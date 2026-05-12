@@ -161,17 +161,17 @@ const lastUpdated = '12 de mayo de 2026'
 }
 
 .pp-alert {
-  background: rgba(99, 102, 241, 0.12);
-  border: 1px solid rgba(99, 102, 241, 0.28);
+  background: rgba(16, 185, 129, 0.12);
+  border: 1px solid rgba(16, 185, 129, 0.28);
   border-radius: 10px;
-  color: #c7d2fe;
+  color: #6ee7b7;
   font-size: 0.88rem;
   line-height: 1.6;
   padding: 14px 18px;
 }
 
 .pp-alert strong {
-  color: #a5b4fc;
+  color: #a7f3d0;
 }
 
 .pp-section {
@@ -216,7 +216,7 @@ const lastUpdated = '12 de mayo de 2026'
 }
 
 .pp-list li::before {
-  color: #6366f1;
+  color: #10b981;
   content: '•';
   left: 0;
   position: absolute;
