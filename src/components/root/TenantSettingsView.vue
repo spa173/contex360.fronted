@@ -134,9 +134,10 @@ async function handleDeleteTenant() {
 
   saving.value = true
   try {
-    await axios.delete(`${API}/admin/tenants/${props.tenantId}`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-      data: { password: password.trim() }
+    await axios.post(`${API}/admin/tenants/${props.tenantId}/delete`, {
+      password: password.trim()
+    }, {
+      headers: { Authorization: `Bearer ${getToken()}` }
     })
     alert('✅ Empresa eliminada correctamente.')
     emit('back')
