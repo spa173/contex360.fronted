@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { businessApi } from '../../services/businessApi'
 import { formatDate } from '../../utils/ui'
+import TenantSettingsView from '../root/TenantSettingsView.vue'
 
 const tabs = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -25,6 +26,7 @@ const breachAlerts = ref([])
 const demoRequests = ref([])
 const erasingUserId = ref(null)
 const notifyingId = ref(null)
+const selectedTenantId = ref(null)
 
 const normalizeCompliance = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) {
@@ -242,7 +244,7 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
                   </span>
                 </td>
                 <td>
-                  <button class="action-btn-sm">Configurar</button>
+                  <button class="action-btn-sm" @click="selectedTenantId = tenant.id">⚙️ Configurar</button>
                 </td>
               </tr>
             </tbody>
@@ -647,6 +649,18 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
       </div>
     </div>
   </div>
+
+  <!-- Tenant Settings Drawer -->
+  <Teleport to="body">
+    <div v-if="selectedTenantId" class="tenant-drawer-overlay" @click.self="selectedTenantId = null">
+      <div class="tenant-drawer">
+        <TenantSettingsView
+          :tenant-id="selectedTenantId"
+          @back="selectedTenantId = null"
+        />
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
@@ -1282,5 +1296,29 @@ h1 {
     width: 100%;
     justify-content: center;
   }
+}
+
+.tenant-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tenant-drawer {
+  width: min(780px, 100vw);
+  height: 100%;
+  background: var(--bg, #0d1117);
+  border-left: 1px solid var(--border, rgba(255,255,255,0.08));
+  overflow-y: auto;
+  padding: 28px;
+  animation: slide-in 220ms ease;
+}
+
+@keyframes slide-in {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
 }
 </style>
