@@ -1779,23 +1779,19 @@ export const useStateStore = defineStore('state', {
     async fetchBusinessData() {
       if (!this.activeTenantId) return
       
-      try {
-        const [products, invoices, thirdParties, movements] = await Promise.all([
-          (businessApi as any).getProducts?.() || Promise.resolve([]),
-          businessApi.getInvoices(),
-          businessApi.getThirdParties(),
-          (businessApi as any).getMovements?.() || Promise.resolve([]),
-        ])
-        
-        if (Array.isArray(products)) this.products = products
-        if (Array.isArray(invoices)) this.invoices = invoices
-        if (Array.isArray(thirdParties)) this.thirdParties = thirdParties
-        if (Array.isArray(movements)) this.inventoryMovements = movements
-        
-        this.saveState()
-      } catch (error) {
-        console.error('Error fetching business data:', error)
-      }
+      const [products, invoices, thirdParties, movements] = await Promise.allSettled([
+        (businessApi as any).getProducts?.() || Promise.resolve([]),
+        businessApi.getInvoices(),
+        businessApi.getThirdParties(),
+        (businessApi as any).getMovements?.() || Promise.resolve([]),
+      ])
+
+      if (products.status === 'fulfilled' && Array.isArray(products.value)) this.products = products.value
+      if (invoices.status === 'fulfilled' && Array.isArray(invoices.value)) this.invoices = invoices.value
+      if (thirdParties.status === 'fulfilled' && Array.isArray(thirdParties.value)) this.thirdParties = thirdParties.value
+      if (movements.status === 'fulfilled' && Array.isArray(movements.value)) this.inventoryMovements = movements.value
+
+      this.saveState()
     },
     async refreshSessionWithBackend() {
       try {
