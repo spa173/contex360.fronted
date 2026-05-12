@@ -313,6 +313,12 @@ const toggleRecoveryHelp = () => {
   overflow: hidden;
 }
 
+@media (min-width: 1101px) {
+  .auth-page {
+    zoom: 0.75;
+  }
+}
+
 .auth-layout {
   display: grid;
   grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
