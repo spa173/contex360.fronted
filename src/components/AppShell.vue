@@ -23,6 +23,7 @@ import ChatAssistant from './ai/ChatAssistant.vue'
 const store = useAuthStore()
 const { pushToast } = useToasts()
 const isSidebarOpen = ref(false)
+const emit = defineEmits(['exit-erp'])
 let healthTimer = null
 const HEALTH_INTERVAL_ACTIVE_MS = 3000
 const HEALTH_INTERVAL_BACKGROUND_MS = 12000
@@ -104,6 +105,7 @@ onUnmounted(() => {
         @logout="handleLogout"
         @tenant-change="handleTenantChange"
         @toggle-sidebar="openSidebar"
+        @exit-erp="emit('exit-erp')"
       />
 
       <div class="content">

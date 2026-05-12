@@ -11,7 +11,7 @@ const canSwitchTenant = computed(
   () => store.accessibleTenants.length > 1 && stateStore.can('manage_users'),
 )
 
-const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar'])
+const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'exit-erp'])
 
 const sessionPill = computed(
   () => `${store.currentUser?.name || 'Sin sesion'} - ${store.currentUser?.title || '-'}`,
@@ -73,8 +73,32 @@ function handleTenantChange(event) {
       <span class="badge badge-info">{{ rolePill }}</span>
       <span class="badge badge-muted">{{ sessionPill }}</span>
 
+      <button
+        v-if="stateStore.currentUser?.isSystemOwner"
+        class="btn-root"
+        type="button"
+        title="Volver al Panel de Administración"
+        @click="emit('exit-erp')"
+      >← Panel Root</button>
       <button class="btn-outline" type="button" @click="store.setActiveView('two-factor')" title="Configurar 2FA">🔐 2FA</button>
       <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
     </div>
   </header>
 </template>
+
+<style scoped>
+.btn-root {
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 8px;
+  color: #f59e0b;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 14px;
+  transition: background 150ms;
+}
+.btn-root:hover {
+  background: rgba(245, 158, 11, 0.22);
+}
+</style>
