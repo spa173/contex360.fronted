@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
+import { getAuthToken } from '../../services/authApi'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
@@ -20,6 +21,7 @@ const form = ref({
   name: '',
   adminName: '',
   adminEmail: '',
+  prefix: '',
   plan: 'trial',
   city: '',
 })
@@ -34,7 +36,7 @@ const filteredCompanies = computed(() => {
 })
 
 function getToken() {
-  return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || ''
+  return getAuthToken()
 }
 
 async function fetchCompanies() {
@@ -89,7 +91,7 @@ async function handleSuspend(id: string, currentStatus: string) {
 }
 
 function resetForm() {
-  form.value = { name: '', adminName: '', adminEmail: '', plan: 'trial', city: '' }
+  form.value = { name: '', adminName: '', adminEmail: '', prefix: '', plan: 'trial', city: '' }
   showModal.value = false
 }
 
@@ -107,7 +109,7 @@ onMounted(fetchCompanies)
         <h2 class="section-title">Empresas</h2>
         <p class="section-sub">{{ companies.length }} empresas registradas en la plataforma</p>
       </div>
-      <button class="btn-primary" @click="showModal = true">+ Nueva Empresa</button>
+      <button class="btn-emerald" @click="showModal = true">+ Registrar nuevo Tenant</button>
     </div>
 
     <div class="search-bar">
@@ -181,9 +183,18 @@ onMounted(fetchCompanies)
           <button class="modal-close" @click="resetForm">✕</button>
         </div>
         <form class="modal-form" @submit.prevent="handleCreate">
-          <div class="field-group">
             <label>Nombre de la empresa *</label>
-            <input v-model="form.name" required placeholder="Ej: Coffee House SAS" />
+            <input v-model="form.name" required placeholder="Ej: Fuego Burger SAS" />
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Prefijo (3-4 letras) *</label>
+              <input v-model="form.prefix" required maxlength="4" placeholder="Ej: FGB" />
+            </div>
+            <div class="field-group">
+              <label>Ubicación / Ciudad</label>
+              <input v-model="form.city" placeholder="Ej: Sogamoso" />
+            </div>
           </div>
           <div class="field-group">
             <label>Nombre del administrador *</label>
@@ -202,10 +213,6 @@ onMounted(fetchCompanies)
                 <option value="pro">Pro</option>
                 <option value="enterprise">Enterprise</option>
               </select>
-            </div>
-            <div class="field-group">
-              <label>Ciudad</label>
-              <input v-model="form.city" placeholder="Ej: Bogotá" />
             </div>
           </div>
           <div class="modal-footer">
@@ -290,6 +297,15 @@ onMounted(fetchCompanies)
 }
 .btn-primary:hover { background: var(--accent-strong); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.btn-emerald {
+  background: #10b981; border: none; border-radius: 10px; color: #fff;
+  cursor: pointer; font-size: 0.9rem; font-weight: 600; padding: 10px 20px;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+  transition: all 0.2s ease;
+}
+.btn-emerald:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); }
+.btn-emerald:active { transform: translateY(0); }
 .btn-ghost {
   background: transparent; border: 1px solid var(--border); border-radius: 10px;
   color: var(--text); cursor: pointer; font-size: 0.9rem; padding: 10px 20px;

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
+import { getAuthToken } from '../../services/authApi'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
@@ -38,7 +39,7 @@ const trialDaysLeft = computed(() => {
 })
 
 function getToken() {
-  return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || ''
+  return getAuthToken()
 }
 
 async function fetchTenant() {

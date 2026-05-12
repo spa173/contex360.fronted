@@ -4,6 +4,7 @@ import { useStateStore } from '../stores/stateStore'
 import RootDashboardView from './root/RootDashboardView.vue'
 import CompaniesView from './root/CompaniesView.vue'
 import TenantSettingsView from './root/TenantSettingsView.vue'
+import DemoRequestsView from './root/DemoRequestsView.vue'
 
 const store = useStateStore()
 const activeSection = ref('dashboard')
@@ -100,12 +101,7 @@ function handleLogout() {
           :tenant-id="selectedTenantId"
           @back="backToCompanies"
         />
-        <div v-else-if="activeSection === 'leads'" class="coming-soon">
-          <div class="coming-soon-icon">📋</div>
-          <h3>Leads / Demos</h3>
-          <p>Gestión de leads disponible próximamente</p>
-          <p class="coming-hint">Usa la Consola Admin del ERP para gestionar demos por ahora.</p>
-        </div>
+        <DemoRequestsView v-else-if="activeSection === 'leads'" />
       </div>
     </main>
   </div>
