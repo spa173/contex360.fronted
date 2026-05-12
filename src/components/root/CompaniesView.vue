@@ -139,7 +139,7 @@ onMounted(fetchCompanies)
           <tr v-for="c in filteredCompanies" :key="c.id">
             <td>
               <div class="company-name-cell">
-                <span class="company-avatar">{{ c.prefix || c.name?.slice(0, 2).toUpperCase() }}</span>
+                <span class="company-avatar">{{ c.prefix || (c.name ? c.name.slice(0, 2).toUpperCase() : '??') }}</span>
                 <div>
                   <div class="company-name">{{ c.name }}</div>
                   <div class="company-id">{{ c.id }}</div>
