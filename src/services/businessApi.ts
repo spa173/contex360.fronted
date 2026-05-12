@@ -86,6 +86,17 @@ export const businessApi = {
     return request<any>('/ai/chat', { method: 'POST', body: { message } })
   },
   
+  // 2FA / TOTP
+  async totpSetup() {
+    return request<{ secret: string; qrCodeUrl: string; otpauthUrl: string }>('/auth/totp/setup')
+  },
+  async totpConfirm(code: string) {
+    return request<{ ok: boolean; message: string }>('/auth/totp/confirm', { method: 'POST', body: { code } })
+  },
+  async totpDisable(code: string) {
+    return request<{ ok: boolean; message: string }>('/auth/totp/disable', { method: 'POST', body: { code } })
+  },
+
   // Admin Console
   async getAdminStats() {
     return request<any>('/admin/stats')

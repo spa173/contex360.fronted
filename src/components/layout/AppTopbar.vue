@@ -66,6 +66,7 @@ function handleTenantChange(event) {
       <span class="badge badge-info">{{ rolePill }}</span>
       <span class="badge badge-muted">{{ sessionPill }}</span>
 
+      <button class="btn-outline" type="button" @click="store.setActiveView('two-factor')" title="Configurar 2FA">🔐 2FA</button>
       <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
     </div>
   </header>

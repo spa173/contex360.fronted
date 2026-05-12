@@ -13,6 +13,7 @@ import InventoryView from './views/InventoryView.vue'
 import ThirdPartiesView from './views/ThirdPartiesView.vue'
 import UsersView from './views/UsersView.vue'
 import AdminConsoleView from './views/AdminConsoleView.vue'
+import TwoFactorView from './views/TwoFactorView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
@@ -141,6 +142,9 @@ onUnmounted(() => {
         <AdminConsoleView
           v-if="store.visibleViews.includes('admin-console')"
           :is-active="store.activeView === 'admin-console'"
+        />
+        <TwoFactorView
+          v-if="store.activeView === 'two-factor'"
         />
       </div>
     </main>

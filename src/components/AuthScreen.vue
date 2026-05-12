@@ -285,14 +285,16 @@ const toggleRecoveryHelp = () => {
   background: #f5f7fb;
   color: #0f1727;
   color-scheme: light;
-  min-height: 100vh;
-  overflow: hidden;
+  min-height: 100dvh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .auth-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .auth-story {
@@ -495,7 +497,7 @@ const toggleRecoveryHelp = () => {
   align-items: center;
   display: flex;
   justify-content: flex-end;
-  padding: 22px 30px 0;
+  padding: calc(22px + env(safe-area-inset-top)) 30px 0;
 }
 
 .auth-support {
@@ -866,7 +868,7 @@ const toggleRecoveryHelp = () => {
 @media (max-width: 640px) {
   .auth-form-panel__topbar {
     justify-content: space-between;
-    padding: 18px 18px 0;
+    padding: calc(18px + env(safe-area-inset-top)) 18px 0;
   }
 
   .auth-mobile-brand {
@@ -898,8 +900,9 @@ const toggleRecoveryHelp = () => {
     color: #8693a8;
     display: block;
     font-size: 0.85rem;
-    padding: 0 18px 22px;
+    padding: 0 18px calc(22px + env(safe-area-inset-bottom));
     text-align: center;
   }
 }
+
 </style>
