@@ -125,6 +125,12 @@ export const businessApi = {
   async notifyBreach(eventId: string) {
     return request<any>(`/admin/breach-alerts/${eventId}/notify`, { method: 'POST' })
   },
+  async getDemoRequests() {
+    return request<any[]>('/demo')
+  },
+  async updateDemoRequestStatus(id: string, estado: string) {
+    return request<any>(`/demo/${id}/status`, { method: 'PUT', body: { estado } })
+  },
   async changePassword(currentPassword: string, newPassword: string) {
     return request<any>('/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
   },

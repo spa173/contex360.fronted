@@ -9,6 +9,7 @@ const tabs = [
   { id: 'logs', label: 'Logs de Auditoria' },
   { id: 'compliance', label: 'Cumplimiento ISO' },
   { id: 'breach', label: 'Alertas de Brecha' },
+  { id: 'demo', label: 'Solicitudes Demo' },
 ]
 
 const stats = ref(null)
@@ -20,6 +21,7 @@ const tenants = ref([])
 const globalUsers = ref([])
 const logs = ref([])
 const breachAlerts = ref([])
+const demoRequests = ref([])
 const erasingUserId = ref(null)
 const notifyingId = ref(null)
 
@@ -34,13 +36,14 @@ const normalizeCompliance = (value) => {
 const fetchAdminData = async () => {
   loading.value = true
   try {
-    const [s, t, u, l, c, b] = await Promise.all([
+    const [s, t, u, l, c, b, d] = await Promise.all([
       businessApi.getAdminStats(),
       businessApi.getAdminTenants(),
       businessApi.getAdminUsers(),
       businessApi.getAdminLogs(),
       businessApi.getComplianceDashboard().catch(() => null),
       businessApi.getBreachAlerts().catch(() => []),
+      businessApi.getDemoRequests().catch(() => []),
     ])
 
     stats.value = s
@@ -49,6 +52,7 @@ const fetchAdminData = async () => {
     logs.value = l
     compliance.value = normalizeCompliance(c)
     breachAlerts.value = Array.isArray(b) ? b : []
+    demoRequests.value = Array.isArray(d) ? d : []
   } catch (error) {
     console.error('Error fetching admin data:', error)
   } finally {
@@ -74,11 +78,20 @@ const sendBreachNotification = async (eventId) => {
   notifyingId.value = eventId
   try {
     await businessApi.notifyBreach(eventId)
-    alert('Alerta enviada a los administradores del sistema.')
+    breachAlerts.value = await businessApi.getBreachAlerts().catch(() => [])
   } catch (err) {
-    console.error('Error sending breach notification:', err)
+    console.error('Error sending notification:', err)
   } finally {
     notifyingId.value = null
+  }
+}
+
+const updateDemoStatus = async (id, newStatus) => {
+  try {
+    await businessApi.updateDemoRequestStatus(id, newStatus)
+    demoRequests.value = await businessApi.getDemoRequests()
+  } catch (err) {
+    console.error('Error updating demo status:', err)
   }
 }
 
@@ -284,6 +297,50 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
               </tbody>
             </table>
           </article>
+        </div>
+
+        <div v-else-if="activeSubView === 'demo'" class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Empresa</th>
+                <th>Nombre</th>
+                <th>Correo</th>
+                <th>Teléfono</th>
+                <th>Mensaje</th>
+                <th>Estado</th>
+                <th>Fecha</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="req in demoRequests" :key="req.id">
+                <td>{{ req.empresa }}</td>
+                <td>{{ req.nombre }}</td>
+                <td>{{ req.correo }}</td>
+                <td>{{ req.telefono || '-' }}</td>
+                <td class="truncate-cell">{{ req.mensaje || '-' }}</td>
+                <td>
+                  <span class="status-pill" :class="req.estado">{{ req.estado }}</span>
+                </td>
+                <td>{{ formatDate(req.createdAt) }}</td>
+                <td>
+                  <select
+                    class="status-select"
+                    @change="updateDemoStatus(req.id, $event.target.value)"
+                  >
+                    <option value="nuevo" :selected="req.estado === 'nuevo'">Nuevo</option>
+                    <option value="contactado" :selected="req.estado === 'contactado'">Contactado</option>
+                    <option value="demo_agendada" :selected="req.estado === 'demo_agendada'">Demo agendada</option>
+                    <option value="cliente" :selected="req.estado === 'cliente'">Cliente</option>
+                  </select>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <p v-if="!demoRequests.length" class="empty-note">
+            No hay solicitudes de demo registradas.
+          </p>
         </div>
 
         <div v-else-if="activeSubView === 'logs'" class="table-container">
