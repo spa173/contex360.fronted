@@ -313,15 +313,9 @@ const toggleRecoveryHelp = () => {
   overflow: hidden;
 }
 
-@media (min-width: 1101px) {
-  .auth-page {
-    zoom: 0.75;
-  }
-}
-
 .auth-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   min-height: 100vh;
 }
 
@@ -353,25 +347,25 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-story__orb--top {
-  height: 290px;
-  right: 10%;
-  top: 8%;
-  width: 290px;
+  height: 260px;
+  right: 12%;
+  top: 10%;
+  width: 260px;
 }
 
 .auth-story__orb--bottom {
-  bottom: -70px;
-  height: 380px;
-  right: -40px;
-  width: 380px;
+  bottom: -64px;
+  height: 340px;
+  right: -36px;
+  width: 340px;
 }
 
 .auth-story__content {
   display: flex;
   flex-direction: column;
-  gap: 36px;
+  gap: 28px;
   height: 100%;
-  padding: 54px 42px 34px 42px;
+  padding: 42px 40px 32px 42px;
   position: relative;
   z-index: 1;
 }
@@ -398,7 +392,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-brand__name {
-  font-size: 1.52rem;
+  font-size: 1.34rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
@@ -406,33 +400,33 @@ const toggleRecoveryHelp = () => {
 
 .auth-brand__subtitle {
   color: rgba(224, 233, 242, 0.62);
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   letter-spacing: 0.08em;
   margin-top: 5px;
   text-transform: uppercase;
 }
 
 .auth-story__copy {
-  margin-top: 70px;
-  max-width: 560px;
+  margin-top: clamp(38px, 4.5vw, 56px);
+  max-width: 520px;
 }
 
 .auth-eyebrow {
   color: #27e0d2;
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.16em;
-  margin: 0 0 18px;
+  margin: 0 0 14px;
   text-transform: uppercase;
 }
 
 .auth-story__copy h1 {
-  font-size: clamp(2.95rem, 4.8vw, 4.55rem);
+  font-size: clamp(2.35rem, 3.8vw, 3.6rem);
   font-weight: 400;
   letter-spacing: -0.06em;
-  line-height: 0.98;
-  margin: 0 0 28px;
-  max-width: 640px;
+  line-height: 1;
+  margin: 0 0 20px;
+  max-width: 520px;
 }
 
 .auth-story__copy h1 strong {
@@ -442,39 +436,39 @@ const toggleRecoveryHelp = () => {
 
 .auth-story__lead {
   color: rgba(234, 240, 248, 0.78);
-  font-size: 1.08rem;
-  line-height: 1.7;
+  font-size: 0.95rem;
+  line-height: 1.64;
   margin: 0;
-  max-width: 560px;
+  max-width: 480px;
 }
 
 .auth-metrics {
   display: grid;
-  gap: 28px;
+  gap: 22px;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   margin: 2px 0 0;
-  max-width: 560px;
+  max-width: 500px;
 }
 
 .auth-metric dt {
   color: #ffffff;
-  font-size: clamp(2.2rem, 3vw, 3rem);
+  font-size: clamp(1.9rem, 2.45vw, 2.6rem);
   font-weight: 400;
   line-height: 1;
 }
 
 .auth-metric dd {
   color: rgba(221, 230, 240, 0.62);
-  font-size: 0.95rem;
+  font-size: 0.82rem;
   margin: 8px 0 0;
 }
 
 .auth-features {
   display: grid;
-  gap: 14px;
+  gap: 11px;
   list-style: none;
   margin: 0;
-  max-width: 560px;
+  max-width: 500px;
   padding: 0;
 }
 
@@ -482,15 +476,15 @@ const toggleRecoveryHelp = () => {
   align-items: center;
   display: flex;
   gap: 14px;
-  font-size: 1rem;
-  line-height: 1.4;
+  font-size: 0.9rem;
+  line-height: 1.35;
 }
 
 .auth-features svg {
   color: #27e0d2;
   flex-shrink: 0;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
 }
 
 .auth-story__footer {
@@ -498,7 +492,7 @@ const toggleRecoveryHelp = () => {
   color: rgba(221, 230, 240, 0.55);
   display: flex;
   flex-wrap: wrap;
-  gap: 34px;
+  gap: 24px;
   margin-top: auto;
   padding-top: 18px;
 }
@@ -525,15 +519,15 @@ const toggleRecoveryHelp = () => {
   align-items: center;
   display: flex;
   justify-content: flex-end;
-  padding: 28px 34px 0;
+  padding: 22px 30px 0;
 }
 
 .auth-support {
   align-items: center;
   color: #3d495d;
   display: flex;
-  gap: 18px;
-  font-size: 0.98rem;
+  gap: 14px;
+  font-size: 0.9rem;
 }
 
 .auth-support a {
@@ -565,20 +559,20 @@ const toggleRecoveryHelp = () => {
   display: flex;
   flex: 1;
   justify-content: center;
-  padding: 22px 42px 46px;
+  padding: 16px 32px 38px;
 }
 
 .auth-form-card {
-  width: min(100%, 494px);
+  width: min(100%, 456px);
 }
 
 .auth-form-head {
-  margin-bottom: 28px;
+  margin-bottom: 22px;
 }
 
 .auth-form-head h2 {
   color: #0e1727;
-  font-size: clamp(2.15rem, 3vw, 2.8rem);
+  font-size: clamp(1.9rem, 2.55vw, 2.35rem);
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1.05;
@@ -587,16 +581,16 @@ const toggleRecoveryHelp = () => {
 
 .auth-form-head p {
   color: #68778f;
-  font-size: 1rem;
+  font-size: 0.92rem;
   margin: 0;
 }
 
 .auth-feedback {
-  border-radius: 14px;
-  font-size: 0.95rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
   line-height: 1.45;
-  margin: 0 0 18px;
-  padding: 14px 16px;
+  margin: 0 0 14px;
+  padding: 12px 14px;
 }
 
 .auth-feedback--success {
@@ -613,18 +607,18 @@ const toggleRecoveryHelp = () => {
 
 .auth-form {
   display: grid;
-  gap: 18px;
+  gap: 16px;
 }
 
 .auth-field {
   display: grid;
-  gap: 10px;
+  gap: 8px;
 }
 
 .auth-field > span,
 .auth-field__header > span {
   color: #0f1727;
-  font-size: 1rem;
+  font-size: 0.93rem;
   font-weight: 500;
 }
 
@@ -640,7 +634,7 @@ const toggleRecoveryHelp = () => {
   border: 0;
   color: #4b5563;
   cursor: pointer;
-  font-size: 0.94rem;
+  font-size: 0.88rem;
   font-weight: 500;
   padding: 0;
 }
@@ -653,13 +647,13 @@ const toggleRecoveryHelp = () => {
   align-items: center;
   background: #ffffff;
   border: 1px solid #d6dbe5;
-  border-radius: 10px;
+  border-radius: 11px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   display: grid;
-  gap: 10px;
+  gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
-  min-height: 48px;
-  padding: 0 14px 0 16px;
+  min-height: 46px;
+  padding: 0 12px 0 14px;
   transition:
     border-color 160ms ease,
     box-shadow 160ms ease,
@@ -675,8 +669,8 @@ const toggleRecoveryHelp = () => {
   background: transparent;
   border: 0;
   color: #101828;
-  font-size: 1rem;
-  min-height: 56px;
+  font-size: 0.96rem;
+  min-height: 50px;
   padding: 0;
   width: 100%;
 }
@@ -696,10 +690,10 @@ const toggleRecoveryHelp = () => {
   color: #7c8596;
   cursor: pointer;
   display: inline-grid;
-  height: 28px;
+  height: 26px;
   justify-content: center;
   padding: 0;
-  width: 28px;
+  width: 26px;
 }
 
 .auth-toggle:hover {
@@ -724,7 +718,7 @@ const toggleRecoveryHelp = () => {
   cursor: pointer;
   display: inline-flex;
   gap: 10px;
-  font-size: 0.96rem;
+  font-size: 0.9rem;
 }
 
 .auth-remember input {
@@ -736,22 +730,22 @@ const toggleRecoveryHelp = () => {
 .auth-recovery-note {
   background: #eef4ff;
   border: 1px solid #d6e2ff;
-  border-radius: 12px;
+  border-radius: 11px;
   color: #334155;
   line-height: 1.5;
   margin: 0;
-  padding: 12px 14px;
+  padding: 11px 13px;
 }
 
 .auth-primary {
   background: #3d4654;
   border: 0;
-  border-radius: 10px;
+  border-radius: 11px;
   color: #ffffff;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 0.96rem;
   font-weight: 600;
-  min-height: 50px;
+  min-height: 46px;
   padding: 0 18px;
   transition:
     background 160ms ease,
@@ -775,10 +769,10 @@ const toggleRecoveryHelp = () => {
   align-items: center;
   color: #93a1b5;
   display: flex;
-  gap: 18px;
-  font-size: 0.85rem;
+  gap: 14px;
+  font-size: 0.78rem;
   letter-spacing: 0.12em;
-  margin: 30px 0 26px;
+  margin: 24px 0 20px;
   text-transform: uppercase;
 }
 
@@ -792,7 +786,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-sso {
   display: grid;
-  gap: 12px;
+  gap: 10px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
@@ -800,15 +794,16 @@ const toggleRecoveryHelp = () => {
   align-items: center;
   background: #ffffff;
   border: 1px solid #d7dee8;
-  border-radius: 10px;
+  border-radius: 11px;
   color: #0f1727;
   cursor: pointer;
   display: inline-flex;
+  font-size: 0.92rem;
   font-weight: 500;
-  gap: 12px;
+  gap: 10px;
   justify-content: center;
-  min-height: 48px;
-  padding: 0 18px;
+  min-height: 44px;
+  padding: 0 16px;
   transition:
     background 160ms ease,
     border-color 160ms ease,
@@ -823,14 +818,14 @@ const toggleRecoveryHelp = () => {
 
 .auth-sso-button svg {
   flex-shrink: 0;
-  height: 20px;
-  width: 20px;
+  height: 18px;
+  width: 18px;
 }
 
 .auth-demo {
   color: #3c4453;
-  font-size: 1rem;
-  margin: 24px 0 0;
+  font-size: 0.92rem;
+  margin: 18px 0 0;
   text-align: center;
 }
 
@@ -850,23 +845,23 @@ const toggleRecoveryHelp = () => {
   color: #68778f;
   display: flex;
   flex-wrap: wrap;
-  gap: 24px;
+  gap: 18px;
   justify-content: center;
-  margin-top: 36px;
-  padding-top: 24px;
+  margin-top: 28px;
+  padding-top: 20px;
 }
 
 .auth-proof span {
   align-items: center;
   display: inline-flex;
   gap: 8px;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
 }
 
 .auth-proof svg {
   color: #7b8798;
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
 }
 
 .auth-mobile-footer {
