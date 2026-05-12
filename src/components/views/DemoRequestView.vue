@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
+import { useStateStore } from '../../stores/stateStore'
+
+const store = useStateStore()
 
 const form = ref({
   nombre: '',
@@ -39,6 +42,10 @@ const handleSubmit = async () => {
 <template>
   <div class="demo-wrap">
     <div class="demo-page">
+      <button class="demo-back" @click="store.setActiveView('dashboard')">
+        ← Volver al login
+      </button>
+
       <div class="demo-header">
         <h1 class="demo-title">Solicita una Demo</h1>
         <p class="demo-subtitle">Descubre cómo Contex360 puede transformar la gestión financiera de tu empresa</p>
@@ -128,6 +135,20 @@ const handleSubmit = async () => {
 <style scoped>
 .demo-wrap {
   padding: 24px 16px 48px;
+}
+
+.demo-back {
+  background: none;
+  border: none;
+  color: #94a3b8;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0 0 8px;
+  transition: color 0.15s;
+}
+
+.demo-back:hover {
+  color: #e2e8f0;
 }
 
 .demo-page {
