@@ -1210,7 +1210,7 @@ const toggleRecoveryHelp = () => {
   position: fixed; z-index: 9999;
 }
 .lm-modal {
-  background: #0f172a; border: 1px solid rgba(255,255,255,.08); border-radius: 24px;
+  background: #15232d; border: 1px solid rgba(255,255,255,.08); border-radius: 24px;
   display: flex; flex-direction: column; max-height: 80vh; max-width: 720px;
   overflow: hidden; width: 100%;
 }
@@ -1245,7 +1245,7 @@ const toggleRecoveryHelp = () => {
 .lm-section li { color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.8; padding-left: 20px; position: relative; }
 .lm-section li::before { color: rgba(255,255,255,.22); content: '—'; left: 0; position: absolute; }
 .lm-foot { border-top: 1px solid rgba(255,255,255,.06); display: flex; flex-shrink: 0; justify-content: flex-end; padding: 20px 36px; }
-.lm-accept { background: #fff; border: none; border-radius: 10px; color: #0f172a; cursor: pointer; font-size: 14px; font-weight: 600; padding: 10px 28px; transition: opacity .15s; }
+.lm-accept { background: #fff; border: none; border-radius: 10px; color: #15232d; cursor: pointer; font-size: 14px; font-weight: 600; padding: 10px 28px; transition: opacity .15s; }
 .lm-accept:hover { opacity: .88; }
 @media (max-width: 640px) {
   .lm-modal { border-radius: 16px; max-height: 90dvh; }
