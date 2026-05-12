@@ -723,7 +723,7 @@ h1 {
   background: rgba(255, 255, 255, 0.05);
 }
 
-.stat-card.blue .stat-icon { color: #3b82f6; background: rgba(59, 130, 246, 0.1); }
+.stat-card.blue .stat-icon { color: #10b981; background: rgba(16, 185, 129, 0.1); }
 .stat-card.purple .stat-icon { color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
 .stat-card.green .stat-icon { color: #10b981; background: rgba(16, 185, 129, 0.1); }
 .stat-card.orange .stat-icon { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
@@ -753,7 +753,7 @@ h1 {
 }
 
 .tab-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
-.tab-btn.active { background: #3b82f6; color: #fff; }
+.tab-btn.active { background: #10b981; color: #fff; }
 
 .tab-content {
   min-width: 0;
@@ -803,7 +803,7 @@ h1 {
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: #3b82f6;
+  background: #10b981;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -861,10 +861,10 @@ h1 {
 .status-pill.active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .status-pill.inactive { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 .status-pill.pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
-.status-pill.documented { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-pill.documented { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .status-pill.automated { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 
-.severity-pill.info { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.severity-pill.info { background: rgba(16, 185, 129, 0.1); color: #10b981; }
 .severity-pill.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 .severity-pill.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
@@ -903,8 +903,8 @@ h1 {
 }
 
 .action-btn {
-  background: #3b82f6;
-  border: 1px solid #3b82f6;
+  background: #10b981;
+  border: 1px solid #10b981;
   color: #fff;
   font-weight: 600;
 }
@@ -988,7 +988,7 @@ h1 {
   width: 40px;
   height: 40px;
   border: 3px solid rgba(255, 255, 255, 0.1);
-  border-top-color: #3b82f6;
+  border-top-color: #10b981;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -1150,8 +1150,8 @@ h1 {
   align-items: center;
   padding: 0.4rem 0.65rem;
   border-radius: 999px;
-  background: rgba(59, 130, 246, 0.12);
-  color: #bfdbfe;
+  background: rgba(16, 185, 129, 0.12);
+  color: #6ee7b7;
   font-size: 0.8rem;
 }
 

@@ -254,8 +254,8 @@ textarea {
 
 .status-pill {
   align-items: center;
-  background: rgba(59, 130, 246, 0.14);
-  border: 1px solid rgba(59, 130, 246, 0.28);
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.28);
   border-radius: 999px;
   color: var(--text);
   display: inline-flex;
@@ -267,7 +267,7 @@ textarea {
 .hero {
   align-items: center;
   background:
-    radial-gradient(circle at right top, rgba(59, 130, 246, 0.18), transparent 35%),
+    radial-gradient(circle at right top, rgba(16, 185, 129, 0.15), transparent 35%),
     linear-gradient(135deg, rgba(24, 24, 27, 0.94), rgba(9, 9, 11, 0.98));
   display: grid;
   gap: 20px;
@@ -345,7 +345,7 @@ textarea {
 }
 
 .metric-card::after {
-  background: linear-gradient(90deg, rgba(59, 130, 246, 0.6), rgba(139, 92, 246, 0.25));
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.6), rgba(5, 150, 105, 0.25));
   border-radius: 999px;
   bottom: 16px;
   content: "";
@@ -449,8 +449,8 @@ textarea {
 .field input:focus,
 .field select:focus,
 .field textarea:focus {
-  border-color: rgba(59, 130, 246, 0.5);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.12);
+  border-color: rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.12);
   outline: none;
 }
 
@@ -527,8 +527,8 @@ textarea {
 }
 
 .small-pill {
-  background: rgba(59, 130, 246, 0.14);
-  border: 1px solid rgba(59, 130, 246, 0.2);
+  background: rgba(16, 185, 129, 0.14);
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .status-badge {
@@ -600,7 +600,7 @@ textarea {
 .invoice-card:hover,
 .invoice-card.active {
   background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(59, 130, 246, 0.24);
+  border-color: rgba(16, 185, 129, 0.24);
   transform: translateY(-1px);
 }
 
@@ -704,7 +704,7 @@ textarea {
 .toast {
   animation: fade-in 180ms ease;
   background: rgba(24, 24, 27, 0.96);
-  border: 1px solid rgba(59, 130, 246, 0.28);
+  border: 1px solid rgba(16, 185, 129, 0.28);
   border-radius: 18px;
   box-shadow: var(--shadow);
   padding: 14px 16px;
@@ -877,7 +877,7 @@ textarea:disabled {
 
 .auth-input-shell:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.14);
+  box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.14);
 }
 
 .auth-input-icon {
@@ -982,7 +982,7 @@ textarea:disabled {
 }
 
 .auth-primary-button:hover {
-  box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 8px 16px rgba(16, 185, 129, 0.2);
 }
 
 .auth-totp-block {
@@ -1149,11 +1149,11 @@ textarea:disabled {
   --color-text-success: #4ade80;
   --color-text-danger: #f87171;
   --color-text-warning: #fbbf24;
-  --color-text-info: #60a5fa;
+  --color-text-info: #10b981;
   --color-background-success: rgba(74, 222, 128, 0.1);
   --color-background-danger: rgba(248, 113, 113, 0.1);
   --color-background-warning: rgba(251, 191, 36, 0.1);
-  --color-background-info: rgba(96, 165, 250, 0.1);
+  --color-background-info: rgba(16, 185, 129, 0.1);
   --border-radius-lg: 10px;
   --border-radius-md: 7px;
   --border-radius-sm: 5px;
@@ -1165,8 +1165,8 @@ textarea:disabled {
   --border: var(--color-border-tertiary);
   --text: var(--color-text-primary);
   --muted: var(--color-text-secondary);
-  --accent: var(--color-text-info);
-  --accent-strong: #93c5fd;
+  --accent: #10b981;
+  --accent-strong: #059669;
   --teal: var(--color-text-success);
   --danger: var(--color-text-danger);
   --success: var(--color-text-success);
@@ -1176,40 +1176,6 @@ textarea:disabled {
   --radius-md: var(--border-radius-md);
 }
 
-html.light {
-  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
-  --color-background-primary: #ffffff;
-  --color-background-secondary: #f4f7fb;
-  --color-background-tertiary: #e9edf5;
-  --color-border-primary: #d2d8e6;
-  --color-border-secondary: #e2e8f0;
-  --color-border-tertiary: #edf2f7;
-  --color-text-primary: #0f1727;
-  --color-text-secondary: #526077;
-  --color-text-tertiary: #8a94a8;
-  --color-text-success: #0f9d58;
-  --color-text-danger: #dc2626;
-  --color-text-warning: #b45309;
-  --color-text-info: #2563eb;
-  --color-background-success: rgba(16, 185, 129, 0.12);
-  --color-background-danger: rgba(220, 38, 38, 0.1);
-  --color-background-warning: rgba(245, 158, 11, 0.12);
-  --color-background-info: rgba(37, 99, 235, 0.1);
-  --bg: var(--color-background-tertiary);
-  --bg-strong: #f7f9fc;
-  --surface: var(--color-background-primary);
-  --surface-alt: var(--color-background-secondary);
-  --surface-soft: #e6ebf3;
-  --border: var(--color-border-tertiary);
-  --text: var(--color-text-primary);
-  --muted: var(--color-text-secondary);
-  --accent: var(--color-text-info);
-  --accent-strong: #1d4ed8;
-  --teal: var(--color-text-success);
-  --danger: var(--color-text-danger);
-  --success: var(--color-text-success);
-  --shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
-}
 
 * {
   box-sizing: border-box;
