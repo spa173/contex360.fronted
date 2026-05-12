@@ -3,9 +3,21 @@ import { ref, computed } from 'vue'
 import { useStateStore } from '../stores/stateStore'
 import RootDashboardView from './root/RootDashboardView.vue'
 import CompaniesView from './root/CompaniesView.vue'
+import TenantSettingsView from './root/TenantSettingsView.vue'
 
 const store = useStateStore()
 const activeSection = ref('dashboard')
+const selectedTenantId = ref<string | null>(null)
+
+function handleConfigure(tenantId: string) {
+  selectedTenantId.value = tenantId
+  activeSection.value = 'tenant-settings'
+}
+
+function backToCompanies() {
+  selectedTenantId.value = null
+  activeSection.value = 'companies'
+}
 
 const emit = defineEmits(['enter-erp'])
 
@@ -82,7 +94,12 @@ function handleLogout() {
 
       <div class="root-content">
         <RootDashboardView v-if="activeSection === 'dashboard'" />
-        <CompaniesView v-else-if="activeSection === 'companies'" />
+        <CompaniesView v-else-if="activeSection === 'companies'" @configure="handleConfigure" />
+        <TenantSettingsView
+          v-else-if="activeSection === 'tenant-settings' && selectedTenantId"
+          :tenant-id="selectedTenantId"
+          @back="backToCompanies"
+        />
         <div v-else-if="activeSection === 'leads'" class="coming-soon">
           <div class="coming-soon-icon">📋</div>
           <h3>Leads / Demos</h3>

@@ -9,7 +9,12 @@ const loading = ref(true)
 const error = ref('')
 const showModal = ref(false)
 const saving = ref(false)
+const emit = defineEmits(['configure'])
 const createdCredentials = ref<{ name: string; email: string; password: string } | null>(null)
+
+function openSettings(id: string) {
+  emit('configure', id)
+}
 
 const form = ref({
   name: '',
@@ -151,12 +156,15 @@ onMounted(fetchCompanies)
             <td>{{ new Date(c.createdAt).toLocaleDateString('es-CO') }}</td>
             <td>
               <div class="action-row">
+                <button class="btn-action btn-configure" @click="openSettings(c.id)">
+                  ⚙️ Configurar
+                </button>
                 <button
                   class="btn-action"
                   :class="c.dianStatus === 'suspended' ? 'btn-activate' : 'btn-suspend'"
                   @click="handleSuspend(c.id, c.dianStatus)"
                 >
-                  {{ c.dianStatus === 'suspended' ? 'Activar' : 'Suspender' }}
+                  {{ c.dianStatus === 'suspended' ? '✅ Activar' : '🔒 Suspender' }}
                 </button>
               </div>
             </td>
@@ -266,6 +274,8 @@ onMounted(fetchCompanies)
 
 .action-row { display: flex; gap: 6px; }
 .btn-action { padding: 5px 12px; border-radius: 7px; font-size: 0.78rem; font-weight: 600; cursor: pointer; border: 1px solid transparent; }
+.btn-configure { background: rgba(245,158,11,0.1); color: #f59e0b; border-color: rgba(245,158,11,0.25); }
+.btn-configure:hover { background: rgba(245,158,11,0.2); }
 .btn-suspend { background: rgba(239,68,68,0.1); color: #ef4444; border-color: rgba(239,68,68,0.25); }
 .btn-suspend:hover { background: rgba(239,68,68,0.2); }
 .btn-activate { background: rgba(16,185,129,0.1); color: #10b981; border-color: rgba(16,185,129,0.25); }
