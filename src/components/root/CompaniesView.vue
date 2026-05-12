@@ -183,6 +183,7 @@ onMounted(fetchCompanies)
           <button class="modal-close" @click="resetForm">✕</button>
         </div>
         <form class="modal-form" @submit.prevent="handleCreate">
+          <div class="field-group">
             <label>Nombre de la empresa *</label>
             <input v-model="form.name" required placeholder="Ej: Fuego Burger SAS" />
           </div>
