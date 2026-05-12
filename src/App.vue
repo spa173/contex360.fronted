@@ -24,7 +24,7 @@ onMounted(async () => {
 
 <template>
   <div class="app-root">
-    <DemoRequestView v-if="store.activeView === 'demo'" />
+    <DemoRequestView v-if="!store.currentUser && store.activeView === 'demo'" />
     <AuthScreen v-else-if="!store.currentUser" />
     <AppShell v-else />
     <ToastStack :toasts="toasts" />
