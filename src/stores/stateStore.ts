@@ -8,7 +8,7 @@ import {
 import { createTimerRegistry } from './stateRuntime'
 import { formatDate } from '../utils/ui'
 import { businessApi } from '../services/businessApi'
-import { getAuthToken, storeAuthToken, clearAuthToken } from '../services/authApi'
+import { getAuthToken, storeAuthToken, clearAuthToken, refreshAccessToken } from '../services/authApi'
 
 const STORAGE_KEY = 'contex360-mvp-state'
 const scheduledDianTimers = createTimerRegistry()
@@ -1816,9 +1816,17 @@ export const useStateStore = defineStore('state', {
         else this.userSessions.push(response.session)
         await this.fetchBusinessData()
         return true
-      } catch (error) {
-        if (getAuthToken()) {
-          console.error('Session validation error:', error)
+      } catch {
+        const refreshed = await refreshAccessToken()
+        if (refreshed) {
+          storeAuthToken(refreshed.accessToken)
+          this.session.currentUserId = refreshed.user.id
+          this.session.currentSessionId = refreshed.session.id
+          this.activeTenantId = refreshed.activeTenantId
+          this.memberships = refreshed.memberships
+          this.tenants = refreshed.accessibleTenants
+          await this.fetchBusinessData()
+          return true
         }
         clearAuthToken()
         return false

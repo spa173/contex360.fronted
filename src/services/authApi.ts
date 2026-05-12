@@ -1,6 +1,7 @@
 import { getApiBaseUrl } from './apiBase'
 
 const AUTH_TOKEN_KEY = 'contex360-auth-token'
+const REFRESH_TOKEN_KEY = 'contex360-refresh-token'
 
 export interface BackendAuthUser {
   id: string
@@ -51,6 +52,7 @@ export interface BackendAuthResponse {
   ok: true
   message: string
   accessToken: string
+  refreshToken: string
   user: BackendAuthUser
   session: BackendAuthSession
   activeTenantId: string
@@ -85,6 +87,35 @@ export function clearAuthToken() {
   }
 
   globalThis.localStorage.removeItem(AUTH_TOKEN_KEY)
+  globalThis.localStorage.removeItem(REFRESH_TOKEN_KEY)
+}
+
+export function getRefreshToken() {
+  if (typeof globalThis === 'undefined') return ''
+  return globalThis.localStorage.getItem(REFRESH_TOKEN_KEY) || ''
+}
+
+export function storeRefreshToken(token: string) {
+  if (typeof globalThis === 'undefined') return
+  globalThis.localStorage.setItem(REFRESH_TOKEN_KEY, token)
+}
+
+export async function refreshAccessToken(): Promise<BackendAuthResponse | null> {
+  const refreshToken = getRefreshToken()
+  if (!refreshToken) return null
+
+  try {
+    const response = await requestJson<BackendAuthResponse>('/auth/refresh', {
+      method: 'POST',
+      body: { refreshToken },
+    })
+    storeAuthToken(response.accessToken)
+    storeRefreshToken(response.refreshToken)
+    return response
+  } catch {
+    clearAuthToken()
+    return null
+  }
 }
 
 async function readResponseBody(response: Response) {
@@ -152,6 +183,7 @@ export async function loginWithBackend(credentials: { email: string; password: s
 
   if ('accessToken' in response && response.accessToken) {
     storeAuthToken(response.accessToken)
+    storeRefreshToken(response.refreshToken)
   } else {
     clearAuthToken()
   }
