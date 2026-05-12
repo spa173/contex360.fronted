@@ -1,10 +1,15 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en" class="dark" data-theme="dark" style="color-scheme:dark">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>contex360-vue</title>
+    <title>Contex360</title>
+    <script>
+      localStorage.setItem('contex360-theme', 'dark');
+      document.documentElement.classList.add('dark');
+      document.documentElement.classList.remove('light');
+    </script>
   </head>
   <body>
     <div id="app"></div>

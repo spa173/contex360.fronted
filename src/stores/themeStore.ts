@@ -1,83 +1,53 @@
 import { defineStore } from 'pinia'
 
-export type ThemeMode = 'dark' | 'light'
+export type ThemeMode = 'dark'
 
 const STORAGE_KEY = 'contex360-theme'
 
-function isThemeMode(value: unknown): value is ThemeMode {
-  return value === 'dark' || value === 'light'
-}
-
-function readStoredTheme(): ThemeMode | null {
-  if (typeof globalThis === 'undefined' || !globalThis.localStorage) {
-    return null
-  }
-
-  const stored = globalThis.localStorage.getItem(STORAGE_KEY)
-  return isThemeMode(stored) ? stored : null
-}
-
-function resolveInitialTheme(): ThemeMode {
-  return readStoredTheme() || 'dark'
-}
-
-function syncDocumentTheme(theme: ThemeMode) {
-  if (typeof document === 'undefined') {
-    return
-  }
+function applyDarkTheme() {
+  if (typeof document === 'undefined') return
 
   const root = document.documentElement
-  root.classList.toggle('dark', theme === 'dark')
-  root.classList.toggle('light', theme === 'light')
-  root.dataset.theme = theme
-  root.style.colorScheme = theme
+  root.classList.add('dark')
+  root.classList.remove('light')
+  root.dataset.theme = 'dark'
+  root.style.colorScheme = 'dark'
 
   if (document.body) {
-    document.body.dataset.theme = theme
-  }
-}
-
-function persistTheme(theme: ThemeMode) {
-  if (typeof globalThis === 'undefined' || !globalThis.localStorage) {
-    return
+    document.body.dataset.theme = 'dark'
   }
 
-  globalThis.localStorage.setItem(STORAGE_KEY, theme)
+  if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+    globalThis.localStorage.setItem(STORAGE_KEY, 'dark')
+  }
 }
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    theme: resolveInitialTheme(),
+    theme: 'dark' as ThemeMode,
     initialized: false,
   }),
 
   getters: {
-    isDark: (state) => state.theme === 'dark',
-    isLight: (state) => state.theme === 'light',
-    nextThemeLabel: (state) => (state.theme === 'dark' ? 'Tema claro' : 'Tema oscuro'),
-    nextThemeIcon: (state) => (state.theme === 'dark' ? 'light_mode' : 'dark_mode'),
+    isDark: () => true,
+    isLight: () => false,
+    nextThemeLabel: () => 'Tema oscuro',
+    nextThemeIcon: () => 'dark_mode',
   },
 
   actions: {
     initializeTheme() {
-      if (!this.initialized) {
-        this.theme = resolveInitialTheme()
-        this.initialized = true
-      }
-
-      syncDocumentTheme(this.theme)
-      persistTheme(this.theme)
+      this.theme = 'dark'
+      this.initialized = true
+      applyDarkTheme()
     },
 
-    setTheme(theme: ThemeMode) {
-      this.theme = theme
-      this.initialized = true
-      syncDocumentTheme(theme)
-      persistTheme(theme)
+    setTheme(_theme: ThemeMode) {
+      applyDarkTheme()
     },
 
     toggleTheme() {
-      this.setTheme(this.theme === 'dark' ? 'light' : 'dark')
+      applyDarkTheme()
     },
   },
 })
