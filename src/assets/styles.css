@@ -1336,6 +1336,35 @@ button {
   padding: 12px 8px 0;
 }
 
+.legal-links {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 4px;
+  padding: 6px 8px 10px;
+}
+
+.legal-link {
+  background: none;
+  border: none;
+  color: var(--color-text-tertiary);
+  cursor: pointer;
+  font-size: 0.72rem;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.legal-link:hover {
+  color: var(--color-text-secondary);
+}
+
+.legal-sep {
+  color: var(--color-text-tertiary);
+  font-size: 0.72rem;
+  opacity: 0.5;
+  user-select: none;
+}
+
 .user-strip {
   align-items: center;
   display: flex;

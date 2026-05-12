@@ -127,12 +127,15 @@ const userInitials = computed(() => {
           <div class="user-role">{{ store.activeMembership?.role || 'Sin rol' }}</div>
         </div>
       </div>
-      <button
-        class="w-full text-left text-xs text-slate-400 hover:text-slate-300 px-2 py-1 mt-1 transition"
-        @click="emit('navigate', 'privacy-policy')"
-      >
-        Política de privacidad · Ley 1581
-      </button>
+      <div class="legal-links">
+        <button class="legal-link" @click="emit('navigate', 'privacy-policy')">
+          Política de privacidad
+        </button>
+        <span class="legal-sep">·</span>
+        <button class="legal-link" @click="emit('navigate', 'terms-of-use')">
+          Términos de uso
+        </button>
+      </div>
     </div>
   </aside>
 </template>

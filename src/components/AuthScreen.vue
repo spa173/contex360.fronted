@@ -1,9 +1,11 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useStateStore } from '../stores/stateStore'
+import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
 
 const store = useStateStore()
+const themeStore = useThemeStore()
 
 const email = ref('')
 const password = ref('')
@@ -19,6 +21,7 @@ const requiresPasswordChange = ref(false)
 const newPassword = ref('')
 const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
+const showTermsModal = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
@@ -173,7 +176,7 @@ const toggleRecoveryHelp = () => {
 
           <footer class="auth-story__footer">
             <span>&copy; 2026 Contex360</span>
-            <a href="#">Terminos de uso</a>
+            <button class="auth-legal-btn" @click="showTermsModal = true">Términos de uso</button>
             <a href="#">Politica de privacidad</a>
           </footer>
         </div>
@@ -189,9 +192,22 @@ const toggleRecoveryHelp = () => {
             </div>
           </div>
 
-          <div class="auth-support">
-            <span>¿Necesitas ayuda?</span>
-            <a href="mailto:soporte@contex360.local">Contactar soporte</a>
+          <div class="auth-topbar-actions">
+            <button
+              class="auth-theme-toggle"
+              type="button"
+              :aria-label="themeStore.nextThemeLabel"
+              :title="themeStore.nextThemeLabel"
+              @click="themeStore.toggleTheme()"
+            >
+              <span class="material-icons" aria-hidden="true">{{ themeStore.nextThemeIcon }}</span>
+              <span>{{ themeStore.nextThemeLabel }}</span>
+            </button>
+
+            <div class="auth-support">
+              <span>¿Necesitas ayuda?</span>
+              <a href="mailto:soporte@contex360.local">Contactar soporte</a>
+            </div>
           </div>
         </header>
 
@@ -377,17 +393,132 @@ const toggleRecoveryHelp = () => {
       </section>
     </div>
   </div>
+  <!-- Terms of use modal -->
+  <Teleport to="body">
+    <div v-if="showTermsModal" class="terms-modal-overlay" @click.self="showTermsModal = false">
+      <div class="terms-modal">
+        <div class="terms-modal-header">
+          <h2>Términos de Uso</h2>
+          <button class="terms-modal-close" @click="showTermsModal = false" aria-label="Cerrar">&times;</button>
+        </div>
+        <div class="terms-modal-body">
+          <p class="terms-updated">Última actualización: 12 de mayo de 2026</p>
+
+          <div class="terms-alert">
+            Al acceder y utilizar <strong>Contex360</strong>, usted acepta estos términos en su totalidad.
+          </div>
+
+          <h3>1. Descripción del servicio</h3>
+          <p>Contex360 es una plataforma ERP SaaS para gestión contable, facturación, inventario y analítica, orientada a empresas colombianas.</p>
+
+          <h3>2. Condiciones de acceso</h3>
+          <ul>
+            <li>Acceso mediante credenciales asignadas por el administrador de su organización.</li>
+            <li>Cada usuario es responsable de la confidencialidad de su contraseña.</li>
+            <li>El uso compartido de credenciales está prohibido.</li>
+            <li>Se recomienda activar autenticación de dos factores (2FA).</li>
+          </ul>
+
+          <h3>3. Uso aceptable</h3>
+          <ul>
+            <li>Uso exclusivo para fines legítimos de gestión empresarial.</li>
+            <li>Prohibido acceder a datos de otras organizaciones sin autorización.</li>
+            <li>Prohibido realizar ingeniería inversa o introducir código malicioso.</li>
+          </ul>
+
+          <h3>4. Propiedad intelectual</h3>
+          <p>El software, diseño y marcas de Contex360 son propiedad de sus desarrolladores, protegidos por la legislación colombiana e internacional.</p>
+
+          <h3>5. Datos y privacidad</h3>
+          <p>El tratamiento de datos personales se rige por la <strong>Política de Privacidad</strong> conforme a la Ley 1581 de 2012. Los datos empresariales son propiedad de la organización usuaria.</p>
+
+          <h3>6. Limitación de responsabilidad</h3>
+          <p>Contex360 no responde por pérdidas derivadas de uso indebido de credenciales o errores en la información ingresada. La responsabilidad máxima se limita al valor pagado en los últimos 30 días.</p>
+
+          <h3>7. Legislación aplicable</h3>
+          <p>Estos términos se rigen por las leyes de Colombia. Las controversias se someterán a los tribunales competentes de Bogotá D.C.</p>
+        </div>
+        <div class="terms-modal-footer">
+          <button class="terms-accept-btn" @click="showTermsModal = false">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
 .auth-page {
-  background: #f5f7fb;
-  color: #0f1727;
+  --auth-page-bg: #f5f7fb;
+  --auth-page-text: #0f1727;
+  --auth-page-muted: #68778f;
+  --auth-surface: rgba(255, 255, 255, 0.96);
+  --auth-surface-alt: rgba(247, 250, 255, 0.86);
+  --auth-surface-strong: #ffffff;
+  --auth-border: rgba(208, 217, 231, 0.92);
+  --auth-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  --auth-input-bg: #ffffff;
+  --auth-input-border: #d6dbe5;
+  --auth-input-text: #101828;
+  --auth-input-placeholder: #94a3b8;
+  --auth-action-bg: #3d4654;
+  --auth-action-bg-hover: #2f3946;
+  --auth-action-text: #ffffff;
+  --auth-link: #0f1727;
+  --auth-link-muted: #3d495d;
+  --auth-divider: #dde3ea;
+  --auth-recovery-bg: #eef4ff;
+  --auth-recovery-border: #d6e2ff;
+  --auth-recovery-text: #334155;
+  --auth-feedback-success-bg: #ecfdf3;
+  --auth-feedback-success-border: #b7ebc0;
+  --auth-feedback-success-text: #0f7a4a;
+  --auth-feedback-error-bg: #fff1f2;
+  --auth-feedback-error-border: #fecdd3;
+  --auth-feedback-error-text: #be123c;
+  --auth-theme-bg: rgba(255, 255, 255, 0.94);
+  --auth-theme-border: rgba(208, 217, 231, 0.92);
+  --auth-theme-text: #0f1727;
+  background: var(--auth-page-bg);
+  color: var(--auth-page-text);
   color-scheme: light;
   min-height: 100dvh;
   overflow-x: hidden;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
+}
+
+:global(html.dark) .auth-page {
+  --auth-page-bg: #0b1220;
+  --auth-page-text: #e5e7eb;
+  --auth-page-muted: #94a3b8;
+  --auth-surface: rgba(15, 23, 42, 0.92);
+  --auth-surface-alt: rgba(17, 24, 39, 0.96);
+  --auth-surface-strong: rgba(15, 23, 42, 0.96);
+  --auth-border: rgba(148, 163, 184, 0.2);
+  --auth-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
+  --auth-input-bg: rgba(15, 23, 42, 0.9);
+  --auth-input-border: rgba(148, 163, 184, 0.22);
+  --auth-input-text: #e5e7eb;
+  --auth-input-placeholder: #94a3b8;
+  --auth-action-bg: #2563eb;
+  --auth-action-bg-hover: #1d4ed8;
+  --auth-action-text: #ffffff;
+  --auth-link: #f8fafc;
+  --auth-link-muted: #cbd5e1;
+  --auth-divider: rgba(148, 163, 184, 0.2);
+  --auth-recovery-bg: rgba(30, 41, 59, 0.78);
+  --auth-recovery-border: rgba(96, 165, 250, 0.18);
+  --auth-recovery-text: #dbeafe;
+  --auth-feedback-success-bg: rgba(16, 185, 129, 0.12);
+  --auth-feedback-success-border: rgba(16, 185, 129, 0.22);
+  --auth-feedback-success-text: #34d399;
+  --auth-feedback-error-bg: rgba(239, 68, 68, 0.12);
+  --auth-feedback-error-border: rgba(239, 68, 68, 0.24);
+  --auth-feedback-error-text: #fca5a5;
+  --auth-theme-bg: rgba(15, 23, 42, 0.8);
+  --auth-theme-border: rgba(148, 163, 184, 0.24);
+  --auth-theme-text: #e5e7eb;
+  color-scheme: dark;
 }
 
 .auth-layout {
@@ -584,8 +715,8 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-form-panel {
-  background: #f5f7fb;
-  color: #0f1727;
+  background: var(--auth-page-bg);
+  color: var(--auth-page-text);
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -599,16 +730,50 @@ const toggleRecoveryHelp = () => {
   padding: calc(22px + env(safe-area-inset-top)) 30px 0;
 }
 
+.auth-topbar-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.auth-theme-toggle {
+  align-items: center;
+  background: var(--auth-theme-bg);
+  border: 1px solid var(--auth-theme-border);
+  border-radius: 999px;
+  color: var(--auth-theme-text);
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  min-height: 40px;
+  padding: 0 14px;
+  transition:
+    background 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.auth-theme-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
+}
+
+.auth-theme-toggle .material-icons {
+  font-size: 18px;
+}
+
 .auth-support {
   align-items: center;
-  color: #3d495d;
+  color: var(--auth-link-muted);
   display: flex;
   gap: 14px;
   font-size: 0.9rem;
 }
 
 .auth-support a {
-  color: #0f1727;
+  color: var(--auth-link);
   font-weight: 600;
   text-decoration: none;
 }
@@ -619,10 +784,10 @@ const toggleRecoveryHelp = () => {
 
 .auth-mobile-brand {
   align-items: center;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 255, 0.86));
-  border: 1px solid rgba(208, 217, 231, 0.92);
+  background: linear-gradient(180deg, var(--auth-surface), var(--auth-surface-alt));
+  border: 1px solid var(--auth-border);
   border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
+  box-shadow: var(--auth-shadow);
   display: none;
   gap: 10px;
   padding: 10px 12px;
@@ -643,7 +808,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__name {
-  color: #0f1727;
+  color: var(--auth-page-text);
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -651,7 +816,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__subtitle {
-  color: #617083;
+  color: var(--auth-page-muted);
   font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.2;
@@ -674,7 +839,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-form-head h2 {
-  color: #0e1727;
+  color: var(--auth-page-text);
   font-size: clamp(1.9rem, 2.55vw, 2.35rem);
   font-weight: 700;
   letter-spacing: -0.05em;
@@ -683,7 +848,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-form-head p {
-  color: #68778f;
+  color: var(--auth-page-muted);
   font-size: 0.92rem;
   margin: 0;
 }
@@ -697,15 +862,15 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-feedback--success {
-  background: #ecfdf3;
-  border: 1px solid #b7ebc0;
-  color: #0f7a4a;
+  background: var(--auth-feedback-success-bg);
+  border: 1px solid var(--auth-feedback-success-border);
+  color: var(--auth-feedback-success-text);
 }
 
 .auth-feedback--error {
-  background: #fff1f2;
-  border: 1px solid #fecdd3;
-  color: #be123c;
+  background: var(--auth-feedback-error-bg);
+  border: 1px solid var(--auth-feedback-error-border);
+  color: var(--auth-feedback-error-text);
 }
 
 .auth-form {
@@ -720,7 +885,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-field > span,
 .auth-field__header > span {
-  color: #0f1727;
+  color: var(--auth-page-text);
   font-size: 0.93rem;
   font-weight: 500;
 }
@@ -735,7 +900,7 @@ const toggleRecoveryHelp = () => {
 .auth-inline-action {
   background: transparent;
   border: 0;
-  color: #4b5563;
+  color: var(--auth-page-muted);
   cursor: pointer;
   font-size: 0.88rem;
   font-weight: 500;
@@ -743,13 +908,13 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-inline-action:hover {
-  color: #111827;
+  color: var(--auth-page-text);
 }
 
 .auth-input-shell {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #d6dbe5;
+  background: var(--auth-input-bg);
+  border: 1px solid var(--auth-input-border);
   border-radius: 11px;
   box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
   display: grid;
@@ -764,14 +929,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-input-shell:focus-within {
-  border-color: #344054;
+  border-color: var(--auth-page-text);
   box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
 }
 
 .auth-input-shell input {
   background: transparent;
   border: 0;
-  color: #101828;
+  color: var(--auth-input-text);
   font-size: 0.96rem;
   min-height: 50px;
   padding: 0;
@@ -783,14 +948,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-input-shell input::placeholder {
-  color: #94a3b8;
+  color: var(--auth-input-placeholder);
 }
 
 .auth-toggle {
   align-items: center;
   background: transparent;
   border: 0;
-  color: #7c8596;
+  color: var(--auth-page-muted);
   cursor: pointer;
   display: inline-grid;
   height: 26px;
@@ -800,7 +965,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-toggle:hover {
-  color: #111827;
+  color: var(--auth-page-text);
 }
 
 .auth-toggle svg {
@@ -817,7 +982,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-remember {
   align-items: center;
-  color: #475569;
+  color: var(--auth-page-muted);
   cursor: pointer;
   display: inline-flex;
   gap: 10px;
@@ -825,26 +990,26 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-remember input {
-  accent-color: #111827;
+  accent-color: var(--auth-page-text);
   height: 16px;
   width: 16px;
 }
 
 .auth-recovery-note {
-  background: #eef4ff;
-  border: 1px solid #d6e2ff;
+  background: var(--auth-recovery-bg);
+  border: 1px solid var(--auth-recovery-border);
   border-radius: 11px;
-  color: #334155;
+  color: var(--auth-recovery-text);
   line-height: 1.5;
   margin: 0;
   padding: 11px 13px;
 }
 
 .auth-primary {
-  background: #3d4654;
+  background: var(--auth-action-bg);
   border: 0;
   border-radius: 11px;
-  color: #ffffff;
+  color: var(--auth-action-text);
   cursor: pointer;
   font-size: 0.96rem;
   font-weight: 600;
@@ -858,7 +1023,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary:hover:not(:disabled) {
-  background: #2f3946;
+  background: var(--auth-action-bg-hover);
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
   transform: translateY(-1px);
 }
@@ -870,7 +1035,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-divider {
   align-items: center;
-  color: #93a1b5;
+  color: var(--auth-page-muted);
   display: flex;
   gap: 14px;
   font-size: 0.78rem;
@@ -881,7 +1046,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-divider::before,
 .auth-divider::after {
-  background: #dde3ea;
+  background: var(--auth-divider);
   content: '';
   flex: 1;
   height: 1px;
@@ -895,10 +1060,10 @@ const toggleRecoveryHelp = () => {
 
 .auth-sso-button {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #d7dee8;
+  background: var(--auth-surface-strong);
+  border: 1px solid var(--auth-border);
   border-radius: 11px;
-  color: #0f1727;
+  color: var(--auth-page-text);
   cursor: pointer;
   display: inline-flex;
   font-size: 0.92rem;
@@ -914,8 +1079,8 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-sso-button:hover {
-  background: #f8fafc;
-  border-color: #cfd8e3;
+  background: var(--auth-surface-alt);
+  border-color: var(--auth-border);
   transform: translateY(-1px);
 }
 
@@ -926,14 +1091,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-demo {
-  color: #3c4453;
+  color: var(--auth-link-muted);
   font-size: 0.92rem;
   margin: 18px 0 0;
   text-align: center;
 }
 
 .auth-demo a {
-  color: #0f1727;
+  color: var(--auth-link);
   font-weight: 700;
   text-decoration: none;
 }
@@ -944,8 +1109,8 @@ const toggleRecoveryHelp = () => {
 
 .auth-proof {
   align-items: center;
-  border-top: 1px solid #e3e8ef;
-  color: #68778f;
+  border-top: 1px solid var(--auth-proof-border);
+  color: var(--auth-page-muted);
   display: flex;
   flex-wrap: wrap;
   gap: 18px;
@@ -962,13 +1127,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-proof svg {
-  color: #7b8798;
+  color: var(--auth-page-muted);
   height: 16px;
   width: 16px;
 }
 
 .auth-mobile-footer {
   display: none;
+  color: var(--auth-page-muted);
 }
 
 @media (max-width: 1100px) {

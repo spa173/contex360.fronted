@@ -1,9 +1,11 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
+import { useThemeStore } from '../../stores/themeStore'
 import { viewLabels } from '../../utils/ui'
 
 const store = useAuthStore()
+const themeStore = useThemeStore()
 
 const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar'])
 
@@ -65,6 +67,17 @@ function handleTenantChange(event) {
 
       <span class="badge badge-info">{{ rolePill }}</span>
       <span class="badge badge-muted">{{ sessionPill }}</span>
+
+      <button
+        class="btn-outline theme-toggle-button"
+        type="button"
+        :aria-label="themeStore.nextThemeLabel"
+        :title="themeStore.nextThemeLabel"
+        @click="themeStore.toggleTheme()"
+      >
+        <span class="material-icons" aria-hidden="true">{{ themeStore.nextThemeIcon }}</span>
+        <span>{{ themeStore.nextThemeLabel }}</span>
+      </button>
 
       <button class="btn-outline" type="button" @click="store.setActiveView('two-factor')" title="Configurar 2FA">🔐 2FA</button>
       <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
