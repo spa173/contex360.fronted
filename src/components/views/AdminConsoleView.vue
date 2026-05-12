@@ -4,6 +4,7 @@ import { businessApi } from '../../services/businessApi'
 import { formatDate } from '../../utils/ui'
 
 const tabs = [
+  { id: 'dashboard', label: 'Dashboard' },
   { id: 'tenants', label: 'Empresas (Tenants)' },
   { id: 'users', label: 'Usuarios Globales' },
   { id: 'logs', label: 'Logs de Auditoria' },
@@ -183,6 +184,33 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
       </div>
 
       <div class="tab-content">
+        <div v-if="activeSubView === 'dashboard'" class="dashboard-grid">
+          <div class="metric-card">
+            <span class="metric-label">Empresas Totales</span>
+            <span class="metric-value">{{ stats?.totalTenants || 0 }}</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Usuarios Totales</span>
+            <span class="metric-value">{{ stats?.totalUsers || 0 }}</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Solicitudes Demo</span>
+            <span class="metric-value">{{ stats?.totalDemoRequests || 0 }}</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Solicitudes Hoy</span>
+            <span class="metric-value">{{ stats?.demoRequestsToday || 0 }}</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Leads Convertidos</span>
+            <span class="metric-value">{{ stats?.demoRequestsConverted || 0 }}</span>
+          </div>
+          <div class="metric-card">
+            <span class="metric-label">Trials Activos</span>
+            <span class="metric-value">{{ stats?.activeTrials || 0 }}</span>
+          </div>
+        </div>
+
         <div v-if="activeSubView === 'tenants'" class="table-container">
           <table class="admin-table">
             <thead>
@@ -787,6 +815,35 @@ h1 {
   background: rgba(255, 255, 255, 0.05);
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.metric-card {
+  background: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.metric-label {
+  color: #94a3b8;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.metric-value {
+  color: #10b981;
+  font-size: 2rem;
+  font-weight: 700;
 }
 
 .status-pill,
