@@ -1,15 +1,27 @@
 <script setup>
-import { onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { useStateStore } from '../stores/stateStore'
 
 const store = useStateStore()
+const route = useRoute()
 const router = useRouter()
 
 const statusMessage = ref('Verificando tu sesion segura...')
 const errorMessage = ref('')
 
+const oauthError = computed(() => {
+  const value = route.query.error
+  return typeof value === 'string' ? value.trim() : ''
+})
+
 const finishAuth = async () => {
+  if (oauthError.value) {
+    statusMessage.value = 'No pudimos completar el inicio de sesion.'
+    errorMessage.value = oauthError.value
+    return
+  }
+
   const ok = await store.refreshSessionWithBackend()
 
   if (ok) {
