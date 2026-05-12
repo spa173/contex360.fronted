@@ -9,15 +9,6 @@ export const viewLabels: Record<string, string> = {
   'admin-console': 'Consola Admin',
 }
 
-export const moduleRows = [
-  ['Login y usuarios', 'Operativo', 'Sesion local, roles y membresias por empresa'],
-  ['Facturacion DIAN', 'Operativo', 'Factura, timeline y estados'],
-  ['Inventarios', 'Operativo', 'Stock, kardex y alertas'],
-  ['Contabilidad', 'Operativo', 'Asientos automaticos'],
-  ['IA/OCR', 'Operativo', 'Extraccion y sugerencias'],
-  ['Nomina', 'Siguiente fase', 'Pendiente de backend y reglas laborales'],
-]
-
 const currencyFormatter = new Intl.NumberFormat('es-CO', {
   style: 'currency',
   currency: 'COP',
