@@ -62,9 +62,9 @@ function handleLogout() {
       <div class="root-sidebar-footer">
         <div class="erp-switch-area">
           <button class="btn-enter-erp" @click="emit('enter-erp')">
-            ⚙️ Entrar al ERP
+            ← Volver al ERP
           </button>
-          <div class="erp-hint">Acceder como operador</div>
+          <div class="erp-hint">Regresar a la vista operativa</div>
         </div>
         <div class="root-user-strip">
           <div class="root-avatar">{{ userInitials }}</div>

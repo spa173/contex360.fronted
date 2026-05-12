@@ -8,6 +8,7 @@ import {
 import { createTimerRegistry } from './stateRuntime'
 import { formatDate } from '../utils/ui'
 import { businessApi } from '../services/businessApi'
+import { loginWithBackend } from '../services/authApi'
 import { getAuthToken, storeAuthToken, clearAuthToken, refreshAccessToken } from '../services/authApi'
 
 const STORAGE_KEY = 'contex360-mvp-state'
@@ -1745,7 +1746,7 @@ export const useStateStore = defineStore('state', {
     async loginWithBackend(credentials: Record<string, string>) {
       this.resetState()
       try {
-        const response = await businessApi.login(credentials)
+        const response = await loginWithBackend(credentials)
         if (!response.ok) return response
 
         if (response.accessToken) {

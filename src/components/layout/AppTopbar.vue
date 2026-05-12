@@ -11,7 +11,7 @@ const canSwitchTenant = computed(
   () => store.accessibleTenants.length > 1 && stateStore.can('manage_users'),
 )
 
-const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'exit-erp'])
+const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel'])
 
 const sessionPill = computed(
   () => `${store.currentUser?.name || 'Sin sesion'} - ${store.currentUser?.title || '-'}`,
@@ -77,9 +77,9 @@ function handleTenantChange(event) {
         v-if="stateStore.currentUser?.isSystemOwner"
         class="btn-root"
         type="button"
-        title="Volver al Panel de Administración"
-        @click="emit('exit-erp')"
-      >← Panel Root</button>
+        title="Ir al Panel de Administracion SaaS"
+        @click="emit('open-admin-panel')"
+      >⚙ Panel Admin</button>
       <button class="btn-outline" type="button" @click="store.setActiveView('two-factor')" title="Configurar 2FA">🔐 2FA</button>
       <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
     </div>

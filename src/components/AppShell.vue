@@ -23,7 +23,7 @@ import ChatAssistant from './ai/ChatAssistant.vue'
 const store = useAuthStore()
 const { pushToast } = useToasts()
 const isSidebarOpen = ref(false)
-const emit = defineEmits(['exit-erp'])
+const emit = defineEmits(['open-admin-panel'])
 let healthTimer = null
 const HEALTH_INTERVAL_ACTIVE_MS = 3000
 const HEALTH_INTERVAL_BACKGROUND_MS = 12000
@@ -105,7 +105,7 @@ onUnmounted(() => {
         @logout="handleLogout"
         @tenant-change="handleTenantChange"
         @toggle-sidebar="openSidebar"
-        @exit-erp="emit('exit-erp')"
+        @open-admin-panel="emit('open-admin-panel')"
       />
 
       <div class="content">

@@ -13,10 +13,10 @@ const store = useStateStore()
 const themeStore = useThemeStore()
 const { toasts } = useToasts()
 const showDemo = ref(false)
-const enteringErp = ref(false)
+const viewingAdminPanel = ref(false)
 
 const showRootPanel = computed(
-  () => store.currentUser?.isSystemOwner && !enteringErp.value
+  () => store.currentUser?.isSystemOwner && viewingAdminPanel.value
 )
 
 themeStore.initializeTheme()
@@ -33,8 +33,8 @@ onMounted(async () => {
   <div class="app-root">
     <DemoRequestView v-if="!store.currentUser && showDemo" @back="showDemo = false" />
     <AuthScreen v-else-if="!store.currentUser" @request-demo="showDemo = true" />
-    <RootShell v-else-if="showRootPanel" @enter-erp="enteringErp = true" />
-    <AppShell v-else @exit-erp="enteringErp = false" />
+    <RootShell v-else-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
+    <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
     <ToastStack :toasts="toasts" />
   </div>
 </template>
