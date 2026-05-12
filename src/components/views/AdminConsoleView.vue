@@ -95,6 +95,18 @@ const updateDemoStatus = async (id, newStatus) => {
   }
 }
 
+const convertToCustomer = async (id) => {
+  if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa, usuario administrador y enviará credenciales por Telegram.')) return
+  try {
+    await businessApi.convertToCustomer(id)
+    demoRequests.value = await businessApi.getDemoRequests()
+    alert('Cliente creado exitosamente. Las credenciales fueron enviadas por Telegram.')
+  } catch (err) {
+    console.error('Error converting to customer:', err)
+    alert('Error al convertir en cliente: ' + (err.message || 'Error desconocido'))
+  }
+}
+
 const executeAccessReview = async () => {
   runningReview.value = true
   try {
@@ -325,15 +337,25 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
                 </td>
                 <td>{{ formatDate(req.createdAt) }}</td>
                 <td>
-                  <select
-                    class="status-select"
-                    @change="updateDemoStatus(req.id, $event.target.value)"
-                  >
-                    <option value="nuevo" :selected="req.estado === 'nuevo'">Nuevo</option>
-                    <option value="contactado" :selected="req.estado === 'contactado'">Contactado</option>
-                    <option value="demo_agendada" :selected="req.estado === 'demo_agendada'">Demo agendada</option>
-                    <option value="cliente" :selected="req.estado === 'cliente'">Cliente</option>
-                  </select>
+                  <div class="demo-actions">
+                    <select
+                      class="status-select"
+                      @change="updateDemoStatus(req.id, $event.target.value)"
+                    >
+                      <option value="nuevo" :selected="req.estado === 'nuevo'">Nuevo</option>
+                      <option value="contactado" :selected="req.estado === 'contactado'">Contactado</option>
+                      <option value="demo_agendada" :selected="req.estado === 'demo_agendada'">Demo agendada</option>
+                      <option value="aprobado" :selected="req.estado === 'aprobado'">Aprobado</option>
+                      <option value="cliente" :selected="req.estado === 'cliente'">Cliente</option>
+                    </select>
+                    <button
+                      v-if="req.estado !== 'convertido'"
+                      class="action-btn-sm action-btn-sm--convert"
+                      @click="convertToCustomer(req.id)"
+                    >
+                      Convertir
+                    </button>
+                  </div>
                 </td>
               </tr>
             </tbody>
@@ -833,6 +855,22 @@ h1 {
 .action-btn:hover,
 .action-btn-sm:hover {
   transform: translateY(-1px);
+}
+
+.demo-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.action-btn-sm--convert {
+  background: #10b981;
+  border-color: #10b981;
+}
+
+.action-btn-sm--convert:hover {
+  background: #059669;
+  border-color: #059669;
 }
 
 .action-btn:disabled {

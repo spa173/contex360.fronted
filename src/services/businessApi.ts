@@ -131,6 +131,9 @@ export const businessApi = {
   async updateDemoRequestStatus(id: string, estado: string) {
     return request<any>(`/demo/${id}/status`, { method: 'PUT', body: { estado } })
   },
+  async convertToCustomer(id: string) {
+    return request<any>(`/demo/${id}/convert`, { method: 'POST' })
+  },
   async changePassword(currentPassword: string, newPassword: string) {
     return request<any>('/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
   },
