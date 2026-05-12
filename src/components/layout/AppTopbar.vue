@@ -1,9 +1,15 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
+import { useStateStore } from '../../stores/stateStore'
 import { viewLabels } from '../../utils/ui'
 
 const store = useAuthStore()
+const stateStore = useStateStore()
+
+const canSwitchTenant = computed(
+  () => store.accessibleTenants.length > 1 && stateStore.can('manage_users'),
+)
 
 const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar'])
 
@@ -53,7 +59,8 @@ function handleTenantChange(event) {
       <label class="topbar-select">
         <span class="sr-only">Empresa activa</span>
         <select
-          :disabled="store.accessibleTenants.length <= 1"
+          :disabled="!canSwitchTenant"
+          :title="!canSwitchTenant ? 'Tu rol no permite cambiar de empresa' : 'Cambiar empresa activa'"
           :value="store.activeTenantId"
           @change="handleTenantChange"
         >
