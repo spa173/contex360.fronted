@@ -90,26 +90,6 @@ async function handleSuspend(id: string, currentStatus: string) {
   }
 }
 
-async function handleDelete(id: string, name: string) {
-  if (!confirm(`⚠️ ATENCIÓN: ¿Estás seguro de eliminar permanentemente a "${name}"?\n\nEsta acción borrará todos sus usuarios, facturas, productos y datos históricos. No se puede deshacer.`)) return
-  
-  // Segunda confirmación para evitar accidentes
-  const confirmName = prompt(`Escribe el nombre de la empresa "${name}" para confirmar la eliminación:`)
-  if (confirmName !== name) {
-    alert('El nombre no coincide. Operación cancelada.')
-    return
-  }
-
-  try {
-    await axios.delete(`${API}/admin/tenants/${id}`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    })
-    await fetchCompanies()
-  } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error eliminando empresa')
-  }
-}
-
 function resetForm() {
   form.value = { name: '', adminName: '', adminEmail: '', prefix: '', plan: 'trial', city: '' }
   showModal.value = false
@@ -187,9 +167,6 @@ onMounted(fetchCompanies)
                   @click="handleSuspend(c.id, c.dianStatus)"
                 >
                   {{ c.dianStatus === 'suspended' ? '✅ Activar' : '🔒 Suspender' }}
-                </button>
-                <button class="btn-action btn-delete" @click="handleDelete(c.id, c.name)" title="Eliminar empresa">
-                  🗑️
                 </button>
               </div>
             </td>
@@ -311,9 +288,6 @@ onMounted(fetchCompanies)
 .btn-suspend:hover { background: rgba(239,68,68,0.2); }
 .btn-activate { background: rgba(16,185,129,0.1); color: #10b981; border-color: rgba(16,185,129,0.25); }
 .btn-activate:hover { background: rgba(16,185,129,0.2); }
- 
- .btn-delete { background: rgba(239,68,68,0.05); color: #ef4444; border-color: rgba(239,68,68,0.15); }
- .btn-delete:hover { background: rgba(239,68,68,0.2); border-color: #ef4444; }
 
 .state-empty { text-align: center; padding: 40px; color: var(--muted); font-size: 0.9rem; }
 .error-text { color: #ef4444; }

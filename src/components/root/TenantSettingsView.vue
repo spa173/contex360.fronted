@@ -115,13 +115,35 @@ async function setStatus(status: 'active' | 'suspended') {
   }
 }
 
-function renewTrial() {
+async function renewTrial() {
   const days = prompt('¿Cuántos días adicionales de trial?', '30')
   if (!days || isNaN(Number(days))) return
   const newDate = new Date(Date.now() + Number(days) * 86400000).toISOString().split('T')[0]
   planForm.value.trialEndsAt = newDate
   planForm.value.active = true
   savePlan()
+}
+
+async function handleDeleteTenant() {
+  const confirmName = prompt(`⚠️ ATENCIÓN: Esta acción es IRREVERSIBLE.\nSe eliminarán todos los datos (facturas, productos, usuarios) de "${tenant.value.name}".\n\nPara confirmar, escribe exactamente el nombre de la empresa:`)
+  
+  if (confirmName !== tenant.value.name) {
+    if (confirmName !== null) alert('El nombre no coincide. Operación cancelada.')
+    return
+  }
+
+  saving.value = true
+  try {
+    await axios.delete(`${API}/admin/tenants/${props.tenantId}`, {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+    alert('✅ Empresa eliminada correctamente.')
+    emit('back')
+  } catch (e: any) {
+    alert(e?.response?.data?.message || 'Error eliminando empresa')
+  } finally {
+    saving.value = false
+  }
 }
 
 watch(() => props.tenantId, fetchTenant)
@@ -331,12 +353,13 @@ onMounted(fetchTenant)
           <button class="btn-ghost" disabled>🔑 Impersonar (próximo)</button>
         </div>
 
-        <div class="danger-action-card danger-action-card--red">
           <div>
             <div class="danger-action-title red">Eliminar empresa</div>
             <div class="danger-action-desc">Elimina permanentemente la empresa y todos sus datos. Irreversible.</div>
           </div>
-          <button class="btn-delete" disabled>🗑 Eliminar (próximo)</button>
+          <button class="btn-delete-active" :disabled="saving" @click="handleDeleteTenant">
+            {{ saving ? 'Eliminando...' : '🗑 Eliminar empresa definitivamente' }}
+          </button>
         </div>
       </div>
     </div>
@@ -488,6 +511,13 @@ onMounted(fetchTenant)
   background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.25);
   border-radius: 10px; color: #ef4444; cursor: not-allowed; font-size: 0.875rem; padding: 10px 20px; opacity: 0.5;
 }
+.btn-delete-active {
+  background: #ef4444; border: none;
+  border-radius: 10px; color: #fff; cursor: pointer; font-size: 0.875rem; font-weight: 600; padding: 10px 20px;
+  transition: all 0.2s;
+}
+.btn-delete-active:hover { background: #dc2626; transform: scale(1.02); }
+.btn-delete-active:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* Danger panel */
 .danger-panel { gap: 16px; }
