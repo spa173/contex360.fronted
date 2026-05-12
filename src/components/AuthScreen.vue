@@ -1,7 +1,6 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useStateStore } from '../stores/stateStore'
-import { getOAuthLoginUrl } from '../services/authApi'
 
 const store = useStateStore()
 
@@ -235,20 +234,6 @@ const toggleRecoveryHelp = () => {
                 <span class="sr-only">{{ isLoading ? 'Verificando...' : 'Iniciar sesion' }}</span>
               </button>
             </form>
-
-            <div class="auth-divider">o continua con</div>
-
-            <div class="auth-sso">
-              <a class="auth-sso-button" :href="getOAuthLoginUrl('google')" rel="noreferrer">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                  <path fill="#4285F4" d="M22.54 12.28c0-.79-.07-1.55-.2-2.28H12v4.33h5.92a5.1 5.1 0 0 1-2.21 3.35v2.79h3.58c2.09-1.93 3.25-4.78 3.25-8.19Z" />
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.67l-3.58-2.79c-.98.66-2.23 1.06-3.7 1.06-2.86 0-5.29-1.93-6.16-4.53H2.17v2.84A10.99 10.99 0 0 0 12 23Z" />
-                  <path fill="#FBBC05" d="M5.84 14.07c-.22-.66-.35-1.36-.35-2.07s.13-1.41.35-2.07V7.07H2.17A10.95 10.95 0 0 0 1 12c0 1.78.43 3.46 1.17 4.93l3.67-2.86Z" />
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.44 2.09 14.96 1 12 1 7.7 1 3.99 3.47 2.17 7.07l3.67 2.86C6.71 7.3 9.14 5.38 12 5.38Z" />
-                </svg>
-                <span>Google</span>
-              </a>
-            </div>
 
             <p class="auth-demo">
               ¿No tienes una cuenta? <a href="#">Solicita una demo</a>

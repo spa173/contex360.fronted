@@ -1,9 +1,6 @@
 import { getApiBaseUrl } from './apiBase'
 
 const AUTH_TOKEN_KEY = 'contex360-auth-token'
-const OAUTH_CALLBACK_PATH = '/auth/callback'
-
-export type OAuthProvider = 'google'
 
 export interface BackendAuthUser {
   id: string
@@ -88,20 +85,6 @@ export function clearAuthToken() {
   }
 
   globalThis.localStorage.removeItem(AUTH_TOKEN_KEY)
-}
-
-function getFrontendAuthCallbackUrl() {
-  if (typeof globalThis === 'undefined' || typeof window === 'undefined') {
-    return OAUTH_CALLBACK_PATH
-  }
-
-  return `${window.location.origin}${OAUTH_CALLBACK_PATH}`
-}
-
-export function getOAuthLoginUrl(provider: OAuthProvider) {
-  const url = new URL(`/auth/oauth/${provider}`, getApiBaseUrl())
-  url.searchParams.set('redirectTo', getFrontendAuthCallbackUrl())
-  return url.toString()
 }
 
 async function readResponseBody(response: Response) {

@@ -3,7 +3,6 @@ import {
   clearAuthToken,
   fetchCurrentAuthSession,
   getAuthToken,
-  getOAuthLoginUrl,
   loginWithBackend,
   revokeBackendSession,
   storeAuthToken,
@@ -89,14 +88,6 @@ describe('authApi', () => {
         credentials: 'include',
       }),
     )
-  })
-
-  it('builds the OAuth login URL for Google', () => {
-    const googleUrl = new URL(getOAuthLoginUrl('google'))
-
-    expect(googleUrl.origin).toBe('http://localhost:3001')
-    expect(googleUrl.pathname).toBe('/auth/oauth/google')
-    expect(googleUrl.searchParams.get('redirectTo')).toContain('/auth/callback')
   })
 
   it('surfaces backend errors when the login fails', async () => {
