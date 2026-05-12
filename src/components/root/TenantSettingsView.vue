@@ -125,16 +125,10 @@ async function renewTrial() {
 }
 
 async function handleDeleteTenant() {
-  const confirmName = prompt(`⚠️ ACCIÓN CRÍTICA: Se eliminarán todos los datos de "${tenant.value.name}" de forma permanente.\n\nPara confirmar, escribe el nombre de la empresa:`)
+  const password = prompt(`⚠️ ACCIÓN IRREVERSIBLE: Se eliminarán todos los datos de "${tenant.value.name}" (facturas, inventario, usuarios).\n\n🔐 Para autorizar esta acción, ingresa tu contraseña de ROOT / Administrador:`)
   
-  if (confirmName !== tenant.value.name) {
-    if (confirmName !== null) alert('El nombre no coincide. Operación cancelada.')
-    return
-  }
-
-  const password = prompt(`🔐 Seguridad Contex360:\nIngresa tu contraseña de root / administrador para autorizar la eliminación de esta empresa:`)
   if (!password) {
-    alert('Se requiere la contraseña para autorizar la operación.')
+    if (password !== null) alert('Se requiere la contraseña para autorizar la operación.')
     return
   }
 
