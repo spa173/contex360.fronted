@@ -400,13 +400,13 @@ const ROLE_DEFINITIONS = [
   {
     id: 'Visor',
     permissions: [],
-    views: ['dashboard'],
+    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties'],
     access: {
-      dashboard: ['view'],
-      billing: ['view'],
-      inventory: ['view'],
-      accounting: ['view'],
-      'third-parties': ['view'],
+      dashboard: ['view', 'export'],
+      billing: ['view', 'export'],
+      inventory: ['view', 'export'],
+      accounting: ['view', 'export'],
+      'third-parties': ['view', 'export'],
       users: [],
       ai: [],
     }
@@ -1834,6 +1834,14 @@ export const useStateStore = defineStore('state', {
     },
     can(permission: string): boolean {
       return this.rolePermissions.includes(permission)
+    },
+    isReadOnly(): boolean {
+      return this.activeMembership?.role === 'Visor'
+    },
+    canWrite(module: string): boolean {
+      if (this.isReadOnly) return false
+      const access = this.roleAccess?.[this.activeMembership?.role || '']?.[module] || []
+      return access.some((a: string) => ['create', 'edit', 'approve'].includes(a))
     },
     checkCurrentSessionHealth() {
       if (!this.session.currentSessionId || !this.session.currentUserId) {

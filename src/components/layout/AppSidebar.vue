@@ -1,9 +1,13 @@
 <script setup>
 import { computed } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
+import { useStateStore } from '../../stores/stateStore'
 import { viewLabels } from '../../utils/ui'
 
 const store = useAuthStore()
+const stateStore = useStateStore()
+
+const isReadOnly = computed(() => stateStore.activeMembership?.role === 'Visor')
 
 const emit = defineEmits(['navigate'])
 
@@ -125,6 +129,7 @@ const userInitials = computed(() => {
         <div class="user-strip-copy">
           <div class="user-name">{{ store.currentUser?.name || 'Usuario' }}</div>
           <div class="user-role">{{ store.activeMembership?.role || 'Sin rol' }}</div>
+          <div v-if="isReadOnly" class="readonly-badge">Solo lectura</div>
         </div>
       </div>
       <div class="legal-links">
@@ -139,3 +144,26 @@ const userInitials = computed(() => {
     </div>
   </aside>
 </template>
+
+<style scoped>
+.readonly-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  color: #f59e0b;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.readonly-badge::before {
+  content: '🔒';
+  font-size: 0.65rem;
+}
+</style>
