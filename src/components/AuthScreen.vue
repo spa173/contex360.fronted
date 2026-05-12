@@ -1,10 +1,8 @@
-<script setup>
+Ôªø<script setup>
 import { computed, ref } from 'vue'
 import { useStateStore } from '../stores/stateStore'
 import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
-
-const emit = defineEmits(['request-demo'])
 
 const store = useStateStore()
 const themeStore = useThemeStore()
@@ -180,7 +178,7 @@ const toggleRecoveryHelp = () => {
           <footer class="auth-story__footer">
             <span class="auth-footer-copy">&copy; 2026 Contex360</span>
             <div class="auth-footer-links">
-              <button class="auth-footer-link" @click="showTermsModal = true">TÈrminos</button>
+              <button class="auth-footer-link" @click="showTermsModal = true">T√©rminos</button>
               <span class="auth-footer-dot" aria-hidden="true"></span>
               <button class="auth-footer-link" @click="showPrivacyModal = true">Privacidad</button>
             </div>
@@ -202,7 +200,7 @@ const toggleRecoveryHelp = () => {
             
 
 <div class="auth-support">
-              <span>øNecesitas ayuda?</span>
+              <span>¬øNecesitas ayuda?</span>
               <a href="mailto:soporte@contex360.local">Contactar soporte</a>
             </div>
           </div>
@@ -213,18 +211,18 @@ const toggleRecoveryHelp = () => {
             <!-- Password change screen -->
             <template v-if="requiresPasswordChange">
               <div class="auth-form-head">
-                <h2>ContraseÒa expirada</h2>
-                <p>Tu contraseÒa ha vencido. Por seguridad debes establecer una nueva para continuar.</p>
+                <h2>Contrase√±a expirada</h2>
+                <p>Tu contrase√±a ha vencido. Por seguridad debes establecer una nueva para continuar.</p>
               </div>
               <p v-if="errorMessage" class="auth-feedback auth-feedback--error" role="alert">{{ errorMessage }}</p>
               <div class="auth-form" style="margin-top:12px;">
                 <label class="auth-field">
-                  <span>Nueva contraseÒa</span>
-                  <input v-model="newPassword" type="password" autocomplete="new-password" placeholder="MÌnimo 8 caracteres" />
+                  <span>Nueva contrase√±a</span>
+                  <input v-model="newPassword" type="password" autocomplete="new-password" placeholder="M√≠nimo 8 caracteres" />
                 </label>
                 <label class="auth-field">
-                  <span>Confirmar contraseÒa</span>
-                  <input v-model="newPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repite la nueva contraseÒa" />
+                  <span>Confirmar contrase√±a</span>
+                  <input v-model="newPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repite la nueva contrase√±a" />
                 </label>
                 <button
                   class="auth-primary"
@@ -246,7 +244,7 @@ const toggleRecoveryHelp = () => {
 
             <p v-if="statusMessage" class="auth-feedback auth-feedback--success" role="status">
               {{ statusMessage }}
-              <span class="sr-only">SesiÛn iniciada.</span>
+              <span class="sr-only">Sesi√≥n iniciada.</span>
             </p>
 
             <p v-if="errorMessage" class="auth-feedback auth-feedback--error" role="alert">
@@ -269,8 +267,8 @@ const toggleRecoveryHelp = () => {
                 <div class="auth-field__header">
                   <span>Contrasena</span>
                   <button class="auth-inline-action" type="button" @click="toggleRecoveryHelp">
-                    <span aria-hidden="true">øOlvidaste tu contraseÒa?</span>
-                    <span class="sr-only">øOlvidaste tu contrasena?</span>
+                    <span aria-hidden="true">¬øOlvidaste tu contrase√±a?</span>
+                    <span class="sr-only">¬øOlvidaste tu contrasena?</span>
                   </button>
                 </div>
 
@@ -280,7 +278,7 @@ const toggleRecoveryHelp = () => {
                     v-model="password"
                     :type="showPassword ? 'text' : 'password'"
                     autocomplete="on"
-                    placeholder="Ingresa tu contraseÒa"
+                    placeholder="Ingresa tu contrase√±a"
                   />
 
                   <button
@@ -315,7 +313,7 @@ const toggleRecoveryHelp = () => {
 
               <div v-if="requiresTotp" class="auth-totp-block">
                 <div class="auth-totp-label">
-                  ?? CÛdigo de autenticaciÛn (2FA)
+                  üîê C√≥digo de autenticaci√≥n (2FA)
                 </div>
                 <input
                   v-model="totpCode"
@@ -326,7 +324,7 @@ const toggleRecoveryHelp = () => {
                   class="auth-totp-input"
                   autocomplete="one-time-code"
                 />
-                <p class="auth-totp-hint">Ingresa el cÛdigo de 6 dÌgitos de tu app autenticadora.</p>
+                <p class="auth-totp-hint">Ingresa el c√≥digo de 6 d√≠gitos de tu app autenticadora.</p>
               </div>
 
               <div class="auth-row">
@@ -341,13 +339,13 @@ const toggleRecoveryHelp = () => {
               </p>
 
               <button class="auth-primary" :disabled="!isFormValid || isLoading || (requiresTotp && totpCode.length < 6)" type="submit">
-                <span aria-hidden="true">{{ isLoading ? 'Verificando...' : 'Iniciar sesiÛn' }}</span>
+                <span aria-hidden="true">{{ isLoading ? 'Verificando...' : 'Iniciar sesi√≥n' }}</span>
                 <span class="sr-only">{{ isLoading ? 'Verificando...' : 'Iniciar sesion' }}</span>
               </button>
             </form>
 
             <p class="auth-demo">
-              øNo tienes una cuenta? <a href="#" @click.prevent="emit('request-demo')">Solicita una demo</a>
+              ¬øNo tienes una cuenta? <a href="#">Solicita una demo</a>
             </p>
 
             <footer class="auth-proof">
@@ -394,19 +392,19 @@ const toggleRecoveryHelp = () => {
   <div v-if="showTermsModal" class="lm-overlay" role="dialog" aria-modal="true" @click.self="showTermsModal = false">
     <div class="lm-modal">
       <div class="lm-header">
-        <div><h2 class="lm-title">TÈrminos de Uso</h2><p class="lm-subtitle">⁄ltima actualizaciÛn: 12 de mayo de 2026</p></div>
+        <div><h2 class="lm-title">T√©rminos de Uso</h2><p class="lm-subtitle">√öltima actualizaci√≥n: 12 de mayo de 2026</p></div>
         <button class="lm-close" @click="showTermsModal = false" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
       <div class="lm-body"><div class="lm-inner">
-        <p class="lm-intro">Al acceder y utilizar <strong>Contex360</strong> usted acepta los presentes tÈrminos. Si no est· de acuerdo, no debe utilizar el servicio.</p>
-        <div class="lm-section"><h3>1. DescripciÛn del servicio</h3><p>Contex360 es una plataforma ERP SaaS con gestiÛn contable, facturaciÛn electrÛnica DIAN, inventario, analÌtica y control de acceso.</p></div>
-        <div class="lm-section"><h3>2. Condiciones de acceso</h3><ul><li>Acceso mediante credenciales asignadas por el administrador de su organizaciÛn.</li><li>Cada usuario es responsable de la confidencialidad de su contraseÒa.</li><li>El uso compartido de credenciales est· estrictamente prohibido.</li><li>Se recomienda activar autenticaciÛn de dos factores (2FA).</li></ul></div>
-        <div class="lm-section"><h3>3. Uso aceptable</h3><ul><li>Uso exclusivo para fines legÌtimos de gestiÛn empresarial.</li><li>Prohibido acceder a datos de otras organizaciones sin autorizaciÛn expresa.</li><li>Prohibido realizar ingenierÌa inversa, descompilar o modificar el software.</li><li>Prohibido introducir cÛdigo malicioso, virus o ataques de cualquier tipo.</li></ul></div>
+        <p class="lm-intro">Al acceder y utilizar <strong>Contex360</strong> usted acepta los presentes t√©rminos. Si no est√° de acuerdo, no debe utilizar el servicio.</p>
+        <div class="lm-section"><h3>1. Descripci√≥n del servicio</h3><p>Contex360 es una plataforma ERP SaaS con gesti√≥n contable, facturaci√≥n electr√≥nica DIAN, inventario, anal√≠tica y control de acceso.</p></div>
+        <div class="lm-section"><h3>2. Condiciones de acceso</h3><ul><li>Acceso mediante credenciales asignadas por el administrador de su organizaci√≥n.</li><li>Cada usuario es responsable de la confidencialidad de su contrase√±a.</li><li>El uso compartido de credenciales est√° estrictamente prohibido.</li><li>Se recomienda activar autenticaci√≥n de dos factores (2FA).</li></ul></div>
+        <div class="lm-section"><h3>3. Uso aceptable</h3><ul><li>Uso exclusivo para fines leg√≠timos de gesti√≥n empresarial.</li><li>Prohibido acceder a datos de otras organizaciones sin autorizaci√≥n expresa.</li><li>Prohibido realizar ingenier√≠a inversa, descompilar o modificar el software.</li><li>Prohibido introducir c√≥digo malicioso, virus o ataques de cualquier tipo.</li></ul></div>
         <div class="lm-section"><h3>4. Seguridad de la cuenta</h3><p>Contex360 implementa cifrado TLS 1.2+, hashing bcrypt, JWT firmados y 2FA opcional. La seguridad de sus credenciales es responsabilidad del usuario.</p></div>
-        <div class="lm-section"><h3>5. Datos y privacidad</h3><p>El tratamiento de datos se rige por la <strong>PolÌtica de Privacidad</strong> (Ley 1581 de 2012). Los datos empresariales son propiedad de la organizaciÛn usuaria.</p></div>
-        <div class="lm-section"><h3>6. Propiedad intelectual</h3><p>El software, diseÒo y marcas de Contex360 est·n protegidos por la legislaciÛn colombiana e internacional.</p></div>
-        <div class="lm-section"><h3>7. LimitaciÛn de responsabilidad</h3><p>La responsabilidad m·xima de Contex360 ante cualquier reclamaciÛn se limita al valor pagado en los ˙ltimos 30 dÌas.</p></div>
-        <div class="lm-section" style="margin-bottom:0"><h3>8. LegislaciÛn aplicable</h3><p>Estos tÈrminos se rigen por las leyes de Colombia. Controversias: tribunales de Bogot· D.C.</p></div>
+        <div class="lm-section"><h3>5. Datos y privacidad</h3><p>El tratamiento de datos se rige por la <strong>Pol√≠tica de Privacidad</strong> (Ley 1581 de 2012). Los datos empresariales son propiedad de la organizaci√≥n usuaria.</p></div>
+        <div class="lm-section"><h3>6. Propiedad intelectual</h3><p>El software, dise√±o y marcas de Contex360 est√°n protegidos por la legislaci√≥n colombiana e internacional.</p></div>
+        <div class="lm-section"><h3>7. Limitaci√≥n de responsabilidad</h3><p>La responsabilidad m√°xima de Contex360 ante cualquier reclamaci√≥n se limita al valor pagado en los √∫ltimos 30 d√≠as.</p></div>
+        <div class="lm-section" style="margin-bottom:0"><h3>8. Legislaci√≥n aplicable</h3><p>Estos t√©rminos se rigen por las leyes de Colombia. Controversias: tribunales de Bogot√° D.C.</p></div>
       </div></div>
       <div class="lm-foot"><button class="lm-accept" @click="showTermsModal = false">Entendido</button></div>
     </div>
@@ -414,16 +412,16 @@ const toggleRecoveryHelp = () => {
   <div v-if="showPrivacyModal" class="lm-overlay" role="dialog" aria-modal="true" @click.self="showPrivacyModal = false">
     <div class="lm-modal">
       <div class="lm-header">
-        <div><h2 class="lm-title">PolÌtica de Privacidad</h2><p class="lm-subtitle">⁄ltima actualizaciÛn: 12 de mayo de 2026 ∑ Ley 1581 de 2012</p></div>
+        <div><h2 class="lm-title">Pol√≠tica de Privacidad</h2><p class="lm-subtitle">√öltima actualizaci√≥n: 12 de mayo de 2026 ¬∑ Ley 1581 de 2012</p></div>
         <button class="lm-close" @click="showPrivacyModal = false" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
       <div class="lm-body"><div class="lm-inner">
-        <p class="lm-intro">De conformidad con la <strong>Ley 1581 de 2012</strong> y el <strong>Decreto 1377 de 2013</strong>, Contex360 informa su polÌtica de tratamiento de datos personales.</p>
-        <div class="lm-section"><h3>1. Responsable del tratamiento</h3><p>Contex360 es el responsable del tratamiento de los datos recopilados a travÈs de esta plataforma.</p></div>
-        <div class="lm-section"><h3>2. Datos que recopilamos</h3><ul><li>Nombre completo y correo electrÛnico (identificaciÛn)</li><li>DirecciÛn IP y agente de usuario (seguridad y trazabilidad)</li><li>Datos de la empresa: NIT, razÛn social, ciudad, sector</li><li>InformaciÛn contable: facturas, movimientos, productos, terceros</li></ul></div>
-        <div class="lm-section"><h3>3. Seguridad</h3><p>TLS 1.2+ en tr·nsito, AES-256 en reposo (Neon/AWS), bcrypt para contraseÒas, JWT firmados. Proveedores certificados <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>.</p></div>
-        <div class="lm-section"><h3>4. Derechos del titular (Art. 8 Ley 1581)</h3><ul><li><strong>Conocer, actualizar y rectificar</strong> sus datos personales</li><li><strong>Suprimir</strong> datos cuando no sean necesarios (derecho al olvido)</li><li><strong>Revocar</strong> la autorizaciÛn para el tratamiento</li><li><strong>Presentar quejas</strong> ante la SIC</li></ul></div>
-        <div class="lm-section" style="margin-bottom:0"><h3>5. NotificaciÛn de brechas</h3><p>En caso de vulneraciÛn, notificaremos a titulares y a la SIC dentro de las <strong>72 horas</strong> siguientes al conocimiento del incidente.</p></div>
+        <p class="lm-intro">De conformidad con la <strong>Ley 1581 de 2012</strong> y el <strong>Decreto 1377 de 2013</strong>, Contex360 informa su pol√≠tica de tratamiento de datos personales.</p>
+        <div class="lm-section"><h3>1. Responsable del tratamiento</h3><p>Contex360 es el responsable del tratamiento de los datos recopilados a trav√©s de esta plataforma.</p></div>
+        <div class="lm-section"><h3>2. Datos que recopilamos</h3><ul><li>Nombre completo y correo electr√≥nico (identificaci√≥n)</li><li>Direcci√≥n IP y agente de usuario (seguridad y trazabilidad)</li><li>Datos de la empresa: NIT, raz√≥n social, ciudad, sector</li><li>Informaci√≥n contable: facturas, movimientos, productos, terceros</li></ul></div>
+        <div class="lm-section"><h3>3. Seguridad</h3><p>TLS 1.2+ en tr√°nsito, AES-256 en reposo (Neon/AWS), bcrypt para contrase√±as, JWT firmados. Proveedores certificados <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>.</p></div>
+        <div class="lm-section"><h3>4. Derechos del titular (Art. 8 Ley 1581)</h3><ul><li><strong>Conocer, actualizar y rectificar</strong> sus datos personales</li><li><strong>Suprimir</strong> datos cuando no sean necesarios (derecho al olvido)</li><li><strong>Revocar</strong> la autorizaci√≥n para el tratamiento</li><li><strong>Presentar quejas</strong> ante la SIC</li></ul></div>
+        <div class="lm-section" style="margin-bottom:0"><h3>5. Notificaci√≥n de brechas</h3><p>En caso de vulneraci√≥n, notificaremos a titulares y a la SIC dentro de las <strong>72 horas</strong> siguientes al conocimiento del incidente.</p></div>
       </div></div>
       <div class="lm-foot"><button class="lm-accept" @click="showPrivacyModal = false">Entendido</button></div>
     </div>
@@ -1162,14 +1160,14 @@ const toggleRecoveryHelp = () => {
 }
 
 
-/* --- Footer links --- */
+/* ‚îÄ‚îÄ‚îÄ Footer links ‚îÄ‚îÄ‚îÄ */
 .auth-footer-copy { color: rgba(255,255,255,.28); font-size: 11px; }
 .auth-footer-links { align-items: center; display: flex; gap: 8px; }
 .auth-footer-link { background: none; border: none; color: rgba(255,255,255,.38); cursor: pointer; font-size: 11px; padding: 0; transition: color .15s; }
 .auth-footer-link:hover { color: rgba(255,255,255,.72); }
 .auth-footer-dot { background: rgba(255,255,255,.2); border-radius: 50%; display: inline-block; height: 3px; width: 3px; }
 
-/* --- Legal modal --- */
+/* ‚îÄ‚îÄ‚îÄ Legal modal ‚îÄ‚îÄ‚îÄ */
 .lm-overlay {
   align-items: center; backdrop-filter: blur(6px); background: rgba(0,0,0,.55);
   display: flex; inset: 0; justify-content: center; padding: 20px;
@@ -1209,7 +1207,7 @@ const toggleRecoveryHelp = () => {
 .lm-section p strong, .lm-section li strong { color: rgba(255,255,255,.9); }
 .lm-section ul { list-style: none; margin: 0; padding: 0; }
 .lm-section li { color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.8; padding-left: 20px; position: relative; }
-.lm-section li::before { color: rgba(255,255,255,.22); content: 'ó'; left: 0; position: absolute; }
+.lm-section li::before { color: rgba(255,255,255,.22); content: '‚Äî'; left: 0; position: absolute; }
 .lm-foot { border-top: 1px solid rgba(255,255,255,.06); display: flex; flex-shrink: 0; justify-content: flex-end; padding: 20px 36px; }
 .lm-accept { background: #fff; border: none; border-radius: 10px; color: #15232d; cursor: pointer; font-size: 14px; font-weight: 600; padding: 10px 28px; transition: opacity .15s; }
 .lm-accept:hover { opacity: .88; }
