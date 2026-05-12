@@ -26,6 +26,13 @@ html {
   scroll-behavior: smooth;
 }
 
+html,
+body,
+#app {
+  min-height: 100%;
+  width: 100%;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -1158,7 +1165,7 @@ button {
 
 .app-root {
   min-height: 100vh;
-  padding: 18px;
+  padding: 0;
 }
 
 .background,
@@ -1173,9 +1180,9 @@ button {
   border-radius: 0;
   display: flex;
   gap: 0;
-  margin: 0 auto;
-  max-width: 1500px;
-  min-height: calc(100vh - 36px);
+  margin: 0;
+  max-width: none;
+  min-height: 100vh;
   overflow: hidden;
   padding: 0;
   position: relative;
@@ -1193,7 +1200,7 @@ button {
   flex-direction: column;
   flex-shrink: 0;
   gap: 0;
-  min-height: auto;
+  min-height: 100vh;
   padding: 20px 0;
   position: static;
   top: auto;
@@ -1335,6 +1342,7 @@ button {
   display: flex;
   flex: 1;
   flex-direction: column;
+  min-height: 100vh;
   min-width: 0;
   overflow: auto;
 }
@@ -1999,7 +2007,7 @@ tr:hover td {
   align-items: center;
   display: flex;
   justify-content: center;
-  min-height: calc(100vh - 36px);
+  min-height: 100vh;
   padding: 20px;
 }
 
@@ -2139,11 +2147,11 @@ fieldset:disabled {
 
 @media (max-width: 860px) {
   .app-root {
-    padding: 10px;
+    padding: 0;
   }
 
   .app.app-shell {
-    min-height: calc(100vh - 20px);
+    min-height: 100vh;
   }
 
   .app .sidebar {

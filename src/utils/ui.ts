@@ -9,6 +9,13 @@ export const viewLabels: Record<string, string> = {
   'admin-console': 'Consola Admin',
 }
 
+export const moduleRows: Array<[string, string, string]> = [
+  ['Facturación', 'Operativo', 'Emisión, DIAN y cartera listos'],
+  ['Inventario', 'Operativo', 'Stock, movimientos y alertas activas'],
+  ['Contabilidad', 'Operativo', 'Libro diario y balance rápido'],
+  ['IA / OCR', 'Operativo', 'Lectura documental y sugerencias'],
+]
+
 const currencyFormatter = new Intl.NumberFormat('es-CO', {
   style: 'currency',
   currency: 'COP',

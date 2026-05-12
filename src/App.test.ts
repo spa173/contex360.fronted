@@ -16,7 +16,7 @@ describe('App integration', () => {
       },
     })
 
-    expect(wrapper.text()).toContain('Iniciar sesion')
+    expect(wrapper.text()).toContain('Iniciar sesión')
   })
 
   it('shows the main shell after authentication', async () => {
