@@ -360,6 +360,7 @@ onMounted(fetchTenant)
           <button class="btn-ghost" disabled>🔑 Impersonar (próximo)</button>
         </div>
 
+        <div class="danger-action-card danger-action-card--red">
           <div>
             <div class="danger-action-title red">Eliminar empresa</div>
             <div class="danger-action-desc">Elimina permanentemente la empresa y todos sus datos. Irreversible.</div>
