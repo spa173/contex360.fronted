@@ -125,10 +125,16 @@ async function renewTrial() {
 }
 
 async function handleDeleteTenant() {
-  const confirmName = prompt(`⚠️ ATENCIÓN: Esta acción es IRREVERSIBLE.\nSe eliminarán todos los datos (facturas, productos, usuarios) de "${tenant.value.name}".\n\nPara confirmar, escribe exactamente el nombre de la empresa:`)
+  const confirmName = prompt(`⚠️ ACCIÓN CRÍTICA: Se eliminarán todos los datos de "${tenant.value.name}" de forma permanente.\n\nPara confirmar, escribe el nombre de la empresa:`)
   
   if (confirmName !== tenant.value.name) {
     if (confirmName !== null) alert('El nombre no coincide. Operación cancelada.')
+    return
+  }
+
+  const password = prompt(`🔐 Seguridad Contex360:\nIngresa tu contraseña de root / administrador para autorizar la eliminación de esta empresa:`)
+  if (!password) {
+    alert('Se requiere la contraseña para autorizar la operación.')
     return
   }
 
@@ -136,11 +142,12 @@ async function handleDeleteTenant() {
   try {
     await axios.delete(`${API}/admin/tenants/${props.tenantId}`, {
       headers: { Authorization: `Bearer ${getToken()}` },
+      data: { password }
     })
     alert('✅ Empresa eliminada correctamente.')
     emit('back')
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error eliminando empresa')
+    alert(e?.response?.data?.message || 'Error eliminando empresa. Verifica tu contraseña.')
   } finally {
     saving.value = false
   }
