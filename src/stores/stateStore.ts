@@ -2353,7 +2353,7 @@ export const useStateStore = defineStore('state', {
       }
     },
     setActiveView(viewId: string) {
-      const publicViews = ['two-factor', 'privacy-policy', 'terms-of-use', 'demo']
+      const publicViews = ['two-factor', 'privacy-policy', 'terms-of-use', 'demo', 'change-password']
       if (!publicViews.includes(viewId) && !this.visibleViews.includes(viewId)) {
         return {
           ok: false,

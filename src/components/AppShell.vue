@@ -17,6 +17,7 @@ import TwoFactorView from './views/TwoFactorView.vue'
 import PrivacyPolicyView from './views/PrivacyPolicyView.vue'
 import TermsOfUseView from './views/TermsOfUseView.vue'
 import DemoRequestView from './views/DemoRequestView.vue'
+import ChangePasswordView from './views/ChangePasswordView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
@@ -156,6 +157,9 @@ onUnmounted(() => {
         />
         <DemoRequestView
           v-if="store.activeView === 'demo'"
+        />
+        <ChangePasswordView
+          v-if="store.activeView === 'change-password'"
         />
       </div>
     </main>
