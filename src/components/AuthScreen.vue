@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, ref } from 'vue'
 import { useStateStore } from '../stores/stateStore'
 import { useThemeStore } from '../stores/themeStore'
@@ -22,6 +22,7 @@ const newPassword = ref('')
 const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
 const showTermsModal = ref(false)
+const showPrivacyModal = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
@@ -175,9 +176,12 @@ const toggleRecoveryHelp = () => {
           </ul>
 
           <footer class="auth-story__footer">
-            <span>&copy; 2026 Contex360</span>
-            <button class="auth-legal-btn" @click="showTermsModal = true">Términos de uso</button>
-            <a href="#">Politica de privacidad</a>
+            <span class="auth-footer-copy">&copy; 2026 Contex360</span>
+            <div class="auth-footer-links">
+              <button class="auth-footer-link" @click="showTermsModal = true">Términos</button>
+              <span class="auth-footer-dot" aria-hidden="true"></span>
+              <button class="auth-footer-link" @click="showPrivacyModal = true">Privacidad</button>
+            </div>
           </footer>
         </div>
       </aside>
@@ -393,57 +397,44 @@ const toggleRecoveryHelp = () => {
       </section>
     </div>
   </div>
-  <!-- Terms of use modal -->
-  <Teleport to="body">
-    <div v-if="showTermsModal" class="terms-modal-overlay" @click.self="showTermsModal = false">
-      <div class="terms-modal">
-        <div class="terms-modal-header">
-          <h2>Términos de Uso</h2>
-          <button class="terms-modal-close" @click="showTermsModal = false" aria-label="Cerrar">&times;</button>
-        </div>
-        <div class="terms-modal-body">
-          <p class="terms-updated">Última actualización: 12 de mayo de 2026</p>
-
-          <div class="terms-alert">
-            Al acceder y utilizar <strong>Contex360</strong>, usted acepta estos términos en su totalidad.
-          </div>
-
-          <h3>1. Descripción del servicio</h3>
-          <p>Contex360 es una plataforma ERP SaaS para gestión contable, facturación, inventario y analítica, orientada a empresas colombianas.</p>
-
-          <h3>2. Condiciones de acceso</h3>
-          <ul>
-            <li>Acceso mediante credenciales asignadas por el administrador de su organización.</li>
-            <li>Cada usuario es responsable de la confidencialidad de su contraseña.</li>
-            <li>El uso compartido de credenciales está prohibido.</li>
-            <li>Se recomienda activar autenticación de dos factores (2FA).</li>
-          </ul>
-
-          <h3>3. Uso aceptable</h3>
-          <ul>
-            <li>Uso exclusivo para fines legítimos de gestión empresarial.</li>
-            <li>Prohibido acceder a datos de otras organizaciones sin autorización.</li>
-            <li>Prohibido realizar ingeniería inversa o introducir código malicioso.</li>
-          </ul>
-
-          <h3>4. Propiedad intelectual</h3>
-          <p>El software, diseño y marcas de Contex360 son propiedad de sus desarrolladores, protegidos por la legislación colombiana e internacional.</p>
-
-          <h3>5. Datos y privacidad</h3>
-          <p>El tratamiento de datos personales se rige por la <strong>Política de Privacidad</strong> conforme a la Ley 1581 de 2012. Los datos empresariales son propiedad de la organización usuaria.</p>
-
-          <h3>6. Limitación de responsabilidad</h3>
-          <p>Contex360 no responde por pérdidas derivadas de uso indebido de credenciales o errores en la información ingresada. La responsabilidad máxima se limita al valor pagado en los últimos 30 días.</p>
-
-          <h3>7. Legislación aplicable</h3>
-          <p>Estos términos se rigen por las leyes de Colombia. Las controversias se someterán a los tribunales competentes de Bogotá D.C.</p>
-        </div>
-        <div class="terms-modal-footer">
-          <button class="terms-accept-btn" @click="showTermsModal = false">Entendido</button>
-        </div>
+  <!-- Legal modals -->
+  <div v-if="showTermsModal" class="lm-overlay" role="dialog" aria-modal="true" @click.self="showTermsModal = false">
+    <div class="lm-modal">
+      <div class="lm-header">
+        <div><h2 class="lm-title">Términos de Uso</h2><p class="lm-subtitle">Última actualización: 12 de mayo de 2026</p></div>
+        <button class="lm-close" @click="showTermsModal = false" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
       </div>
+      <div class="lm-body"><div class="lm-inner">
+        <p class="lm-intro">Al acceder y utilizar <strong>Contex360</strong> usted acepta los presentes términos. Si no está de acuerdo, no debe utilizar el servicio.</p>
+        <div class="lm-section"><h3>1. Descripción del servicio</h3><p>Contex360 es una plataforma ERP SaaS con gestión contable, facturación electrónica DIAN, inventario, analítica y control de acceso.</p></div>
+        <div class="lm-section"><h3>2. Condiciones de acceso</h3><ul><li>Acceso mediante credenciales asignadas por el administrador de su organización.</li><li>Cada usuario es responsable de la confidencialidad de su contraseña.</li><li>El uso compartido de credenciales está estrictamente prohibido.</li><li>Se recomienda activar autenticación de dos factores (2FA).</li></ul></div>
+        <div class="lm-section"><h3>3. Uso aceptable</h3><ul><li>Uso exclusivo para fines legítimos de gestión empresarial.</li><li>Prohibido acceder a datos de otras organizaciones sin autorización expresa.</li><li>Prohibido realizar ingeniería inversa, descompilar o modificar el software.</li><li>Prohibido introducir código malicioso, virus o ataques de cualquier tipo.</li></ul></div>
+        <div class="lm-section"><h3>4. Seguridad de la cuenta</h3><p>Contex360 implementa cifrado TLS 1.2+, hashing bcrypt, JWT firmados y 2FA opcional. La seguridad de sus credenciales es responsabilidad del usuario.</p></div>
+        <div class="lm-section"><h3>5. Datos y privacidad</h3><p>El tratamiento de datos se rige por la <strong>Política de Privacidad</strong> (Ley 1581 de 2012). Los datos empresariales son propiedad de la organización usuaria.</p></div>
+        <div class="lm-section"><h3>6. Propiedad intelectual</h3><p>El software, diseño y marcas de Contex360 están protegidos por la legislación colombiana e internacional.</p></div>
+        <div class="lm-section"><h3>7. Limitación de responsabilidad</h3><p>La responsabilidad máxima de Contex360 ante cualquier reclamación se limita al valor pagado en los últimos 30 días.</p></div>
+        <div class="lm-section" style="margin-bottom:0"><h3>8. Legislación aplicable</h3><p>Estos términos se rigen por las leyes de Colombia. Controversias: tribunales de Bogotá D.C.</p></div>
+      </div></div>
+      <div class="lm-foot"><button class="lm-accept" @click="showTermsModal = false">Entendido</button></div>
     </div>
-  </Teleport>
+  </div>
+  <div v-if="showPrivacyModal" class="lm-overlay" role="dialog" aria-modal="true" @click.self="showPrivacyModal = false">
+    <div class="lm-modal">
+      <div class="lm-header">
+        <div><h2 class="lm-title">Política de Privacidad</h2><p class="lm-subtitle">Última actualización: 12 de mayo de 2026 · Ley 1581 de 2012</p></div>
+        <button class="lm-close" @click="showPrivacyModal = false" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="lm-body"><div class="lm-inner">
+        <p class="lm-intro">De conformidad con la <strong>Ley 1581 de 2012</strong> y el <strong>Decreto 1377 de 2013</strong>, Contex360 informa su política de tratamiento de datos personales.</p>
+        <div class="lm-section"><h3>1. Responsable del tratamiento</h3><p>Contex360 es el responsable del tratamiento de los datos recopilados a través de esta plataforma.</p></div>
+        <div class="lm-section"><h3>2. Datos que recopilamos</h3><ul><li>Nombre completo y correo electrónico (identificación)</li><li>Dirección IP y agente de usuario (seguridad y trazabilidad)</li><li>Datos de la empresa: NIT, razón social, ciudad, sector</li><li>Información contable: facturas, movimientos, productos, terceros</li></ul></div>
+        <div class="lm-section"><h3>3. Seguridad</h3><p>TLS 1.2+ en tránsito, AES-256 en reposo (Neon/AWS), bcrypt para contraseñas, JWT firmados. Proveedores certificados <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>.</p></div>
+        <div class="lm-section"><h3>4. Derechos del titular (Art. 8 Ley 1581)</h3><ul><li><strong>Conocer, actualizar y rectificar</strong> sus datos personales</li><li><strong>Suprimir</strong> datos cuando no sean necesarios (derecho al olvido)</li><li><strong>Revocar</strong> la autorización para el tratamiento</li><li><strong>Presentar quejas</strong> ante la SIC</li></ul></div>
+        <div class="lm-section" style="margin-bottom:0"><h3>5. Notificación de brechas</h3><p>En caso de vulneración, notificaremos a titulares y a la SIC dentro de las <strong>72 horas</strong> siguientes al conocimiento del incidente.</p></div>
+      </div></div>
+      <div class="lm-foot"><button class="lm-accept" @click="showPrivacyModal = false">Entendido</button></div>
+    </div>
+  </div>
 </template>
 
 <style scoped>
@@ -1204,4 +1195,62 @@ const toggleRecoveryHelp = () => {
   }
 }
 
-</style>
+
+/* ─── Footer links ─── */
+.auth-footer-copy { color: rgba(255,255,255,.28); font-size: 11px; }
+.auth-footer-links { align-items: center; display: flex; gap: 8px; }
+.auth-footer-link { background: none; border: none; color: rgba(255,255,255,.38); cursor: pointer; font-size: 11px; padding: 0; transition: color .15s; }
+.auth-footer-link:hover { color: rgba(255,255,255,.72); }
+.auth-footer-dot { background: rgba(255,255,255,.2); border-radius: 50%; display: inline-block; height: 3px; width: 3px; }
+
+/* ─── Legal modal ─── */
+.lm-overlay {
+  align-items: center; backdrop-filter: blur(6px); background: rgba(0,0,0,.55);
+  display: flex; inset: 0; justify-content: center; padding: 20px;
+  position: fixed; z-index: 9999;
+}
+.lm-modal {
+  background: #0f172a; border: 1px solid rgba(255,255,255,.08); border-radius: 24px;
+  display: flex; flex-direction: column; max-height: 80vh; max-width: 720px;
+  overflow: hidden; width: 100%;
+}
+.lm-header {
+  align-items: flex-start; border-bottom: 1px solid rgba(255,255,255,.06);
+  display: flex; flex-shrink: 0; justify-content: space-between; padding: 32px 36px 24px;
+}
+.lm-title { color: #fff; font-size: 32px; font-weight: 700; letter-spacing: -.03em; line-height: 1.1; margin: 0 0 6px; }
+.lm-subtitle { color: rgba(255,255,255,.38); font-size: 12px; margin: 0; }
+.lm-close {
+  align-items: center; background: rgba(255,255,255,.06); border: none; border-radius: 10px;
+  color: rgba(255,255,255,.45); cursor: pointer; display: flex; flex-shrink: 0;
+  height: 36px; justify-content: center; margin-top: 4px; transition: background .15s, color .15s; width: 36px;
+}
+.lm-close:hover { background: rgba(255,255,255,.12); color: #fff; }
+.lm-body { flex: 1; overflow-y: auto; padding: 32px 36px; }
+.lm-body::-webkit-scrollbar { width: 4px; }
+.lm-body::-webkit-scrollbar-track { background: transparent; }
+.lm-body::-webkit-scrollbar-thumb { background: rgba(255,255,255,.12); border-radius: 4px; }
+.lm-inner { max-width: 65ch; }
+.lm-intro {
+  background: rgba(255,255,255,.04); border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px; color: rgba(255,255,255,.65); font-size: 14px; line-height: 1.7;
+  margin: 0 0 32px; padding: 16px 20px;
+}
+.lm-intro strong { color: rgba(255,255,255,.85); }
+.lm-section { margin-bottom: 32px; }
+.lm-section h3 { color: #fff; font-size: 13px; font-weight: 600; letter-spacing: .02em; margin: 0 0 10px; text-transform: uppercase; }
+.lm-section p { color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.8; margin: 0; }
+.lm-section p strong, .lm-section li strong { color: rgba(255,255,255,.9); }
+.lm-section ul { list-style: none; margin: 0; padding: 0; }
+.lm-section li { color: rgba(255,255,255,.72); font-size: 15px; line-height: 1.8; padding-left: 20px; position: relative; }
+.lm-section li::before { color: rgba(255,255,255,.22); content: '—'; left: 0; position: absolute; }
+.lm-foot { border-top: 1px solid rgba(255,255,255,.06); display: flex; flex-shrink: 0; justify-content: flex-end; padding: 20px 36px; }
+.lm-accept { background: #fff; border: none; border-radius: 10px; color: #0f172a; cursor: pointer; font-size: 14px; font-weight: 600; padding: 10px 28px; transition: opacity .15s; }
+.lm-accept:hover { opacity: .88; }
+@media (max-width: 640px) {
+  .lm-modal { border-radius: 16px; max-height: 90dvh; }
+  .lm-header { padding: 24px 20px 18px; }
+  .lm-title { font-size: 24px; }
+  .lm-body { padding: 24px 20px; }
+  .lm-foot { padding: 16px 20px; }
+}</style>
