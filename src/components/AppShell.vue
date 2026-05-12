@@ -16,6 +16,7 @@ import AdminConsoleView from './views/AdminConsoleView.vue'
 import TwoFactorView from './views/TwoFactorView.vue'
 import PrivacyPolicyView from './views/PrivacyPolicyView.vue'
 import TermsOfUseView from './views/TermsOfUseView.vue'
+import DemoRequestView from './views/DemoRequestView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
@@ -152,6 +153,9 @@ onUnmounted(() => {
         />
         <TermsOfUseView
           v-if="store.activeView === 'terms-of-use'"
+        />
+        <DemoRequestView
+          v-if="store.activeView === 'demo'"
         />
       </div>
     </main>
