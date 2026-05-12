@@ -12,6 +12,8 @@ const rememberMe = ref(false)
 const errorMessage = ref('')
 const statusMessage = ref('')
 const forgotAccessOpen = ref(false)
+const requiresTotp = ref(false)
+const totpCode = ref('')
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
@@ -23,7 +25,18 @@ const handleSubmit = async () => {
   statusMessage.value = ''
 
   try {
-    const result = await store.loginWithBackend({ email: email.value, password: password.value })
+    const credentials = { email: email.value, password: password.value, totpCode: undefined }
+    if (requiresTotp.value && totpCode.value) {
+      credentials.totpCode = totpCode.value
+    }
+
+    const result = await store.loginWithBackend(credentials)
+
+    if (result?.requiresTotp) {
+      requiresTotp.value = true
+      errorMessage.value = ''
+      return
+    }
 
     if (!result.ok) {
       errorMessage.value = result.message || 'Credenciales invalidas. Por favor, verifica tus datos.'
@@ -221,6 +234,22 @@ const toggleRecoveryHelp = () => {
                 </div>
               </div>
 
+              <div v-if="requiresTotp" class="auth-totp-block">
+                <div class="auth-totp-label">
+                  🔐 Código de autenticación (2FA)
+                </div>
+                <input
+                  v-model="totpCode"
+                  type="text"
+                  inputmode="numeric"
+                  maxlength="6"
+                  placeholder="000000"
+                  class="auth-totp-input"
+                  autocomplete="one-time-code"
+                />
+                <p class="auth-totp-hint">Ingresa el código de 6 dígitos de tu app autenticadora.</p>
+              </div>
+
               <div class="auth-row">
                 <label class="auth-remember">
                   <input v-model="rememberMe" type="checkbox" />
@@ -232,7 +261,7 @@ const toggleRecoveryHelp = () => {
                 Contacta a tu administrador para restablecer el acceso.
               </p>
 
-              <button class="auth-primary" :disabled="!isFormValid || isLoading" type="submit">
+              <button class="auth-primary" :disabled="!isFormValid || isLoading || (requiresTotp && totpCode.length < 6)" type="submit">
                 <span aria-hidden="true">{{ isLoading ? 'Verificando...' : 'Iniciar sesión' }}</span>
                 <span class="sr-only">{{ isLoading ? 'Verificando...' : 'Iniciar sesion' }}</span>
               </button>

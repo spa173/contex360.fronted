@@ -984,6 +984,46 @@ textarea:disabled {
   box-shadow: 0 8px 16px rgba(59, 130, 246, 0.2);
 }
 
+.auth-totp-block {
+  background: rgba(99, 102, 241, 0.07);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 14px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.auth-totp-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.auth-totp-input {
+  text-align: center;
+  font-size: 22px;
+  font-family: monospace;
+  letter-spacing: 0.3em;
+  border: 1.5px solid rgba(99, 102, 241, 0.3);
+  border-radius: 10px;
+  padding: 10px;
+  background: transparent;
+  color: var(--color-text-primary);
+  outline: none;
+  width: 100%;
+}
+
+.auth-totp-input:focus {
+  border-color: var(--accent);
+}
+
+.auth-totp-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
 .auth-feedback {
   background: rgba(239, 68, 68, 0.14);
   border: 1px solid rgba(239, 68, 68, 0.28);
