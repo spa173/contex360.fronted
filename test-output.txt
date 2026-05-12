@@ -1,0 +1,185 @@
+
+> contex360-vue@0.0.0 test:coverage
+> vitest run --coverage
+
+
+[1m[30m[46m RUN [49m[39m[22m [36mv4.1.5 [39m[90mC:/Users/camilo/contex360-vue[39m
+      [2mCoverage enabled with [22m[33mv8[39m
+
+ [31m❯[39m src/stores/stateStore.test.ts [2m([22m[2m6 tests[22m[2m | [22m[31m1 failed[39m[2m)[22m[32m 129[2mms[22m[39m
+     [32m✓[39m permite iniciar sesion con credenciales hash y persiste usuarios sin clave en texto plano[32m 18[2mms[22m[39m
+     [32m✓[39m detecta navegador y sistema operativo desde el user agent sin regex costosas[32m 5[2mms[22m[39m
+[31m     [31m×[31m cambia de tenant y ajusta la vista activa cuando el nuevo rol no puede ver el panel actual[39m[32m 23[2mms[22m[39m
+     [32m✓[39m crea usuarios nuevos con hash y membresia en el tenant activo[32m 22[2mms[22m[39m
+     [32m✓[39m activa usuarios registrados al asignarles rol en la empresa activa[32m 25[2mms[22m[39m
+     [32m✓[39m ejecuta OCR, selecciona el analisis nuevo y registra auditoria[32m 35[2mms[22m[39m
+ [31m❯[39m src/stores/stateCoverage.test.ts [2m([22m[2m39 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 216[2mms[22m[39m
+     [32m✓[39m exports ROLE_OPTIONS correctly[32m 5[2mms[22m[39m
+     [32m✓[39m exports ROLE_PERMISSIONS correctly[32m 1[2mms[22m[39m
+     [32m✓[39m exports ROLE_VIEWS correctly[32m 0[2mms[22m[39m
+     [32m✓[39m exports DEFAULT_ROLE_ACCESS correctly[32m 0[2mms[22m[39m
+     [32m✓[39m exports DEFAULT_TENANT_SECURITY_SETTINGS correctly[32m 0[2mms[22m[39m
+     [32m✓[39m covers parseUserAgentMetadata with empty string (no userAgent)[32m 0[2mms[22m[39m
+     [32m✓[39m covers parseUserAgentMetadata with Chrome UA[32m 0[2mms[22m[39m
+     [32m✓[39m covers parseUserAgentMetadata with Firefox on Linux[32m 0[2mms[22m[39m
+     [32m✓[39m covers parseUserAgentMetadata with Safari on macOS[32m 1[2mms[22m[39m
+     [32m✓[39m covers parseUserAgentMetadata with Edge on Android[32m 1[2mms[22m[39m
+     [32m✓[39m covers parseUserAgentMetadata with iOS[32m 1[2mms[22m[39m
+     [32m✓[39m covers buildDemoPassword[32m 1[2mms[22m[39m
+     [32m✓[39m covers scheduleDianUpdates and clearAllScheduledDianUpdates[32m 11[2mms[22m[39m
+     [32m✓[39m covers runOcr with empty source[32m 3[2mms[22m[39m
+     [32m✓[39m covers runOcr with valid content[32m 2[2mms[22m[39m
+     [32m✓[39m covers uid fallback when randomUUID is missing[32m 2[2mms[22m[39m
+     [32m✓[39m covers login with wrong credentials[32m 5[2mms[22m[39m
+     [32m✓[39m covers login with unknown email[32m 2[2mms[22m[39m
+     [32m✓[39m covers login with correct credentials[32m 9[2mms[22m[39m
+[31m     [31m×[31m covers logout without session[39m[32m 23[2mms[22m[39m
+[31m     [31m×[31m covers logout with active session[39m[32m 22[2mms[22m[39m
+     [32m✓[39m covers loginDemoUser with invalid id[32m 3[2mms[22m[39m
+     [32m✓[39m covers loginDemoUser with valid id[32m 6[2mms[22m[39m
+     [32m✓[39m covers panicLogoutAll without manage_users permission[32m 6[2mms[22m[39m
+     [32m✓[39m covers panicLogoutAll as admin[32m 7[2mms[22m[39m
+     [32m✓[39m covers exportUsers action[32m 11[2mms[22m[39m
+     [32m✓[39m covers activateSessionForUser with IP whitelist blocking[32m 21[2mms[22m[39m
+     [32m✓[39m covers singleSessionOnly policy on login[32m 29[2mms[22m[39m
+     [32m✓[39m covers runOcr when user lacks run_ocr permission[32m 7[2mms[22m[39m
+     [32m✓[39m covers scheduleDianUpdates timer callbacks via fake timers[32m 15[2mms[22m[39m
+     [32m✓[39m covers rate-limit block after too many login attempts[32m 10[2mms[22m[39m
+     [32m✓[39m creates and verifies password credentials using globalThis.crypto[32m 2[2mms[22m[39m
+     [32m✓[39m covers verifyPassword legacy path (no salt)[32m 0[2mms[22m[39m
+     [32m✓[39m covers createPasswordSalt fallback when getRandomValues is missing[32m 1[2mms[22m[39m
+     [32m✓[39m upgrades legacy user secrets[32m 3[2mms[22m[39m
+     [32m✓[39m returns false when upgrading user that already has hash or no password[32m 1[2mms[22m[39m
+     [32m✓[39m covers serializeStateSnapshot sanitizing passwordHash fields[32m 1[2mms[22m[39m
+     [32m✓[39m handles missing productId in getRequestedQuantityByProduct[32m 1[2mms[22m[39m
+     [32m✓[39m handles timer registry set, clear, and clearAll[32m 0[2mms[22m[39m
+ [32m✓[39m src/stores/inventoryCoverage.test.ts [2m([22m[2m16 tests[22m[2m)[22m[32m 248[2mms[22m[39m
+ [32m✓[39m src/components/views/DashboardView.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 190[2mms[22m[39m
+ [32m✓[39m src/stores/rbacCoverage.test.ts [2m([22m[2m21 tests[22m[2m)[22m[33m 312[2mms[22m[39m
+ [32m✓[39m src/components/views/InventoryViewExtended.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 489[2mms[22m[39m
+ [32m✓[39m src/components/componentFlows.test.ts [2m([22m[2m4 tests[22m[2m)[22m[33m 398[2mms[22m[39m
+ [32m✓[39m src/components/views/InventoryView.test.ts [2m([22m[2m7 tests[22m[2m)[22m[33m 698[2mms[22m[39m
+Not implemented: navigation to another Document
+Not implemented: navigation to another Document
+ [32m✓[39m src/components/views/UsersView.test.js [2m([22m[2m9 tests[22m[2m)[22m[33m 855[2mms[22m[39m
+ [32m✓[39m backend/src/modules/auth/auth.service.test.ts [2m([22m[2m3 tests[22m[2m)[22m[33m 658[2mms[22m[39m
+     [33m[2m✓[22m[39m logs in a valid user and returns the auth snapshot [33m 319[2mms[22m[39m
+ [31m❯[39m backend/src/modules/ai/ai.service.test.ts [2m([22m[2m2 tests[22m[2m | [22m[31m2 failed[39m[2m)[22m[32m 26[2mms[22m[39m
+[31m     [31m×[31m responds to sales queries[39m[32m 21[2mms[22m[39m
+[31m     [31m×[31m responds to stock queries with alerts[39m[32m 3[2mms[22m[39m
+ [32m✓[39m src/stores/finalCoverageBoost.test.ts [2m([22m[2m4 tests[22m[2m)[22m[32m 68[2mms[22m[39m
+ [32m✓[39m src/stores/bulkActionCoverage.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 28[2mms[22m[39m
+ [32m✓[39m src/stores/dianCoverage.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 23[2mms[22m[39m
+ [32m✓[39m src/services/authApi.test.ts [2m([22m[2m7 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m src/App.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 59[2mms[22m[39m
+ [32m✓[39m backend/src/modules/analytics/analytics.service.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 24[2mms[22m[39m
+ [32m✓[39m backend/src/modules/database/prisma.service.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m backend/src/modules/database/prisma.module.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 33[2mms[22m[39m
+ [32m✓[39m backend/src/app.controller.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 21[2mms[22m[39m
+ [32m✓[39m backend/src/modules/invoices/invoices.service.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 26[2mms[22m[39m
+ [32m✓[39m backend/src/modules/auth/auth.controller.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 27[2mms[22m[39m
+ [32m✓[39m src/composables/useToasts.test.js [2m([22m[2m2 tests[22m[2m)[22m[32m 8[2mms[22m[39m
+ [32m✓[39m src/stores/authStore.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 9[2mms[22m[39m
+ [32m✓[39m backend/src/common/cors.utils.test.ts [2m([22m[2m3 tests[22m[2m)[22m[32m 6[2mms[22m[39m
+ [32m✓[39m backend/src/modules/auth/auth.guard.test.ts [2m([22m[2m2 tests[22m[2m)[22m[32m 7[2mms[22m[39m
+ [32m✓[39m backend/src/modules/third-parties/third-parties.service.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 12[2mms[22m[39m
+ [32m✓[39m backend/src/modules/health/health.controller.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 17[2mms[22m[39m
+ [32m✓[39m backend/src/modules/health/health.service.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+ [32m✓[39m backend/src/app.service.test.ts [2m([22m[2m1 test[22m[2m)[22m[32m 5[2mms[22m[39m
+
+[31m⎯⎯⎯⎯⎯⎯⎯[39m[1m[41m Failed Tests 5 [49m[22m[31m⎯⎯⎯⎯⎯⎯⎯[39m
+
+[41m[1m FAIL [22m[49m src/stores/stateCoverage.test.ts[2m > [22mCoverage for New Code in stateStore.ts[2m > [22mcovers logout without session
+[31m[1mAssertionError[22m: expected undefined to be false // Object.is equality[39m
+
+[32m- Expected:[39m
+false
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m src/stores/stateCoverage.test.ts:[2m163:23[22m[39m
+    [90m161|[39m     [35mconst[39m store [33m=[39m [34museStateStore[39m()
+    [90m162|[39m     [35mconst[39m result [33m=[39m store[33m.[39m[34mlogout[39m()
+    [90m163|[39m     [34mexpect[39m(result[33m.[39mok)[33m.[39m[34mtoBe[39m([35mfalse[39m)
+    [90m   |[39m                       [31m^[39m
+    [90m164|[39m   })
+    [90m165|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/stores/stateCoverage.test.ts[2m > [22mCoverage for New Code in stateStore.ts[2m > [22mcovers logout with active session
+[31m[1mAssertionError[22m: expected undefined to be true // Object.is equality[39m
+
+[32m- Expected:[39m
+true
+
+[31m+ Received:[39m
+undefined
+
+[36m [2m❯[22m src/stores/stateCoverage.test.ts:[2m173:23[22m[39m
+    [90m171|[39m     })
+    [90m172|[39m     [35mconst[39m result [33m=[39m store[33m.[39m[34mlogout[39m()
+    [90m173|[39m     [34mexpect[39m(result[33m.[39mok)[33m.[39m[34mtoBe[39m([35mtrue[39m)
+    [90m   |[39m                       [31m^[39m
+    [90m174|[39m   })
+    [90m175|[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m src/stores/stateStore.test.ts[2m > [22museStateStore[2m > [22mcambia de tenant y ajusta la vista activa cuando el nuevo rol no puede ver el panel actual
+[31m[1mAssertionError[22m: expected [ 'dashboard', 'accounting', …(6) ] to deeply equal [ 'dashboard', 'accounting' ][39m
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[2m  [[22m
+[2m    "dashboard",[22m
+[2m    "accounting",[22m
+[31m+   "admin-console",[39m
+[31m+   "billing",[39m
+[31m+   "inventory",[39m
+[31m+   "third-parties",[39m
+[31m+   "users",[39m
+[31m+   "ai",[39m
+[2m  ][22m
+
+[36m [2m❯[22m src/stores/stateStore.test.ts:[2m91:32[22m[39m
+    [90m 89|[39m     [34mexpect[39m(store[33m.[39mactiveMembership[33m?.[39mrole)[33m.[39m[34mtoBe[39m([32m'Gerencia'[39m)
+    [90m 90|[39m     [34mexpect[39m(store[33m.[39mactiveView)[33m.[39m[34mtoBe[39m([32m'dashboard'[39m)
+    [90m 91|[39m     [34mexpect[39m(store[33m.[39mvisibleViews)[33m.[39m[34mtoEqual[39m([[32m'dashboard'[39m[33m,[39m [32m'accounting'[39m])
+    [90m   |[39m                                [31m^[39m
+    [90m 92|[39m     [34mexpect[39m(store[33m.[39mselections[33m.[39minvoiceId)[33m.[39m[34mtoBeNull[39m()
+    [90m 93|[39m   })
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯[22m[39m
+
+[41m[1m FAIL [22m[49m backend/src/modules/ai/ai.service.test.ts[2m > [22mAiService[2m > [22mresponds to sales queries
+[41m[1m FAIL [22m[49m backend/src/modules/ai/ai.service.test.ts[2m > [22mAiService[2m > [22mresponds to stock queries with alerts
+[31m[1mError[22m: Nest can't resolve dependencies of the AiService (PrismaService, AnalyticsService, ?). Please make sure that the argument ConfigService at index [2] is available in the RootTestModule module.
+
+Potential solutions:
+- Is RootTestModule a valid NestJS module?
+- If ConfigService is a provider, is it part of the current RootTestModule?
+- If ConfigService is exported from a separate @Module, is that module imported within RootTestModule?
+  @Module({
+    imports: [ /* the Module containing ConfigService */ ]
+  })
+
+For more common dependency resolution issues, see: https://docs.nestjs.com/faq/common-errors[39m
+[90m [2m❯[22m TestingInjector.lookupComponentInParentModules backend/node_modules/@nestjs/core/injector/injector.js:[2m290:19[22m[39m
+[90m [2m❯[22m TestingInjector.resolveComponentWrapper backend/node_modules/@nestjs/testing/testing-injector.js:[2m19:45[22m[39m
+[90m [2m❯[22m resolveParam backend/node_modules/@nestjs/core/injector/injector.js:[2m140:38[22m[39m
+[90m [2m❯[22m TestingInjector.resolveConstructorParams backend/node_modules/@nestjs/core/injector/injector.js:[2m169:27[22m[39m
+[90m [2m❯[22m TestingInjector.loadInstance backend/node_modules/@nestjs/core/injector/injector.js:[2m75:13[22m[39m
+[90m [2m❯[22m TestingInjector.loadProvider backend/node_modules/@nestjs/core/injector/injector.js:[2m103:9[22m[39m
+[90m [2m❯[22m backend/node_modules/@nestjs/core/injector/instance-loader.js:[2m56:13[22m[39m
+
+[31m[2m⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯[22m[39m
+
+
+[2m Test Files [22m [1m[31m3 failed[39m[22m[2m | [22m[1m[32m27 passed[39m[22m[90m (30)[39m
+[2m      Tests [22m [1m[31m5 failed[39m[22m[2m | [22m[1m[32m143 passed[39m[22m[90m (148)[39m
+[2m   Start at [22m 21:00:16
+[2m   Duration [22m 12.21s[2m (transform 4.03s, setup 4.29s, import 19.17s, tests 4.64s, environment 76.88s)[22m
+
