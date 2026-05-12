@@ -92,9 +92,8 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div :class="['sidebar-overlay', { show: isSidebarOpen }]" @click="closeSidebar"></div>
-
   <div class="app app-shell">
+    <div :class="['sidebar-overlay', { show: isSidebarOpen }]" @click="closeSidebar"></div>
     <AppSidebar :is-open="isSidebarOpen" @navigate="handleNavigate" />
 
     <main class="main main-panel">

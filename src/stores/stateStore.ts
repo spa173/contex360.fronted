@@ -2353,7 +2353,8 @@ export const useStateStore = defineStore('state', {
       }
     },
     setActiveView(viewId: string) {
-      if (!this.visibleViews.includes(viewId)) {
+      const publicViews = ['two-factor', 'privacy-policy']
+      if (!publicViews.includes(viewId) && !this.visibleViews.includes(viewId)) {
         return {
           ok: false,
           message: 'Tu rol actual no tiene acceso a ese panel.',
