@@ -3,6 +3,7 @@ import {
   clearAuthToken,
   fetchCurrentAuthSession,
   getAuthToken,
+  getOAuthLoginUrl,
   loginWithBackend,
   revokeBackendSession,
   storeAuthToken,
@@ -85,8 +86,17 @@ describe('authApi', () => {
       'http://localhost:3001/auth/login',
       expect.objectContaining({
         method: 'POST',
+        credentials: 'include',
       }),
     )
+  })
+
+  it('builds the OAuth login URL for Google', () => {
+    const googleUrl = new URL(getOAuthLoginUrl('google'))
+
+    expect(googleUrl.origin).toBe('http://localhost:3001')
+    expect(googleUrl.pathname).toBe('/auth/oauth/google')
+    expect(googleUrl.searchParams.get('redirectTo')).toContain('/auth/callback')
   })
 
   it('surfaces backend errors when the login fails', async () => {
@@ -153,6 +163,7 @@ describe('authApi', () => {
     expect(fetchMock).toHaveBeenCalledWith(
       'http://localhost:3001/auth/me',
       expect.objectContaining({
+        credentials: 'include',
         headers: expect.objectContaining({
           authorization: 'Bearer token-123',
         }),
@@ -160,18 +171,73 @@ describe('authApi', () => {
     )
   })
 
-  it('requires a token to load the current auth session', async () => {
-    await expect(fetchCurrentAuthSession()).rejects.toThrow('Token de acceso requerido.')
+  it('loads the current auth session with cookie credentials even without a token', async () => {
+    const fetchMock = vi.fn(async () =>
+      buildJsonResponse({
+        ok: true,
+        message: 'Sesion activa.',
+        user: {
+          id: 'user-demo',
+          name: 'Camilo Demo',
+          email: 'admin@contex360.local',
+          title: 'Administrador local',
+          status: 'active',
+          lastLoginAt: '2026-05-06T10:00:00.000Z',
+          isSystemOwner: true,
+          isDemoAccount: true,
+        },
+        session: {
+          id: 'sess-1',
+          userId: 'user-demo',
+          tenantId: 'tenant-a',
+          ip: '127.0.0.1',
+          location: 'Local',
+          device: 'Navegador web',
+          browser: 'Chrome',
+          os: 'Windows',
+          fingerprint: 'fingerprint-1',
+          createdAt: '2026-05-06T10:00:00.000Z',
+          lastSeenAt: '2026-05-06T10:00:00.000Z',
+          revokedAt: null,
+          revokedBy: null,
+        },
+        activeTenantId: 'tenant-a',
+        accessibleTenants: [],
+        memberships: [],
+      }),
+    )
+    vi.stubGlobal('fetch', fetchMock)
+
+    const response = await fetchCurrentAuthSession()
+
+    expect(response.message).toBe('Sesion activa.')
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3001/auth/me',
+      expect.objectContaining({
+        credentials: 'include',
+      }),
+    )
   })
 
   it('clears the token even if there is no backend session to revoke', async () => {
-    const fetchMock = vi.fn()
+    const fetchMock = vi.fn(async () =>
+      buildJsonResponse({
+        ok: true,
+        message: 'Sesion cerrada.',
+      }),
+    )
     vi.stubGlobal('fetch', fetchMock)
 
     const response = await revokeBackendSession()
 
     expect(response.message).toBe('Sesion cerrada.')
-    expect(fetchMock).not.toHaveBeenCalled()
+    expect(fetchMock).toHaveBeenCalledWith(
+      'http://localhost:3001/auth/logout',
+      expect.objectContaining({
+        method: 'POST',
+        credentials: 'include',
+      }),
+    )
     expect(getAuthToken()).toBe('')
   })
 
@@ -187,6 +253,7 @@ describe('authApi', () => {
       'http://localhost:3001/auth/logout',
       expect.objectContaining({
         method: 'POST',
+        credentials: 'include',
         headers: expect.objectContaining({
           authorization: 'Bearer token-123',
         }),

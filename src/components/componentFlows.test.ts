@@ -110,6 +110,11 @@ describe('component flows', () => {
     expect((emailInput.element as HTMLInputElement).value).toBe('')
     expect(passwordInput.attributes('type')).toBe('password')
 
+    const ssoButtons = wrapper.findAll('a.auth-sso-button')
+    expect(ssoButtons).toHaveLength(1)
+    expect(ssoButtons[0].attributes('href')).toContain('/auth/oauth/google')
+    expect(ssoButtons[0].attributes('href')).toContain('redirectTo=')
+
     await passwordToggle.trigger('click')
     await nextTick()
 

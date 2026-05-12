@@ -1,11 +1,5 @@
 import { getAuthToken } from './authApi'
-
-const DEFAULT_API_BASE_URL = 'http://localhost:3001'
-
-function getApiBaseUrl() {
-  const raw = String(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
-  return raw.endsWith('/') ? raw.slice(0, -1) : raw
-}
+import { getApiBaseUrl } from './apiBase'
 
 async function request<T>(path: string, init: { method?: string; body?: unknown } = {}) {
   const token = getAuthToken()
@@ -25,6 +19,7 @@ async function request<T>(path: string, init: { method?: string; body?: unknown 
     method: init.method || 'GET',
     headers,
     body: bodyJson,
+    credentials: 'include',
   })
 
   if (!response.ok) {

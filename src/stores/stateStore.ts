@@ -1748,7 +1748,11 @@ export const useStateStore = defineStore('state', {
         const response = await businessApi.login(credentials)
         if (!response.ok) return response
 
-        storeAuthToken(response.accessToken)
+        if (response.accessToken) {
+          storeAuthToken(response.accessToken)
+        } else {
+          clearAuthToken()
+        }
         const userIdx = this.users.findIndex((u: any) => u.id === response.user.id)
         if (userIdx > -1) this.users[userIdx] = response.user
         else this.users.push(response.user)
@@ -1773,7 +1777,7 @@ export const useStateStore = defineStore('state', {
       }
     },
     async fetchBusinessData() {
-      if (!getAuthToken() || !this.activeTenantId) return
+      if (!this.activeTenantId) return
       
       try {
         const [products, invoices, thirdParties, movements] = await Promise.all([
@@ -1794,8 +1798,6 @@ export const useStateStore = defineStore('state', {
       }
     },
     async refreshSessionWithBackend() {
-      const token = getAuthToken()
-      if (!token) return false
       try {
         const response = await businessApi.me()
         const userIdx = this.users.findIndex((u: any) => u.id === response.user.id)
@@ -1815,7 +1817,9 @@ export const useStateStore = defineStore('state', {
         await this.fetchBusinessData()
         return true
       } catch (error) {
-        console.error('Session validation error:', error)
+        if (getAuthToken()) {
+          console.error('Session validation error:', error)
+        }
         clearAuthToken()
         return false
       }
@@ -2265,10 +2269,8 @@ export const useStateStore = defineStore('state', {
       }
       
       try {
-        if (getAuthToken()) {
-          const { revokeBackendSession } = await import('../services/authApi')
-          await revokeBackendSession()
-        }
+        const { revokeBackendSession } = await import('../services/authApi')
+        await revokeBackendSession()
       } catch (error) {
         console.error('Error during backend logout:', error)
       } finally {

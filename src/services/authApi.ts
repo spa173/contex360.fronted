@@ -1,5 +1,9 @@
-const DEFAULT_API_BASE_URL = 'http://localhost:3001'
+import { getApiBaseUrl } from './apiBase'
+
 const AUTH_TOKEN_KEY = 'contex360-auth-token'
+const OAUTH_CALLBACK_PATH = '/auth/callback'
+
+export type OAuthProvider = 'google'
 
 export interface BackendAuthUser {
   id: string
@@ -62,11 +66,6 @@ export interface BackendMessageResponse {
   message: string
 }
 
-function getApiBaseUrl() {
-  const raw = String(import.meta.env.VITE_API_BASE_URL || DEFAULT_API_BASE_URL)
-  return raw.endsWith('/') ? raw.slice(0, -1) : raw
-}
-
 export function getAuthToken() {
   if (typeof globalThis === 'undefined') {
     return ''
@@ -89,6 +88,20 @@ export function clearAuthToken() {
   }
 
   globalThis.localStorage.removeItem(AUTH_TOKEN_KEY)
+}
+
+function getFrontendAuthCallbackUrl() {
+  if (typeof globalThis === 'undefined' || typeof window === 'undefined') {
+    return OAUTH_CALLBACK_PATH
+  }
+
+  return `${window.location.origin}${OAUTH_CALLBACK_PATH}`
+}
+
+export function getOAuthLoginUrl(provider: OAuthProvider) {
+  const url = new URL(`/auth/oauth/${provider}`, getApiBaseUrl())
+  url.searchParams.set('redirectTo', getFrontendAuthCallbackUrl())
+  return url.toString()
 }
 
 async function readResponseBody(response: Response) {
@@ -149,35 +162,41 @@ async function requestJson<T>(path: string, init: { method?: string; body?: unkn
 }
 
 export async function loginWithBackend(credentials: { email: string; password: string }) {
-  return requestJson<BackendAuthResponse>('/auth/login', {
+  const response = await requestJson<BackendAuthResponse>('/auth/login', {
     method: 'POST',
     body: credentials,
   })
+
+  if ('accessToken' in response && response.accessToken) {
+    storeAuthToken(response.accessToken)
+  } else {
+    clearAuthToken()
+  }
+
+  return response
 }
 
 export async function fetchCurrentAuthSession() {
   const token = getAuthToken()
-  if (!token) {
-    throw new Error('Token de acceso requerido.')
-  }
-
-  return requestJson<Omit<BackendAuthResponse, 'accessToken'>>('/auth/me', {
-    token,
-  })
+  return requestJson<Omit<BackendAuthResponse, 'accessToken'>>('/auth/me', token ? { token } : {})
 }
 
 export async function revokeBackendSession() {
   const token = getAuthToken()
 
   try {
-    if (!token) {
-      return { ok: true, message: 'Sesion cerrada.' } as BackendMessageResponse
+    try {
+      await requestJson<BackendMessageResponse>('/auth/logout', {
+        method: 'POST',
+        token: token || undefined,
+      })
+    } catch {
+      if (token) {
+        throw new Error('No fue posible cerrar la sesion en el backend.')
+      }
     }
 
-    return await requestJson<BackendMessageResponse>('/auth/logout', {
-      method: 'POST',
-      token,
-    })
+    return { ok: true, message: 'Sesion cerrada.' } as BackendMessageResponse
   } finally {
     clearAuthToken()
   }
