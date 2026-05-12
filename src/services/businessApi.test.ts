@@ -40,4 +40,43 @@ describe('businessApi', () => {
 
     await expect(businessApi.getInvoices()).rejects.toThrow('Bad Request')
   })
+
+  it('getComplianceDashboard calls the correct endpoint', async () => {
+    localStorage.setItem('contex360-auth-token', 'mock-token')
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ complianceChecks: [] })
+    })
+
+    const result = await businessApi.getComplianceDashboard()
+    expect(result).toEqual({ complianceChecks: [] })
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/admin/compliance'),
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          'authorization': 'Bearer mock-token'
+        })
+      })
+    )
+  })
+
+  it('runAccessReview posts to the correct endpoint', async () => {
+    localStorage.setItem('contex360-auth-token', 'mock-token')
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ accessReview: { totals: { totalUsers: 1 } } })
+    })
+
+    const result = await businessApi.runAccessReview()
+    expect(result).toEqual({ accessReview: { totals: { totalUsers: 1 } } })
+    expect(mockFetch).toHaveBeenCalledWith(
+      expect.stringContaining('/admin/compliance/access-review'),
+      expect.objectContaining({
+        method: 'POST',
+        headers: expect.objectContaining({
+          'authorization': 'Bearer mock-token'
+        })
+      })
+    )
+  })
 })

@@ -3,30 +3,99 @@ import { ref, onMounted, computed } from 'vue'
 import { businessApi } from '../../services/businessApi'
 import { formatDate } from '../../utils/ui'
 
+const tabs = [
+  { id: 'tenants', label: 'Empresas (Tenants)' },
+  { id: 'users', label: 'Usuarios Globales' },
+  { id: 'logs', label: 'Logs de Auditoria' },
+  { id: 'compliance', label: 'Cumplimiento ISO' },
+  { id: 'breach', label: 'Alertas de Brecha' },
+]
+
 const stats = ref(null)
+const compliance = ref(null)
 const loading = ref(true)
+const runningReview = ref(false)
 const activeSubView = ref('tenants')
 const tenants = ref([])
 const globalUsers = ref([])
 const logs = ref([])
+const breachAlerts = ref([])
+const erasingUserId = ref(null)
+const notifyingId = ref(null)
+
+const normalizeCompliance = (value) => {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return null
+  }
+
+  return value
+}
 
 const fetchAdminData = async () => {
   loading.value = true
   try {
-    const [s, t, u, l] = await Promise.all([
+    const [s, t, u, l, c, b] = await Promise.all([
       businessApi.getAdminStats(),
       businessApi.getAdminTenants(),
       businessApi.getAdminUsers(),
       businessApi.getAdminLogs(),
+      businessApi.getComplianceDashboard().catch(() => null),
+      businessApi.getBreachAlerts().catch(() => []),
     ])
+
     stats.value = s
     tenants.value = t
     globalUsers.value = u
     logs.value = l
+    compliance.value = normalizeCompliance(c)
+    breachAlerts.value = Array.isArray(b) ? b : []
   } catch (error) {
     console.error('Error fetching admin data:', error)
   } finally {
     loading.value = false
+  }
+}
+
+const eraseUser = async (userId) => {
+  if (!confirm('¿Confirmas anonimizar permanentemente los datos de este usuario? Esta accion no se puede deshacer.')) return
+  erasingUserId.value = userId
+  try {
+    await businessApi.eraseUserData(userId)
+    globalUsers.value = globalUsers.value.filter((u) => u.id !== userId)
+    breachAlerts.value = await businessApi.getBreachAlerts().catch(() => [])
+  } catch (err) {
+    console.error('Error erasing user:', err)
+  } finally {
+    erasingUserId.value = null
+  }
+}
+
+const sendBreachNotification = async (eventId) => {
+  notifyingId.value = eventId
+  try {
+    await businessApi.notifyBreach(eventId)
+    alert('Alerta enviada a los administradores del sistema.')
+  } catch (err) {
+    console.error('Error sending breach notification:', err)
+  } finally {
+    notifyingId.value = null
+  }
+}
+
+const executeAccessReview = async () => {
+  runningReview.value = true
+  try {
+    const [updatedCompliance, updatedLogs] = await Promise.all([
+      businessApi.runAccessReview().catch(() => null),
+      businessApi.getAdminLogs().catch(() => []),
+    ])
+
+    compliance.value = normalizeCompliance(updatedCompliance) || compliance.value
+    logs.value = updatedLogs
+  } catch (error) {
+    console.error('Error running access review:', error)
+  } finally {
+    runningReview.value = false
   }
 }
 
@@ -38,18 +107,23 @@ const statCards = computed(() => [
   { label: 'Facturas Emitidas', value: stats.value?.totalInvoices || 0, icon: 'description', color: 'green' },
   { label: 'Movimientos', value: stats.value?.totalMovements || 0, icon: 'swap_horiz', color: 'orange' },
 ])
+
+const complianceChecks = computed(() => compliance.value?.complianceChecks ?? [])
+const businessContinuityPlan = computed(() => compliance.value?.businessContinuityPlan ?? null)
+const accessReview = computed(() => compliance.value?.accessReview ?? null)
+const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.severity === 'critical' || e.severity === 'error'))
 </script>
 
 <template>
   <div class="admin-console">
     <header class="admin-header">
       <div class="header-content">
-        <h1>Consola de Administración</h1>
-        <p class="subtitle">Gestión de infraestructura y control global del sistema</p>
+        <h1>Consola de Administracion</h1>
+        <p class="subtitle">Gestion de infraestructura, control global y evidencias de cumplimiento</p>
       </div>
       <div class="system-badge" :class="stats?.systemStatus">
         <span class="dot"></span>
-        {{ stats?.systemStatus === 'healthy' ? 'Sistema Saludable' : 'Atención Requerida' }}
+        {{ stats?.systemStatus === 'healthy' ? 'Sistema saludable' : 'Atencion requerida' }}
         <span class="version">v{{ stats?.version }}</span>
       </div>
     </header>
@@ -60,7 +134,6 @@ const statCards = computed(() => [
     </div>
 
     <div v-else class="admin-content">
-      <!-- Stats Grid -->
       <div class="stats-grid">
         <div v-for="card in statCards" :key="card.label" class="stat-card" :class="card.color">
           <div class="stat-icon">
@@ -73,28 +146,25 @@ const statCards = computed(() => [
         </div>
       </div>
 
-      <!-- Navigation Tabs -->
       <div class="admin-tabs">
-        <button 
-          v-for="tab in ['tenants', 'users', 'logs']" 
-          :key="tab"
-          :class="['tab-btn', { active: activeSubView === tab }]"
-          @click="activeSubView = tab"
+        <button
+          v-for="tab in tabs"
+          :key="tab.id"
+          :class="['tab-btn', { active: activeSubView === tab.id }]"
+          @click="activeSubView = tab.id"
         >
-          {{ tab === 'tenants' ? 'Empresas (Tenants)' : tab === 'users' ? 'Usuarios Globales' : 'Logs de Auditoría' }}
+          {{ tab.label }}
         </button>
       </div>
 
-      <!-- Content Area -->
       <div class="tab-content">
-        <!-- Tenants Table -->
         <div v-if="activeSubView === 'tenants'" class="table-container">
           <table class="admin-table">
             <thead>
               <tr>
                 <th>Empresa</th>
                 <th>Prefijo</th>
-                <th>Ubicación</th>
+                <th>Ubicacion</th>
                 <th>Usuarios</th>
                 <th>Facturas</th>
                 <th>Estado DIAN</th>
@@ -126,7 +196,6 @@ const statCards = computed(() => [
           </table>
         </div>
 
-        <!-- Users Table -->
         <div v-else-if="activeSubView === 'users'" class="table-container">
           <table class="admin-table">
             <thead>
@@ -135,7 +204,8 @@ const statCards = computed(() => [
                 <th>Email</th>
                 <th>Empresas</th>
                 <th>Estado</th>
-                <th>Último Acceso</th>
+                <th>Ultimo Acceso</th>
+                <th>Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -151,12 +221,71 @@ const statCards = computed(() => [
                 </td>
                 <td><span class="status-pill" :class="user.status">{{ user.status }}</span></td>
                 <td>{{ user.lastLoginAt ? formatDate(user.lastLoginAt) : 'Nunca' }}</td>
+                <td>
+                  <button
+                    v-if="!user.isSystemOwner"
+                    class="erase-btn"
+                    :disabled="erasingUserId === user.id"
+                    :title="'Derecho al olvido — Ley 1581 Art. 15'"
+                    @click="eraseUser(user.id)"
+                  >
+                    {{ erasingUserId === user.id ? '...' : 'Borrar datos' }}
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        <!-- Logs Table -->
+        <div v-else-if="activeSubView === 'breach'" class="compliance-grid">
+          <article class="compliance-card wide">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Ley 1581 · ISO 27001 A.16</p>
+                <h3>Alertas de brecha de seguridad</h3>
+              </div>
+              <span v-if="criticalBreaches.length" class="severity-pill critical">{{ criticalBreaches.length }} criticas</span>
+            </div>
+            <p class="card-meta" style="margin-bottom:1rem">
+              Eventos con severidad <strong>error</strong> o <strong>critical</strong>. Puedes notificar a los administradores del sistema por email.
+              Conforme a la Ley 1581, las brechas que afecten datos personales deben notificarse a la SIC dentro de 72 horas.
+            </p>
+            <div v-if="!breachAlerts.length" class="empty-state">
+              <p>Sin alertas de brecha registradas.</p>
+            </div>
+            <table v-else class="admin-table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Severidad</th>
+                  <th>Accion</th>
+                  <th>Actor</th>
+                  <th>Descripcion</th>
+                  <th>Notificar</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="alert in breachAlerts" :key="alert.id">
+                  <td>{{ formatDate(alert.at) }}</td>
+                  <td><span class="severity-pill" :class="alert.severity">{{ alert.severity }}</span></td>
+                  <td>{{ alert.action }}</td>
+                  <td>{{ alert.actorUser?.name || alert.actor }}</td>
+                  <td class="description-cell">{{ alert.description }}</td>
+                  <td>
+                    <button
+                      class="action-btn"
+                      :disabled="notifyingId === alert.id"
+                      @click="sendBreachNotification(alert.id)"
+                    >
+                      {{ notifyingId === alert.id ? 'Enviando...' : 'Notificar' }}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </article>
+        </div>
+
         <div v-else-if="activeSubView === 'logs'" class="table-container">
           <table class="admin-table">
             <thead>
@@ -164,7 +293,7 @@ const statCards = computed(() => [
                 <th>Fecha</th>
                 <th>Actor</th>
                 <th>Entidad</th>
-                <th>Acción</th>
+                <th>Accion</th>
                 <th>Empresa</th>
                 <th>Severidad</th>
               </tr>
@@ -183,6 +312,231 @@ const statCards = computed(() => [
             </tbody>
           </table>
         </div>
+
+        <div v-else-if="activeSubView === 'compliance'" class="compliance-grid">
+          <article class="compliance-card">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">ISO 27000</p>
+                <h3>Controles documentados</h3>
+              </div>
+              <button class="action-btn" :disabled="runningReview" @click="executeAccessReview">
+                {{ runningReview ? 'Ejecutando revision...' : 'Ejecutar revision ahora' }}
+              </button>
+            </div>
+
+            <div v-if="complianceChecks.length" class="check-grid">
+              <article v-for="check in complianceChecks" :key="check.key" class="check-card">
+                <div class="check-card-head">
+                  <span class="material-icons check-icon">
+                    {{ check.status === 'documented' ? 'description' : 'schedule' }}
+                  </span>
+                  <span class="status-pill" :class="check.status">
+                    {{ check.status === 'documented' ? 'Documentado' : 'Automatizado' }}
+                  </span>
+                </div>
+                <h4>{{ check.label }}</h4>
+                <p class="card-copy">{{ check.description }}</p>
+                <p class="check-evidence">{{ check.evidence }}</p>
+                <a class="inline-link" :href="check.documentUrl" target="_blank" rel="noreferrer">
+                  Abrir documento
+                </a>
+              </article>
+            </div>
+
+            <p v-else class="empty-note">
+              No se pudo cargar la evidencia automatica. Reintenta en un momento.
+            </p>
+          </article>
+
+          <article v-if="businessContinuityPlan" class="compliance-card wide">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Plan de continuidad</p>
+                <h3>{{ businessContinuityPlan.title }}</h3>
+              </div>
+              <span class="status-pill documented">Documentado</span>
+            </div>
+
+            <p class="card-copy">{{ businessContinuityPlan.summary }}</p>
+
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Responsable</span>
+                <strong>{{ businessContinuityPlan.owner }}</strong>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Version</span>
+                <strong>{{ businessContinuityPlan.version }}</strong>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Revision</span>
+                <strong>{{ businessContinuityPlan.reviewCadence }}</strong>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Prueba</span>
+                <strong>{{ businessContinuityPlan.testCadence }}</strong>
+              </div>
+            </div>
+
+            <div class="objective-grid">
+              <div v-for="objective in businessContinuityPlan.recoveryObjectives" :key="objective.label" class="objective-card">
+                <span class="detail-label">{{ objective.label }}</span>
+                <strong>{{ objective.value }}</strong>
+              </div>
+            </div>
+
+            <div class="pill-row">
+              <span v-for="scenario in businessContinuityPlan.scenarios" :key="scenario" class="detail-pill">
+                {{ scenario }}
+              </span>
+            </div>
+
+            <ul class="bullet-list">
+              <li v-for="control in businessContinuityPlan.controls" :key="control">{{ control }}</li>
+            </ul>
+
+            <div class="link-row">
+              <a class="inline-link" :href="businessContinuityPlan.documentUrl" target="_blank" rel="noreferrer">
+                Ver plan completo
+              </a>
+              <span class="card-meta">El plan se revisa de forma semestral y tras cambios mayores.</span>
+            </div>
+          </article>
+
+          <article v-if="accessReview" class="compliance-card wide">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">Revision de accesos</p>
+                <h3>Control automatizado y auditable</h3>
+              </div>
+              <span class="status-pill automated">Automatizado</span>
+            </div>
+
+            <div class="detail-grid">
+              <div class="detail-item">
+                <span class="detail-label">Frecuencia</span>
+                <strong>{{ accessReview.policy.frequency }}</strong>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Programacion</span>
+                <strong>{{ accessReview.policy.schedule }}</strong>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Ultima ejecucion</span>
+                <strong>{{ accessReview.policy.lastRunAt ? formatDate(accessReview.policy.lastRunAt) : 'Sin ejecucion' }}</strong>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Siguiente revision</span>
+                <strong>{{ accessReview.policy.nextReviewAt ? formatDate(accessReview.policy.nextReviewAt) : 'Pendiente' }}</strong>
+              </div>
+            </div>
+
+            <div class="metric-grid">
+              <div class="metric-card">
+                <span class="detail-label">Cobertura</span>
+                <strong>{{ accessReview.policy.coverage.percentage }}%</strong>
+                <p>{{ accessReview.policy.coverage.usersReviewed }} usuarios y {{ accessReview.policy.coverage.sessionsReviewed }} sesiones revisadas</p>
+              </div>
+              <div class="metric-card">
+                <span class="detail-label">Usuarios activos</span>
+                <strong>{{ accessReview.totals.activeUsers }}</strong>
+                <p>Usuarios con acceso vigente en la plataforma</p>
+              </div>
+              <div class="metric-card">
+                <span class="detail-label">Accesos inactivos</span>
+                <strong>{{ accessReview.totals.inactiveUsersWithAccess }}</strong>
+                <p>Cuentas inactivas que aun conservan membresias</p>
+              </div>
+              <div class="metric-card">
+                <span class="detail-label">2FA pendiente</span>
+                <strong>{{ accessReview.totals.usersPending2FA }}</strong>
+                <p>Usuarios activos que aun no tienen 2FA</p>
+              </div>
+            </div>
+
+            <div class="finding-grid">
+              <article v-for="finding in accessReview.findings" :key="finding.title" class="finding-card">
+                <div class="finding-head">
+                  <h4>{{ finding.title }}</h4>
+                  <span class="severity-pill" :class="finding.severity">{{ finding.severity }}</span>
+                </div>
+                <p>{{ finding.description }}</p>
+                <span v-if="finding.count !== undefined" class="finding-count">{{ finding.count }}</span>
+              </article>
+            </div>
+
+            <div class="split-grid">
+              <section>
+                <h4>Recomendaciones</h4>
+                <ul class="bullet-list tight">
+                  <li v-for="item in accessReview.recommendations" :key="item">{{ item }}</li>
+                </ul>
+              </section>
+
+              <section>
+                <h4>Revision por empresa</h4>
+                <div class="mini-table">
+                  <table class="admin-table compact">
+                    <thead>
+                      <tr>
+                        <th>Empresa</th>
+                        <th>Usuarios</th>
+                        <th>Admin</th>
+                        <th>2FA</th>
+                        <th>Inactivos</th>
+                        <th>Sesiones</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="tenant in accessReview.byTenant" :key="tenant.tenantId">
+                        <td>{{ tenant.tenantName }}</td>
+                        <td>{{ tenant.totalUsers }}</td>
+                        <td>{{ tenant.adminUsers }}</td>
+                        <td>{{ tenant.usersWith2FA }}</td>
+                        <td>{{ tenant.inactiveUsersWithAccess }}</td>
+                        <td>{{ tenant.activeSessions }}</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+
+            <section class="timeline-section">
+              <h4>Ultimas ejecuciones</h4>
+              <div class="mini-table">
+                <table class="admin-table compact">
+                  <thead>
+                    <tr>
+                      <th>Fecha</th>
+                      <th>Actor</th>
+                      <th>Severidad</th>
+                      <th>Descripcion</th>
+                      <th>Empresa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr v-for="run in accessReview.recentRuns" :key="run.id">
+                      <td>{{ formatDate(run.at) }}</td>
+                      <td>{{ run.actor }}</td>
+                      <td><span class="severity-pill" :class="run.severity">{{ run.severity }}</span></td>
+                      <td>{{ run.description }}</td>
+                      <td>{{ run.tenantName || 'Sistema' }}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <div class="link-row">
+              <a class="inline-link" href="/compliance/access-review-procedure.md" target="_blank" rel="noreferrer">
+                Abrir procedimiento de revision
+              </a>
+              <span class="card-meta">Cada ejecucion deja evidencia en auditoria y queda visible en esta consola.</span>
+            </div>
+          </article>
+        </div>
       </div>
     </div>
   </div>
@@ -200,6 +554,7 @@ const statCards = computed(() => [
   justify-content: space-between;
   align-items: flex-start;
   margin-bottom: 2.5rem;
+  gap: 1rem;
 }
 
 h1 {
@@ -224,13 +579,13 @@ h1 {
   border-radius: 99px;
   font-size: 0.875rem;
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .system-badge.healthy { color: #10b981; }
 .dot { width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
 .version { opacity: 0.5; font-size: 0.75rem; margin-left: 0.5rem; }
 
-/* Stats Grid */
 .stats-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -270,10 +625,10 @@ h1 {
 .stat-label { font-size: 0.875rem; color: var(--text-secondary); }
 .stat-value { font-size: 1.5rem; font-weight: 700; color: #fff; }
 
-/* Tabs */
 .admin-tabs {
   display: flex;
-  gap: 1rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   margin-bottom: 1.5rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   padding-bottom: 1rem;
@@ -281,7 +636,7 @@ h1 {
 
 .tab-btn {
   padding: 0.75rem 1.25rem;
-  border-radius: 0.5rem;
+  border-radius: 0.75rem;
   border: none;
   background: transparent;
   color: var(--text-secondary);
@@ -293,18 +648,27 @@ h1 {
 .tab-btn:hover { background: rgba(255, 255, 255, 0.05); color: #fff; }
 .tab-btn.active { background: #3b82f6; color: #fff; }
 
-/* Table */
+.tab-content {
+  min-width: 0;
+}
+
 .table-container {
   background: var(--card-bg, #1e293b);
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .admin-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
+  min-width: 760px;
+}
+
+.admin-table.compact {
+  min-width: 680px;
 }
 
 .admin-table th {
@@ -346,7 +710,11 @@ h1 {
   border-radius: 4px;
 }
 
-.status-pill, .severity-pill {
+.status-pill,
+.severity-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   padding: 0.25rem 0.75rem;
   border-radius: 99px;
   font-size: 0.75rem;
@@ -355,7 +723,13 @@ h1 {
 }
 
 .status-pill.active { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+.status-pill.inactive { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
+.status-pill.pending { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
+.status-pill.documented { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-pill.automated { background: rgba(16, 185, 129, 0.1); color: #10b981; }
+
 .severity-pill.info { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.severity-pill.warning { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 .severity-pill.error { background: rgba(239, 68, 68, 0.1); color: #ef4444; }
 
 .owner-tag {
@@ -377,21 +751,76 @@ h1 {
   margin-right: 0.4rem;
 }
 
-.action-btn-sm {
+.action-btn-sm,
+.action-btn {
   padding: 0.4rem 0.8rem;
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 6px;
-  color: #fff;
-  font-size: 0.75rem;
+  border-radius: 0.75rem;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.action-btn-sm:hover { background: rgba(255, 255, 255, 0.05); }
+.action-btn-sm {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.action-btn {
+  background: #3b82f6;
+  border: 1px solid #3b82f6;
+  color: #fff;
+  font-weight: 600;
+}
+
+.action-btn:hover,
+.action-btn-sm:hover {
+  transform: translateY(-1px);
+}
+
+.action-btn:disabled {
+  opacity: 0.7;
+  cursor: wait;
+  transform: none;
+}
 
 .log-date {
   font-family: monospace;
   opacity: 0.7;
+}
+
+.erase-btn {
+  background: rgba(220, 38, 38, 0.12);
+  border: 1px solid rgba(220, 38, 38, 0.3);
+  border-radius: 6px;
+  color: #fca5a5;
+  cursor: pointer;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.erase-btn:hover:not(:disabled) {
+  background: rgba(220, 38, 38, 0.22);
+}
+
+.erase-btn:disabled {
+  cursor: wait;
+  opacity: 0.5;
+}
+
+.severity-pill.critical {
+  background: rgba(220, 38, 38, 0.18);
+  color: #fca5a5;
+  border-color: rgba(220, 38, 38, 0.3);
+}
+
+.description-cell {
+  max-width: 280px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .loading-state {
@@ -413,7 +842,293 @@ h1 {
   margin-bottom: 1rem;
 }
 
+.compliance-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.5rem;
+}
+
+.compliance-card {
+  background: var(--card-bg, #1e293b);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+}
+
+.compliance-card.wide {
+  grid-column: 1 / -1;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.eyebrow {
+  margin: 0 0 0.35rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #60a5fa;
+}
+
+.section-heading h3,
+.finding-head h4 {
+  margin: 0;
+}
+
+.card-copy {
+  color: var(--text-secondary);
+  margin: 0 0 1rem;
+}
+
+.check-grid,
+.metric-grid,
+.detail-grid,
+.objective-grid,
+.finding-grid,
+.split-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.check-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.check-card {
+  padding: 1rem;
+  border-radius: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.24);
+}
+
+.check-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.check-icon {
+  color: #60a5fa;
+}
+
+.check-card h4 {
+  margin: 0 0 0.5rem;
+}
+
+.check-card p {
+  margin: 0 0 0.65rem;
+  color: var(--text-secondary);
+}
+
+.check-evidence {
+  font-size: 0.85rem;
+}
+
+.inline-link {
+  color: #93c5fd;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.inline-link:hover {
+  text-decoration: underline;
+}
+
+.empty-note {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.detail-grid {
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  margin: 1rem 0;
+}
+
+.detail-item,
+.metric-card,
+.objective-card,
+.finding-card {
+  border-radius: 0.875rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(15, 23, 42, 0.24);
+  padding: 1rem;
+}
+
+.detail-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.detail-label {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-secondary);
+}
+
+.objective-grid {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  margin-bottom: 1rem;
+}
+
+.objective-card strong,
+.metric-card strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-top: 0.35rem;
+}
+
+.pill-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.detail-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.4rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.12);
+  color: #bfdbfe;
+  font-size: 0.8rem;
+}
+
+.bullet-list {
+  margin: 0 0 1rem;
+  padding-left: 1.2rem;
+  color: var(--text-secondary);
+}
+
+.bullet-list.tight {
+  margin-bottom: 0;
+}
+
+.bullet-list li + li {
+  margin-top: 0.35rem;
+}
+
+.link-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.card-meta {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.metric-grid {
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  margin: 1rem 0;
+}
+
+.metric-card p {
+  margin: 0.4rem 0 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.finding-grid {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin-bottom: 1rem;
+}
+
+.finding-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: flex-start;
+  margin-bottom: 0.65rem;
+}
+
+.finding-card p {
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+.finding-count {
+  display: inline-flex;
+  margin-top: 0.65rem;
+  font-size: 0.8rem;
+  color: #bfdbfe;
+}
+
+.split-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  margin-bottom: 1rem;
+}
+
+.split-grid h4,
+.timeline-section h4 {
+  margin: 0 0 0.75rem;
+}
+
+.mini-table {
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 1rem;
+  overflow-x: auto;
+  background: rgba(15, 23, 42, 0.24);
+}
+
+.timeline-section {
+  margin-top: 0.5rem;
+}
+
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+@media (max-width: 768px) {
+  .admin-console {
+    padding: 1rem;
+  }
+
+  .admin-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .system-badge {
+    width: fit-content;
+  }
+
+  .tab-btn {
+    width: 100%;
+    text-align: center;
+  }
+
+  .check-grid,
+  .metric-grid,
+  .detail-grid,
+  .objective-grid,
+  .finding-grid,
+  .split-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-heading,
+  .link-row,
+  .finding-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .action-btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 </style>

@@ -1,6 +1,7 @@
 <script setup>
 import { computed, ref } from 'vue'
 import { useStateStore } from '../stores/stateStore'
+import { businessApi } from '../services/businessApi'
 
 const store = useStateStore()
 
@@ -14,6 +15,10 @@ const statusMessage = ref('')
 const forgotAccessOpen = ref(false)
 const requiresTotp = ref(false)
 const totpCode = ref('')
+const requiresPasswordChange = ref(false)
+const newPassword = ref('')
+const newPasswordConfirm = ref('')
+const changePasswordLoading = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
@@ -38,6 +43,12 @@ const handleSubmit = async () => {
       return
     }
 
+    if (result?.requiresPasswordChange) {
+      requiresPasswordChange.value = true
+      errorMessage.value = ''
+      return
+    }
+
     if (!result.ok) {
       errorMessage.value = result.message || 'Credenciales invalidas. Por favor, verifica tus datos.'
       return
@@ -48,6 +59,32 @@ const handleSubmit = async () => {
     errorMessage.value = error?.message || 'Error de conexion. Intenta de nuevo.'
   } finally {
     isLoading.value = false
+  }
+}
+
+const handleChangePassword = async () => {
+  if (newPassword.value.length < 8) {
+    errorMessage.value = 'La nueva contrasena debe tener al menos 8 caracteres.'
+    return
+  }
+  if (newPassword.value !== newPasswordConfirm.value) {
+    errorMessage.value = 'Las contrasenas no coinciden.'
+    return
+  }
+  changePasswordLoading.value = true
+  errorMessage.value = ''
+  try {
+    const res = await businessApi.changePassword(password.value, newPassword.value)
+    if (res.ok) {
+      requiresPasswordChange.value = false
+      password.value = newPassword.value
+      statusMessage.value = 'Contrasena actualizada. Iniciando sesion...'
+      await handleSubmit()
+    }
+  } catch (err) {
+    errorMessage.value = err?.message || 'Error al cambiar la contrasena.'
+  } finally {
+    changePasswordLoading.value = false
   }
 }
 
@@ -160,6 +197,35 @@ const toggleRecoveryHelp = () => {
 
         <main class="auth-form-panel__main">
           <div class="auth-form-card">
+            <!-- Password change screen -->
+            <template v-if="requiresPasswordChange">
+              <div class="auth-form-head">
+                <h2>Contraseña expirada</h2>
+                <p>Tu contraseña ha vencido. Por seguridad debes establecer una nueva para continuar.</p>
+              </div>
+              <p v-if="errorMessage" class="auth-feedback auth-feedback--error" role="alert">{{ errorMessage }}</p>
+              <div class="auth-form" style="margin-top:12px;">
+                <label class="auth-field">
+                  <span>Nueva contraseña</span>
+                  <input v-model="newPassword" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" />
+                </label>
+                <label class="auth-field">
+                  <span>Confirmar contraseña</span>
+                  <input v-model="newPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repite la nueva contraseña" />
+                </label>
+                <button
+                  class="auth-primary"
+                  type="button"
+                  :disabled="changePasswordLoading || newPassword.length < 8 || newPassword !== newPasswordConfirm"
+                  @click="handleChangePassword"
+                >
+                  {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y continuar' }}
+                </button>
+              </div>
+            </template>
+
+            <!-- Normal login form -->
+            <template v-else>
             <div class="auth-form-head">
               <h2>Bienvenido de nuevo</h2>
               <p>Ingresa tus credenciales para acceder al sistema</p>
@@ -301,6 +367,7 @@ const toggleRecoveryHelp = () => {
                 <span>SOC 2</span>
               </span>
             </footer>
+            </template>
           </div>
         </main>
 

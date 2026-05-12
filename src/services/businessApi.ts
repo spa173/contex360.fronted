@@ -110,4 +110,22 @@ export const businessApi = {
   async getAdminLogs() {
     return request<any[]>('/admin/audit-logs')
   },
+  async getComplianceDashboard() {
+    return request<any>('/admin/compliance')
+  },
+  async runAccessReview() {
+    return request<any>('/admin/compliance/access-review', { method: 'POST' })
+  },
+  async eraseUserData(userId: string) {
+    return request<any>(`/admin/users/${userId}/data`, { method: 'DELETE' })
+  },
+  async getBreachAlerts() {
+    return request<any[]>('/admin/breach-alerts')
+  },
+  async notifyBreach(eventId: string) {
+    return request<any>(`/admin/breach-alerts/${eventId}/notify`, { method: 'POST' })
+  },
+  async changePassword(currentPassword: string, newPassword: string) {
+    return request<any>('/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
+  },
 }
