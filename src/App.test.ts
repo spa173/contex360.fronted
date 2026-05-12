@@ -50,6 +50,8 @@ function installFetchMock(responses: Record<string, unknown>) {
 describe('App integration', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    localStorage.removeItem('contex360-theme')
+    document.documentElement.classList.remove('dark', 'light')
   })
 
   afterEach(() => {

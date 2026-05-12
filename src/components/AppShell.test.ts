@@ -16,6 +16,8 @@ vi.mock('chart.js/auto', () => ({
 describe('AppShell', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    localStorage.removeItem('contex360-theme')
+    document.documentElement.classList.remove('dark', 'light')
     const state = useStateStore()
     state.activeTenantId = 'tenant-a'
     state.session.currentUserId = 'user-demo'

@@ -16,6 +16,33 @@
   --radius-xl: 28px;
   --radius-lg: 20px;
   --radius-md: 14px;
+  --page-background:
+    radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.15), transparent 18%),
+    radial-gradient(circle at 84% 16%, rgba(139, 92, 246, 0.15), transparent 22%),
+    radial-gradient(circle at 66% 74%, rgba(37, 99, 235, 0.1), transparent 28%),
+    linear-gradient(150deg, #09090b 0%, #000000 100%);
+}
+
+html.light {
+  --bg: #f8fafc;
+  --bg-strong: #ffffff;
+  --surface: rgba(255, 255, 255, 0.92);
+  --surface-alt: rgba(241, 245, 249, 0.92);
+  --surface-soft: rgba(226, 232, 240, 0.9);
+  --border: rgba(15, 23, 42, 0.08);
+  --text: #0f1727;
+  --muted: #526077;
+  --accent: #2563eb;
+  --accent-strong: #1d4ed8;
+  --teal: #0f766e;
+  --danger: #dc2626;
+  --success: #059669;
+  --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+  --page-background:
+    radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.08), transparent 18%),
+    radial-gradient(circle at 84% 16%, rgba(139, 92, 246, 0.08), transparent 22%),
+    radial-gradient(circle at 66% 74%, rgba(37, 99, 235, 0.04), transparent 28%),
+    linear-gradient(150deg, #f8fafc 0%, #eef2f7 100%);
 }
 
 * {
@@ -38,11 +65,7 @@ body {
   min-height: 100vh;
   font-family: "Inter", "Segoe UI Variable", "Trebuchet MS", sans-serif;
   color: var(--text);
-  background:
-    radial-gradient(circle at 12% 18%, rgba(59, 130, 246, 0.15), transparent 18%),
-    radial-gradient(circle at 84% 16%, rgba(139, 92, 246, 0.15), transparent 22%),
-    radial-gradient(circle at 66% 74%, rgba(37, 99, 235, 0.1), transparent 28%),
-    linear-gradient(150deg, #09090b 0%, #000000 100%);
+  background: var(--page-background);
 }
 
 button,
@@ -1175,6 +1198,41 @@ textarea:disabled {
   --radius-md: var(--border-radius-md);
 }
 
+html.light {
+  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f4f7fb;
+  --color-background-tertiary: #e9edf5;
+  --color-border-primary: #d2d8e6;
+  --color-border-secondary: #e2e8f0;
+  --color-border-tertiary: #edf2f7;
+  --color-text-primary: #0f1727;
+  --color-text-secondary: #526077;
+  --color-text-tertiary: #8a94a8;
+  --color-text-success: #0f9d58;
+  --color-text-danger: #dc2626;
+  --color-text-warning: #b45309;
+  --color-text-info: #2563eb;
+  --color-background-success: rgba(16, 185, 129, 0.12);
+  --color-background-danger: rgba(220, 38, 38, 0.1);
+  --color-background-warning: rgba(245, 158, 11, 0.12);
+  --color-background-info: rgba(37, 99, 235, 0.1);
+  --bg: var(--color-background-tertiary);
+  --bg-strong: #f7f9fc;
+  --surface: var(--color-background-primary);
+  --surface-alt: var(--color-background-secondary);
+  --surface-soft: #e6ebf3;
+  --border: var(--color-border-tertiary);
+  --text: var(--color-text-primary);
+  --muted: var(--color-text-secondary);
+  --accent: var(--color-text-info);
+  --accent-strong: #1d4ed8;
+  --teal: var(--color-text-success);
+  --danger: var(--color-text-danger);
+  --success: var(--color-text-success);
+  --shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+}
+
 * {
   box-sizing: border-box;
 }
@@ -1831,6 +1889,7 @@ textarea:focus,
 }
 
 .btn-sm,
+.btn-outline,
 .ghost-button,
 .secondary-button,
 .line-remove {
@@ -1847,12 +1906,25 @@ textarea:focus,
 }
 
 .btn-sm:hover,
+.btn-outline:hover,
 .ghost-button:hover,
 .secondary-button:hover,
 .line-remove:hover {
   background: var(--color-background-secondary);
   color: var(--color-text-primary);
   transform: none;
+}
+
+.btn-outline {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+  padding: 7px 12px;
+}
+
+.theme-toggle-button .material-icons {
+  font-size: 16px;
 }
 
 .btn-primary,

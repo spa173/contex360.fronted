@@ -592,6 +592,7 @@ const toggleRecoveryHelp = () => {
   border-radius: 12px;
   display: inline-flex;
   flex-shrink: 0;
+  color: #ffffff;
   font-size: 1.1rem;
   font-weight: 700;
   height: 44px;
@@ -735,6 +736,7 @@ const toggleRecoveryHelp = () => {
   display: flex;
   gap: 12px;
   margin-left: auto;
+  flex-wrap: wrap;
 }
 
 .auth-theme-toggle {
@@ -748,6 +750,7 @@ const toggleRecoveryHelp = () => {
   gap: 8px;
   min-height: 40px;
   padding: 0 14px;
+  white-space: nowrap;
   transition:
     background 160ms ease,
     border-color 160ms ease,
