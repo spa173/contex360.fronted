@@ -197,18 +197,9 @@ const toggleRecoveryHelp = () => {
           </div>
 
           <div class="auth-topbar-actions">
-            <button
-              class="auth-theme-toggle"
-              type="button"
-              :aria-label="themeStore.nextThemeLabel"
-              :title="themeStore.nextThemeLabel"
-              @click="themeStore.toggleTheme()"
-            >
-              <span class="material-icons" aria-hidden="true">{{ themeStore.nextThemeIcon }}</span>
-              <span>{{ themeStore.nextThemeLabel }}</span>
-            </button>
+            
 
-            <div class="auth-support">
+<div class="auth-support">
               <span>¿Necesitas ayuda?</span>
               <a href="mailto:soporte@contex360.local">Contactar soporte</a>
             </div>
@@ -730,33 +721,6 @@ const toggleRecoveryHelp = () => {
   flex-wrap: wrap;
 }
 
-.auth-theme-toggle {
-  align-items: center;
-  background: var(--auth-theme-bg);
-  border: 1px solid var(--auth-theme-border);
-  border-radius: 999px;
-  color: var(--auth-theme-text);
-  cursor: pointer;
-  display: inline-flex;
-  gap: 8px;
-  min-height: 40px;
-  padding: 0 14px;
-  white-space: nowrap;
-  transition:
-    background 160ms ease,
-    border-color 160ms ease,
-    transform 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.auth-theme-toggle:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.08);
-}
-
-.auth-theme-toggle .material-icons {
-  font-size: 18px;
-}
 
 .auth-support {
   align-items: center;
