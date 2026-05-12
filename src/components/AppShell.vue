@@ -14,6 +14,7 @@ import ThirdPartiesView from './views/ThirdPartiesView.vue'
 import UsersView from './views/UsersView.vue'
 import AdminConsoleView from './views/AdminConsoleView.vue'
 import TwoFactorView from './views/TwoFactorView.vue'
+import PrivacyPolicyView from './views/PrivacyPolicyView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
@@ -145,6 +146,9 @@ onUnmounted(() => {
         />
         <TwoFactorView
           v-if="store.activeView === 'two-factor'"
+        />
+        <PrivacyPolicyView
+          v-if="store.activeView === 'privacy-policy'"
         />
       </div>
     </main>

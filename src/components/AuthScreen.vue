@@ -133,7 +133,10 @@ const toggleRecoveryHelp = () => {
         <header class="auth-form-panel__topbar">
           <div class="auth-mobile-brand">
             <div class="auth-mobile-brand__mark" aria-hidden="true">C</div>
-            <span>Contex360</span>
+            <div class="auth-mobile-brand__copy">
+              <span class="auth-mobile-brand__name">Contex360</span>
+              <span class="auth-mobile-brand__subtitle">Acceso seguro para equipos financieros</span>
+            </div>
           </div>
 
           <div class="auth-support">
@@ -520,16 +523,42 @@ const toggleRecoveryHelp = () => {
 
 .auth-mobile-brand {
   align-items: center;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 250, 255, 0.86));
+  border: 1px solid rgba(208, 217, 231, 0.92);
+  border-radius: 18px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
   display: none;
   gap: 10px;
+  padding: 10px 12px;
   font-weight: 700;
 }
 
 .auth-mobile-brand__mark {
   background: #182430;
   border-color: transparent;
-  height: 32px;
-  width: 32px;
+  height: 36px;
+  width: 36px;
+}
+
+.auth-mobile-brand__copy {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.auth-mobile-brand__name {
+  color: #0f1727;
+  font-size: 0.98rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+}
+
+.auth-mobile-brand__subtitle {
+  color: #617083;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
 }
 
 .auth-form-panel__main {
@@ -867,6 +896,7 @@ const toggleRecoveryHelp = () => {
 
 @media (max-width: 640px) {
   .auth-form-panel__topbar {
+    align-items: flex-start;
     justify-content: space-between;
     padding: calc(18px + env(safe-area-inset-top)) 18px 0;
   }
@@ -875,13 +905,17 @@ const toggleRecoveryHelp = () => {
     display: inline-flex;
   }
 
+  .auth-mobile-brand__subtitle {
+    max-width: 150px;
+  }
+
   .auth-support {
     display: none;
   }
 
   .auth-form-panel__main {
     align-items: flex-start;
-    padding: 24px 18px 28px;
+    padding: 20px 18px 28px;
   }
 
   .auth-form-head h2 {
