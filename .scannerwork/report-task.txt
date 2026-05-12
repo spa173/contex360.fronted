@@ -1,6 +1,0 @@
-projectKey=contex360
-serverUrl=http://localhost:9000
-serverVersion=26.4.0.121862
-dashboardUrl=http://localhost:9000/dashboard?id=contex360
-ceTaskId=c4b01ef6-b766-47dc-a3a2-e1098fa8e1e0
-ceTaskUrl=http://localhost:9000/api/ce/task?id=c4b01ef6-b766-47dc-a3a2-e1098fa8e1e0
