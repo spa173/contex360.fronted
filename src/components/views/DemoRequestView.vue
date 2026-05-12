@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import axios from 'axios'
-import { useStateStore } from '../../stores/stateStore'
 
-const store = useStateStore()
+const emit = defineEmits(['back'])
 
 const form = ref({
   nombre: '',
@@ -42,7 +41,7 @@ const handleSubmit = async () => {
 <template>
   <div class="demo-wrap">
     <div class="demo-page">
-      <button class="demo-back" @click="store.setActiveView('dashboard')">
+      <button class="demo-back" @click="emit('back')">
         ← Volver al login
       </button>
 
