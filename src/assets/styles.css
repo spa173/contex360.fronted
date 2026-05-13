@@ -1,33 +1,59 @@
 
 :root {
-  
+  /* Paleta Base: Azul Petróleo Profundo */
   --bg: #15232D;
   --bg-strong: #0D161C;
   --surface: rgba(21, 35, 45, 0.85);
-  --surface-alt: rgba(30, 49, 63, 0.85);
+  --surface-alt: rgba(30, 49, 63, 0.9);
   --surface-soft: rgba(50, 75, 95, 0.6);
   --border: rgba(255, 255, 255, 0.08);
+
+  /* Textos */
   --text: #fafafa;
-  --muted: #a1a1aa;
-  
-  --accent: #10b981;          
-  --accent-strong: #059669;   
-  --teal: #10b981;            
-  
-  --danger: #ef4444;    
-  --success: #10b981;  
-  
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5); 
-  
-  --radius-xl: 28px;  
-  --radius-lg: 20px;  
-  --radius-md: 14px;  
-  
+  --muted: #8b94ad;
+
+  /* Acento Principal: Verde Esmeralda */
+  --accent: #10b981;
+  --accent-strong: #059669;
+  --teal: #10b981;
+  --success: #10b981;
+  --danger: #ef4444;
+
+  /* Legacy Mappings (compatibilidad con el resto del código) */
+  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
+  --color-background-primary: var(--surface);
+  --color-background-secondary: var(--bg-strong);
+  --color-background-tertiary: var(--bg);
+  --color-border-primary: var(--border);
+  --color-border-secondary: rgba(255, 255, 255, 0.1);
+  --color-border-tertiary: rgba(255, 255, 255, 0.06);
+  --color-text-primary: var(--text);
+  --color-text-secondary: var(--muted);
+  --color-text-tertiary: #586177;
+  --color-text-info: var(--accent);
+  --color-text-success: #4ade80;
+  --color-text-danger: #f87171;
+  --color-text-warning: #fbbf24;
+  --color-background-success: rgba(74, 222, 128, 0.1);
+  --color-background-danger: rgba(248, 113, 113, 0.1);
+  --color-background-warning: rgba(251, 191, 36, 0.1);
+  --color-background-info: rgba(16, 185, 129, 0.1);
+  --border-radius-lg: 10px;
+  --border-radius-md: 7px;
+  --border-radius-sm: 5px;
+
+  /* Efectos */
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --radius-xl: 14px;
+  --radius-lg: 10px;
+  --radius-md: 7px;
+
+  /* Fondo con Orbes Verdes */
   --page-background:
-    radial-gradient(circle at 12% 18%, hsla(160, 84%, 39%, 0.12), transparent 18%),   
-    radial-gradient(circle at 84% 16%, rgba(5, 150, 105, 0.1), transparent 22%),       
-    radial-gradient(circle at 66% 74%, rgba(16, 185, 129, 0.06), transparent 28%),     
-    linear-gradient(150deg, #15232D 0%, #0D161C 100%);                                 
+    radial-gradient(circle at 12% 18%, hsla(160, 84%, 39%, 0.12), transparent 18%),
+    radial-gradient(circle at 84% 16%, rgba(5, 150, 105, 0.1), transparent 22%),
+    radial-gradient(circle at 66% 74%, rgba(16, 185, 129, 0.06), transparent 28%),
+    linear-gradient(150deg, #15232D 0%, #0D161C 100%);
 }
 
 
@@ -1171,81 +1197,17 @@ textarea:disabled {
   text-align: center;
 }
 
-
-:root {
-  --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;  
-
-
-  --color-background-primary: #181c27;    
-  --color-background-secondary: #111521;  
-  --color-background-tertiary: #0c0f1a;   
-
-
-  --color-border-primary: #3a4260;    
-  --color-border-secondary: #232840;  
-  --color-border-tertiary: #191e30;   
-
-
-  --color-text-primary: #dde2f0;    
-  --color-text-secondary: #8b94ad;  
-  --color-text-tertiary: #586177;   
-  
-  --color-text-success: #4ade80;   
-  --color-text-danger: #f87171;    
-  --color-text-warning: #fbbf24;   
-  --color-text-info: #10b981;      
-
-
-  --color-background-success: rgba(74, 222, 128, 0.1);
-  --color-background-danger: rgba(248, 113, 113, 0.1);
-  --color-background-warning: rgba(251, 191, 36, 0.1);
-  --color-background-info: rgba(16, 185, 129, 0.1);
-  
-  --border-radius-lg: 10px;
-  --border-radius-md: 7px;
-  --border-radius-sm: 5px;
-
-
-  --bg: var(--color-background-tertiary);      
-  --bg-strong: #080b13;                        
-  --surface: var(--color-background-primary);  
-  --surface-alt: var(--color-background-secondary);  
-  --surface-soft: #151a29;                     
-  --border: var(--color-border-tertiary);      
-  
-  --text: var(--color-text-primary);
-  --muted: var(--color-text-secondary);
-
-
-  --accent: #10b981;
-  --accent-strong: #059669;
-  --teal: var(--color-text-success);
-  --danger: var(--color-text-danger);
-  --success: var(--color-text-success);
-  --shadow: 0 12px 34px rgba(0, 0, 0, 0.28);  
-
-
-  --radius-xl: var(--border-radius-lg);
-  --radius-lg: var(--border-radius-lg);
-  --radius-md: var(--border-radius-md);
-}
-
-
-* {
-  box-sizing: border-box;
-}
-
 html {
-  background: var(--color-background-tertiary);
+  background: var(--page-background) !important;
 }
 
 body {
-  color: var(--color-text-primary);
+  color: var(--text);
   font-family: var(--font-sans);
   font-size: 14px;
   margin: 0;
   min-height: 100vh;
-  background: var(--color-background-tertiary);
+  background: var(--page-background) !important;
 }
 
 button,
@@ -1804,8 +1766,8 @@ textarea:focus,
 .field select:focus,
 .field textarea:focus,
 .auth-input-shell:focus-within {
-  border-color: var(--color-border-primary);
-  box-shadow: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
   outline: none;
 }
 
@@ -1978,18 +1940,18 @@ textarea:focus,
 .primary-button,
 .hero-button,
 .auth-primary-button {
-  background: var(--color-text-primary);         
-  border: 0.5px solid var(--color-border-secondary);
+  background: var(--accent);
+  border: none;
   border-radius: var(--border-radius-md);
   box-shadow: none;
-  color: var(--color-background-primary);        
+  color: #ffffff;
   cursor: pointer;
   font-size: 13px;
   font-weight: 600;
   min-height: 32px;
   padding: 7px 14px;
   text-shadow: none;
-  transition: opacity 0.15s ease, background 0.15s ease;
+  transition: background 0.15s ease;
   white-space: nowrap;
 }
 
@@ -1997,8 +1959,8 @@ textarea:focus,
 .primary-button:hover,
 .hero-button:hover,
 .auth-primary-button:hover {
+  background: var(--accent-strong);
   box-shadow: none;
-  opacity: 0.86;
   transform: none;
 }
 
@@ -2098,7 +2060,7 @@ tr:hover td {
 
 
 .progress-fill {
-  background: #4a9eff;  
+  background: var(--accent);
   border-radius: inherit;
   height: 100%;
 }
