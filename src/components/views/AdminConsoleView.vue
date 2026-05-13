@@ -103,11 +103,11 @@ const updateDemoStatus = async (id, newStatus) => {
 }
 
 const convertToCustomer = async (id) => {
-  if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa, usuario administrador y enviará credenciales por Telegram.')) return
+  if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa, usuario administrador y enviará credenciales por Telegram y Correo Electrónico.')) return
   try {
     await businessApi.convertToCustomer(id)
     demoRequests.value = await businessApi.getDemoRequests()
-    alert('Cliente creado exitosamente. Las credenciales fueron enviadas por Telegram.')
+    alert('Cliente creado exitosamente. Las credenciales fueron enviadas por Correo Electrónico y Telegram.')
   } catch (err) {
     console.error('Error converting to customer:', err)
     alert('Error al convertir en cliente: ' + (err.message || 'Error desconocido'))
