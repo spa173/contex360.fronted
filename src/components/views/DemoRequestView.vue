@@ -9,7 +9,11 @@ const form = ref({
   empresa: '',
   correo: '',
   telefono: '',
-  mensaje: ''
+  mensaje: '',
+  nit: '',
+  ciudad: '',
+  direccion: '',
+  sector: '',
 })
 
 const isLoading = ref(false)
@@ -29,7 +33,7 @@ const handleSubmit = async () => {
   try {
     const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/demo`, form.value)
     successMessage.value = response.data.message || 'Solicitud enviada correctamente. Nuestro equipo te contactará pronto.'
-    form.value = { nombre: '', empresa: '', correo: '', telefono: '', mensaje: '' }
+    form.value = { nombre: '', empresa: '', correo: '', telefono: '', mensaje: '', nit: '', ciudad: '', direccion: '', sector: '' }
   } catch (error: any) {
     errorMessage.value = error.response?.data?.message || 'Error al enviar la solicitud. Intenta nuevamente.'
   } finally {
@@ -95,19 +99,70 @@ const handleSubmit = async () => {
           />
         </div>
 
+        <div class="demo-field-row">
+          <div class="demo-field">
+            <label for="nit">NIT de la empresa</label>
+            <input
+              id="nit"
+              v-model="form.nit"
+              type="text"
+              placeholder="Ej: 900.123.456-1"
+              :disabled="isLoading"
+            />
+          </div>
+          <div class="demo-field">
+            <label for="telefono">Teléfono</label>
+            <input
+              id="telefono"
+              v-model="form.telefono"
+              type="tel"
+              placeholder="+57 300 123 4567"
+              :disabled="isLoading"
+            />
+          </div>
+        </div>
+
+        <div class="demo-field-row">
+          <div class="demo-field">
+            <label for="ciudad">Ciudad</label>
+            <input
+              id="ciudad"
+              v-model="form.ciudad"
+              type="text"
+              placeholder="Ej: Sogamoso"
+              :disabled="isLoading"
+            />
+          </div>
+          <div class="demo-field">
+            <label for="sector">Sector / Industria</label>
+            <select id="sector" v-model="form.sector" :disabled="isLoading">
+              <option value="">Sin especificar</option>
+              <option value="comercio">Comercio</option>
+              <option value="servicios">Servicios</option>
+              <option value="manufactura">Manufactura</option>
+              <option value="construccion">Construcción</option>
+              <option value="salud">Salud</option>
+              <option value="educacion">Educación</option>
+              <option value="tecnologia">Tecnología</option>
+              <option value="agropecuario">Agropecuario</option>
+              <option value="otro">Otro</option>
+            </select>
+          </div>
+        </div>
+
         <div class="demo-field">
-          <label for="telefono">Teléfono</label>
+          <label for="direccion">Dirección</label>
           <input
-            id="telefono"
-            v-model="form.telefono"
-            type="tel"
-            placeholder="+57 300 123 4567"
+            id="direccion"
+            v-model="form.direccion"
+            type="text"
+            placeholder="Ej: Calle 11 #15-20, Sogamoso"
             :disabled="isLoading"
           />
         </div>
 
         <div class="demo-field">
-          <label for="mensaje">Mensaje</label>
+          <label for="mensaje">Mensaje / Necesidades</label>
           <textarea
             id="mensaje"
             v-model="form.mensaje"
@@ -202,6 +257,16 @@ const handleSubmit = async () => {
   gap: 20px;
 }
 
+.demo-field-row {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 520px) {
+  .demo-field-row { grid-template-columns: 1fr; }
+}
+
 .demo-field {
   display: flex;
   flex-direction: column;
@@ -216,6 +281,28 @@ const handleSubmit = async () => {
 
 .demo-required {
   color: #ef4444;
+}
+
+.demo-field select {
+  appearance: none;
+  background: rgba(255, 255, 255, 0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  padding: 12px 16px;
+  transition: border-color 0.15s;
+  width: 100%;
+}
+
+.demo-field select:focus {
+  outline: none;
+  border-color: #10b981;
+}
+
+.demo-field select option {
+  background: #1e2a38;
+  color: #f1f5f9;
 }
 
 .demo-field input,

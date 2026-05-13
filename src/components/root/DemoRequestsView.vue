@@ -20,7 +20,7 @@ async function fetchRequests() {
     const { data } = await axios.get(`${API}/demo`, {
       headers: { Authorization: `Bearer ${getToken()}` },
     })
-    requests.value = data
+    requests.value = data?.data ?? data
   } catch (e: any) {
     error.value = 'Error cargando solicitudes de demo'
   } finally {
@@ -85,6 +85,8 @@ onMounted(fetchRequests)
             <th>Fecha</th>
             <th>Empresa / Prospecto</th>
             <th>Contacto</th>
+            <th>NIT / Ciudad</th>
+            <th>Sector</th>
             <th>Estado</th>
             <th>Acciones</th>
           </tr>
@@ -107,6 +109,13 @@ onMounted(fetchRequests)
                 <span class="phone">{{ r.telefono || 'Sin teléfono' }}</span>
               </div>
             </td>
+            <td>
+              <div class="extra-info">
+                <span class="nit-val">{{ r.nit || '—' }}</span>
+                <span class="city-val">{{ r.ciudad || '—' }}</span>
+              </div>
+            </td>
+            <td><span class="sector-tag">{{ r.sector || '—' }}</span></td>
             <td>
               <span :class="['status-pill', getStatusClass(r.estado)]">
                 {{ r.estado.toUpperCase() }}
@@ -182,6 +191,14 @@ onMounted(fetchRequests)
   transition: transform 0.2s;
 }
 .btn-convert:hover { transform: scale(1.02); background: #059669; }
+
+.extra-info { display: flex; flex-direction: column; gap: 2px; }
+.nit-val { font-family: monospace; font-size: 0.8rem; color: var(--text); }
+.city-val { font-size: 0.78rem; color: var(--muted); }
+.sector-tag {
+  background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.18);
+  border-radius: 6px; color: var(--muted); font-size: 0.75rem; padding: 2px 8px; text-transform: capitalize;
+}
 
 .state-loading, .state-empty { padding: 40px; text-align: center; color: var(--muted); }
 .state-error { padding: 20px; color: #ef4444; background: rgba(239, 68, 68, 0.05); border-radius: 8px; text-align: center; }
