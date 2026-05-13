@@ -1,18 +1,18 @@
 
 :root {
-  /* Paleta Base: Azul Petróleo Profundo */
-  --bg: #15232D;
-  --bg-strong: #0D161C;
-  --surface: rgba(21, 35, 45, 0.85);
-  --surface-alt: rgba(30, 49, 63, 0.9);
-  --surface-soft: rgba(50, 75, 95, 0.6);
-  --border: rgba(255, 255, 255, 0.08);
+  /* === 60% FONDO BASE: Gris Carbón === */
+  --bg: #212121;
+  --bg-strong: #181818;
+  --surface: rgba(33, 33, 33, 0.92);
+  --surface-alt: rgba(42, 42, 42, 0.95);
+  --surface-soft: rgba(55, 55, 55, 0.7);
+  --border: rgba(16, 185, 129, 0.15);
 
-  /* Textos */
-  --text: #fafafa;
-  --muted: #8b94ad;
+  /* === 10% ACENTO: Blanco Hueso (texto y contraste) === */
+  --text: #F1F5F9;
+  --muted: #94a3b8;
 
-  /* Acento Principal: Verde Esmeralda */
+  /* === 30% DETALLES: Verde Esmeralda === */
   --accent: #10b981;
   --accent-strong: #059669;
   --teal: #10b981;
@@ -25,35 +25,35 @@
   --color-background-secondary: var(--bg-strong);
   --color-background-tertiary: var(--bg);
   --color-border-primary: var(--border);
-  --color-border-secondary: rgba(255, 255, 255, 0.1);
-  --color-border-tertiary: rgba(255, 255, 255, 0.06);
+  --color-border-secondary: rgba(16, 185, 129, 0.12);
+  --color-border-tertiary: rgba(16, 185, 129, 0.08);
   --color-text-primary: var(--text);
   --color-text-secondary: var(--muted);
-  --color-text-tertiary: #586177;
+  --color-text-tertiary: #64748b;
   --color-text-info: var(--accent);
-  --color-text-success: #4ade80;
+  --color-text-success: #34d399;
   --color-text-danger: #f87171;
   --color-text-warning: #fbbf24;
-  --color-background-success: rgba(74, 222, 128, 0.1);
+  --color-background-success: rgba(16, 185, 129, 0.1);
   --color-background-danger: rgba(248, 113, 113, 0.1);
   --color-background-warning: rgba(251, 191, 36, 0.1);
-  --color-background-info: rgba(16, 185, 129, 0.1);
+  --color-background-info: rgba(16, 185, 129, 0.08);
   --border-radius-lg: 10px;
   --border-radius-md: 7px;
   --border-radius-sm: 5px;
 
   /* Efectos */
-  --shadow: 0 24px 60px rgba(0, 0, 0, 0.5);
+  --shadow: 0 24px 60px rgba(0, 0, 0, 0.6);
   --radius-xl: 14px;
   --radius-lg: 10px;
   --radius-md: 7px;
 
-  /* Fondo con Orbes Verdes */
+  /* Fondo principal — gris carbón con toque de verde */
   --page-background:
-    radial-gradient(circle at 12% 18%, hsla(160, 84%, 39%, 0.12), transparent 18%),
-    radial-gradient(circle at 84% 16%, rgba(5, 150, 105, 0.1), transparent 22%),
-    radial-gradient(circle at 66% 74%, rgba(16, 185, 129, 0.06), transparent 28%),
-    linear-gradient(150deg, #15232D 0%, #0D161C 100%);
+    radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.07), transparent 22%),
+    radial-gradient(circle at 85% 20%, rgba(5, 150, 105, 0.05), transparent 25%),
+    radial-gradient(circle at 60% 80%, rgba(16, 185, 129, 0.04), transparent 28%),
+    linear-gradient(160deg, #242424 0%, #181818 100%);
 }
 
 
@@ -106,7 +106,7 @@ textarea {
 
 
 .orb-a {
-  background: rgba(16, 185, 129, 0.12);
+  background: rgba(16, 185, 129, 0.08);
   height: 360px;
   left: 4%;
   top: 16%;
@@ -115,7 +115,7 @@ textarea {
 
 
 .orb-b {
-  background: rgba(5, 150, 105, 0.1);
+  background: rgba(5, 150, 105, 0.06);
   height: 300px;
   right: 8%;
   top: 12%;
@@ -218,7 +218,7 @@ textarea {
 
 
 .nav-link {
-  background: rgba(255, 255, 255, 0.02);
+  background: transparent;
   border: 1px solid transparent;
   border-radius: 16px;
   color: var(--text);
@@ -229,8 +229,9 @@ textarea {
 
 .nav-link:hover,
 .nav-link.active {
-  background: linear-gradient(135deg, rgba(16, 185, 129, 0.16), rgba(5, 150, 105, 0.12));
-  border-color: rgba(16, 185, 129, 0.3);
+  background: rgba(16, 185, 129, 0.12);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: #F1F5F9;
   transform: translateX(4px);
 }
 
@@ -315,8 +316,8 @@ textarea {
 .hero {
   align-items: center;
   background:
-    radial-gradient(circle at right top, rgba(16, 185, 129, 0.15), transparent 35%),
-    linear-gradient(135deg, rgba(24, 24, 27, 0.94), rgba(9, 9, 11, 0.98));
+    radial-gradient(circle at right top, rgba(16, 185, 129, 0.12), transparent 35%),
+    linear-gradient(135deg, rgba(30, 30, 30, 0.96), rgba(20, 20, 20, 0.99));
   display: grid;
   gap: 20px;
   grid-template-columns: minmax(0, 1.4fr) minmax(240px, 0.6fr);  
@@ -355,8 +356,8 @@ textarea {
 .ghost-button,
 .secondary-button,
 .line-remove {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(195, 229, 220, 0.22);
+  background: rgba(45, 45, 45, 0.8);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 16px;
   color: var(--text);
   cursor: pointer;
@@ -368,7 +369,7 @@ textarea {
 .ghost-button:hover,
 .secondary-button:hover,
 .line-remove:hover {
-  background: rgba(255, 255, 255, 0.11);
+  background: rgba(55, 55, 55, 0.9);
   transform: translateY(-1px);
 }
 
@@ -388,7 +389,7 @@ textarea {
 
 
 .metric-card {
-  background: linear-gradient(180deg, rgba(39, 39, 42, 0.95), rgba(9, 9, 11, 0.98));
+  background: linear-gradient(180deg, rgba(38, 38, 38, 0.97), rgba(24, 24, 24, 0.99));
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   padding: 20px;
@@ -397,7 +398,7 @@ textarea {
 
 
 .metric-card::after {
-  background: linear-gradient(90deg, rgba(16, 185, 129, 0.6), rgba(5, 150, 105, 0.25));
+  background: linear-gradient(90deg, rgba(16, 185, 129, 0.7), rgba(5, 150, 105, 0.3));
   border-radius: 999px;
   bottom: 16px;
   content: "";
@@ -485,8 +486,8 @@ textarea {
 .field input,
 .field select,
 .field textarea {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(28, 28, 28, 0.95);
+  border: 1px solid rgba(16, 185, 129, 0.15);
   border-radius: 14px;
   color: var(--text);
   min-height: 48px;
@@ -509,14 +510,14 @@ textarea {
 }
 
 .card-subsection {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(35, 35, 35, 0.9);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 18px;
 }
 
 .invoice-line {
-  background: rgba(24, 24, 27, 0.7);
+  background: rgba(27, 27, 27, 0.85);
   border: 1px solid var(--border);
   border-radius: 18px;
   display: grid;
@@ -546,7 +547,7 @@ textarea {
 .invoice-card,
 .module-row,
 .alert-row {
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(38, 38, 38, 0.9);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 14px 16px;
@@ -610,12 +611,12 @@ textarea {
 
 .status-contingencia,
 .status-borrador {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(55, 55, 55, 0.8);
   color: var(--muted);
 }
 
 .progress-bar {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(55, 55, 55, 0.8);
   border-radius: 999px;
   height: 10px;
   overflow: hidden;
@@ -653,8 +654,8 @@ textarea {
 
 .invoice-card:hover,
 .invoice-card.active {
-  background: rgba(255, 255, 255, 0.05);
-  border-color: rgba(16, 185, 129, 0.24);
+  background: rgba(45, 45, 45, 0.95);
+  border-color: rgba(16, 185, 129, 0.4);
   transform: translateY(-1px);
 }
 
@@ -722,7 +723,7 @@ textarea {
 
 .table-row {
   align-items: center;
-  background: rgba(255, 255, 255, 0.025);
+  background: rgba(38, 38, 38, 0.9);
   border: 1px solid var(--border);
   border-radius: 18px;
   padding: 14px 16px;
@@ -758,8 +759,8 @@ textarea {
 
 .toast {
   animation: fade-in 180ms ease;
-  background: rgba(24, 24, 27, 0.96);    
-  border: 1px solid rgba(16, 185, 129, 0.28);  
+  background: rgba(30, 30, 30, 0.98);
+  border: 1px solid rgba(16, 185, 129, 0.3);  
   border-radius: 18px;
   box-shadow: var(--shadow);
   padding: 14px 16px;
@@ -1251,13 +1252,13 @@ button {
 
 
 .app .sidebar {
-  background: var(--surface);             
-  backdrop-filter: blur(16px);            
-  -webkit-backdrop-filter: blur(16px);   
+  background: rgba(27, 27, 27, 0.97);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border: 0;
   border-radius: 0;
-  border-right: 1px solid var(--border); 
-  box-shadow: 4px 0 32px rgba(0, 0, 0, 0.45);  
+  border-right: 1px solid rgba(16, 185, 129, 0.18);
+  box-shadow: 4px 0 40px rgba(0, 0, 0, 0.5);  
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
@@ -1469,22 +1470,22 @@ button {
 
 
 .main.main-panel {
-  background: var(--color-background-tertiary);  
+  background: #212121;
   display: flex;
-  flex: 1;           
+  flex: 1;
   flex-direction: column;
   min-height: 100vh;
-  min-width: 0;      
+  min-width: 0;
   overflow: auto;
 }
 
 
 .topbar {
   align-items: center;
-  backdrop-filter: none;                        
-  background: var(--color-background-primary);  
+  backdrop-filter: none;
+  background: rgba(27, 27, 27, 0.97);
   border: 0;
-  border-bottom: 0;
+  border-bottom: 1px solid rgba(16, 185, 129, 0.12);
   border-radius: 0;
   box-shadow: none;
   display: flex;
