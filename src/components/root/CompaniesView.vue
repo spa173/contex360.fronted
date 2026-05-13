@@ -24,6 +24,10 @@ const form = ref({
   prefix: '',
   plan: 'trial',
   city: '',
+  nit: '',
+  address: '',
+  phone: '',
+  sector: '',
 })
 
 const searchQuery = ref('')
@@ -91,7 +95,7 @@ async function handleSuspend(id: string, currentStatus: string) {
 }
 
 function resetForm() {
-  form.value = { name: '', adminName: '', adminEmail: '', prefix: '', plan: 'trial', city: '' }
+  form.value = { name: '', adminName: '', adminEmail: '', prefix: '', plan: 'trial', city: '', nit: '', address: '', phone: '', sector: '' }
   showModal.value = false
 }
 
@@ -126,7 +130,9 @@ onMounted(fetchCompanies)
             <th>Usuarios</th>
             <th>Facturas</th>
             <th>Productos</th>
+            <th>NIT</th>
             <th>Ciudad</th>
+            <th>Teléfono</th>
             <th>Estado</th>
             <th>Creada</th>
             <th>Acciones</th>
@@ -149,7 +155,9 @@ onMounted(fetchCompanies)
             <td>{{ c._count?.memberships ?? '—' }}</td>
             <td>{{ c._count?.invoices ?? '—' }}</td>
             <td>{{ c._count?.products ?? '—' }}</td>
+            <td><span class="nit-cell">{{ c.nit || '—' }}</span></td>
             <td>{{ c.city || '—' }}</td>
+            <td>{{ c.phone || '—' }}</td>
             <td>
               <span :class="['status-pill', c.dianStatus === 'suspended' ? 'suspended' : 'active']">
                 {{ c.dianStatus === 'suspended' ? 'Suspendida' : 'Activa' }}
@@ -189,23 +197,50 @@ onMounted(fetchCompanies)
           </div>
           <div class="field-row">
             <div class="field-group">
+              <label>NIT</label>
+              <input v-model="form.nit" placeholder="Ej: 900.123.456-1" />
+            </div>
+            <div class="field-group">
               <label>Prefijo (3-4 letras) *</label>
               <input v-model="form.prefix" required maxlength="4" placeholder="Ej: FGB" />
             </div>
+          </div>
+          <div class="field-row">
             <div class="field-group">
               <label>Ubicación / Ciudad</label>
               <input v-model="form.city" placeholder="Ej: Sogamoso" />
             </div>
+            <div class="field-group">
+              <label>Teléfono</label>
+              <input v-model="form.phone" placeholder="Ej: 601 234 5678" />
+            </div>
           </div>
           <div class="field-group">
-            <label>Nombre del administrador *</label>
-            <input v-model="form.adminName" required placeholder="Ej: Carlos García" />
-          </div>
-          <div class="field-group">
-            <label>Correo del administrador *</label>
-            <input v-model="form.adminEmail" required type="email" placeholder="admin@empresa.com" />
+            <label>Dirección</label>
+            <input v-model="form.address" placeholder="Ej: Calle 11 #15-20, Sogamoso" />
           </div>
           <div class="field-row">
+            <div class="field-group">
+              <label>Sector / Industria</label>
+              <select v-model="form.sector">
+                <option value="">Sin especificar</option>
+                <option value="comercio">Comercio</option>
+                <option value="servicios">Servicios</option>
+                <option value="manufactura">Manufactura</option>
+                <option value="construccion">Construcción</option>
+                <option value="salud">Salud</option>
+                <option value="educacion">Educación</option>
+                <option value="tecnologia">Tecnología</option>
+                <option value="agropecuario">Agropecuario</option>
+                <option value="otro">Otro</option>
+              </select>
+            </div>
+          </div>
+          <div class="field-row">
+            <div class="field-group">
+              <label>Nombre del administrador *</label>
+              <input v-model="form.adminName" required placeholder="Ej: Carlos García" />
+            </div>
             <div class="field-group">
               <label>Plan</label>
               <select v-model="form.plan">
@@ -215,6 +250,10 @@ onMounted(fetchCompanies)
                 <option value="enterprise">Enterprise</option>
               </select>
             </div>
+          </div>
+          <div class="field-group">
+            <label>Correo del administrador *</label>
+            <input v-model="form.adminEmail" required type="email" placeholder="admin@empresa.com" />
           </div>
           <div class="modal-footer">
             <button type="button" class="btn-ghost" @click="resetForm">Cancelar</button>
@@ -262,8 +301,9 @@ onMounted(fetchCompanies)
 .companies-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .companies-table th {
   background: var(--surface); color: var(--muted); font-weight: 600;
-  padding: 12px 16px; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em;
+  padding: 12px 16px; text-align: left; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.04em; white-space: nowrap;
 }
+.nit-cell { font-family: monospace; font-size: 0.82rem; color: var(--muted); }
 .companies-table td { padding: 14px 16px; border-top: 1px solid var(--border); color: var(--text); }
 .companies-table tr:hover td { background: rgba(255,255,255,0.02); }
 
@@ -318,7 +358,7 @@ onMounted(fetchCompanies)
 }
 .modal-box {
   background: var(--surface); border: 1px solid var(--border); border-radius: 18px;
-  padding: 28px; width: 100%; max-width: 480px;
+  padding: 28px; width: 100%; max-width: 560px; max-height: 90vh; overflow-y: auto;
 }
 .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
 .modal-header h3 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 0; }
