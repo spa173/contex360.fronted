@@ -107,13 +107,29 @@ const convertToCustomer = async (id) => {
   if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa y un usuario administrador, y enviará credenciales por correo electrónico.')) return
   try {
     const result = await businessApi.convertToCustomer(id)
+    console.log('Conversion result:', result)
+    
+    // Update local list
     const fresh = await businessApi.getDemoRequests()
-    demoRequests.value = fresh?.data ?? fresh
-    newCustomerCredentials.value = result?.data ?? result
+    demoRequests.value = fresh?.data || fresh || []
+    
+    // Set credentials for modal
+    if (result && (result.data || result.tempPassword)) {
+      newCustomerCredentials.value = result.data || result
+      console.log('Credentials set:', newCustomerCredentials.value)
+    } else {
+      console.warn('Result does not contain credentials:', result)
+      alert('Cliente creado, pero no se pudieron recuperar las credenciales para mostrar. Revisa el correo enviado.')
+    }
   } catch (err) {
     console.error('Error converting to customer:', err)
     alert('Error al convertir en cliente: ' + (err.message || 'Error desconocido'))
   }
+}
+
+const copyToClipboard = (text) => {
+  navigator.clipboard.writeText(text)
+  alert('Copiado al portapapeles')
 }
 
 const executeAccessReview = async () => {
@@ -723,7 +739,12 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
           </div>
           <div class="cred-row cred-row--highlight">
             <span class="cred-label">Contraseña temporal</span>
-            <code class="cred-code cred-code--password">{{ newCustomerCredentials.tempPassword }}</code>
+            <div class="cred-value-group">
+              <code class="cred-code cred-code--password">{{ newCustomerCredentials.tempPassword }}</code>
+              <button class="copy-btn" @click="copyToClipboard(newCustomerCredentials.tempPassword)" title="Copiar contraseña">
+                📋
+              </button>
+            </div>
           </div>
           <p class="cred-note">⚠️ El cliente deberá cambiar esta contraseña en su primer inicio de sesión.</p>
         </div>
@@ -1587,6 +1608,27 @@ h1 {
   font-size: 1.05rem;
   font-weight: 700;
   letter-spacing: 0.05em;
+}
+
+.cred-value-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.copy-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #fff;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: all 0.2s;
+}
+
+.copy-btn:hover {
+  background: rgba(16, 185, 129, 0.2);
+  border-color: #10b981;
 }
 
 .cred-note {
