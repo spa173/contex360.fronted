@@ -28,6 +28,7 @@ const globalUsers = ref([])
 const logs = ref([])
 const breachAlerts = ref([])
 const demoRequests = ref([])
+const newCustomerCredentials = ref(null)
 const erasingUserId = ref(null)
 const notifyingId = ref(null)
 const selectedTenantId = ref(null)
@@ -103,11 +104,12 @@ const updateDemoStatus = async (id, newStatus) => {
 }
 
 const convertToCustomer = async (id) => {
-  if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa, usuario administrador y enviará credenciales por Telegram y Correo Electrónico.')) return
+  if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa y un usuario administrador, y enviará credenciales por correo electrónico.')) return
   try {
-    await businessApi.convertToCustomer(id)
-    demoRequests.value = await businessApi.getDemoRequests()
-    alert('Cliente creado exitosamente. Las credenciales fueron enviadas por Correo Electrónico y Telegram.')
+    const result = await businessApi.convertToCustomer(id)
+    const fresh = await businessApi.getDemoRequests()
+    demoRequests.value = fresh?.data ?? fresh
+    newCustomerCredentials.value = result?.data ?? result
   } catch (err) {
     console.error('Error converting to customer:', err)
     alert('Error al convertir en cliente: ' + (err.message || 'Error desconocido'))
@@ -690,6 +692,48 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
       </div>
     </div>
   </Teleport>
+
+  <!-- Modal credenciales nuevo cliente -->
+  <Teleport to="body">
+    <div v-if="newCustomerCredentials" class="cred-overlay" @click.self="newCustomerCredentials = null">
+      <div class="cred-modal" role="dialog" aria-modal="true">
+        <div class="cred-header">
+          <span class="cred-icon">✅</span>
+          <div>
+            <h2 class="cred-title">Cliente creado exitosamente</h2>
+            <p class="cred-subtitle">Guarda estas credenciales — también se enviaron al correo del cliente</p>
+          </div>
+        </div>
+        <div class="cred-body">
+          <div class="cred-row">
+            <span class="cred-label">Empresa</span>
+            <span class="cred-value">{{ newCustomerCredentials.tenant?.name }}</span>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Prefijo</span>
+            <code class="cred-code">{{ newCustomerCredentials.tenant?.prefix }}</code>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Admin</span>
+            <span class="cred-value">{{ newCustomerCredentials.user?.name }}</span>
+          </div>
+          <div class="cred-row">
+            <span class="cred-label">Correo</span>
+            <code class="cred-code">{{ newCustomerCredentials.user?.email }}</code>
+          </div>
+          <div class="cred-row cred-row--highlight">
+            <span class="cred-label">Contraseña temporal</span>
+            <code class="cred-code cred-code--password">{{ newCustomerCredentials.tempPassword }}</code>
+          </div>
+          <p class="cred-note">⚠️ El cliente deberá cambiar esta contraseña en su primer inicio de sesión.</p>
+        </div>
+        <div class="cred-footer">
+          <button class="cred-close-btn" @click="newCustomerCredentials = null">Entendido</button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
+
   </section>
 </template>
 
@@ -1447,4 +1491,129 @@ h1 {
   from { transform: translateX(100%); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
+
+.cred-overlay {
+  align-items: center;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.65);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 9999;
+}
+
+.cred-modal {
+  background: #15232d;
+  border: 1px solid rgba(16, 185, 129, 0.22);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: column;
+  max-width: 520px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.cred-header {
+  align-items: flex-start;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 16px;
+  padding: 28px 28px 20px;
+}
+
+.cred-icon { font-size: 2rem; line-height: 1; }
+
+.cred-title {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.cred-subtitle {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.cred-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px 28px;
+}
+
+.cred-row {
+  align-items: center;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  background: rgba(255,255,255,0.03);
+}
+
+.cred-row--highlight {
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+}
+
+.cred-label {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+}
+
+.cred-value {
+  color: #e2e8f0;
+  font-size: 0.9rem;
+  font-weight: 500;
+  text-align: right;
+}
+
+.cred-code {
+  background: rgba(0,0,0,0.3);
+  border-radius: 6px;
+  color: #7dd3fc;
+  font-family: monospace;
+  font-size: 0.9rem;
+  padding: 3px 8px;
+}
+
+.cred-code--password {
+  color: #34d399;
+  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.cred-note {
+  color: #f59e0b;
+  font-size: 0.82rem;
+  margin: 4px 0 0;
+  padding: 0 4px;
+}
+
+.cred-footer {
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 28px;
+}
+
+.cred-close-btn {
+  background: #10b981;
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 10px 28px;
+  transition: opacity 0.15s;
+}
+
+.cred-close-btn:hover { opacity: 0.88; }
 </style>
