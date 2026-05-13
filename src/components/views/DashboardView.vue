@@ -56,11 +56,11 @@ const pipelineChartData = computed(() => ({
   datasets: [{
     data: pipeline.value.map(p => p.count),
     backgroundColor: [
-      '#64748B', // Borrador (Slate)
-      '#0EA5E9', // Emitida (Sky)
-      '#8B5CF6', // Enviada (Violet)
-      '#22C55E', // Aceptada (Green)
-      '#F43F5E'  // Rechazada (Rose)
+      '#4b5563', // Borrador (Gris oscuro)
+      '#06b6d4', // Emitida (Cian)
+      '#f59e0b', // Enviada (Ambar)
+      '#10b981', // Aceptada (Esmeralda)
+      '#f43f5e'  // Rechazada (Coral)
     ],
     borderWidth: 0,
     hoverOffset: 8
@@ -93,12 +93,12 @@ const revenueTrendData = computed(() => {
     datasets: [{
       label: 'Ventas mensuales',
       data: values,
-      borderColor: '#4F46E5', // Indigo 600
-      backgroundColor: 'rgba(79, 70, 229, 0.15)',
+      borderColor: '#10b981',
+      backgroundColor: 'rgba(16, 185, 129, 0.12)',
       fill: 'start',
-      borderWidth: 3,
-      pointBackgroundColor: '#FFFFFF',
-      pointBorderColor: '#4F46E5',
+      borderWidth: 2.5,
+      pointBackgroundColor: '#15232D',
+      pointBorderColor: '#10b981',
       pointBorderWidth: 2,
       pointRadius: 4,
       pointHoverRadius: 6
@@ -121,7 +121,7 @@ const stockValueData = computed(() => {
     datasets: [{
       label: 'Valor total',
       data: values,
-      backgroundColor: ['#38BDF8', '#818CF8', '#C084FC', '#F472B6', '#FB923C'],
+      backgroundColor: ['#10b981', '#06b6d4', '#f59e0b', '#f43f5e', '#a78bfa'],
       borderRadius: 6,
       borderWidth: 0
     }]

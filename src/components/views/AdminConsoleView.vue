@@ -733,7 +733,7 @@ h1 {
 }
 
 .stat-card.blue .stat-icon { color: #10b981; background: rgba(16, 185, 129, 0.1); }
-.stat-card.purple .stat-icon { color: #8b5cf6; background: rgba(139, 92, 246, 0.1); }
+.stat-card.purple .stat-icon { color: #06b6d4; background: rgba(6, 182, 212, 0.1); }
 .stat-card.green .stat-icon { color: #10b981; background: rgba(16, 185, 129, 0.1); }
 .stat-card.orange .stat-icon { color: #f59e0b; background: rgba(245, 158, 11, 0.1); }
 
@@ -1093,7 +1093,7 @@ h1 {
 }
 
 .inline-link {
-  color: #93c5fd;
+  color: #10b981;
   font-weight: 600;
   text-decoration: none;
 }

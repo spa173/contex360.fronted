@@ -1047,8 +1047,8 @@ textarea:disabled {
 }
 
 .auth-totp-block {
-  background: rgba(99, 102, 241, 0.07);
-  border: 1px solid rgba(99, 102, 241, 0.25);
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 14px;
   padding: 14px 16px;
   display: flex;
@@ -1067,7 +1067,7 @@ textarea:disabled {
   font-size: 22px;
   font-family: monospace;
   letter-spacing: 0.3em;
-  border: 1.5px solid rgba(99, 102, 241, 0.3);
+  border: 1.5px solid rgba(16, 185, 129, 0.25);
   border-radius: 10px;
   padding: 10px;
   background: transparent;

@@ -109,12 +109,12 @@ const scrollToBottom = async () => {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
   border: none;
   color: white;
   font-size: 1.5rem;
   cursor: pointer;
-  box-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+  box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.35);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -123,7 +123,7 @@ const scrollToBottom = async () => {
 
 .chat-trigger:hover {
   transform: scale(1.1) rotate(5deg);
-  box-shadow: 0 15px 30px -5px rgba(99, 102, 241, 0.6);
+  box-shadow: 0 15px 30px -5px rgba(16, 185, 129, 0.5);
 }
 
 .chat-trigger.is-active {
@@ -153,7 +153,7 @@ const scrollToBottom = async () => {
 
 .chat-header {
   padding: 1.25rem;
-  background: linear-gradient(to right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+  background: linear-gradient(to right, rgba(16, 185, 129, 0.08), rgba(6, 182, 212, 0.06));
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
   display: flex;
   align-items: center;
@@ -216,7 +216,7 @@ const scrollToBottom = async () => {
 }
 
 .user .bubble {
-  background: #6366f1;
+  background: #10b981;
   color: white;
   border-bottom-right-radius: 0.25rem;
 }
@@ -237,10 +237,10 @@ const scrollToBottom = async () => {
 .action-btn {
   width: 100%;
   padding: 0.5rem;
-  background: rgba(99, 102, 241, 0.1);
-  border: 1px solid rgba(99, 102, 241, 0.2);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 0.5rem;
-  color: #6366f1;
+  color: #10b981;
   font-size: 0.8rem;
   font-weight: 600;
   cursor: pointer;
@@ -248,7 +248,7 @@ const scrollToBottom = async () => {
 }
 
 .action-btn:hover {
-  background: #6366f1;
+  background: #10b981;
   color: white;
 }
 
@@ -270,14 +270,14 @@ const scrollToBottom = async () => {
 }
 
 .chat-footer input:focus {
-  border-color: #6366f1;
+  border-color: #10b981;
 }
 
 .chat-footer button {
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: #6366f1;
+  background: #10b981;
   color: white;
   border: none;
   cursor: pointer;

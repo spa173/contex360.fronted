@@ -165,10 +165,10 @@ onMounted(fetchRequests)
 .phone { font-size: 0.8rem; color: var(--muted); }
 
 .status-pill { padding: 4px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
-.status-new { background: rgba(59, 130, 246, 0.1); color: #3b82f6; }
+.status-new { background: rgba(6, 182, 212, 0.1); color: #06b6d4; }
 .status-contacted { background: rgba(245, 158, 11, 0.1); color: #f59e0b; }
 .status-approved { background: rgba(16, 185, 129, 0.1); color: #10b981; }
-.status-converted { background: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
+.status-converted { background: rgba(16, 185, 129, 0.12); color: #10b981; }
 
 .actions { display: flex; gap: 8px; align-items: center; }
 .status-select {

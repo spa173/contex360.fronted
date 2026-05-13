@@ -397,7 +397,7 @@ onMounted(fetchTenant)
 .ts-plan {
   display: inline-block; padding: 3px 10px; border-radius: 999px;
   font-size: 0.75rem; font-weight: 600;
-  background: rgba(139,92,246,0.12); color: #a78bfa; border: 1px solid rgba(139,92,246,0.25);
+  background: rgba(6,182,212,0.1); color: #06b6d4; border: 1px solid rgba(6,182,212,0.25);
 }
 
 /* Tabs */
@@ -457,7 +457,7 @@ onMounted(fetchTenant)
   color: #10b981; font-size: 0.75rem; font-weight: 700;
   display: flex; align-items: center; justify-content: center;
 }
-.role-pill { padding: 2px 8px; border-radius: 6px; background: rgba(139,92,246,0.1); color: #a78bfa; font-size: 0.75rem; font-weight: 600; }
+.role-pill { padding: 2px 8px; border-radius: 6px; background: rgba(6,182,212,0.1); color: #06b6d4; font-size: 0.75rem; font-weight: 600; }
 .status-dot { font-size: 0.78rem; font-weight: 600; }
 .status-dot.active  { color: #10b981; }
 .status-dot.inactive { color: #ef4444; }
