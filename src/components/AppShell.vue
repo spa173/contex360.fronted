@@ -70,6 +70,10 @@ function openSidebar() {
 function closeSidebar() {
   isSidebarOpen.value = false
 }
+
+function handleSidebarToggle() {
+  isSidebarOpen.value = !isSidebarOpen.value
+}
 /* c8 ignore stop */
 
 /* c8 ignore start */
@@ -104,15 +108,20 @@ onUnmounted(() => {
 
 <template>
   <div class="app app-shell">
-    <div :class="['sidebar-overlay', { show: isSidebarOpen }]" @click="closeSidebar"></div>
-    <AppSidebar :is-open="isSidebarOpen" @navigate="handleNavigate" />
+    <div class="sidebar-trigger" @mouseenter="openSidebar"></div>
+    <AppSidebar
+      :is-open="isSidebarOpen"
+      @navigate="handleNavigate"
+      @mouseenter="openSidebar"
+      @mouseleave="closeSidebar"
+    />
 
     <main class="main main-panel">
       <AppTopbar
         :sidebar-open="isSidebarOpen"
         @logout="handleLogout"
         @tenant-change="handleTenantChange"
-        @toggle-sidebar="isSidebarOpen ? closeSidebar() : openSidebar()"
+        @toggle-sidebar="handleSidebarToggle"
         @open-admin-panel="emit('open-admin-panel')"
         @exit-erp="emit('exit-erp')"
       />
