@@ -2,10 +2,12 @@
 import { computed } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useStateStore } from '../../stores/stateStore'
+import { useThemeStore } from '../../stores/themeStore'
 import { viewLabels } from '../../utils/ui'
 
 const store = useAuthStore()
 const stateStore = useStateStore()
+const themeStore = useThemeStore()
 
 const canSwitchTenant = computed(
   () => store.accessibleTenants.length > 1 && stateStore.can('manage_users'),
@@ -82,6 +84,21 @@ function handleTenantChange(event) {
         @click="emit('open-admin-panel')"
       >⚙ Panel Admin</button>
       <button class="btn-outline" type="button" @click="store.setActiveView('two-factor')" title="Configurar 2FA">🔐 2FA</button>
+      <button
+        class="theme-toggle-button"
+        type="button"
+        :title="themeStore.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        :aria-label="themeStore.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        @click="themeStore.toggleTheme()"
+      >
+        <svg v-if="themeStore.isDark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/>
+          <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        </svg>
+        <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
       <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
     </div>
   </header>
@@ -112,5 +129,26 @@ function handleTenantChange(event) {
 }
 .btn-root:hover {
   background: rgba(245, 158, 11, 0.22);
+}
+
+.theme-toggle-button {
+  background: none;
+  border: none;
+  border-radius: 8px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  transition: color 150ms ease, transform 200ms ease;
+}
+.theme-toggle-button:hover {
+  color: var(--accent);
+  transform: rotate(20deg);
+}
+.theme-toggle-button svg {
+  height: 20px;
+  width: 20px;
 }
 </style>
