@@ -59,7 +59,7 @@ const fetchAdminData = async () => {
     logs.value = l
     compliance.value = normalizeCompliance(c)
     breachAlerts.value = Array.isArray(b) ? b : []
-    demoRequests.value = Array.isArray(d) ? d : []
+    demoRequests.value = d?.data || []
   } catch (error) {
     console.error('Error fetching admin data:', error)
   } finally {
@@ -210,6 +210,26 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
           <div class="metric-card">
             <span class="metric-label">Trials Activos</span>
             <span class="metric-value">{{ stats?.activeTrials || 0 }}</span>
+          </div>
+
+          <!-- New Recent Requests Section -->
+          <div class="recent-requests-card wide">
+            <div class="card-header">
+              <h3>Solicitudes Recientes</h3>
+              <button class="view-all-btn" @click="activeSubView = 'demo'">Ver todas</button>
+            </div>
+            <div v-if="demoRequests.length" class="mini-list">
+              <div v-for="req in demoRequests.slice(0, 5)" :key="req.id" class="mini-item">
+                <div class="item-info">
+                  <span class="item-title">{{ req.empresa }}</span>
+                  <span class="item-subtitle">{{ req.nombre }} · {{ formatDate(req.createdAt) }}</span>
+                </div>
+                <span class="status-pill-sm" :class="req.estado">{{ req.estado }}</span>
+              </div>
+            </div>
+            <div v-else class="empty-mini">
+              No hay solicitudes recientes.
+            </div>
           </div>
         </div>
 
@@ -755,6 +775,102 @@ h1 {
 .stat-info { display: flex; flex-direction: column; }
 .stat-label { font-size: 0.875rem; color: var(--text-secondary); }
 .stat-value { font-size: 1.5rem; font-weight: 700; color: #fff; }
+
+.recent-requests-card {
+  background: var(--card-bg, #1e293b);
+  border-radius: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.recent-requests-card.wide {
+  grid-column: 1 / -1;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+.view-all-btn {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: #10b981;
+  padding: 0.4rem 0.8rem;
+  border-radius: 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.view-all-btn:hover {
+  background: rgba(16, 185, 129, 0.1);
+}
+
+.mini-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mini-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.item-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #fff;
+}
+
+.item-subtitle {
+  font-size: 0.8rem;
+  color: #94a3b8;
+}
+
+.status-pill-sm {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.4rem;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.status-pill-sm.nuevo { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+.status-pill-sm.contactado { background: rgba(6, 182, 212, 0.15); color: #06b6d4; }
+.status-pill-sm.convertido { background: rgba(139, 92, 246, 0.15); color: #8b5cf6; }
+
+.empty-mini {
+  padding: 2rem;
+  text-align: center;
+  color: #64748b;
+  font-style: italic;
+}
 
 .admin-tabs {
   display: flex;
