@@ -331,7 +331,7 @@ const ROLE_DEFINITIONS = [
   {
     id: 'Administrador',
     permissions: ['emit_invoice', 'manage_inventory', 'manage_third_parties', 'run_ocr', 'manage_users'],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai'],
+    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'profile'],
     access: {
       dashboard: ['view', 'export', 'configure'],
       billing: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
@@ -345,7 +345,7 @@ const ROLE_DEFINITIONS = [
   {
     id: 'Contador',
     permissions: ['emit_invoice', 'manage_inventory', 'manage_third_parties', 'run_ocr'],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'ai'],
+    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'ai', 'profile'],
     access: {
       dashboard: ['view', 'export'],
       billing: ['view', 'create', 'edit', 'export'],
@@ -359,7 +359,7 @@ const ROLE_DEFINITIONS = [
   {
     id: 'Auxiliar contable',
     permissions: ['emit_invoice', 'manage_third_parties', 'run_ocr'],
-    views: ['dashboard', 'billing', 'accounting', 'third-parties', 'ai'],
+    views: ['dashboard', 'billing', 'accounting', 'third-parties', 'ai', 'profile'],
     access: {
       dashboard: ['view'],
       billing: ['view', 'create'],
@@ -387,7 +387,7 @@ const ROLE_DEFINITIONS = [
   {
     id: 'Gerencia',
     permissions: [],
-    views: ['dashboard', 'accounting'],
+    views: ['dashboard', 'accounting', 'profile'],
     access: {
       dashboard: ['view', 'export'],
       billing: ['view', 'export'],
@@ -401,7 +401,7 @@ const ROLE_DEFINITIONS = [
   {
     id: 'Visor',
     permissions: [],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties'],
+    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile'],
     access: {
       dashboard: ['view', 'export'],
       billing: ['view', 'export'],
@@ -485,8 +485,6 @@ const seedState = {
   ],
   users: await buildSeedUsers(),
   memberships: [
-    { userId: 'user-demo', tenantId: 'tenant-a', role: 'Administrador' },
-    { userId: 'user-demo', tenantId: 'tenant-b', role: 'Gerencia' },
     { userId: 'user-accountant', tenantId: 'tenant-a', role: 'Contador' },
     { userId: 'user-visor', tenantId: 'tenant-b', role: 'Visor' },
     { userId: 'user-retail-admin', tenantId: 'tenant-b', role: 'Administrador' },
@@ -497,19 +495,6 @@ const seedState = {
   userOnboardingTasks: [],
   authRateLimit: {},
   userSecurity: [
-    {
-      userId: 'user-demo',
-      twoFactorEnabled: true,
-      twoFactorRequired: true,
-      passwordResetRequired: false,
-      passwordUpdatedAt: '2026-04-20T09:00:00.000Z',
-      resetRequestedAt: null,
-      tempPasswordExpiresAt: null,
-      riskLevel: 'low',
-      passwordHistory: [],
-      failedLoginAttempts: 0,
-      lockedUntil: null,
-    },
     {
       userId: 'user-accountant',
       twoFactorEnabled: true,
@@ -563,20 +548,6 @@ const seedState = {
   ],
   userSessions: [
     {
-      id: 'sess-seed-1',
-      userId: 'user-demo',
-      tenantId: 'tenant-a',
-      ip: '192.0.2.21',
-      location: 'Cartagena, CO',
-      device: 'Edge en Windows',
-      browser: 'Edge 124',
-      os: 'Windows 11',
-      createdAt: '2026-05-04T18:56:00.000Z',
-      lastSeenAt: '2026-05-04T18:56:00.000Z',
-      revokedAt: null,
-      revokedBy: null,
-    },
-    {
       id: 'sess-seed-2',
       userId: 'user-accountant',
       tenantId: 'tenant-a',
@@ -614,7 +585,7 @@ const seedState = {
       status: 'pending',
       expiresAt: '2026-05-08T12:00:00.000Z',
       createdAt: '2026-05-04T12:00:00.000Z',
-      createdBy: 'Camilo Demo',
+      createdBy: 'Sistema local',
       customMessage: 'Hola, bienvenida al equipo contable de Contex Labs.',
       resendCount: 0,
       resentAt: null,
@@ -840,7 +811,7 @@ const seedState = {
       type: 'salida',
       quantity: 1,
       reason: 'venta',
-      userId: 'user-demo',
+      userId: 'user-accountant',
       batch: '',
       expirationDate: '',
       note: 'Factura CL-0001',
@@ -854,7 +825,7 @@ const seedState = {
       type: 'salida',
       quantity: 1,
       reason: 'venta',
-      userId: 'user-demo',
+      userId: 'user-accountant',
       batch: '',
       expirationDate: '',
       note: 'Factura CL-0001',
@@ -886,7 +857,7 @@ const seedState = {
       action: 'Emitir',
       description: 'Se emitio la factura CL-0001 con asiento automatico e inventario.',
       at: '2026-04-22T08:31:00.000Z',
-      actor: 'Camilo Demo',
+      actor: 'Sistema',
     },
     {
       id: 'aud-seed-2',
@@ -1183,7 +1154,7 @@ function normalizeState(source: any = {}): AppState {
       ? {
           id: sourceCurrentUser.id,
           name: sourceCurrentUser.name || 'Usuario migrado',
-          email: sourceCurrentUser.email || 'admin@contex360.local',
+          email: sourceCurrentUser.email || 'admin@contex360.com',
           status: 'active' as const,
           isSystemOwner: false,
           isDemoAccount: false,
@@ -1423,16 +1394,6 @@ export function buildDemoPassword(identifier: string) {
 
 async function buildSeedUsers() {
   const seedUserDefinitions = [
-    {
-      id: 'user-demo',
-      name: 'Camilo Demo',
-      email: 'admin@contex360.local',
-      status: 'active',
-      title: 'Administrador local',
-      lastLoginAt: null,
-      isDemoAccount: true,
-      isSystemOwner: true,
-    },
     {
       id: 'user-accountant',
       name: 'Daniela Rojas',
@@ -1691,6 +1652,10 @@ export const useStateStore = defineStore('state', {
     },
     visibleViews(): string[] {
       const views = this.activeMembership ? [...(ROLE_VIEWS[this.activeMembership.role] || ['dashboard'])] : ['dashboard']
+      
+      // Always include profile and other essential views for authenticated users
+      if (!views.includes('profile')) views.push('profile')
+      
       if (this.currentUser?.isSystemOwner) {
         // Super Admins ALWAYS get the Admin Console regardless of their role in the current tenant
         if (!views.includes('admin-console')) {
@@ -1743,6 +1708,14 @@ export const useStateStore = defineStore('state', {
     },
   },
   actions: {
+    updateCurrentUser(data: Partial<User>) {
+      const userId = this.session.currentUserId
+      if (!userId) return
+      const index = this.users.findIndex((u: User) => u.id === userId)
+      if (index !== -1) {
+        this.users[index] = { ...this.users[index], ...data }
+      }
+    },
     async loginWithBackend(credentials: Record<string, string>) {
       this.resetState()
       try {
@@ -2358,7 +2331,7 @@ export const useStateStore = defineStore('state', {
       }
     },
     setActiveView(viewId: string) {
-      const publicViews = ['two-factor', 'privacy-policy', 'terms-of-use', 'demo', 'change-password']
+      const publicViews = ['two-factor', 'privacy-policy', 'terms-of-use', 'demo', 'change-password', 'profile']
       if (!publicViews.includes(viewId) && !this.visibleViews.includes(viewId)) {
         return {
           ok: false,

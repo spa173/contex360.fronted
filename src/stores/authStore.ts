@@ -25,6 +25,7 @@ export const useAuthStore = defineStore('auth', () => {
     logout: state.logout,
     setActiveTenant: state.setActiveTenant,
     setActiveView: state.setActiveView,
+    updateCurrentUser: state.updateCurrentUser,
     resetState: state.resetState,
     can: state.can,
     checkCurrentSessionHealth: state.checkCurrentSessionHealth,

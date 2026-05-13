@@ -17,7 +17,7 @@
   --radius-lg: 20px;
   --radius-md: 14px;
   --page-background:
-    radial-gradient(circle at 12% 18%, rgba(16, 185, 129, 0.12), transparent 18%),
+    radial-gradient(circle at 12% 18%, hsla(160, 84%, 39%, 0.12), transparent 18%),
     radial-gradient(circle at 84% 16%, rgba(5, 150, 105, 0.1), transparent 22%),
     radial-gradient(circle at 66% 74%, rgba(16, 185, 129, 0.06), transparent 28%),
     linear-gradient(150deg, #09090b 0%, #000000 100%);
@@ -1236,18 +1236,26 @@ button {
   background: var(--color-background-secondary);
   border: 0;
   border-radius: 0;
-  border-right: 0;
-  box-shadow: none;
+  border-right: 1px solid var(--color-border-tertiary);
+  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   gap: 0;
+  height: 100vh;
+  left: 0;
   min-height: 100vh;
   padding: 20px 0;
-  position: static;
-  top: auto;
-  transition: transform 0.25s ease;
-  width: 210px;
+  position: fixed;
+  top: 0;
+  transform: translateX(-100%);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 230px;
+  z-index: 50;
+}
+
+.app .sidebar.mobile-open {
+  transform: translateX(0);
 }
 
 .logo {
@@ -1369,9 +1377,28 @@ button {
 
 .user-strip {
   align-items: center;
+  background: transparent;
+  border: 0.5px solid transparent;
+  border-radius: var(--border-radius-md);
+  color: inherit;
+  cursor: pointer;
   display: flex;
   gap: 8px;
   padding: 8px;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.user-strip:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: var(--color-border-tertiary);
+}
+
+.user-strip.active {
+  background: var(--color-background-primary);
+  border-color: var(--color-border-secondary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .avatar {
@@ -2038,7 +2065,7 @@ tr:hover td {
   border: 0;
   border-radius: var(--border-radius-md);
   cursor: pointer;
-  display: none;
+  display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 4px;
@@ -2054,11 +2081,13 @@ tr:hover td {
 }
 
 .sidebar-overlay {
-  background: rgba(0, 0, 0, 0.42);
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(2px);
   display: none;
   inset: 0;
   position: fixed;
-  z-index: 40;
+  z-index: 49;
+  cursor: pointer;
 }
 
 .sidebar-overlay.show {
@@ -2237,25 +2266,6 @@ fieldset:disabled {
 
   .app.app-shell {
     min-height: 100vh;
-  }
-
-  .app .sidebar {
-    border-radius: 0;
-    height: 100%;
-    left: 0;
-    position: fixed;
-    top: 0;
-    transform: translateX(-100%);
-    width: 220px;
-    z-index: 45;
-  }
-
-  .app .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  .hamburger {
-    display: flex;
   }
 
   .topbar {

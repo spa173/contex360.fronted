@@ -124,14 +124,19 @@ const userInitials = computed(() => {
     </nav>
 
     <div class="sidebar-footer">
-      <div class="user-strip">
+      <button 
+        class="user-strip" 
+        type="button" 
+        @click="emit('navigate', 'profile')"
+        :class="{ active: store.activeView === 'profile' }"
+      >
         <div class="avatar" title="Sesion activa">{{ userInitials || 'U' }}</div>
         <div class="user-strip-copy">
           <div class="user-name">{{ store.currentUser?.name || 'Usuario' }}</div>
           <div class="user-role">{{ store.activeMembership?.role || 'Sin rol' }}</div>
           <div v-if="isReadOnly" class="readonly-badge">Solo lectura</div>
         </div>
-      </div>
+      </button>
       <div class="legal-links">
         <button class="legal-link" @click="emit('navigate', 'privacy-policy')">
           Política de privacidad

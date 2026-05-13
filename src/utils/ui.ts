@@ -7,6 +7,7 @@ export const viewLabels: Record<string, string> = {
   users: 'Usuarios',
   ai: 'IA / OCR',
   'admin-console': 'Consola Admin',
+  profile: 'Perfil',
 }
 
 export const moduleRows: Array<[string, string, string]> = [

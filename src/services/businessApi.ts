@@ -137,4 +137,7 @@ export const businessApi = {
   async changePassword(currentPassword: string, newPassword: string) {
     return request<any>('/auth/change-password', { method: 'POST', body: { currentPassword, newPassword } })
   },
+  async updateProfile(data: { name?: string; title?: string }) {
+    return request<any>('/auth/profile', { method: 'PATCH', body: data })
+  },
 }

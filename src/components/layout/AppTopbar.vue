@@ -11,7 +11,8 @@ const canSwitchTenant = computed(
   () => store.accessibleTenants.length > 1 && stateStore.can('manage_users'),
 )
 
-const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel'])
+const props = defineProps({ sidebarOpen: { type: Boolean, default: false } })
+const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'exit-erp'])
 
 const sessionPill = computed(
   () => `${store.currentUser?.name || 'Sin sesion'} - ${store.currentUser?.title || '-'}`,
@@ -42,7 +43,7 @@ function handleTenantChange(event) {
 <template>
   <header class="topbar">
     <div class="topbar-title">
-      <button class="hamburger" aria-label="Abrir menu" type="button" @click="emit('toggle-sidebar')">
+      <button :class="['hamburger', { 'is-open': props.sidebarOpen }]" aria-label="Abrir menu" type="button" @click="emit('toggle-sidebar')">
         <span></span>
         <span></span>
         <span></span>
@@ -87,6 +88,17 @@ function handleTenantChange(event) {
 </template>
 
 <style scoped>
+.hamburger.is-open span:nth-child(1) {
+  transform: translateY(5.5px) rotate(45deg);
+}
+.hamburger.is-open span:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0);
+}
+.hamburger.is-open span:nth-child(3) {
+  transform: translateY(-5.5px) rotate(-45deg);
+}
+
 .btn-root {
   background: rgba(245, 158, 11, 0.12);
   border: 1px solid rgba(245, 158, 11, 0.3);

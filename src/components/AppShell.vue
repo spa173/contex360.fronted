@@ -18,12 +18,13 @@ import PrivacyPolicyView from './views/PrivacyPolicyView.vue'
 import TermsOfUseView from './views/TermsOfUseView.vue'
 import DemoRequestView from './views/DemoRequestView.vue'
 import ChangePasswordView from './views/ChangePasswordView.vue'
+import ProfileView from './views/ProfileView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
 const { pushToast } = useToasts()
 const isSidebarOpen = ref(false)
-const emit = defineEmits(['open-admin-panel'])
+const emit = defineEmits(['open-admin-panel', 'exit-erp'])
 let healthTimer = null
 const HEALTH_INTERVAL_ACTIVE_MS = 3000
 const HEALTH_INTERVAL_BACKGROUND_MS = 12000
@@ -102,10 +103,12 @@ onUnmounted(() => {
 
     <main class="main main-panel">
       <AppTopbar
+        :sidebar-open="isSidebarOpen"
         @logout="handleLogout"
         @tenant-change="handleTenantChange"
-        @toggle-sidebar="openSidebar"
+        @toggle-sidebar="isSidebarOpen ? closeSidebar() : openSidebar()"
         @open-admin-panel="emit('open-admin-panel')"
+        @exit-erp="emit('exit-erp')"
       />
 
       <div class="content">
@@ -162,6 +165,11 @@ onUnmounted(() => {
         />
         <ChangePasswordView
           v-if="store.activeView === 'change-password'"
+        />
+        <ProfileView
+          v-if="store.activeView === 'profile'"
+          :is-active="store.activeView === 'profile'"
+          @notify="handleNotify"
         />
       </div>
     </main>
