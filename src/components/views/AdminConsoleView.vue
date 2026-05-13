@@ -4,6 +4,10 @@ import { businessApi } from '../../services/businessApi'
 import { formatDate } from '../../utils/ui'
 import TenantSettingsView from '../root/TenantSettingsView.vue'
 
+defineProps({
+  isActive: { type: Boolean, default: false },
+})
+
 const tabs = [
   { id: 'dashboard', label: 'Dashboard' },
   { id: 'tenants', label: 'Empresas (Tenants)' },
@@ -143,6 +147,7 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
 </script>
 
 <template>
+  <section :class="['view', { active: isActive }]">
   <div class="admin-console">
     <header class="admin-header">
       <div class="header-content">
@@ -656,6 +661,7 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
       </div>
     </div>
   </Teleport>
+  </section>
 </template>
 
 <style scoped>
