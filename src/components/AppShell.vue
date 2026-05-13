@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useAuthStore } from '../stores/authStore'
+import { businessApi } from '../services/businessApi'
 import { useToasts } from '../composables/useToasts'
 import AppSidebar from './layout/AppSidebar.vue'
 import AppTopbar from './layout/AppTopbar.vue'
@@ -24,6 +25,7 @@ import ChatAssistant from './ai/ChatAssistant.vue'
 const store = useAuthStore()
 const { pushToast } = useToasts()
 const isSidebarOpen = ref(false)
+const systemStats = ref(null)
 const emit = defineEmits(['open-admin-panel', 'exit-erp'])
 let healthTimer = null
 const HEALTH_INTERVAL_ACTIVE_MS = 3000
@@ -85,6 +87,10 @@ onMounted(() => {
   }
 
   scheduleNextHealthCheck()
+
+  if (store.currentUser?.isSystemOwner) {
+    businessApi.getAdminStats().then(s => { systemStats.value = s }).catch(() => {})
+  }
 })
 /* c8 ignore stop */
 
@@ -174,5 +180,11 @@ onUnmounted(() => {
       </div>
     </main>
     <ChatAssistant @navigate="store.setActiveView" />
+
+    <div v-if="store.currentUser?.isSystemOwner" class="version-pill" :class="systemStats?.systemStatus">
+      <span class="version-dot"></span>
+      {{ systemStats?.systemStatus === 'healthy' ? 'Sistema saludable' : systemStats ? 'Atencion requerida' : 'Sistema' }}
+      <span class="version-tag">v{{ systemStats?.version || '...' }}</span>
+    </div>
   </div>
 </template>

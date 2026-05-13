@@ -149,11 +149,6 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
         <h1>Consola de Administracion</h1>
         <p class="subtitle">Gestion de infraestructura, control global y evidencias de cumplimiento</p>
       </div>
-      <div class="system-badge" :class="stats?.systemStatus">
-        <span class="dot"></span>
-        {{ stats?.systemStatus === 'healthy' ? 'Sistema saludable' : 'Atencion requerida' }}
-        <span class="version">v{{ stats?.version }}</span>
-      </div>
     </header>
 
     <div v-if="loading" class="loading-state">
