@@ -128,6 +128,9 @@ export const businessApi = {
   async getDemoRequests() {
     return request<any[]>('/demo')
   },
+  async createDemoRequest(data: any) {
+    return request<any>('/demo', { method: 'POST', body: data })
+  },
   async updateDemoRequestStatus(id: string, estado: string) {
     return request<any>(`/demo/${id}/status`, { method: 'PUT', body: { estado } })
   },

@@ -1,4 +1,4 @@
-﻿<script setup>
+<script setup>
 import { computed, ref } from 'vue'
 import { useStateStore } from '../stores/stateStore'
 import { useThemeStore } from '../stores/themeStore'
@@ -6,6 +6,8 @@ import { businessApi } from '../services/businessApi'
 
 const store = useStateStore()
 const themeStore = useThemeStore()
+
+const emit = defineEmits(['request-demo'])
 
 const email = ref('')
 const password = ref('')
@@ -345,7 +347,7 @@ const toggleRecoveryHelp = () => {
             </form>
 
             <p class="auth-demo">
-              ¿No tienes una cuenta? <a href="#">Solicita una demo</a>
+              ¿No tienes una cuenta? <a href="#" @click.prevent="$emit('request-demo')">Solicita una demo</a>
             </p>
 
             <footer class="auth-proof">

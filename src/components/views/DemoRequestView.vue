@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import axios from 'axios'
+import { businessApi } from '../../services/businessApi'
 
 const emit = defineEmits(['back'])
 
@@ -31,11 +31,11 @@ const handleSubmit = async () => {
   successMessage.value = ''
 
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/demo`, form.value)
-    successMessage.value = response.data.message || 'Solicitud enviada correctamente. Nuestro equipo te contactará pronto.'
+    const response = await businessApi.createDemoRequest(form.value)
+    successMessage.value = response.message || 'Solicitud enviada correctamente. Nuestro equipo te contactará pronto.'
     form.value = { nombre: '', empresa: '', correo: '', telefono: '', mensaje: '', nit: '', ciudad: '', direccion: '', sector: '' }
   } catch (error: any) {
-    errorMessage.value = error.response?.data?.message || 'Error al enviar la solicitud. Intenta nuevamente.'
+    errorMessage.value = error.message || 'Error al enviar la solicitud. Intenta nuevamente.'
   } finally {
     isLoading.value = false
   }

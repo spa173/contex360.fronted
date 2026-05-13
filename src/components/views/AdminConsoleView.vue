@@ -348,6 +348,10 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
                 <th>Empresa</th>
                 <th>Nombre</th>
                 <th>Correo</th>
+                <th>NIT</th>
+                <th>Ciudad</th>
+                <th>Sector</th>
+                <th>Dirección</th>
                 <th>Teléfono</th>
                 <th>Mensaje</th>
                 <th>Estado</th>
@@ -360,6 +364,10 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
                 <td>{{ req.empresa }}</td>
                 <td>{{ req.nombre }}</td>
                 <td>{{ req.correo }}</td>
+                <td>{{ req.nit || '-' }}</td>
+                <td>{{ req.ciudad || '-' }}</td>
+                <td>{{ req.sector || '-' }}</td>
+                <td>{{ req.direccion || '-' }}</td>
                 <td>{{ req.telefono || '-' }}</td>
                 <td class="truncate-cell">{{ req.mensaje || '-' }}</td>
                 <td>
@@ -376,6 +384,7 @@ const criticalBreaches = computed(() => breachAlerts.value.filter((e) => e.sever
                       <option value="contactado" :selected="req.estado === 'contactado'">Contactado</option>
                       <option value="demo_agendada" :selected="req.estado === 'demo_agendada'">Demo agendada</option>
                       <option value="aprobado" :selected="req.estado === 'aprobado'">Aprobado</option>
+                      <option value="convertido" :selected="req.estado === 'convertido'">Convertido</option>
                       <option value="cliente" :selected="req.estado === 'cliente'">Cliente</option>
                     </select>
                     <button
