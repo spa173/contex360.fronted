@@ -198,27 +198,6 @@ const stockValueData = computed(() => {
         </div>
       </article>
 
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Cumplimiento</p>
-            <h3>Pipeline DIAN</h3>
-          </div>
-        </div>
-        <div class="list-grid">
-           <BusinessChart 
-             type="doughnut" 
-             :data="pipelineChartData" 
-             :options="{ 
-               plugins: { 
-                 legend: { position: 'bottom' } 
-               },
-               cutout: '70%'
-             }" 
-           />
-        </div>
-      </article>
-
       <article class="panel-card" style="grid-column: span 2;">
         <div class="card-head">
           <div>
@@ -236,6 +215,27 @@ const stockValueData = computed(() => {
                },
                plugins: { legend: { display: false } },
                tension: 0.4
+             }" 
+           />
+        </div>
+      </article>
+
+      <article class="panel-card">
+        <div class="card-head">
+          <div>
+            <p class="eyebrow">Cumplimiento</p>
+            <h3>Pipeline DIAN</h3>
+          </div>
+        </div>
+        <div class="list-grid">
+           <BusinessChart 
+             type="doughnut" 
+             :data="pipelineChartData" 
+             :options="{ 
+               plugins: { 
+                 legend: { position: 'bottom' } 
+               },
+               cutout: '70%'
              }" 
            />
         </div>
