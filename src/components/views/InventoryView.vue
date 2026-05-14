@@ -255,7 +255,7 @@ function exportCSV() {
     </div>
 
     <div v-if="activeTab === 'general'" class="two-column">
-      <article class="panel-card">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Maestro</p>
@@ -379,7 +379,7 @@ function exportCSV() {
       </article>
 
       <div class="stack-column">
-        <article class="panel-card">
+        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
           <div class="card-head">
             <div style="display: flex; justify-content: space-between; align-items: center;">
               <div>
@@ -465,7 +465,7 @@ function exportCSV() {
           <p v-else class="empty-state">No hay productos cargados en este tenant.</p>
         </article>
 
-        <article v-if="store.deadInventory.length" class="panel-card" style="border: 1px solid var(--danger-color);">
+        <article v-if="store.deadInventory.length" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="border: 1px solid var(--danger-color);">
           <div class="card-head">
             <div>
               <p class="eyebrow" style="color: var(--danger-color);">Alerta Financiera</p>
@@ -483,7 +483,7 @@ function exportCSV() {
           </div>
         </article>
 
-        <article class="panel-card">
+        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
           <div class="card-head">
             <div>
               <p class="eyebrow">Kardex</p>
@@ -514,7 +514,7 @@ function exportCSV() {
     </div>
 
     <div v-if="activeTab === 'operaciones'" class="two-column">
-      <article class="panel-card">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
           <div class="card-head">
             <div>
               <p class="eyebrow">Stock y Valorizacion</p>
@@ -577,7 +577,7 @@ function exportCSV() {
     <div v-if="activeTab === 'inteligencia'" class="two-column">
       <div class="stack-column" style="grid-column: span 2;">
         
-        <article class="panel-card" style="margin-bottom: 24px;">
+        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="margin-bottom: 24px;">
           <div class="card-head">
             <div>
               <p class="eyebrow">Finanzas</p>
@@ -613,7 +613,7 @@ function exportCSV() {
           </div>
         </div>
         
-        <article v-if="store.deadInventory.length" class="panel-card" style="border: 1px solid var(--danger-color);">
+        <article v-if="store.deadInventory.length" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="border: 1px solid var(--danger-color);">
           <div class="card-head">
             <div>
               <p class="eyebrow" style="color: var(--danger-color);">Alerta Financiera</p>
@@ -631,7 +631,7 @@ function exportCSV() {
           </div>
         </article>
 
-        <article v-if="Object.keys(store.reorderSuggestions).length" class="panel-card" style="border: 1px solid var(--accent-color);">
+        <article v-if="Object.keys(store.reorderSuggestions).length" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="border: 1px solid var(--accent-color);">
           <div class="card-head">
             <div>
               <p class="eyebrow" style="color: var(--accent-color);">Abastecimiento Automatizado</p>

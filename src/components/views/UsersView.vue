@@ -756,7 +756,7 @@ watch(
 
 <template>
   <section :class="['view', { active: isActive }]">
-    <article class="panel-card users-admin-hero">
+    <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm users-admin-hero">
       <div class="card-head">
         <div>
           <p class="eyebrow">Identity & Access</p>
@@ -825,7 +825,7 @@ watch(
 
     <div v-if="activeTab === 'users'" class="users-workspace">
       <div class="stack-column">
-        <article class="panel-card user-create-panel" :class="{ collapsed: !isCreatePanelOpen }">
+        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm user-create-panel" :class="{ collapsed: !isCreatePanelOpen }">
           <div class="card-head">
             <div>
               <p class="eyebrow">Alta controlada</p>
@@ -894,7 +894,7 @@ watch(
           </form>
         </article>
 
-        <article class="panel-card">
+        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
           <div class="toolbar-grid">
             <label class="field toolbar-search">
               <span>Buscar</span>
@@ -968,7 +968,7 @@ watch(
         </article>
       </div>
 
-      <aside v-if="selectedRow" class="panel-card user-detail-panel">
+      <aside v-if="selectedRow" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm user-detail-panel">
         <div class="card-head">
           <div>
             <p class="eyebrow">Detalle</p>
@@ -1117,7 +1117,7 @@ watch(
     </div>
 
     <div v-else-if="activeTab === 'roles'" class="stack-column">
-      <article class="panel-card">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">RBAC</p>
@@ -1186,7 +1186,7 @@ watch(
         </div>
       </article>
 
-      <article class="panel-card">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Resumen</p>
@@ -1205,7 +1205,7 @@ watch(
       </article>
     </div>
 
-    <article v-else-if="activeTab === 'sessions'" class="panel-card">
+    <article v-else-if="activeTab === 'sessions'" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
       <div class="card-head">
         <div>
           <p class="eyebrow">Seguridad</p>
@@ -1266,7 +1266,7 @@ watch(
     </article>
 
      <div v-else-if="activeTab === 'invitations'" class="two-column">
-      <article class="panel-card">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Onboarding</p>
@@ -1310,7 +1310,7 @@ watch(
         </form>
       </article>
 
-      <article class="panel-card">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Pendientes</p>
@@ -1359,7 +1359,7 @@ watch(
       </article>
     </div>
 
-    <div v-else-if="activeTab === 'security'" class="panel-card security-config">
+    <div v-else-if="activeTab === 'security'" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm security-config">
         <div class="card-head">
           <div>
             <p class="eyebrow">Seguridad</p>
