@@ -1,10 +1,10 @@
 <script setup>
 import { computed, ref } from 'vue'
-import { useStateStore } from '../stores/stateStore'
+import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
 
-const store = useStateStore()
+const authStore = useAuthStore()
 const themeStore = useThemeStore()
 
 const emit = defineEmits(['request-demo'])
@@ -41,7 +41,7 @@ const handleSubmit = async () => {
       credentials.totpCode = totpCode.value
     }
 
-    const result = await store.loginWithBackend(credentials)
+    const result = await authStore.loginWithBackend(credentials)
 
     if (result?.requiresTotp) {
       requiresTotp.value = true

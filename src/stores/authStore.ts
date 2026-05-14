@@ -26,7 +26,6 @@ export const useAuthStore = defineStore('auth', () => {
   const visibleViews = computed(() => {
     const role = activeMembership.value?.role
     if (!role) return ['dashboard', 'profile']
-    // Simple logic for now, using the role definitions
     const definitions: any = {
       'Administrador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile'],
       'Contador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile'],
@@ -35,10 +34,11 @@ export const useAuthStore = defineStore('auth', () => {
     return definitions[role] || ['dashboard', 'profile']
   })
 
-  async function login(credentials: { email: string; password: string; totpCode?: string }) {
+  async function loginWithBackend(credentials: { email: string; password: string; totpCode?: string }) {
     isLoading.value = true
     authError.value = null
     try {
+      // Intentar login local primero (para el MVP/Simulacion)
       const user = root.users.find(u => u.email === credentials.email)
       if (!user) return { ok: false, message: 'Usuario no encontrado.' }
 
@@ -47,7 +47,6 @@ export const useAuthStore = defineStore('auth', () => {
 
       if (user.status === 'inactive') return { ok: false, message: 'Tu cuenta está desactivada.' }
 
-      // Check 2FA if needed
       const security = root.userSecurity.find(s => s.userId === user.id)
       if (security?.twoFactorEnabled && !credentials.totpCode) {
         return { ok: true, requiresTwoFactor: true, userId: user.id }
@@ -77,7 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
       root.saveState()
       return { ok: true, user }
     } catch (error) {
-      authError.value = 'Error de autenticación'
+      authError.value = 'Error de conexión con el servidor'
       return { ok: false, message: authError.value }
     } finally {
       isLoading.value = false
@@ -100,6 +99,9 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     authError,
     currentUser,
+    isAuthenticated,
+    loginWithBackend,
+    logout,
     refreshSessionWithBackend,
     visibleViews,
     activeMembership,
