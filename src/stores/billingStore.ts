@@ -22,13 +22,13 @@ export const useBillingStore = defineStore('billing', () => {
   const activeTenantId = computed(() => root.activeTenantId)
   
   const tenantInvoices = computed(() => 
-    [...invoices.value]
+    [...(invoices.value || [])]
       .filter(inv => inv.tenantId === activeTenantId.value)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .sort((a, b) => new Date(b?.createdAt || 0).getTime() - new Date(a?.createdAt || 0).getTime())
   )
 
   const selectedInvoice = computed(() => 
-    tenantInvoices.value.find(inv => inv.id === selections.value.invoiceId) || tenantInvoices.value[0] || null
+    (tenantInvoices.value || []).find(inv => inv.id === selections.value.invoiceId) || tenantInvoices.value[0] || null
   )
 
   const canEmitInvoice = computed(() => root.can('emit_invoice'))
@@ -37,8 +37,11 @@ export const useBillingStore = defineStore('billing', () => {
     if (!activeTenantId.value) return
     try {
       const data = await businessApi.getInvoices()
-      invoices.value = data as Invoice[]
-    } catch (error) { console.error('Error fetching invoices:', error) }
+      invoices.value = Array.isArray(data) ? data : []
+    } catch (error) { 
+      console.error('Error fetching invoices:', error)
+      invoices.value = []
+    }
   }
 
   async function emitInvoice(payload: Record<string, any>) {

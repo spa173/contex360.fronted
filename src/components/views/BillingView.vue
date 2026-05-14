@@ -434,7 +434,7 @@ function getStatusColor(status) {
 
           <div class="p-6">
             <div class="relative space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
-              <div v-for="event in [...billingStore.selectedInvoice.timeline].reverse()" :key="event.id" class="relative pl-8">
+              <div v-for="event in [...(billingStore.selectedInvoice.timeline || [])].reverse()" :key="event.id" class="relative pl-8">
                 <div :class="[
                   'absolute left-0 top-1.5 w-[23px] h-[23px] rounded-full border-4 border-[#131926] z-10 flex items-center justify-center',
                   event.status === 'aceptada' ? 'bg-emerald-500' : 'bg-slate-700'

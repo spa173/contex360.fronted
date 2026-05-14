@@ -92,10 +92,11 @@ export const useStateStore = defineStore('state', {
       if (!this.activeTenantId || !this.session.currentUserId) return
       try {
         const thirdParties = await businessApi.getThirdParties()
-        this.thirdParties = thirdParties
+        this.thirdParties = Array.isArray(thirdParties) ? thirdParties : []
       } catch (error: any) { 
+        this.thirdParties = []
         if (error.message?.includes('403') || error.message?.includes('401')) return
-        console.error(error) 
+        console.error('Error fetching business data:', error) 
       }
       this.saveState()
     },
