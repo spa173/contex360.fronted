@@ -729,7 +729,7 @@ watch(
 
 <template>
   <section :class="['view', { active: isActive }]">
-    <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm users-admin-hero">
+    <article class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm users-admin-hero">
       <div class="card-head">
         <div>
           <p class="eyebrow">Identity & Access</p>
@@ -805,7 +805,7 @@ watch(
           @submit="handleUserSubmit"
         />
 
-        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
+        <article class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm">
           <div class="toolbar-grid">
             <label class="field toolbar-search">
               <span>Buscar</span>
@@ -897,7 +897,7 @@ watch(
     </div>
 
     <div v-else-if="activeTab === 'roles'" class="stack-column">
-      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
+      <article class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">RBAC</p>
@@ -966,7 +966,7 @@ watch(
         </div>
       </article>
 
-      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
+      <article class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Resumen</p>
@@ -985,7 +985,7 @@ watch(
       </article>
     </div>
 
-    <article v-else-if="activeTab === 'sessions'" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
+    <article v-else-if="activeTab === 'sessions'" class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm">
       <div class="card-head">
         <div>
           <p class="eyebrow">Seguridad</p>
@@ -1046,7 +1046,7 @@ watch(
     </article>
 
      <div v-else-if="activeTab === 'invitations'" class="two-column">
-      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
+      <article class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Onboarding</p>
@@ -1090,7 +1090,7 @@ watch(
         </form>
       </article>
 
-      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
+      <article class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm">
         <div class="card-head">
           <div>
             <p class="eyebrow">Pendientes</p>
@@ -1139,7 +1139,7 @@ watch(
       </article>
     </div>
 
-    <div v-else-if="activeTab === 'security'" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm security-config">
+    <div v-else-if="activeTab === 'security'" class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm security-config">
         <div class="card-head">
           <div>
             <p class="eyebrow">Seguridad</p>

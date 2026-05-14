@@ -1,6 +1,7 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
+import { useAuthStore } from './authStore'
 import { Product, InventoryMovement, InventoryTransfer } from '@/types/inventory'
 import { uid, appendAuditEvent } from '@/utils/storeHelpers'
 import { businessApi } from '../services/businessApi'
@@ -109,7 +110,8 @@ export const useInventoryStore = defineStore('inventory', () => {
     return abc
   })
 
-  const canManageInventory = computed(() => root.can('manage_inventory'))
+  const auth = useAuthStore()
+  const canManageInventory = computed(() => auth.can('manage_inventory'))
 
   // Actions
   function createProduct(payload: Partial<Product>) {

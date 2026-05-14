@@ -22,10 +22,9 @@
   --surface-hover: #1A2340;
   --border: rgba(148, 163, 184, 0.12);
   --border-subtle: rgba(148, 163, 184, 0.08);
-  --text: #F8FAFC;
-  --text-secondary: #94A3B8;
-  --text-muted: #64748B;
-
+  --text: #F8FAFC;         /* text-slate-50 */
+  --text-secondary: #CBD5E1; /* text-slate-300 */
+  --text-muted: #64748B;    /* text-slate-500 */
   --background: var(--bg);
   --foreground: var(--text);
   --card: var(--surface);
@@ -144,7 +143,10 @@ body,
 body {
   margin: 0;
   min-height: 100vh;
-  font-family: "Inter", "Segoe UI Variable", "Trebuchet MS", sans-serif;
+  font-family: var(--font-sans);
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: var(--text);                      
   background: #0B0F1A;     
 }
@@ -218,7 +220,7 @@ textarea {
 .topbar {
   backdrop-filter: blur(16px);
   background: var(--surface);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(148, 163, 184, 0.16);
   box-shadow: var(--shadow);
 }
 
@@ -790,11 +792,12 @@ textarea {
 }
 
 .table-header {
-  color: var(--muted);
-  font-size: 0.85rem;
-  letter-spacing: 0.08em;
+  color: #94A3B8; /* text-slate-400 */
+  font-size: 0.8125rem;
+  letter-spacing: 0.05em;
   padding: 0 6px;
   text-transform: uppercase;
+  font-weight: 600;
 }
 
 .table-row {
