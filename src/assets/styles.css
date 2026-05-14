@@ -656,47 +656,16 @@ textarea {
   font-weight: 700;
 }
 
-.small-pill,
-.status-badge {
+.small-pill {
   border-radius: 999px;
   display: inline-flex;
   font-size: 0.82rem;
   padding: 6px 10px;
-}
-
-.small-pill {
   background: rgba(59, 130, 246, 0.14);
   border: 1px solid rgba(59, 130, 246, 0.2);
 }
 
-.status-badge {
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  text-transform: capitalize;
-}
-
-.status-accepted,
-.status-acceptada {
-  background: rgba(106, 221, 156, 0.14);
-  color: var(--success);
-}
-
-.status-enviada,
-.status-emitida {
-  background: rgba(88, 215, 190, 0.14);
-  color: var(--teal);
-}
-
-.status-rechazada,
-.status-danger {
-  background: rgba(255, 118, 102, 0.14);
-  color: var(--danger);
-}
-
-.status-contingencia,
-.status-borrador {
-  background: rgba(55, 55, 55, 0.8);
-  color: var(--muted);
-}
+/* Nota: clases .status-* eliminadas - usar componente Badge de shadcn/ui */
 
 .progress-bar {
   background: rgba(55, 55, 55, 0.8);
@@ -1220,15 +1189,7 @@ textarea:disabled {
   border-color: rgba(255, 191, 71, 0.26);
 }
 
-.status-active {
-  background: rgba(106, 221, 156, 0.14);
-  color: var(--success);
-}
-
-.status-inactive {
-  background: rgba(255, 118, 102, 0.14);
-  color: var(--danger);
-}
+/* Nota: .status-active y .status-inactive eliminadas - usar componente Badge de shadcn/ui */
 
 .small-action {
   padding: 10px 14px;
@@ -1732,17 +1693,11 @@ button {
   margin-top: 4px;
 }
 
-.delta-up,
-.status-accepted,
-.status-acceptada,
-.status-active {
+.delta-up {
   color: var(--color-text-success);
 }
 
-.delta-down,
-.status-danger,
-.status-rechazada,
-.status-inactive {
+.delta-down {
   color: var(--color-text-danger);
 }
 
@@ -1919,8 +1874,7 @@ textarea:focus,
 
 
 .badge,
-.small-pill,
-.status-badge {
+.small-pill {
   border-radius: 20px;
   display: inline-flex;
   font-size: 11px;
@@ -1930,21 +1884,13 @@ textarea:focus,
   white-space: nowrap;
 }
 
-
-.badge-success,
-.status-accepted,
-.status-acceptada,
-.status-active,
-.status-enviada,
-.status-emitida {
+.badge-success {
   background: #dcfce7;
   color: #166534;
   font-weight: 600;
 }
 
-.badge-warn,
-.status-contingencia,
-.status-borrador {
+.badge-warn {
   background: var(--color-background-warning);
   color: var(--color-text-warning);
 }
@@ -1965,20 +1911,7 @@ textarea:focus,
   color: var(--color-text-secondary);
 }
 
-.status-badge {
-  background: var(--color-background-secondary);
-  border: 0.5px solid var(--color-border-secondary);
-  color: var(--color-text-secondary);
-  text-transform: capitalize;
-}
-
-
-.status-danger,
-.status-rechazada,
-.status-inactive {
-  background: var(--color-background-danger);
-  color: var(--color-text-danger);
-}
+/* Nota: clases .status-* eliminadas - usar componente Badge de shadcn/ui */
 
 
 .btn-sm,
