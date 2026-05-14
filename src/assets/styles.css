@@ -1660,8 +1660,7 @@ button {
 }
 
 .card,
-.panel-card,
-.auth-card {
+.panel-card {
   background: var(--color-background-primary);
   border: 0.5px solid var(--color-border-tertiary);
   border-radius: var(--border-radius-lg);
@@ -1779,15 +1778,13 @@ button {
 }
 
 .field,
-.form-group,
-.auth-field {
+.form-group {
   display: grid;
   gap: 5px;
 }
 
 .field span,
-.form-label,
-.auth-label {
+.form-label {
   color: var(--color-text-secondary);
   font-size: 11px;
   font-weight: 500;
@@ -1801,8 +1798,7 @@ select,
 textarea,
 .field input,
 .field select,
-.field textarea,
-.auth-input {
+.field textarea {
   background: var(--color-background-primary);
   border: 0.5px solid var(--color-border-secondary);
   border-radius: var(--border-radius-md);
@@ -1828,8 +1824,7 @@ select:focus,
 textarea:focus,
 .field input:focus,
 .field select:focus,
-.field textarea:focus,
-.auth-input-shell:focus-within {
+.field textarea:focus {
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2) !important;
   outline: none;
@@ -1980,8 +1975,7 @@ textarea:focus,
 
 .btn-primary,
 .primary-button,
-.hero-button,
-.auth-primary-button {
+.hero-button {
   background: var(--accent);
   border: none;
   border-radius: var(--border-radius-md);
@@ -1999,8 +1993,7 @@ textarea:focus,
 
 .btn-primary:hover,
 .primary-button:hover,
-.hero-button:hover,
-.auth-primary-button:hover {
+.hero-button:hover {
   background: var(--accent-strong);
   box-shadow: none;
   transform: none;
@@ -2214,133 +2207,7 @@ tr:hover td {
 }
 
 
-.auth-screen {
-  align-items: center;
-  display: flex;
-  justify-content: center;
-  min-height: 100vh;
-  padding: 20px;
-}
 
-
-.auth-card-clean,
-.auth-card {
-  background: var(--color-background-primary);
-  border: 0.5px solid var(--color-border-secondary);
-  border-radius: var(--border-radius-lg);
-  box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
-  color: var(--color-text-primary);
-  max-width: 380px;
-  padding: 36px 40px;
-  width: 100%;
-}
-
-.auth-header {
-  display: grid;
-  gap: 4px;
-  justify-items: start;
-  margin-bottom: 22px;
-}
-
-.auth-logo-wordmark {
-  color: var(--color-text-primary);
-  font-family: var(--font-sans);
-  font-size: 18px;
-  font-weight: 600;
-  letter-spacing: 0;
-  margin: 0 0 6px;
-}
-
-.auth-title {
-  color: var(--color-text-primary);
-  font-family: var(--font-sans);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: 0;
-  line-height: 1.2;
-  margin: 0;
-  text-align: left;
-}
-
-.auth-form {
-  display: grid;
-  gap: 14px;
-}
-
-.auth-input-shell {
-  align-items: center;
-  background: var(--color-background-secondary);
-  border: 0.5px solid var(--color-border-secondary);
-  border-radius: var(--border-radius-md);
-  color: var(--color-text-secondary);
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr) auto;
-  min-height: 36px;
-  padding: 0 10px;
-}
-
-.auth-input {
-  background: transparent;
-  border: 0;
-  color: var(--color-text-primary);
-  min-height: 34px;
-  padding: 0 8px;
-}
-
-.auth-input-icon,
-.auth-visibility-toggle {
-  color: var(--color-text-secondary);
-}
-
-.auth-visibility-toggle {
-  align-items: center;
-  background: transparent;
-  border: 0;
-  cursor: pointer;
-  display: inline-flex;
-  height: 24px;
-  justify-content: center;
-  padding: 0;
-  width: 24px;
-}
-
-.auth-link {
-  background: transparent;
-  border: 0;
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  font-size: 12px;
-  padding: 0;
-  text-decoration: underline;
-  text-underline-offset: 2px;
-}
-
-.auth-link:hover {
-  color: var(--color-text-primary);
-}
-
-.auth-link-inline {
-  justify-self: center;
-  margin: 0;
-}
-
-.auth-link-centered {
-  display: block;
-  margin: 12px auto 0;
-}
-
-
-.auth-feedback {
-  background: var(--color-background-info);
-  border: 0.5px solid rgba(96, 165, 250, 0.28);
-  border-radius: var(--border-radius-md);
-  color: var(--color-text-info);
-  font-size: 11px;
-  line-height: 1.45;
-  margin: 12px 0 0;
-  padding: 8px 10px;
-  text-align: left;
-}
 
 button:disabled,
 input:disabled,
@@ -2424,9 +2291,6 @@ fieldset:disabled {
     flex-direction: column;
   }
 
-  .auth-card-clean,
-  .auth-card {
-    padding: 28px 24px;
   }
 }
 
