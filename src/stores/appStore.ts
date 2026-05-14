@@ -1,1 +1,6 @@
-export { ROLE_OPTIONS, ROLE_PERMISSIONS, ROLE_VIEWS, useStateStore } from './stateStore'
+export { useStateStore } from './stateStore'
+export { 
+  ROLE_OPTIONS, 
+  PERMISSION_MODULES as ROLE_VIEWS, 
+  PERMISSION_ACTIONS as ROLE_PERMISSIONS 
+} from './rbacStore'
