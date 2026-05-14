@@ -7,9 +7,12 @@ import {
   ShieldCheck, 
   Lock, 
   Globe, 
-  HelpCircle,
-  Mail,
-  ArrowRight
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  Search,
+  Settings,
+  Cpu
 } from 'lucide-vue-next'
 
 const authStore = useAuthStore()
@@ -31,8 +34,6 @@ const requiresPasswordChange = ref(false)
 const newPassword = ref('')
 const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
-const showTermsModal = ref(false)
-const showPrivacyModal = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
@@ -112,470 +113,387 @@ const toggleRecoveryHelp = () => {
 </script>
 
 <template>
-  <div class="login-wrapper">
-    <div class="login-split">
-      <!-- PANEL IZQUIERDO: Branding & Impacto Visual -->
-      <aside class="side-info">
-        <div class="info-inner">
-          <header class="brand-header">
-            <div class="logo-square">C</div>
-            <div class="brand-meta">
-              <span class="brand-title">Contex360</span>
-              <span class="brand-subtitle">Enterprise Resource Planning</span>
+  <div class="auth-root">
+    <div class="auth-grid">
+      <!-- LEFT PANEL: Dark Branding -->
+      <aside class="branding-panel">
+        <header class="panel-header">
+          <div class="logo-group">
+            <div class="logo-box">C</div>
+            <div class="logo-text">
+              <span class="brand-name">Contex360</span>
+              <span class="brand-tagline">SISTEMA DE GESTION FINANCIERA</span>
             </div>
-          </header>
-
-          <div class="hero-text">
-            <span class="eyebrow">Solución ERP de Próxima Generación</span>
-            <h1 class="main-title">Plataforma Integral de <br/><span>Gestión Empresarial</span></h1>
-            <p class="description">
-              Controla tus finanzas, inventarios y cumplimiento tributario con una suite diseñada para la escala y la precisión.
-            </p>
-          </div>
-
-          <ul class="features">
-            <li v-for="feat in ['Multi-tenant con aislamiento total', 'Reportes financieros en tiempo real', 'Integración DIAN automatizada', 'Seguridad grado bancario AES-256']" :key="feat">
-              <div class="check-circle">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                  <path d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <span>{{ feat }}</span>
-            </li>
-          </ul>
-
-          <div class="metrics-row">
-            <div class="metric-item">
-              <span class="m-val">+500</span>
-              <span class="m-label">Empresas</span>
-            </div>
-            <div class="metric-divider"></div>
-            <div class="metric-item">
-              <span class="m-val">99.9%</span>
-              <span class="m-label">Uptime</span>
-            </div>
-            <div class="metric-divider"></div>
-            <div class="metric-item">
-              <span class="m-val">24/7</span>
-              <span class="m-label">Soporte</span>
-            </div>
-          </div>
-        </div>
-        
-        <footer class="side-footer">
-          &copy; 2026 Contex360 · Tecnología Contable Local
-        </footer>
-      </aside>
-
-      <!-- PANEL DERECHO: Formulario & Acceso -->
-      <section class="side-form">
-        <!-- Top Help Header -->
-        <header class="top-help">
-          <div class="help-box">
-            <HelpCircle class="icon-s" />
-            <span>¿Necesitas ayuda?</span>
-            <button class="ghost-link">Contactar soporte</button>
           </div>
         </header>
 
-        <div class="form-box">
-          <!-- Mobile Brand -->
-          <div class="mobile-logo lg-hidden">
-            <div class="logo-square small">C</div>
-            <span class="bold">Contex360</span>
+        <div class="panel-content">
+          <span class="eyebrow">PLATAFORMA ERP EMPRESARIAL</span>
+          <h1 class="main-title">Plataforma Integral de <br/><span>Gestión Empresarial</span></h1>
+          <p class="description">
+            Soluciones financieras y contables de clase mundial para empresas que buscan optimizar sus operaciones y tomar decisiones estratégicas.
+          </p>
+
+          <div class="metrics-row">
+            <div class="metric">
+              <span class="m-value">+ 500</span>
+              <span class="m-label">Empresas activas</span>
+            </div>
+            <div class="metric">
+              <span class="m-value">99.9%</span>
+              <span class="m-label">Disponibilidad</span>
+            </div>
+            <div class="metric">
+              <span class="m-value">24/7</span>
+              <span class="m-label">Soporte técnico</span>
+            </div>
           </div>
 
-          <template v-if="requiresPasswordChange">
-            <div class="header-group">
-              <h2>Contraseña expirada</h2>
-              <p>Por seguridad debes establecer una nueva credencial.</p>
-            </div>
-            
-            <div v-if="errorMessage" class="msg error">{{ errorMessage }}</div>
+          <ul class="feat-list">
+            <li v-for="feat in ['Multi-tenant con aislamiento completo de datos', 'Reportes financieros en tiempo real', 'Integración con sistemas bancarios', 'Cumplimiento normativo automatizado']" :key="feat">
+              <CheckCircle2 class="check-icon" />
+              <span>{{ feat }}</span>
+            </li>
+          </ul>
+        </div>
 
-            <form @submit.prevent="handleChangePassword" class="vertical-form">
-              <div class="field-group">
+        <footer class="panel-footer">
+          <span>&copy; 2026 Contex360</span>
+          <div class="footer-links">
+            <a href="#">Términos</a>
+            <a href="#">Privacidad</a>
+          </div>
+        </footer>
+      </aside>
+
+      <!-- RIGHT PANEL: Login Form -->
+      <section class="form-panel">
+        <header class="form-header-top">
+          <div class="support-link">
+            <span>¿Necesitas ayuda?</span>
+            <a href="#">Contactar soporte</a>
+          </div>
+        </header>
+
+        <div class="form-container">
+          <template v-if="requiresPasswordChange">
+            <h2 class="form-title">Contraseña expirada</h2>
+            <p class="form-subtitle">Por seguridad debes establecer una nueva para continuar.</p>
+            
+            <div v-if="errorMessage" class="error-msg">{{ errorMessage }}</div>
+
+            <form @submit.prevent="handleChangePassword" class="auth-form">
+              <div class="form-field">
                 <label>Nueva contraseña</label>
-                <input v-model="newPassword" type="password" placeholder="Mínimo 8 caracteres" required />
+                <input v-model="newPassword" type="password" placeholder="Mínimo 8 caracteres" />
               </div>
-              <div class="field-group">
+              <div class="form-field">
                 <label>Confirmar contraseña</label>
-                <input v-model="newPasswordConfirm" type="password" placeholder="Repite la contraseña" required />
+                <input v-model="newPasswordConfirm" type="password" placeholder="Repite la contraseña" />
               </div>
-              <button type="submit" class="primary-btn" :disabled="changePasswordLoading">
-                {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y Continuar' }}
+              <button type="submit" class="submit-btn" :disabled="changePasswordLoading">
+                {{ changePasswordLoading ? 'Cambiando...' : 'Establecer Contraseña' }}
               </button>
             </form>
           </template>
 
           <template v-else>
-            <div class="header-group">
-              <h2>Bienvenido</h2>
-              <p>Ingresa tus credenciales para acceder al sistema</p>
-            </div>
+            <h2 class="form-title">Bienvenido de nuevo</h2>
+            <p class="form-subtitle">Ingresa tus credenciales para acceder al sistema</p>
 
-            <!-- Social Login Section -->
-            <div class="social-login">
+            <div v-if="errorMessage" class="error-msg">{{ errorMessage }}</div>
+            <div v-if="statusMessage" class="success-msg">{{ statusMessage }}</div>
+
+            <!-- Social Login (Added as per request text) -->
+            <div class="social-row">
               <button class="social-btn">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="G" />
                 <span>Google</span>
               </button>
               <button class="social-btn">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" />
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="M" />
                 <span>Microsoft</span>
               </button>
             </div>
 
-            <div class="divider-text">
-              <span>o continúa con</span>
-            </div>
+            <div class="divider"><span>o continúa con</span></div>
 
-            <div v-if="errorMessage" class="msg error">{{ errorMessage }}</div>
-            <div v-if="statusMessage" class="msg success">{{ statusMessage }}</div>
-
-            <form @submit.prevent="handleSubmit" class="vertical-form">
-              <div class="field-group">
-                <label>Correo electrónico</label>
-                <div class="input-with-icon">
-                  <Mail class="input-icon" />
-                  <input v-model="email" type="email" placeholder="usuario@empresa.com" required />
-                </div>
+            <form @submit.prevent="handleSubmit" class="auth-form">
+              <div class="form-field">
+                <label>Correo electronico</label>
+                <input v-model="email" type="email" placeholder="nombre@empresa.com" />
               </div>
 
-              <div class="field-group">
-                <div class="label-split">
-                  <label>Contraseña</label>
-                  <button type="button" @click="toggleRecoveryHelp" class="ghost-link">¿Olvidaste tu contraseña?</button>
+              <div class="form-field">
+                <div class="label-row">
+                  <label>Contrasena</label>
+                  <button type="button" @click="toggleRecoveryHelp" class="forgot-link">¿Olvidaste tu contraseña?</button>
                 </div>
-                <div class="input-relative">
-                  <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" required />
-                  <button type="button" @click="showPassword = !showPassword" class="eye-toggle">
-                    {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+                <div class="input-wrap">
+                  <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="Ingresa tu contraseña" />
+                  <button type="button" @click="showPassword = !showPassword" class="eye-btn">
+                    <Eye v-if="!showPassword" class="eye-icon" />
+                    <EyeOff v-else class="eye-icon" />
                   </button>
                 </div>
               </div>
 
-              <div v-if="requiresTotp" class="totp-container">
-                <label>Código de Autenticación (2FA)</label>
-                <input v-model="totpCode" type="text" maxlength="6" placeholder="000000" class="totp-field" />
-                <span class="hint">Ingresa el código de 6 dígitos de tu aplicación</span>
+              <div v-if="requiresTotp" class="totp-block">
+                <label>Código 2FA</label>
+                <input v-model="totpCode" type="text" maxlength="6" placeholder="000000" />
               </div>
 
-              <div class="options-row">
-                <label class="custom-checkbox">
-                  <input v-model="rememberMe" type="checkbox" />
-                  <span>Recordar este dispositivo</span>
-                </label>
+              <div class="form-check">
+                <input v-model="rememberMe" type="checkbox" id="remember" />
+                <label for="remember">Recordar dispositivo</label>
               </div>
 
-              <button type="submit" class="primary-btn" :disabled="isLoading">
-                <span>{{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}</span>
-                <ArrowRight v-if="!isLoading" class="btn-icon" />
+              <button type="submit" class="submit-btn" :disabled="isLoading">
+                {{ isLoading ? 'Verificando...' : 'Iniciar sesión' }}
               </button>
             </form>
 
-            <div class="form-footer-action">
-              ¿No tienes una cuenta? <button @click="$emit('request-demo')" class="ghost-link bold">Solicita una demo</button>
+            <div class="demo-link">
+              ¿No tienes una cuenta? <a href="#" @click.prevent="$emit('request-demo')">Solicita una demo</a>
             </div>
 
-            <div class="security-badges">
-              <div class="badge-item">
-                <ShieldCheck class="badge-icon" />
-                <span>ISO 27001</span>
-              </div>
-              <div class="badge-item">
-                <Lock class="badge-icon" />
-                <span>SOC 2</span>
-              </div>
-              <div class="badge-item">
-                <Globe class="badge-icon" />
-                <span>Enterprise</span>
-              </div>
+            <div class="cert-badges">
+              <div class="badge"><ShieldCheck class="b-icon" /> <span>SSL</span></div>
+              <div class="badge"><Lock class="b-icon" /> <span>AES-256</span></div>
+              <div class="badge"><Globe class="b-icon" /> <span>ISO 27001</span></div>
+              <div class="badge"><Cpu class="b-icon" /> <span>SOC 2</span></div>
             </div>
           </template>
         </div>
       </section>
     </div>
-
-    <!-- Modals (Blindados) -->
-    <div v-if="showTermsModal || showPrivacyModal" class="modal-overlay">
-      <div class="modal-card">
-        <header class="modal-header">
-          <h3>{{ showTermsModal ? 'Términos de Uso' : 'Privacidad' }}</h3>
-          <button @click="showTermsModal = false; showPrivacyModal = false" class="close-btn">&times;</button>
-        </header>
-        <div class="modal-body">
-          <p v-if="showTermsModal">Contenido de términos y condiciones del servicio ERP...</p>
-          <p v-if="showPrivacyModal">Política de tratamiento de datos personales (Ley 1581 de 2012)...</p>
-        </div>
-        <footer class="modal-footer">
-          <button @click="showTermsModal = false; showPrivacyModal = false" class="primary-btn small">Cerrar</button>
-        </footer>
-      </div>
-    </div>
   </div>
 </template>
 
 <style scoped>
-/* 
-  REGLA DE ORO: AISLAMIENTO TOTAL
-  No se usan variables de styles.css para evitar contaminación.
-*/
+/* Scoped Styles to ensure isolation and match reference exactly */
 
-.login-wrapper {
+.auth-root {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+  font-family: 'Inter', -apple-system, system-ui, sans-serif;
   margin: 0;
   padding: 0;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  background-color: #0B0F1A;
+  display: flex;
 }
 
-.login-split {
-  display: flex;
-  height: 100vh;
-  width: 100vw;
-  overflow: hidden;
-}
-
-/* --- PANEL IZQUIERDO (ASIDE) --- */
-.side-info {
-  flex: 1.1;
-  background-color: #0B0F1A;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  padding: 60px 100px;
-  position: relative;
+.auth-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
 }
 
 @media (max-width: 1024px) {
-  .side-info {
+  .auth-grid {
+    grid-template-columns: 1fr;
+  }
+  .branding-panel {
     display: none;
   }
 }
 
-.info-inner {
-  max-width: 600px;
+/* --- LEFT PANEL --- */
+.branding-panel {
+  background-color: #131926;
+  color: #ffffff;
+  padding: 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+  overflow: hidden;
 }
 
-.brand-header {
+/* Background orbs for depth */
+.branding-panel::before {
+  content: "";
+  position: absolute;
+  top: -100px;
+  right: -100px;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, transparent 70%);
+  border-radius: 50%;
+}
+
+.logo-group {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 80px;
 }
 
-.logo-square {
-  width: 48px;
-  height: 48px;
-  background-color: #10B981;
-  border-radius: 12px;
+.logo-box {
+  width: 40px;
+  height: 40px;
+  background-color: #334155;
+  color: #ffffff;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 900;
-  font-size: 1.6rem;
-  color: #ffffff;
+  font-size: 1.25rem;
 }
 
-.brand-meta {
-  display: flex;
-  flex-direction: column;
-}
-
-.brand-title {
-  font-weight: 800;
+.brand-name {
+  display: block;
   font-size: 1.5rem;
-  letter-spacing: -0.02em;
+  font-weight: 800;
+  line-height: 1;
 }
 
-.brand-subtitle {
-  font-size: 0.75rem;
-  text-transform: uppercase;
+.brand-tagline {
+  display: block;
+  font-size: 0.65rem;
   letter-spacing: 0.1em;
-  color: #64748b;
+  color: #94a3b8;
+  margin-top: 4px;
 }
 
-.hero-text .eyebrow {
+.eyebrow {
   color: #10B981;
+  font-size: 0.75rem;
   font-weight: 700;
-  font-size: 0.8rem;
-  text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.1em;
   margin-bottom: 24px;
   display: block;
 }
 
 .main-title {
-  font-size: 5rem;
+  font-size: 4.5rem;
   font-weight: 900;
   line-height: 1.05;
-  margin-bottom: 28px;
-  letter-spacing: -0.05em;
-  color: #ffffff !important;
+  margin-bottom: 32px;
+  letter-spacing: -0.04em;
+  background: linear-gradient(to bottom, #ffffff 60%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .main-title span {
-  color: #10B981;
+  color: #ffffff;
+  -webkit-text-fill-color: #ffffff;
 }
 
 .description {
   font-size: 1.25rem;
   color: #94a3b8;
   line-height: 1.6;
-  margin-bottom: 56px;
-}
-
-.features {
-  list-style: none;
-  padding: 0;
-  margin: 0 0 64px 0;
-}
-
-.features li {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 22px;
-  color: #cbd5e1;
-  font-weight: 500;
-}
-
-.check-circle {
-  width: 24px;
-  height: 24px;
-  background-color: #10B981;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  flex-shrink: 0;
-}
-
-.check-circle svg {
-  width: 14px;
-  height: 14px;
+  max-width: 500px;
+  margin-bottom: 60px;
 }
 
 .metrics-row {
   display: flex;
-  align-items: center;
-  gap: 40px;
+  gap: 60px;
+  margin-bottom: 60px;
 }
 
-.metric-item {
-  display: flex;
-  flex-direction: column;
-}
-
-.m-val {
-  font-size: 2rem;
+.m-value {
+  display: block;
+  font-size: 2.25rem;
   font-weight: 800;
   color: #ffffff;
+  margin-bottom: 4px;
 }
 
 .m-label {
   font-size: 0.85rem;
   color: #64748b;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-.metric-divider {
-  width: 1px;
-  height: 40px;
-  background-color: rgba(255, 255, 255, 0.1);
+.feat-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
 }
 
-.side-footer {
-  position: absolute;
-  bottom: 40px;
-  left: 100px;
+.feat-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.check-icon {
+  width: 20px;
+  height: 20px;
+  color: #10B981;
+}
+
+.panel-footer {
+  display: flex;
+  justify-content: space-between;
   font-size: 0.8rem;
   color: #475569;
 }
 
-/* --- PANEL DERECHO (FORM) --- */
-.side-form {
-  flex: 0.9;
+.footer-links {
+  display: flex;
+  gap: 16px;
+}
+
+.footer-links a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* --- RIGHT PANEL --- */
+.form-panel {
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   padding: 40px;
-  position: relative;
 }
 
-.top-help {
-  position: absolute;
-  top: 32px;
-  right: 40px;
-}
-
-.help-box {
+.form-header-top {
   display: flex;
-  align-items: center;
-  gap: 8px;
+  justify-content: flex-end;
+  margin-bottom: 60px;
+}
+
+.support-link {
   font-size: 0.85rem;
   color: #64748b;
-}
-
-.icon-s {
-  width: 16px;
-  height: 16px;
-}
-
-.form-box {
-  width: 100%;
-  max-width: 420px;
-}
-
-.mobile-logo {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 40px;
+  gap: 8px;
 }
 
-.logo-square.small {
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  font-size: 1.2rem;
+.support-link a {
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
 }
 
-.lg-hidden {
-  display: none;
+.form-container {
+  max-width: 440px;
+  width: 100%;
+  margin: auto;
 }
 
-@media (max-width: 1024px) {
-  .lg-hidden {
-    display: flex;
-  }
-}
-
-.header-group {
-  margin-bottom: 40px;
-}
-
-.header-group h2 {
-  color: #0f172a !important;
-  font-size: 2.5rem;
+.form-title {
+  font-size: 2.75rem;
   font-weight: 800;
-  letter-spacing: -0.04em;
-  margin: 0 0 10px;
+  color: #0f172a;
+  margin-bottom: 12px;
+  letter-spacing: -0.02em;
 }
 
-.header-group p {
+.form-subtitle {
   color: #64748b;
+  margin-bottom: 40px;
   font-size: 1.1rem;
-  margin: 0;
 }
 
-/* Social Login */
-.social-login {
+.social-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
@@ -583,347 +501,231 @@ const toggleRecoveryHelp = () => {
 }
 
 .social-btn {
+  height: 52px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
-  height: 52px;
-  background-color: #f8fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 12px;
   cursor: pointer;
+  transition: all 0.2s;
   font-weight: 600;
   color: #1e293b;
-  transition: all 0.2s;
 }
 
 .social-btn:hover {
-  background-color: #f1f5f9;
+  background: #f8fafc;
   border-color: #cbd5e1;
 }
 
 .social-btn img {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
-.divider-text {
+.divider {
   position: relative;
   text-align: center;
-  margin: 24px 0;
+  margin: 32px 0;
 }
 
-.divider-text::before {
+.divider::before {
   content: "";
   position: absolute;
   top: 50%;
   left: 0;
-  width: 100%;
+  right: 0;
   height: 1px;
-  background-color: #e2e8f0;
+  background: #f1f5f9;
 }
 
-.divider-text span {
-  position: relative;
-  background-color: #ffffff;
+.divider span {
+  background: #ffffff;
   padding: 0 16px;
-  font-size: 0.85rem;
+  position: relative;
   color: #94a3b8;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  font-weight: 500;
+  font-size: 0.85rem;
 }
 
-.vertical-form {
+.auth-form {
   display: flex;
   flex-direction: column;
   gap: 24px;
 }
 
-.field-group {
+.form-field {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
-.label-split {
+.form-field label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.form-field input {
+  height: 48px;
+  padding: 0 16px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  color: #475569;
+  background: #ffffff;
+  transition: border-color 0.2s;
+}
+
+.form-field input:focus {
+  border-color: #0f172a;
+  outline: none;
+}
+
+.label-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
 
-.field-group label {
-  color: #1e293b !important;
-  font-size: 0.95rem;
-  font-weight: 600;
-}
-
-.input-with-icon {
-  position: relative;
-}
-
-.input-icon {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 18px;
-  height: 18px;
-  color: #94a3b8;
-}
-
-.field-group input {
-  width: 100%;
-  height: 56px !important;
-  border: 1px solid #e2e8f0 !important;
-  border-radius: 12px;
-  padding: 0 16px;
-  font-size: 1rem;
-  color: #0f172a !important;
-  background-color: #ffffff;
-  box-sizing: border-box;
-}
-
-.input-with-icon input {
-  padding-left: 48px;
-}
-
-.field-group input:focus {
-  border-color: #0f172a !important;
-  outline: none;
-  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.04);
-}
-
-.input-relative {
-  position: relative;
-}
-
-.eye-toggle {
-  position: absolute;
-  right: 16px;
-  top: 50%;
-  transform: translateY(-50%);
+.forgot-link {
   background: none;
   border: none;
-  cursor: pointer;
-  padding: 8px;
-  opacity: 0.4;
-  display: flex;
-}
-
-.totp-container {
-  background-color: #f8fafc;
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid #e2e8f0;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.totp-field {
-  text-align: center;
-  letter-spacing: 0.4em;
-  font-weight: 800;
-  font-size: 1.5rem !important;
-  border: 2px solid #cbd5e1 !important;
-}
-
-.totp-container .hint {
-  font-size: 0.75rem;
   color: #64748b;
-  text-align: center;
-}
-
-.options-row {
-  margin: 4px 0;
-}
-
-.custom-checkbox {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  color: #64748b;
-  font-size: 0.95rem;
-}
-
-.custom-checkbox input {
-  width: 20px;
-  height: 20px;
-  cursor: pointer;
-  border-radius: 6px;
-}
-
-.primary-btn {
-  background-color: #2D3748;
-  color: #ffffff;
-  border: none;
-  border-radius: 8px;
-  width: 100%;
-  height: 56px;
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  transition: all 0.2s;
-}
-
-.primary-btn:hover {
-  background-color: #1a202c;
-  transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(45, 55, 72, 0.2);
-}
-
-.primary-btn:active {
-  transform: translateY(0);
-}
-
-.primary-btn:disabled {
-  background-color: #cbd5e1;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-.btn-icon {
-  width: 20px;
-  height: 20px;
-}
-
-.form-footer-action {
-  margin-top: 40px;
-  text-align: center;
-  color: #64748b;
-  font-size: 1rem;
-}
-
-.ghost-link {
-  background: none;
-  border: none;
-  color: #10B981;
-  font-weight: 600;
+  font-size: 0.85rem;
   cursor: pointer;
   padding: 0;
-  font-size: 0.9rem;
 }
 
-.ghost-link.bold {
-  font-weight: 800;
-}
-
-.ghost-link:hover {
+.forgot-link:hover {
+  color: #0f172a;
   text-decoration: underline;
 }
 
-.msg {
-  padding: 16px 20px;
-  border-radius: 12px;
+.input-wrap {
+  position: relative;
+}
+
+.eye-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #94a3b8;
+  display: flex;
+  padding: 4px;
+}
+
+.eye-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.form-check {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 4px 0;
+}
+
+.form-check input {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.form-check label {
+  font-size: 0.9rem;
+  color: #64748b;
+  cursor: pointer;
+}
+
+.submit-btn {
+  height: 48px;
+  background-color: #334155;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  font-weight: 700;
   font-size: 1rem;
-  font-weight: 500;
-  margin-bottom: 32px;
+  cursor: pointer;
+  transition: background 0.2s;
+  margin-top: 8px;
 }
 
-.msg.error {
-  background-color: #fff1f2;
-  border: 1px solid #fecdd3;
-  color: #be123c;
+.submit-btn:hover {
+  background-color: #1e293b;
 }
 
-.msg.success {
-  background-color: #f0fdf4;
-  border: 1px solid #bbf7d0;
-  color: #15803d;
+.submit-btn:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
 }
 
-.security-badges {
-  margin-top: 64px;
-  padding-top: 40px;
-  border-top: 1px solid #f1f5f9;
+.demo-link {
+  text-align: center;
+  margin-top: 32px;
+  font-size: 0.95rem;
+  color: #64748b;
+}
+
+.demo-link a {
+  color: #0f172a;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.cert-badges {
+  margin-top: 60px;
   display: flex;
   justify-content: center;
-  gap: 32px;
+  gap: 24px;
 }
 
-.badge-item {
+.badge {
   display: flex;
   align-items: center;
   gap: 8px;
   color: #94a3b8;
-}
-
-.badge-icon {
-  width: 18px;
-  height: 18px;
-}
-
-.badge-item span {
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
 }
 
-/* --- MODALS --- */
-.modal-overlay {
-  position: fixed;
-  inset: 0;
-  background-color: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(8px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  padding: 20px;
+.b-icon {
+  width: 14px;
+  height: 14px;
 }
 
-.modal-card {
-  background-color: #ffffff;
-  width: 100%;
-  max-width: 640px;
-  border-radius: 24px;
-  overflow: hidden;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+.error-msg {
+  padding: 12px;
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #be123c;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 24px;
 }
 
-.modal-header {
-  padding: 28px 36px;
-  border-bottom: 1px solid #f1f5f9;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+.success-msg {
+  padding: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #15803d;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  margin-bottom: 24px;
 }
 
-.modal-header h3 {
-  margin: 0;
-  color: #0f172a;
-  font-size: 1.5rem;
-  font-weight: 800;
-}
-
-.close-btn {
-  background: none;
-  border: none;
-  font-size: 2.5rem;
-  line-height: 1;
-  color: #64748b;
-  cursor: pointer;
-}
-
-.modal-body {
-  padding: 40px;
-  color: #475569;
-  line-height: 1.7;
-  font-size: 1.1rem;
-}
-
-.modal-footer {
-  padding: 24px 36px;
-  border-top: 1px solid #f1f5f9;
-  display: flex;
-  justify-content: flex-end;
+.totp-block {
+  background: #f8fafc;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
 }
 </style>
 
