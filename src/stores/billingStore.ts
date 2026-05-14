@@ -1,7 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
-import { useAuthStore } from './authStore'
 import { businessApi } from '../services/businessApi'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import { Invoice } from '../types/billing'
@@ -11,7 +10,6 @@ const scheduledDianTimers = new Map<string, any[]>()
 
 export const useBillingStore = defineStore('billing', () => {
   const root = useStateStore()
-  const auth = useAuthStore()
   const accounting = useAccountingStore()
 
   // State with robust initialization
@@ -36,7 +34,7 @@ export const useBillingStore = defineStore('billing', () => {
     tenantInvoices.value.find(inv => inv.id === selections.value.invoiceId) || tenantInvoices.value[0] || null
   )
 
-  const canEmitInvoice = computed(() => auth.can('emit_invoice'))
+  const canEmitInvoice = computed(() => root.can('emit_invoice'))
 
   // Actions
   async function fetchInvoices() {

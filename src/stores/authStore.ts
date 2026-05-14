@@ -28,6 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
   const accessibleTenants = computed(() => root.tenants)
 
   const visibleViews = computed(() => {
+    // Si es System Owner (Root), tiene acceso a TODO por definición
     if (currentUser.value?.isSystemOwner) {
       return ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile']
     }
@@ -43,12 +44,6 @@ export const useAuthStore = defineStore('auth', () => {
     return definitions[role] || ['dashboard', 'profile']
   })
 
-  // === SECURITY GUARDRAIL ===
-  function can(permission: string): boolean {
-    if (currentUser.value?.isSystemOwner) return true
-    return root.can(permission)
-  }
-
   async function loginWithBackend(credentials: { email: string; password: string; totpCode?: string }) {
     isLoading.value = true
     authError.value = null
@@ -56,6 +51,7 @@ export const useAuthStore = defineStore('auth', () => {
     const tenantIdForRequest = root.activeTenantId || 'tenant-a'
     
     try {
+      // Intentar login con el Backend Real
       try {
         const response = await apiLoginWithBackend(credentials)
         
@@ -69,6 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
               isDemoAccount: !!response.user.isDemoAccount
             } as any)
           } else {
+            // Actualizar propiedades críticas si cambiaron en el backend
             exists.isSystemOwner = !!response.user.isSystemOwner
             exists.status = response.user.status || 'active'
           }
@@ -89,6 +86,7 @@ export const useAuthStore = defineStore('auth', () => {
           return { ok: true, user: response.user }
         }
       } catch (backendError: any) {
+        // Fallback a login local
         const user = root.users.find(u => u.email === credentials.email)
         if (user && user.isDemoAccount) {
           const isValid = await verifyPassword(user, credentials.password)
@@ -140,6 +138,10 @@ export const useAuthStore = defineStore('auth', () => {
     return { revoked: false }
   }
 
+  function processScheduledDeactivations() {
+    // Logic for scheduled deactivations if needed
+  }
+
   async function refreshSessionWithBackend() {
     return await root.refreshSessionWithBackend()
   }
@@ -158,9 +160,9 @@ export const useAuthStore = defineStore('auth', () => {
     setActiveTenant,
     refreshSessionWithBackend,
     checkCurrentSessionHealth,
+    processScheduledDeactivations,
     visibleViews,
     activeMembership,
     activeView,
-    can
   }
 })
