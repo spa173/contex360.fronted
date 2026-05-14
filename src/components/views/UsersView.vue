@@ -6,6 +6,7 @@ import {
   ROLE_OPTIONS,
   useUsersStore,
 } from '../../stores/usersStore'
+import { Badge } from '@/components/ui/badge'
 import UserTable from '../users/UserTable.vue'
 import { formatDate } from '../../utils/ui'
 
@@ -974,9 +975,11 @@ watch(
             <h3>{{ selectedRow.user.name }}</h3>
             <p class="label-soft">{{ selectedRow.user.email }}</p>
           </div>
-          <span :class="selectedRow.security.riskLevel === 'review' ? 'status-badge status-contingencia' : 'small-pill'">
+          <Badge
+            :class="selectedRow.security.riskLevel === 'review' ? 'bg-amber-500/15 text-amber-500 border-none' : 'bg-slate-700/50 text-slate-400 border-none'"
+          >
             Riesgo {{ selectedRow.security.riskLevel === 'review' ? 'revisar' : 'normal' }}
-          </span>
+          </Badge>
         </div>
 
         <div class="detail-section">
@@ -1243,9 +1246,11 @@ watch(
               <td>{{ formatDate(session.createdAt) }}</td>
               <td>{{ formatDate(session.lastSeenAt) }}</td>
               <td>
-                <span :class="session.revokedAt ? 'status-badge status-inactive' : 'status-badge status-active'">
+                <Badge
+                  :class="session.revokedAt ? 'bg-rose-500/15 text-rose-500 border-none' : 'bg-emerald-500/15 text-emerald-500 border-none'"
+                >
                   {{ session.revokedAt ? 'Cerrada' : 'Activa' }}
-                </span>
+                </Badge>
               </td>
               <td>
                 <button v-if="!session.revokedAt" class="btn-sm" type="button" @click="handleRevokeSession(session.id)">
@@ -1337,17 +1342,17 @@ watch(
               </p>
               <p v-if="invitation.resendCount" class="label-soft">Reenviada {{ invitation.resendCount }} veces</p>
             </div>
-            <span
+            <Badge
               :class="
                 invitation.isExpired
-                  ? 'status-badge status-inactive'
+                  ? 'bg-rose-500/15 text-rose-500 border-none'
                   : invitation.isExpiringSoon
-                    ? 'status-badge status-contingencia'
-                    : 'status-badge status-active'
+                    ? 'bg-amber-500/15 text-amber-500 border-none'
+                    : 'bg-emerald-500/15 text-emerald-500 border-none'
               "
             >
               {{ invitation.status }}
-            </span>
+            </Badge>
             <button class="btn-sm" type="button" @click="handleResendInvitation(invitation.id)">Reenviar</button>
           </div>
         </div>
