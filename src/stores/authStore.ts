@@ -190,6 +190,49 @@ export const useAuthStore = defineStore('auth', () => {
     return stateStore.setTwoFactorRequirement(userId, required)
   }
 
+  /**
+   * Generar credenciales iniciales para conversión de Demo a Empresa Real
+   * Solo accesible por system owners
+   */
+  async function generateInitialCredentials(leadId: string): Promise<{
+    ok: boolean
+    message: string
+    credentials?: { email: string; password: string; tenantId: string }
+  }> {
+    // Validar que el usuario actual sea system owner
+    if (!currentUser.value?.isSystemOwner) {
+      return {
+        ok: false,
+        message: 'Solo los system owners pueden convertir demos a empresas reales.',
+      }
+    }
+
+    try {
+      // Llamar al backend para convertir la empresa
+      const response = await businessApi.convertLeadToTenant?.(leadId)
+
+      if (!response || !response.ok) {
+        return {
+          ok: false,
+          message: response?.message || 'Error al convertir el lead a empresa real.',
+        }
+      }
+
+      // Retornar credenciales generadas
+      return {
+        ok: true,
+        message: 'Empresa convertida exitosamente. Credenciales generadas.',
+        credentials: response.credentials,
+      }
+    } catch (error) {
+      console.error('Error converting lead to tenant:', error)
+      return {
+        ok: false,
+        message: error instanceof Error ? error.message : 'Error de conexión al servidor.',
+      }
+    }
+  }
+
   // Compatibilidad temporal: re-exportar funciones del stateStore
   return {
     // State

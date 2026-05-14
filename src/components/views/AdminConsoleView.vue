@@ -3,6 +3,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { Menu, CheckCircle, Copy, AlertTriangle, Check } from 'lucide-vue-next'
 import { businessApi } from '../../services/businessApi'
+import { useAuthStore } from '../../stores/authStore'
 import { formatDate } from '../../utils/ui'
 import TenantSettingsView from '../root/TenantSettingsView.vue'
 
@@ -15,6 +16,11 @@ import LeadsTable from '../admin_new/LeadsTable.vue'
 import LogsTable from '../admin_new/LogsTable.vue'
 import ComplianceView from '../admin_new/ComplianceView.vue'
 import BreachView from '../admin_new/BreachView.vue'
+
+// Shadcn UI components
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
+import { toast } from 'vue-sonner'
 
 defineProps({
   isActive: { type: Boolean, default: false },
@@ -35,6 +41,10 @@ const newCustomerCredentials = ref(null)
 const erasingUserId = ref(null)
 const notifyingId = ref(null)
 const selectedTenantId = ref(null)
+const isCredentialsDialogOpen = ref(false)
+
+// Auth Store
+const authStore = useAuthStore()
 
 const normalizeCompliance = (value) => {
   if (!value || typeof value !== 'object' || Array.isArray(value)) return null
@@ -105,29 +115,31 @@ const updateDemoStatus = async (id, newStatus) => {
 }
 
 const convertToCustomer = async (id) => {
-  if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa y un usuario administrador, y enviará credenciales por correo electrónico.')) return
-  try {
-    const result = await businessApi.convertToCustomer(id)
-    
-    // Update local list
-    const fresh = await businessApi.getDemoRequests()
-    demoRequests.value = fresh?.data || fresh || []
-    
-    // Set credentials for modal
-    if (result && (result.data || result.tempPassword)) {
-      newCustomerCredentials.value = result.data || result
-    } else {
-      alert('Cliente creado, pero no se pudieron recuperar las credenciales para mostrar. Revisa el correo enviado.')
-    }
-  } catch (err) {
-    console.error('Error converting to customer:', err)
-    alert('Error al convertir en cliente: ' + (err.message || 'Error desconocido'))
+  // Usar authStore para validar permisos y generar credenciales
+  const result = await authStore.generateInitialCredentials(id)
+
+  if (!result.ok) {
+    toast.error(result.message)
+    return
+  }
+
+  // Update local list
+  const fresh = await businessApi.getDemoRequests()
+  demoRequests.value = fresh?.data || fresh || []
+
+  // Set credentials for modal
+  if (result.credentials) {
+    newCustomerCredentials.value = result.credentials
+    isCredentialsDialogOpen.value = true
+    toast.success('Empresa convertida exitosamente. Credenciales generadas.')
+  } else {
+    toast.error('Cliente creado, pero no se pudieron recuperar las credenciales para mostrar. Revisa el correo enviado.')
   }
 }
 
 const copyToClipboard = (text) => {
   navigator.clipboard.writeText(text)
-  alert('Copiado al portapapeles')
+  toast.success('Copiado al portapapeles')
 }
 
 const executeAccessReview = async () => {
@@ -249,59 +261,65 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
       </div>
     </Teleport>
 
-    <!-- Modal credenciales nuevo cliente (Teleportado) -->
-    <Teleport to="body">
-      <div v-if="newCustomerCredentials" class="cred-overlay" @click.self="newCustomerCredentials = null">
-        <div class="cred-modal" role="dialog" aria-modal="true">
-          <div class="cred-header">
+    <!-- Dialog credenciales nuevo cliente -->
+    <Dialog v-model:open="isCredentialsDialogOpen">
+      <DialogContent class="bg-[#131926] border border-slate-800/50 text-slate-200">
+        <DialogHeader>
+          <div class="flex items-center gap-3 mb-2">
             <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
               <CheckCircle class="w-6 h-6 text-emerald-400" />
             </div>
             <div>
-              <h2 class="cred-title">Cliente creado exitosamente</h2>
-              <p class="cred-subtitle">Guarda estas credenciales — también se enviaron al correo del cliente</p>
+              <DialogTitle class="text-slate-50">Cliente creado exitosamente</DialogTitle>
+              <DialogDescription class="text-slate-500">
+                Guarda estas credenciales — también se enviaron al correo del cliente
+              </DialogDescription>
             </div>
           </div>
-          <div class="cred-body">
-            <div class="cred-row">
-              <span class="cred-label">Empresa</span>
-              <span class="cred-value">{{ newCustomerCredentials.tenant?.name || newCustomerCredentials.companyName }}</span>
+        </DialogHeader>
+
+        <div class="space-y-3 py-4">
+          <div class="flex items-center justify-between p-3 bg-[#0B0F1A] rounded-lg border border-slate-800/30">
+            <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Empresa</span>
+            <span class="text-sm font-medium text-slate-200">{{ newCustomerCredentials?.tenant?.name || newCustomerCredentials?.companyName }}</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-[#0B0F1A] rounded-lg border border-slate-800/30">
+            <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Prefijo</span>
+            <code class="text-sm text-emerald-400 bg-[#0B0F1A] px-2 py-1 rounded border border-emerald-500/20">{{ newCustomerCredentials?.tenant?.prefix || newCustomerCredentials?.prefix }}</code>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-[#0B0F1A] rounded-lg border border-slate-800/30">
+            <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Admin</span>
+            <span class="text-sm font-medium text-slate-200">{{ newCustomerCredentials?.user?.name || newCustomerCredentials?.name }}</span>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-[#0B0F1A] rounded-lg border border-slate-800/30">
+            <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Correo</span>
+            <code class="text-sm text-emerald-400 bg-[#0B0F1A] px-2 py-1 rounded border border-emerald-500/20">{{ newCustomerCredentials?.user?.email || newCustomerCredentials?.email }}</code>
+          </div>
+          <div class="flex items-center justify-between p-3 bg-emerald-500/10 rounded-lg border border-emerald-500/25">
+            <span class="text-xs text-slate-500 uppercase tracking-wider font-semibold">Contraseña temporal</span>
+            <div class="flex items-center gap-2">
+              <code class="text-emerald-400 bg-[#0B0F1A] px-2 py-1 rounded border border-emerald-500/20 font-bold tracking-wider">{{ newCustomerCredentials?.tempPassword }}</code>
+              <button class="p-1.5 bg-emerald-500/10 border border-emerald-500/20 rounded-lg text-emerald-400 hover:bg-emerald-500/20 transition-all" @click="copyToClipboard(newCustomerCredentials?.tempPassword)" title="Copiar contraseña">
+                <Copy class="w-4 h-4" />
+              </button>
             </div>
-            <div class="cred-row">
-              <span class="cred-label">Prefijo</span>
-              <code class="cred-code">{{ newCustomerCredentials.tenant?.prefix || newCustomerCredentials.prefix }}</code>
-            </div>
-            <div class="cred-row">
-              <span class="cred-label">Admin</span>
-              <span class="cred-value">{{ newCustomerCredentials.user?.name || newCustomerCredentials.name }}</span>
-            </div>
-            <div class="cred-row">
-              <span class="cred-label">Correo</span>
-              <code class="cred-code">{{ newCustomerCredentials.user?.email || newCustomerCredentials.email }}</code>
-            </div>
-            <div class="cred-row cred-row--highlight">
-              <span class="cred-label">Contraseña temporal</span>
-              <div class="cred-value-group">
-                <code class="cred-code cred-code--password">{{ newCustomerCredentials.tempPassword }}</code>
-                <button class="copy-btn" @click="copyToClipboard(newCustomerCredentials.tempPassword)" title="Copiar contraseña">
-                  <Copy class="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-            <p class="cred-note">
-              <AlertTriangle class="w-4 h-4 text-amber-400 flex-shrink-0" />
+          </div>
+          <div class="flex items-start gap-2 p-3 bg-amber-500/10 rounded-lg border border-amber-500/15">
+            <AlertTriangle class="w-4 h-4 text-amber-400 flex-shrink-0 mt-0.5" />
+            <p class="text-xs text-amber-400">
               El cliente deberá cambiar esta contraseña en su primer inicio de sesión.
             </p>
           </div>
-          <div class="cred-footer">
-            <button class="cred-close-btn" @click="newCustomerCredentials = null">
-              <Check class="w-4 h-4" />
-              Entendido
-            </button>
-          </div>
         </div>
-      </div>
-    </Teleport>
+
+        <DialogFooter>
+          <Button @click="isCredentialsDialogOpen = false" class="bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white">
+            <Check class="w-4 h-4 mr-2" />
+            Entendido
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   </section>
 </template>
 
@@ -318,170 +336,6 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 
 .view-container.active {
   display: block;
-}
-
-/* Modal Credenciales Styles (kept from previous implementation) */
-.cred-overlay {
-  align-items: center;
-  backdrop-filter: blur(8px);
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  inset: 0;
-  justify-content: center;
-  padding: 20px;
-  position: fixed;
-  z-index: 9999;
-}
-
-.cred-modal {
-  background: #131926;
-  border: 1px solid rgba(148, 163, 184, 0.15);
-  border-radius: 20px;
-  display: flex;
-  flex-direction: column;
-  max-width: 480px;
-  overflow: hidden;
-  width: 100%;
-  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6);
-}
-
-.cred-header {
-  align-items: center;
-  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-  display: flex;
-  gap: 16px;
-  padding: 28px 28px 20px;
-}
-
-.cred-title {
-  color: #f8fafc;
-  font-size: 1.15rem;
-  font-weight: 700;
-  margin: 0 0 4px;
-}
-
-.cred-subtitle {
-  color: #64748b;
-  font-size: 0.8rem;
-  margin: 0;
-}
-
-.cred-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 20px 28px;
-}
-
-.cred-row {
-  align-items: center;
-  border-radius: 10px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 14px;
-  background: rgba(11, 15, 26, 0.6);
-  border: 1px solid rgba(148, 163, 184, 0.08);
-}
-
-.cred-row--highlight {
-  background: rgba(16, 185, 129, 0.08);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-}
-
-.cred-label {
-  color: #64748b;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-weight: 600;
-}
-
-.cred-value {
-  color: #e2e8f0;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.cred-code {
-  background: rgba(11, 15, 26, 0.8);
-  border-radius: 6px;
-  color: #10b981;
-  font-family: 'JetBrains Mono', 'Fira Code', monospace;
-  font-size: 0.85rem;
-  padding: 4px 8px;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-.cred-code--password {
-  color: #34d399;
-  font-size: 1rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-}
-
-.cred-value-group {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.copy-btn {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 8px;
-  color: #10b981;
-  cursor: pointer;
-  padding: 6px;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-}
-
-.copy-btn:hover {
-  background: rgba(16, 185, 129, 0.2);
-  border-color: #10b981;
-  color: #34d399;
-}
-
-.cred-note {
-  color: #fbbf24;
-  font-size: 0.75rem;
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(251, 191, 36, 0.08);
-  padding: 10px 14px;
-  border-radius: 8px;
-  border: 1px solid rgba(251, 191, 36, 0.15);
-}
-
-.cred-footer {
-  border-top: 1px solid rgba(148, 163, 184, 0.1);
-  display: flex;
-  justify-content: flex-end;
-  padding: 20px 28px;
-}
-
-.cred-close-btn {
-  background: linear-gradient(to right, #059669, #10b981);
-  border: none;
-  border-radius: 10px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.9rem;
-  font-weight: 600;
-  padding: 10px 24px;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.cred-close-btn:hover { 
-  transform: translateY(-1px); 
-  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35); 
 }
 
 /* Tenant Drawer Overlay */

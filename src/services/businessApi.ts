@@ -39,6 +39,13 @@ export const businessApi = {
     return request<any>('/auth/me')
   },
 
+  // Lead Conversion
+  async convertLeadToTenant(leadId: string) {
+    // Placeholder para conversión de demo a empresa real
+    // Backend endpoint: POST /leads/:leadId/convert-to-tenant
+    return request<any>(`/leads/${leadId}/convert-to-tenant`, { method: 'POST' })
+  },
+
   // Third Parties
   async getThirdParties(kind?: string) {
     const query = kind ? `?kind=${kind}` : ''
