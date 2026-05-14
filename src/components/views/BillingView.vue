@@ -1,8 +1,23 @@
 <script setup>
-import { computed, reactive, watch } from 'vue'
-import { useBillingStore } from '../../stores/billingStore'
-import { formatCurrency, formatDate, formatDateOnly } from '../../utils/ui'
-import { generateInvoicePdf } from '../../utils/pdfGenerator'
+import { computed, reactive, watch, onMounted } from 'vue'
+import { useBillingStore } from '@/stores/billingStore'
+import { useStateStore } from '@/stores/stateStore'
+import { useInventoryStore } from '@/stores/inventoryStore'
+import { useThirdPartiesStore } from '@/stores/thirdPartiesStore'
+import { formatCurrency, formatDate, formatDateOnly } from '@/utils/ui'
+import { generateInvoicePdf } from '@/utils/pdfGenerator'
+import { 
+  FileText, 
+  Plus, 
+  Trash2, 
+  Download, 
+  Clock, 
+  CheckCircle2, 
+  AlertCircle,
+  FileDown,
+  LayoutDashboard,
+  Receipt
+} from 'lucide-vue-next'
 
 defineProps({
   isActive: {
@@ -12,7 +27,17 @@ defineProps({
 })
 
 const emit = defineEmits(['notify'])
-const store = useBillingStore()
+const billingStore = useBillingStore()
+const rootStore = useStateStore()
+const inventoryStore = useInventoryStore()
+const thirdPartiesStore = useThirdPartiesStore()
+
+// Initialize bridge on mount
+onMounted(() => {
+  if (typeof billingStore.initializeBridge === 'function') {
+    billingStore.initializeBridge()
+  }
+})
 
 const invoiceForm = reactive({
   clientId: '',
@@ -20,11 +45,12 @@ const invoiceForm = reactive({
   notes: '',
   lines: [],
 })
+
 let lineIdCounter = 0
 
 function createEmptyLine() {
   return {
-    id: `line-${lineIdCounter++}`,
+    id: `line-${Date.now()}-${lineIdCounter++}`,
     productId: '',
     quantity: 1,
   }
@@ -38,14 +64,14 @@ function resetForm() {
 }
 
 watch(
-  () => store.activeTenantId,
+  () => rootStore.activeTenantId,
   () => {
     resetForm()
   },
   { immediate: true },
 )
 
-const canBilling = computed(() => store.canEmitInvoice)
+const canBilling = computed(() => billingStore.canEmitInvoice)
 
 const billingPermissionNote = computed(() =>
   canBilling.value
@@ -56,7 +82,7 @@ const billingPermissionNote = computed(() =>
 const draftInvoiceItems = computed(() =>
   invoiceForm.lines
     .map((line) => {
-      const product = store.tenantProducts.find((item) => item.id === line.productId)
+      const product = inventoryStore.tenantProducts.find((item) => item.id === line.productId)
       const quantity = Number(line.quantity || 0)
 
       if (!product || quantity <= 0) {
@@ -101,9 +127,9 @@ const draftInvoiceWarnings = computed(() => {
   }, new Map())
 
   requestedByProduct.forEach((quantity, productId) => {
-    const product = store.tenantProducts.find((productItem) => productItem.id === productId)
+    const product = inventoryStore.tenantProducts.find((p) => p.id === productId)
 
-    if (product && !store.activeTenant.allowNegativeStock && product.stock < quantity) {
+    if (product && !rootStore.activeTenant?.allowNegativeStock && product.stock < quantity) {
       warnings.push(`Sin stock suficiente para ${product.name}. Disponible: ${product.stock}. Solicitado: ${quantity}.`)
     }
   })
@@ -112,8 +138,8 @@ const draftInvoiceWarnings = computed(() => {
 })
 
 const selectedInvoiceClient = computed(() =>
-  store.selectedInvoice
-    ? store.thirdParties.find((item) => item.id === store.selectedInvoice.clientId) || null
+  billingStore.selectedInvoice
+    ? thirdPartiesStore.thirdParties.find((item) => item.id === billingStore.selectedInvoice.clientId) || null
     : null,
 )
 
@@ -140,7 +166,7 @@ function removeLineItem(index) {
 }
 
 async function handleSubmit() {
-  const result = await store.emitInvoice({
+  const result = await billingStore.emitInvoice({
     clientId: invoiceForm.clientId,
     paymentTermDays: invoiceForm.paymentTermDays,
     notes: invoiceForm.notes,
@@ -155,268 +181,296 @@ async function handleSubmit() {
 }
 
 function handleDownloadPdf() {
-  if (!store.selectedInvoice) return
-  const client = store.thirdParties.find(tp => tp.id === store.selectedInvoice.clientId)
+  if (!billingStore.selectedInvoice) return
+  const client = thirdPartiesStore.thirdParties.find(tp => tp.id === billingStore.selectedInvoice.clientId)
   generateInvoicePdf({
-    ...store.selectedInvoice,
-    consecutive: store.selectedInvoice.number,
+    ...billingStore.selectedInvoice,
+    consecutive: billingStore.selectedInvoice.number,
     client: client
-  }, store.activeTenant)
+  }, rootStore.activeTenant)
+}
+
+function getStatusColor(status) {
+  const colors = {
+    aceptada: 'text-emerald-400 bg-emerald-400/10 border-emerald-400/20',
+    emitida: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
+    enviada: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
+    borrador: 'text-slate-400 bg-slate-400/10 border-slate-400/20',
+    rechazada: 'text-rose-400 bg-rose-400/10 border-rose-400/20'
+  }
+  return colors[status] || 'text-slate-400 bg-slate-400/10 border-slate-400/20'
 }
 </script>
 
 <template>
-  <section :class="['view', { active: isActive }]">
-    <div class="two-column">
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Flujo nucleo</p>
-            <h3>Crear factura electronica</h3>
-          </div>
+  <section v-if="isActive" class="min-h-full p-8 animate-in fade-in duration-500">
+    <!-- Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
+          <Receipt class="w-6 h-6 text-emerald-400" />
+          Facturación Electrónica
+        </h1>
+        <p class="text-slate-400 text-sm mt-1">Gestión de documentos tributarios y ciclos DIAN</p>
+      </div>
+      
+      <div class="flex items-center gap-3">
+        <div class="px-3 py-1.5 rounded-full bg-slate-800/50 border border-slate-700/50 flex items-center gap-2">
+          <div :class="['w-2 h-2 rounded-full', canBilling ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500']"></div>
+          <span class="text-xs font-medium text-slate-300">{{ billingPermissionNote }}</span>
         </div>
+      </div>
+    </div>
 
-        <p class="permission-note">{{ billingPermissionNote }}</p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <!-- Left Column: Form -->
+      <div class="lg:col-span-7 space-y-6">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20">
+          <div class="p-6 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
+            <h2 class="text-lg font-semibold text-white flex items-center gap-2">
+              <Plus class="w-5 h-5 text-emerald-400" />
+              Nueva Factura
+            </h2>
+          </div>
 
-        <form class="form-layout" @submit.prevent="handleSubmit">
-          <fieldset class="form-fieldset" :disabled="!canBilling">
-            <div class="field-grid two">
-              <label class="field">
-                <span>Cliente</span>
-                <select v-model="invoiceForm.clientId" required>
+          <form @submit.prevent="handleSubmit" class="p-6 space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="space-y-2">
+                <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Cliente</label>
+                <select 
+                  v-model="invoiceForm.clientId" 
+                  required
+                  class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all outline-none"
+                  :disabled="!canBilling"
+                >
                   <option value="">Selecciona un cliente</option>
-                  <option v-for="client in store.tenantClients" :key="client.id" :value="client.id">
+                  <option v-for="client in thirdPartiesStore.tenantClients" :key="client.id" :value="client.id">
                     {{ client.name }} - {{ client.nit }}
                   </option>
                 </select>
-              </label>
+              </div>
 
-              <label class="field">
-                <span>Condicion de pago</span>
-                <select v-model.number="invoiceForm.paymentTermDays">
-                  <option :value="30">Credito 30 dias</option>
-                  <option :value="15">Credito 15 dias</option>
-                  <option :value="0">Contado</option>
+              <div class="space-y-2">
+                <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Condición de Pago</label>
+                <select 
+                  v-model.number="invoiceForm.paymentTermDays"
+                  class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all outline-none"
+                  :disabled="!canBilling"
+                >
+                  <option :value="30">Crédito 30 días</option>
+                  <option :value="15">Crédito 15 días</option>
+                  <option :value="0">Contado (Efectivo)</option>
                 </select>
-              </label>
+              </div>
             </div>
 
-            <label class="field">
-              <span>Notas comerciales</span>
+            <div class="space-y-2">
+              <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Notas Comerciales</label>
               <textarea
                 v-model="invoiceForm.notes"
-                placeholder="Observaciones visibles en el documento y la auditoria."
-                rows="3"
+                placeholder="Observaciones visibles en el documento..."
+                rows="2"
+                class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all outline-none resize-none"
+                :disabled="!canBilling"
               ></textarea>
-            </label>
+            </div>
 
-            <div class="card-subsection">
-              <div class="split-head">
-                <div>
-                  <p class="eyebrow">Items</p>
-                  <h4>Detalle de productos</h4>
-                </div>
-                <button class="ghost-button" type="button" @click="addLineItem">Agregar item</button>
+            <!-- Items Section -->
+            <div class="pt-4 border-t border-slate-800/50">
+              <div class="flex items-center justify-between mb-4">
+                <h3 class="text-sm font-semibold text-slate-200">Items de la Factura</h3>
+                <button 
+                  type="button" 
+                  @click="addLineItem"
+                  class="text-xs font-medium text-emerald-400 hover:text-emerald-300 flex items-center gap-1 transition-colors"
+                >
+                  <Plus class="w-4 h-4" /> Agregar Item
+                </button>
               </div>
 
-              <div class="stack-list">
-                <div v-for="(line, index) in invoiceForm.lines" :key="line.id" class="invoice-line">
-                  <label class="field">
-                    <span>Producto</span>
-                    <select v-model="line.productId">
+              <div class="space-y-3">
+                <div v-for="(line, index) in invoiceForm.lines" :key="line.id" 
+                  class="group flex flex-col md:flex-row gap-3 p-4 bg-slate-900/30 border border-slate-800 rounded-xl hover:border-slate-700 transition-all"
+                >
+                  <div class="flex-grow space-y-2">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Producto/Servicio</label>
+                    <select 
+                      v-model="line.productId"
+                      class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 outline-none focus:border-emerald-500/50"
+                    >
                       <option value="">Selecciona un producto</option>
-                      <option v-for="product in store.tenantProducts" :key="product.id" :value="product.id">
-                        {{ product.name }} - stock {{ product.stock }}
+                      <option v-for="product in inventoryStore.tenantProducts" :key="product.id" :value="product.id">
+                        {{ product.name }} (Stock: {{ product.stock }})
                       </option>
                     </select>
-                  </label>
+                  </div>
 
-                  <label class="field">
-                    <span>Cantidad</span>
-                    <input v-model.number="line.quantity" min="1" step="1" type="number" />
-                  </label>
+                  <div class="md:w-32 space-y-2">
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">Cantidad</label>
+                    <input 
+                      v-model.number="line.quantity" 
+                      min="1" 
+                      type="number"
+                      class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-1.5 text-sm text-slate-200 outline-none focus:border-emerald-500/50"
+                    />
+                  </div>
 
-                  <button class="line-remove" type="button" @click="removeLineItem(index)">Quitar</button>
+                  <div class="flex items-end pb-1">
+                    <button 
+                      type="button" 
+                      @click="removeLineItem(index)"
+                      class="p-2 text-slate-500 hover:text-rose-400 hover:bg-rose-400/10 rounded-lg transition-all"
+                    >
+                      <Trash2 class="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
 
-            <div class="form-actions">
-              <button class="primary-button" type="submit">Emitir factura</button>
-            </div>
-          </fieldset>
-        </form>
-      </article>
-
-      <div class="stack-column">
-        <article class="panel-card">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Vista previa</p>
-              <h3>Totales y validaciones</h3>
-            </div>
-          </div>
-
-          <div class="summary-grid">
-            <div class="summary-row">
-              <span class="label-soft">Subtotal</span>
-              <strong class="value-strong">{{ formatCurrency(draftInvoiceTotals.subtotal) }}</strong>
-            </div>
-            <div class="summary-row">
-              <span class="label-soft">IVA</span>
-              <strong class="value-strong">{{ formatCurrency(draftInvoiceTotals.tax) }}</strong>
-            </div>
-            <div class="summary-row">
-              <span class="label-soft">Total estimado</span>
-              <strong class="value-strong">{{ formatCurrency(draftInvoiceTotals.total) }}</strong>
-            </div>
-            <div class="summary-row">
-              <span class="label-soft">Metodo de costo</span>
-              <strong class="value-strong">{{ store.activeTenant?.costMethod }}</strong>
-            </div>
-          </div>
-
-          <div class="card-subsection">
-            <div class="split-head">
-              <div>
-                <p class="eyebrow">Items calculados</p>
-                <h4>Detalle</h4>
-              </div>
-            </div>
-            <div v-if="draftInvoiceItems.length" class="list-grid">
-              <div v-for="item in draftInvoiceItems" :key="`${item.productId}-${item.quantity}`" class="mini-row">
-                <span>{{ item.productName }} x {{ item.quantity }}</span>
-                <strong>{{ formatCurrency(item.total) }}</strong>
-              </div>
-            </div>
-            <p v-else class="empty-state">Agrega productos para ver el calculo del documento.</p>
-          </div>
-
-          <div class="card-subsection">
-            <div class="split-head">
-              <div>
-                <p class="eyebrow">Validaciones</p>
-                <h4>Revision previa</h4>
-              </div>
-            </div>
-            <div v-if="draftInvoiceWarnings.length" class="list-grid">
-              <div v-for="warning in draftInvoiceWarnings" :key="warning" class="alert-row">
-                <p>{{ warning }}</p>
-                <span class="status-badge status-danger">Bloquea emision</span>
-              </div>
-            </div>
-            <p v-else class="empty-state">
-              La factura esta lista para emitirse con las reglas configuradas del tenant.
-            </p>
-          </div>
-        </article>
-
-        <article class="panel-card">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Trazabilidad</p>
-              <h3>Facturas emitidas</h3>
-            </div>
-          </div>
-
-          <div v-if="store.tenantInvoices.length" class="list-grid">
-            <article
-              v-for="invoice in store.tenantInvoices"
-              :key="invoice.id"
-              :class="['invoice-card', { active: invoice.id === store.selections.invoiceId }]"
-              @click="store.selectInvoice(invoice.id)"
-            >
-              <div class="invoice-card-head">
-                <div>
-                  <p>{{ invoice.number }}</p>
-                  <p class="label-soft">
-                    {{ store.thirdParties.find((item) => item.id === invoice.clientId)?.name || 'Cliente no disponible' }}
-                  </p>
-                </div>
-                <span :class="`status-badge status-${invoice.status}`">{{ invoice.status }}</span>
-              </div>
-              <div class="mini-row">
-                <span class="label-soft">{{ formatDate(invoice.createdAt) }}</span>
-                <strong>{{ formatCurrency(invoice.total) }}</strong>
-              </div>
-            </article>
-          </div>
-          <p v-else class="empty-state">Todavia no hay facturas emitidas para esta empresa.</p>
-        </article>
-
-        <article class="panel-card">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">DIAN</p>
-              <h3>Timeline del documento</h3>
-            </div>
-          </div>
-
-          <template v-if="store.selectedInvoice">
-            <div class="summary-grid">
-              <div class="summary-row">
-                <span class="label-soft">Documento</span>
-                <strong class="value-strong">{{ store.selectedInvoice.number }}</strong>
-              </div>
-              <div class="summary-row">
-                <span class="label-soft">Cliente</span>
-                <strong class="value-strong">{{ selectedInvoiceClient?.name || 'Sin cliente' }}</strong>
-              </div>
-              <div class="summary-row">
-                <span class="label-soft">Vencimiento</span>
-                <strong class="value-strong">{{ formatDateOnly(store.selectedInvoice.dueAt) }}</strong>
-              </div>
-              <div class="summary-row">
-                <span class="label-soft">Archivos</span>
-                <strong class="value-strong">
-                  <button 
-                    v-if="store.selectedInvoice"
-                    type="button" 
-                    class="ghost-button" 
-                    style="padding: 2px 8px; font-size: 12px; height: auto;"
-                    @click="handleDownloadPdf"
-                  >
-                    Descargar PDF
-                  </button>
-                  <span v-else>-</span> /
-                  {{ store.selectedInvoice?.files.xml ? 'XML' : '-' }}
-                </strong>
-              </div>
-            </div>
-
-            <div class="timeline-list">
-              <article
-                v-for="event in [...store.selectedInvoice.timeline].slice().reverse()"
-                :key="event.id"
-                class="timeline-item"
+            <div class="pt-6">
+              <button 
+                type="submit"
+                :disabled="!canBilling || draftInvoiceItems.length === 0 || draftInvoiceWarnings.length > 0"
+                class="w-full bg-emerald-600 hover:bg-emerald-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-semibold py-3 rounded-xl transition-all shadow-lg shadow-emerald-900/20 flex items-center justify-center gap-2"
               >
-                <div class="timeline-header">
-                  <span :class="`status-badge status-${event.status}`">{{ event.status }}</span>
-                  <span class="label-soft">{{ formatDate(event.at) }}</span>
-                </div>
-                <p>{{ event.note }}</p>
-              </article>
+                <Receipt class="w-5 h-5" />
+                Emitir Factura Electrónica
+              </button>
             </div>
-          </template>
-          <p v-else class="empty-state">Selecciona o crea una factura para ver la trazabilidad.</p>
-        </article>
+          </form>
+        </div>
+      </div>
+
+      <!-- Right Column: Previews & History -->
+      <div class="lg:col-span-5 space-y-6">
+        <!-- Totals Card -->
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20">
+          <div class="p-5 border-b border-slate-800/50 bg-slate-800/20">
+            <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-widest">Resumen de Liquidación</h2>
+          </div>
+          
+          <div class="p-6 space-y-4">
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">Subtotal</span>
+              <span class="text-slate-200 font-medium">{{ formatCurrency(draftInvoiceTotals.subtotal) }}</span>
+            </div>
+            <div class="flex justify-between text-sm">
+              <span class="text-slate-400">IVA (19%)</span>
+              <span class="text-emerald-400 font-medium">+ {{ formatCurrency(draftInvoiceTotals.tax) }}</span>
+            </div>
+            <div class="pt-4 border-t border-slate-800/50 flex justify-between items-center">
+              <span class="text-base font-bold text-white">Total a Pagar</span>
+              <span class="text-xl font-bold text-white">{{ formatCurrency(draftInvoiceTotals.total) }}</span>
+            </div>
+
+            <div v-if="draftInvoiceWarnings.length" class="mt-4 p-3 bg-rose-500/10 border border-rose-500/20 rounded-lg flex gap-3">
+              <AlertCircle class="w-5 h-5 text-rose-500 shrink-0" />
+              <div class="text-xs text-rose-200 leading-relaxed">
+                <p v-for="warning in draftInvoiceWarnings" :key="warning">{{ warning }}</p>
+              </div>
+            </div>
+            <div v-else-if="draftInvoiceItems.length > 0" class="mt-4 p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex gap-3">
+              <CheckCircle2 class="w-5 h-5 text-emerald-500 shrink-0" />
+              <p class="text-xs text-emerald-200">El documento cumple con las validaciones de stock y DIAN.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- History Card -->
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20">
+          <div class="p-5 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-widest">Últimas Facturas</h2>
+            <FileText class="w-4 h-4 text-slate-500" />
+          </div>
+
+          <div class="max-h-[300px] overflow-y-auto">
+            <div v-if="billingStore.tenantInvoices.length" class="divide-y divide-slate-800/50">
+              <div 
+                v-for="invoice in billingStore.tenantInvoices" 
+                :key="invoice.id"
+                @click="billingStore.selections.invoiceId = invoice.id"
+                :class="[
+                  'p-4 cursor-pointer hover:bg-slate-800/30 transition-all relative group',
+                  invoice.id === billingStore.selections.invoiceId ? 'bg-slate-800/50' : ''
+                ]"
+              >
+                <!-- Active Indicator -->
+                <div v-if="invoice.id === billingStore.selections.invoiceId" class="absolute left-0 top-0 bottom-0 w-1 bg-emerald-500"></div>
+
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-sm font-bold text-white group-hover:text-emerald-400 transition-colors">{{ invoice.number }}</span>
+                  <span :class="['text-[10px] px-2 py-0.5 rounded-full border font-bold uppercase tracking-tighter', getStatusColor(invoice.status)]">
+                    {{ invoice.status }}
+                  </span>
+                </div>
+                <div class="flex justify-between items-end">
+                  <div class="text-xs text-slate-400">
+                    <p class="text-slate-300 font-medium">{{ rootStore.thirdParties.find(tp => tp.id === invoice.clientId)?.name }}</p>
+                    <p>{{ formatDate(invoice.createdAt) }}</p>
+                  </div>
+                  <span class="text-sm font-semibold text-white">{{ formatCurrency(invoice.total) }}</span>
+                </div>
+              </div>
+            </div>
+            <div v-else class="p-12 text-center">
+              <Receipt class="w-12 h-12 text-slate-800 mx-auto mb-3" />
+              <p class="text-slate-500 text-sm">No hay facturas emitidas</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DIAN Workflow Card -->
+        <div v-if="billingStore.selectedInvoice" class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20 animate-in slide-in-from-bottom-4">
+          <div class="p-5 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-emerald-400 uppercase tracking-widest">Trazabilidad DIAN</h2>
+            <button 
+              @click="handleDownloadPdf"
+              class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2 text-xs"
+            >
+              <FileDown class="w-4 h-4" /> PDF
+            </button>
+          </div>
+
+          <div class="p-6">
+            <div class="relative space-y-6 before:absolute before:left-[11px] before:top-2 before:bottom-2 before:w-px before:bg-slate-800">
+              <div v-for="event in [...billingStore.selectedInvoice.timeline].reverse()" :key="event.id" class="relative pl-8">
+                <div :class="[
+                  'absolute left-0 top-1.5 w-[23px] h-[23px] rounded-full border-4 border-[#131926] z-10 flex items-center justify-center',
+                  event.status === 'aceptada' ? 'bg-emerald-500' : 'bg-slate-700'
+                ]">
+                  <CheckCircle2 v-if="event.status === 'aceptada'" class="w-2.5 h-2.5 text-white" />
+                  <Clock v-else class="w-2.5 h-2.5 text-white" />
+                </div>
+                <div class="flex items-center justify-between mb-1">
+                  <span :class="['text-[10px] font-bold uppercase', event.status === 'aceptada' ? 'text-emerald-400' : 'text-slate-400']">
+                    {{ event.status }}
+                  </span>
+                  <span class="text-[10px] text-slate-500 font-mono">{{ formatDate(event.at) }}</span>
+                </div>
+                <p class="text-xs text-slate-300 leading-relaxed">{{ event.note }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.form-fieldset {
-  border: 0;
-  display: grid;
-  gap: 20px;
-  margin: 0;
-  min-inline-size: 0;
-  padding: 0;
+/* Custom scrollbar for history list */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 4px;
 }
-
-.stack-list {
-  display: grid;
-  gap: 12px;
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 </style>

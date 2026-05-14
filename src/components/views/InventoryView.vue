@@ -1,18 +1,16 @@
-<script setup>
+<script setup lang="ts">
 import { computed, reactive, watch, ref } from 'vue'
-import { useInventoryStore } from '../../stores/inventoryStore'
-import { useStateStore } from '../../stores/stateStore'
-import { formatCurrency, formatDate } from '../../utils/ui'
+import { useInventoryStore } from '@/stores/inventoryStore'
+import { useStateStore } from '@/stores/stateStore'
+import { formatCurrency, formatDate } from '@/utils/ui'
 
-defineProps({
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
-})
+defineProps<{
+  isActive: boolean
+}>()
 
 const emit = defineEmits(['notify'])
 const store = useInventoryStore()
+const rootStore = useStateStore()
 
 const productForm = reactive({
   sku: '',
@@ -27,12 +25,11 @@ const productForm = reactive({
   category: 'General',
   barcode: '',
   isInventoriable: true,
-  productType: 'standard',
-  kitComponents: [],
+  productType: 'standard' as 'standard' | 'kit',
+  kitComponents: [] as { productId: string; quantity: number }[],
   preferredSupplier: '',
 })
 
-const rootStore = useStateStore()
 const newComponent = reactive({ productId: '', quantity: 1 })
 
 function addKitComponent() {
@@ -42,39 +39,41 @@ function addKitComponent() {
   newComponent.quantity = 1
 }
 
-function removeKitComponent(index) {
+function removeKitComponent(index: number) {
   productForm.kitComponents.splice(index, 1)
 }
 
-function viewReceipt(invoiceId) {
-  /* c8 ignore next 3 */
+function viewReceipt(invoiceId: string) {
   rootStore.setActiveView('billing')
+  // @ts-ignore
   rootStore.selections.invoiceId = invoiceId
 }
 
 function resetForm() {
-  productForm.sku = ''
-  productForm.name = ''
-  productForm.price = 0
-  productForm.cost = 0
-  productForm.taxRate = 19
-  productForm.stock = 1
-  productForm.minStock = 1
-  productForm.maxStock = 0
-  productForm.location = ''
-  productForm.category = 'General'
-  productForm.barcode = ''
-  productForm.isInventoriable = true
-  productForm.productType = 'standard'
-  productForm.kitComponents = []
-  productForm.preferredSupplier = ''
+  Object.assign(productForm, {
+    sku: '',
+    name: '',
+    price: 0,
+    cost: 0,
+    taxRate: 19,
+    stock: 1,
+    minStock: 1,
+    maxStock: 0,
+    location: '',
+    category: 'General',
+    barcode: '',
+    isInventoriable: true,
+    productType: 'standard',
+    kitComponents: [],
+    preferredSupplier: '',
+  })
 }
 
 const activeTab = ref('general')
 
 // --- Audit Logic ---
 const auditMode = ref(false)
-const auditData = reactive({}) // Data mapping for inventory products: { productId: { count, reason } }
+const auditData = reactive<Record<string, any>>({})
 
 function toggleAuditMode() {
   if (auditMode.value) {
@@ -90,16 +89,13 @@ function toggleAuditMode() {
   })
 }
 
-function handlePhotoUpload(event, productId) {
+function handlePhotoUpload(event: any, productId: string) {
   const file = event.target.files[0]
-  /* c8 ignore next */
   if (!file) return
   const reader = new FileReader()
-  /* c8 ignore next 3 */
-  reader.onload = (e) => {
+  reader.onload = (e: any) => {
     auditData[productId].photoBase64 = e.target.result
   }
-  /* c8 ignore next */
   reader.readAsDataURL(file)
 }
 
@@ -128,7 +124,7 @@ function saveAudit() {
 
 // --- Transfer Logic ---
 const transferForm = reactive({ productId: '', fromLocId: '', toLocId: '', quantity: 1 })
-const lastTransfer = ref(null)
+const lastTransfer = ref<any>(null)
 
 function handleTransfer() {
   if (transferForm.fromLocId === transferForm.toLocId) {
@@ -147,47 +143,10 @@ function handleTransfer() {
   }
 }
 
-function confirmReceiveTransfer(transferId) {
+function confirmReceiveTransfer(transferId: string) {
   const result = store.receiveTransfer(transferId)
   emit('notify', { message: result.message })
 }
-
-function printRemision() {
-  if (!lastTransfer.value) return
-  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${lastTransfer.value.id || 'remision'}`
-  const html = `
-    <html><head><title>Remision de Traslado</title>
-    <style>body { font-family: sans-serif; padding: 20px; } .header { border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; display:flex; justify-content: space-between;} .row { margin-bottom: 10px; } .signature { margin-top: 50px; border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 5px; }</style>
-    </head><body>
-      <div class="header">
-        <div><h2>Documento de Remision Interna</h2><p>Fecha: ${formatDate(lastTransfer.value.date)}</p></div>
-        <div><img src="${qrUrl}" alt="QR Code" width="100" height="100"/></div>
-      </div>
-      <div class="row"><strong>Producto:</strong> ${lastTransfer.value.productName}</div>
-      <div class="row"><strong>Cantidad:</strong> ${lastTransfer.value.quantity}</div>
-      <div class="row"><strong>Origen:</strong> ${lastTransfer.value.fromLoc}</div>
-      <div class="row"><strong>Destino:</strong> ${lastTransfer.value.toLoc}</div>
-      <div style="display:flex; justify-content: space-around; margin-top: 80px;">
-        <div class="signature">Firma Entrega</div>
-        <div class="signature">Firma Recibe</div>
-      </div>
-    </body></html>
-  `
-  /* c8 ignore next 6 */
-  const win = window.open('', '_blank')
-  win.document.write(html)
-  win.document.close()
-  win.focus()
-  setTimeout(() => { win.print(); win.close(); }, 500)
-}
-
-watch(
-  () => store.activeTenantId,
-  () => {
-    resetForm()
-  },
-  { immediate: true },
-)
 
 const canInventory = computed(() => store.canManageInventory)
 
@@ -214,12 +173,11 @@ function handleSubmit() {
   }
 }
 
-function handleFileUpload(event) {
+function handleFileUpload(event: any) {
   const file = event.target.files[0]
   if (!file) return
 
-  /* c8 ignore next 10 */
-  file.text().then(content => {
+  file.text().then((content: string) => {
     const result = store.importProductsCSV(content)
     emit('notify', {
       message: result.message,
@@ -232,11 +190,10 @@ function handleFileUpload(event) {
 function exportCSV() {
   const headers = ['sku', 'name', 'price', 'cost', 'taxRate', 'stock', 'minStock', 'maxStock', 'location', 'category', 'barcode', 'isInventoriable']
   const rows = store.tenantProducts.map(p => 
-    headers.map(h => p[h]).join(',')
+    headers.map(h => (p as any)[h]).join(',')
   )
   const csvContent = "data:text/csv;charset=utf-8," + [headers.join(','), ...rows].join("\n")
   const encodedUri = encodeURI(csvContent)
-  /* c8 ignore next 5 */
   const link = document.createElement("a")
   link.setAttribute("href", encodedUri)
   link.setAttribute("download", `inventario_${store.activeTenantId}.csv`)
@@ -247,429 +204,431 @@ function exportCSV() {
 </script>
 
 <template>
-  <section :class="['view', { active: isActive }]">
-    <div class="tabs-header" style="display:flex; gap:16px; margin-bottom: 20px; border-bottom: 1px solid var(--border-color); padding: 0 20px;">
-      <button :class="['tab-button', { active: activeTab === 'general' }]" @click="activeTab = 'general'" style="background:none; border:none; padding:12px 16px; border-bottom:2px solid transparent; cursor:pointer; color:var(--text-color); font-weight:600; font-size:14px;">General</button>
-      <button :class="['tab-button', { active: activeTab === 'operaciones' }]" @click="activeTab = 'operaciones'" style="background:none; border:none; padding:12px 16px; border-bottom:2px solid transparent; cursor:pointer; color:var(--text-color); font-weight:600; font-size:14px;">Operaciones (Auditorias & Traslados)</button>
-      <button :class="['tab-button', { active: activeTab === 'inteligencia' }]" @click="activeTab = 'inteligencia'" style="background:none; border:none; padding:12px 16px; border-bottom:2px solid transparent; cursor:pointer; color:var(--text-color); font-weight:600; font-size:14px;">Inteligencia de Negocio</button>
-    </div>
+  <section v-if="isActive" class="p-8 space-y-8 animate-in fade-in duration-500">
+    <!-- Header & Navigation -->
+    <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-6">
+      <div>
+        <h1 class="text-3xl font-bold text-white tracking-tight">Gestión de Inventario</h1>
+        <p class="text-slate-400 mt-1">{{ permissionNote }}</p>
+      </div>
+      
+      <nav class="flex p-1 bg-slate-900/50 rounded-lg border border-slate-800">
+        <button 
+          v-for="tab in ['general', 'operaciones', 'inteligencia']" 
+          :key="tab"
+          @click="activeTab = tab"
+          :class="[
+            'px-6 py-2 rounded-md transition-all duration-200 text-sm font-medium capitalize',
+            activeTab === tab ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-lg' : 'text-slate-400 hover:text-white'
+          ]"
+        >
+          {{ tab }}
+        </button>
+      </nav>
+    </header>
 
-    <div v-if="activeTab === 'general'" class="two-column">
-      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Maestro</p>
-            <h3>Crear producto</h3>
+    <!-- Tab Content: General -->
+    <div v-if="activeTab === 'general'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <!-- Create Product Form -->
+      <aside class="lg:col-span-1 space-y-6">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
+          <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-white">Nuevo Producto</h2>
+              <p class="text-xs text-slate-400">Registrar ítem en el maestro</p>
+            </div>
+          </div>
+
+          <form @submit.prevent="handleSubmit" class="space-y-4">
+            <div class="space-y-4" :class="{ 'opacity-50 pointer-events-none': !canInventory }">
+              <div class="space-y-1">
+                <label class="text-xs font-medium text-slate-400 ml-1">Nombre del Producto</label>
+                <input v-model="productForm.name" type="text" placeholder="Ej: Consultoría Contable" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none" required />
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">SKU</label>
+                  <input v-model="productForm.sku" type="text" placeholder="SKU-001" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" required />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">Categoría</label>
+                  <input v-model="productForm.category" type="text" placeholder="General" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-3 gap-4">
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">Precio</label>
+                  <input v-model.number="productForm.price" type="number" step="0.01" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none" required />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">Costo</label>
+                  <input v-model.number="productForm.cost" type="number" step="0.01" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none" required />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">IVA %</label>
+                  <input v-model.number="productForm.taxRate" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none" />
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">Stock Inicial</label>
+                  <input v-model.number="productForm.stock" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none" />
+                </div>
+                <div class="space-y-1">
+                  <label class="text-xs font-medium text-slate-400 ml-1">Mínimo</label>
+                  <input v-model.number="productForm.minStock" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none" />
+                </div>
+              </div>
+
+              <div class="flex items-center gap-2 py-2">
+                <input v-model="productForm.isInventoriable" type="checkbox" class="w-4 h-4 rounded border-slate-800 bg-slate-900 text-emerald-500 focus:ring-emerald-500/20" />
+                <span class="text-sm text-slate-300">Producto inventariable</span>
+              </div>
+
+              <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-emerald-500/20 transition-all duration-200">
+                Guardar Producto
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
+          <h3 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Acciones Rápidas</h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button @click="exportCSV" class="flex flex-col items-center gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl hover:border-emerald-500/50 transition-colors">
+              <span class="text-xl">📊</span>
+              <span class="text-xs text-slate-400">Exportar CSV</span>
+            </button>
+            <label class="flex flex-col items-center gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl hover:border-emerald-500/50 transition-colors cursor-pointer">
+              <span class="text-xl">📥</span>
+              <span class="text-xs text-slate-400">Importar CSV</span>
+              <input type="file" accept=".csv" class="hidden" @change="handleFileUpload" />
+            </label>
+            <button @click="toggleAuditMode" :class="[
+              'flex flex-col items-center gap-2 p-3 border rounded-xl transition-colors col-span-2',
+              auditMode ? 'bg-emerald-500/10 border-emerald-500/50' : 'bg-slate-900 border-slate-800 hover:border-emerald-500/50'
+            ]">
+              <span class="text-xl">🔍</span>
+              <span class="text-xs font-medium" :class="auditMode ? 'text-emerald-400' : 'text-slate-400'">
+                {{ auditMode ? 'Finalizar Auditoría' : 'Iniciar Auditoría' }}
+              </span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Products Table -->
+      <main class="lg:col-span-2 space-y-6">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl shadow-xl overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-slate-900/50 border-b border-slate-800">
+                  <th class="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Producto</th>
+                  <th class="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Categoría</th>
+                  <th class="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-center">Stock</th>
+                  <th class="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider text-right">Precio</th>
+                  <th v-if="auditMode" class="px-6 py-4 text-xs font-semibold text-slate-400 uppercase tracking-wider">Ajuste</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-800/50">
+                <tr v-for="product in sortedProducts" :key="product.id" class="hover:bg-slate-800/30 transition-colors group">
+                  <td class="px-6 py-4">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-medium text-white group-hover:text-emerald-400 transition-colors">{{ product.name }}</span>
+                      <span class="text-xs text-slate-500 font-mono">{{ product.sku }}</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <span class="px-2 py-1 bg-slate-900 border border-slate-800 rounded text-[10px] font-semibold text-slate-400 uppercase">
+                      {{ product.category }}
+                    </span>
+                  </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="flex flex-col items-center gap-1">
+                      <span :class="[
+                        'text-sm font-bold px-2.5 py-0.5 rounded-full',
+                        product.stock <= product.minStock ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                      ]">
+                        {{ product.stock }}
+                      </span>
+                      <span class="text-[10px] text-slate-500">Min: {{ product.minStock }}</span>
+                    </div>
+                  </td>
+                  <td class="px-6 py-4 text-right">
+                    <span class="text-sm font-semibold text-white">{{ formatCurrency(product.price) }}</span>
+                  </td>
+                  <td v-if="auditMode && product.isInventoriable" class="px-6 py-4">
+                    <div class="flex gap-2">
+                      <input v-model.number="auditData[product.id].count" type="number" class="w-20 bg-slate-900 border border-emerald-500/30 rounded px-2 py-1 text-sm text-emerald-400 focus:border-emerald-500 outline-none" />
+                      <button @click="saveAudit" class="p-1 text-emerald-400 hover:bg-emerald-500/10 rounded">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                          <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                        </svg>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div v-if="!sortedProducts.length" class="p-12 text-center">
+            <div class="text-slate-600 mb-2">🚫</div>
+            <p class="text-slate-400">No hay productos registrados en este tenant.</p>
           </div>
         </div>
 
-        <p class="permission-note">{{ permissionNote }}</p>
-
-        <form class="form-layout" @submit.prevent="handleSubmit">
-          <fieldset class="form-fieldset" :disabled="!canInventory">
-            <div class="field-grid two">
-              <label class="field">
-                <span>SKU</span>
-                <input v-model="productForm.sku" placeholder="SKU-001" required type="text" />
-              </label>
-
-              <label class="field">
-                <span>Nombre</span>
-                <input v-model="productForm.name" placeholder="Servicio de consultoria" required type="text" />
-              </label>
-            </div>
-
-            <div class="field-grid three">
-              <label class="field">
-                <span>Precio venta</span>
-                <input v-model.number="productForm.price" min="0" required step="0.01" type="number" />
-              </label>
-
-              <label class="field">
-                <span>Costo</span>
-                <input v-model.number="productForm.cost" min="0" required step="0.01" type="number" />
-              </label>
-
-              <label class="field">
-                <span>IVA %</span>
-                <input v-model.number="productForm.taxRate" min="0" required step="1" type="number" />
-              </label>
-            </div>
-
-            <div class="field-grid three">
-              <label class="field">
-                <span>Stock inicial</span>
-                <input v-model.number="productForm.stock" min="0" required step="1" type="number" />
-              </label>
-
-              <label class="field">
-                <span>Stock minimo</span>
-                <input v-model.number="productForm.minStock" min="0" required step="1" type="number" />
-              </label>
-
-              <label class="field">
-                <span>Stock maximo</span>
-                <input v-model.number="productForm.maxStock" min="0" required step="1" type="number" />
-              </label>
-            </div>
-
-            <div class="field-grid three">
-              <label class="field">
-                <span>Categoria</span>
-                <input v-model="productForm.category" placeholder="Hardware, Insumos..." required type="text" />
-              </label>
-
-              <label class="field">
-                <span>Ubicacion fisica</span>
-                <input v-model="productForm.location" placeholder="Bodega A, Estante 3" type="text" />
-              </label>
-
-              <label class="field">
-                <span>Proveedor Preferido</span>
-                <input v-model="productForm.preferredSupplier" placeholder="Proveedor SAS" type="text" />
-              </label>
-            </div>
-
-            <div class="field-grid two">
-              <label class="field">
-                <span>Tipo de Producto</span>
-                <select v-model="productForm.productType">
-                  <option value="standard">Estandar</option>
-                  <option value="kit">Kit / Combo</option>
-                </select>
-              </label>
-
-              <label class="field-checkbox" style="align-self: center; margin-top: 1.5rem;">
-                <input v-model="productForm.isInventoriable" type="checkbox" />
-                <span>Es un producto fisico (desmarcar para intangibles)</span>
-              </label>
-            </div>
-
-            <div v-if="productForm.productType === 'kit'" class="kit-builder" style="background: var(--surface-2); padding: 16px; border-radius: 8px;">
-              <h4>Componentes del Kit</h4>
-              <div style="display: flex; gap: 8px; margin-bottom: 12px; align-items: flex-end;">
-                <label class="field" style="flex: 1;">
-                  <span>Producto</span>
-                  <select v-model="newComponent.productId">
-                    <option disabled value="">Seleccionar componente</option>
-                    <option v-for="p in sortedProducts.filter(p => p.productType === 'standard' && p.isInventoriable)" :key="p.id" :value="p.id">
-                      {{ p.name }} (Stock: {{ p.stock }})
-                    </option>
-                  </select>
-                </label>
-                <label class="field" style="width: 100px;">
-                  <span>Cant.</span>
-                  <input v-model.number="newComponent.quantity" min="1" type="number" />
-                </label>
-                <button type="button" class="secondary-button" @click="addKitComponent">Añadir</button>
+        <!-- Recent Movements -->
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-semibold text-white flex items-center gap-2">
+              <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
+              Kardex Reciente
+            </h3>
+            <button class="text-xs text-emerald-400 hover:underline">Ver todo el historial</button>
+          </div>
+          
+          <div class="space-y-4">
+            <div v-for="movement in store.tenantInventoryMovements.slice(0, 5)" :key="movement.id" class="flex items-center justify-between p-4 bg-slate-900/50 border border-slate-800/50 rounded-xl">
+              <div class="flex items-center gap-4">
+                <div :class="[
+                  'w-10 h-10 rounded-full flex items-center justify-center text-lg shadow-sm',
+                  movement.type === 'salida' ? 'bg-red-500/10 border border-red-500/20' : 'bg-emerald-500/10 border border-emerald-500/20'
+                ]">
+                  {{ movement.type === 'salida' ? '📦' : '📥' }}
+                </div>
+                <div>
+                  <p class="text-sm font-medium text-white">{{ movement.productName }}</p>
+                  <p class="text-xs text-slate-400">{{ movement.note }} • {{ formatDate(movement.at) }}</p>
+                </div>
               </div>
-              <ul v-if="productForm.kitComponents.length" style="list-style: none; padding: 0; margin: 0;">
-                <li v-for="(comp, idx) in productForm.kitComponents" :key="idx" style="display: flex; justify-content: space-between; padding: 8px; border-bottom: 1px solid var(--border-color);">
-                  <span>{{ comp.quantity }}x {{ sortedProducts.find(p => p.id === comp.productId)?.name }}</span>
-                  <button type="button" style="color: var(--danger-color); background: none; border: none; cursor: pointer;" @click="removeKitComponent(idx)">Remover</button>
-                </li>
-              </ul>
-            </div>
-
-            <div class="form-actions">
-              <button class="primary-button" type="submit">Guardar producto</button>
-            </div>
-          </fieldset>
-        </form>
-      </article>
-
-      <div class="stack-column">
-        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
-          <div class="card-head">
-            <div style="display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <p class="eyebrow">Stock y valorizacion</p>
-                <h3>Inventario del tenant</h3>
-              </div>
-              <div class="header-actions" style="display: flex; gap: 8px;">
-                <button type="button" :class="auditMode ? 'primary-button' : 'secondary-button'" style="font-size: 14px; padding: 6px 12px;" @click="toggleAuditMode">
-                  {{ auditMode ? 'Cancelar Auditoria' : 'Modo Auditoria' }}
-                </button>
-                <label class="secondary-button" style="cursor: pointer; font-size: 14px; padding: 6px 12px; margin: 0;">
-                  Importar CSV
-                  <input type="file" accept=".csv" style="display: none" @change="handleFileUpload" />
-                </label>
-                <button class="secondary-button" style="font-size: 14px; padding: 6px 12px;" @click="exportCSV">
-                  Exportar
-                </button>
+              <div class="text-right">
+                <p :class="[
+                  'text-sm font-bold',
+                  movement.type === 'salida' ? 'text-red-400' : 'text-emerald-400'
+                ]">
+                  {{ movement.type === 'salida' ? '-' : '+' }}{{ movement.quantity }}
+                </p>
+                <p class="text-[10px] text-slate-500 uppercase tracking-tighter">{{ movement.type }}</p>
               </div>
             </div>
           </div>
+        </div>
+      </main>
+    </div>
 
-          <div v-if="sortedProducts.length" class="table-card">
-            <div class="table-header" :style="{ gridTemplateColumns: auditMode ? '2fr 1fr 2fr' : '2fr 1fr 1fr 1fr' }">
-              <span>Producto</span>
-              <span>{{ auditMode ? 'Stock Fisico' : 'Stock / Min / Max' }}</span>
-              <span v-if="auditMode">Justificacion de Ajuste</span>
-              <span v-if="!auditMode">Valor venta</span>
-              <span v-if="!auditMode">Costo</span>
+    <!-- Tab Content: Operaciones -->
+    <div v-if="activeTab === 'operaciones'" class="space-y-8 animate-in slide-in-from-bottom-4">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Stock Transfers -->
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
+          <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
+            <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+              </svg>
             </div>
-            <div v-for="product in sortedProducts" :key="product.id" class="table-row" :style="{ gridTemplateColumns: auditMode ? '2fr 1fr 2fr' : '2fr 1fr 1fr 1fr' }">
-              <div>
-                <p>
-                  <span v-if="store.abcAnalysis[product.id]" :class="'small-pill abc-' + store.abcAnalysis[product.id]" style="margin-right:6px; font-weight:bold;">
-                    Cat {{ store.abcAnalysis[product.id] }}
-                  </span>
-                  {{ product.name }} 
-                  <span class="small-pill" style="margin-left: 6px">{{ product.category }}</span>
-                </p>
-                <p class="label-soft">
-                  SKU {{ product.sku }}
-                  <span v-if="product.preferredSupplier" style="margin-left: 8px">🏢 {{ product.preferredSupplier }}</span>
-                </p>
-              </div>
-              <div v-if="auditMode && product.isInventoriable && product.productType !== 'kit'">
-                <div style="display: flex; gap: 4px; align-items: center;">
-                  <input type="number" v-model.number="auditData[product.id].count" style="width: 80px; padding: 4px;" min="0" />
-                  <select v-model="auditData[product.id].locationId" style="padding: 4px; font-size: 12px;">
-                    <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-                  </select>
-                </div>
-              </div>
-              <div v-else-if="auditMode">
-                <span class="small-pill">No auditable</span>
-              </div>
-              <div v-if="auditMode && product.isInventoriable && product.productType !== 'kit'">
-                <input type="text" v-model="auditData[product.id].reason" placeholder="Motivo del cambio..." style="width: 100%; padding: 4px; margin-bottom:4px;" />
-                <label style="font-size:12px; display:flex; align-items:center; gap:4px; cursor:pointer;">
-                  <span style="background:var(--surface-2); padding:2px 6px; border-radius:4px;">📸 Adjuntar foto</span>
-                  <input type="file" accept="image/*" style="display:none;" @change="(e) => handlePhotoUpload(e, product.id)" />
-                  <span v-if="auditData[product.id].photoBase64" style="color:var(--success-color);">✔️ OK</span>
-                </label>
-              </div>
-              <div v-else-if="auditMode"></div>
+            <div>
+              <h2 class="text-lg font-semibold text-white">Traslado de Mercancía</h2>
+              <p class="text-xs text-slate-400">Movimiento entre bodegas</p>
+            </div>
+          </div>
 
-              <div v-if="!auditMode && product.isInventoriable">
-                <span :class="product.stock <= product.minStock ? 'status-badge status-danger' : 'small-pill'"
-                      :title="Object.entries(product.stockByLocation || {}).map(([locId, qty]) => `${store.tenantLocations.find(l=>l.id===locId)?.name || locId}: ${qty}`).join(' | ')">
-                  {{ product.stock }} / min {{ product.minStock }} / max {{ product.maxStock }}
-                </span>
+          <div class="space-y-4">
+            <div class="space-y-1">
+              <label class="text-xs font-medium text-slate-400 ml-1">Producto a trasladar</label>
+              <select v-model="transferForm.productId" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none focus:border-blue-500 transition-all">
+                <option value="" disabled>Seleccione un producto...</option>
+                <option v-for="p in sortedProducts.filter(p => p.isInventoriable)" :key="p.id" :value="p.id">
+                  {{ p.name }} (Stock: {{ p.stock }})
+                </option>
+              </select>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+              <div class="space-y-1">
+                <label class="text-xs font-medium text-slate-400 ml-1">Bodega Origen</label>
+                <select v-model="transferForm.fromLocId" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none">
+                  <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
+                </select>
               </div>
-              <div v-else-if="!auditMode">
-                <span class="small-pill">No inventariable</span>
+              <div class="space-y-1">
+                <label class="text-xs font-medium text-slate-400 ml-1">Bodega Destino</label>
+                <select v-model="transferForm.toLocId" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none">
+                  <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
+                </select>
               </div>
-              
-              <strong v-if="!auditMode">{{ formatCurrency(product.price) }}</strong>
-              <strong v-if="!auditMode">{{ formatCurrency(product.cost) }}</strong>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-medium text-slate-400 ml-1">Cantidad</label>
+              <input v-model.number="transferForm.quantity" type="number" min="1" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none" />
+            </div>
+
+            <button @click="handleTransfer" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-3 rounded-lg shadow-lg shadow-blue-500/20 transition-all">
+              Ejecutar Traslado
+            </button>
+          </div>
+        </div>
+
+        <!-- Pending Transfers -->
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
+          <h2 class="text-lg font-semibold text-white mb-6 border-b border-slate-800 pb-4">Traslados en Tránsito</h2>
+          
+          <div class="space-y-4">
+            <div v-for="t in store.inventoryTransfers.filter(t => t.status === 'en_transito')" :key="t.id" class="p-4 bg-slate-900/50 border border-slate-800/50 rounded-xl flex items-center justify-between">
+              <div>
+                <p class="text-sm font-semibold text-white">{{ t.quantity }}x {{ t.productName }}</p>
+                <p class="text-xs text-slate-500">Destino: {{ store.tenantLocations.find(l => l.id === t.toLocId)?.name }}</p>
+                <p class="text-[10px] text-slate-600 mt-1">{{ formatDate(t.date as string) }}</p>
+              </div>
+              <button @click="confirmReceiveTransfer(t.id)" class="px-4 py-2 bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-semibold hover:bg-emerald-500/20 transition-all">
+                Recibir
+              </button>
+            </div>
+            <div v-if="!store.inventoryTransfers.filter(t => t.status === 'en_transito').length" class="py-12 text-center text-slate-500">
+              <p>No hay traslados pendientes de recepción.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab Content: Inteligencia -->
+    <div v-if="activeTab === 'inteligencia'" class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-in zoom-in-95">
+      <!-- ABC Analysis -->
+      <article class="md:col-span-3 bg-[#131926] border border-slate-800/50 rounded-2xl p-8 shadow-2xl overflow-hidden relative">
+        <div class="absolute top-0 right-0 p-8 opacity-5">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+          </svg>
+        </div>
+
+        <div class="relative">
+          <h2 class="text-2xl font-bold text-white mb-2">Análisis ABC de Inventario</h2>
+          <p class="text-slate-400 mb-8 max-w-2xl">Visualización del impacto financiero por ítem. Optimiza tus compras enfocándote en la categoría A.</p>
+          
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 group hover:bg-emerald-500/10 transition-all">
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2 py-0.5 bg-emerald-500 text-black text-[10px] font-black rounded uppercase">Clase A</span>
+                <span class="text-2xl">💎</span>
+              </div>
+              <p class="text-3xl font-bold text-emerald-400">{{ Object.values(store.abcAnalysis).filter(v => v === 'A').length }}</p>
+              <p class="text-sm text-slate-400 mt-1">Generan el 80% de tus ingresos</p>
             </div>
             
-            <div v-if="auditMode" class="form-actions" style="padding: 16px; border-top: 1px solid var(--border-color);">
-              <button class="primary-button" type="button" @click="saveAudit">Guardar Ajustes de Auditoria</button>
-            </div>
-          </div>
-          <p v-else class="empty-state">No hay productos cargados en este tenant.</p>
-        </article>
-
-        <article v-if="store.deadInventory.length" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="border: 1px solid var(--danger-color);">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow" style="color: var(--danger-color);">Alerta Financiera</p>
-              <h3>Inventario Muerto (Sin salidas > 90 dias)</h3>
-            </div>
-          </div>
-          <div class="movement-list">
-            <article v-for="product in store.deadInventory" :key="product.id" class="movement-item">
-              <div class="movement-header">
-                <strong>{{ product.name }}</strong>
-                <span class="status-badge status-danger">Inmovilizado</span>
+            <div class="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 group hover:bg-blue-500/10 transition-all">
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2 py-0.5 bg-blue-500 text-black text-[10px] font-black rounded uppercase">Clase B</span>
+                <span class="text-2xl">📦</span>
               </div>
-              <p>Stock: {{ product.stock }} - Capital Estancado: {{ formatCurrency(product.stock * product.cost) }}</p>
-            </article>
-          </div>
-        </article>
-
-        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Kardex</p>
-              <h3>Movimientos recientes</h3>
+              <p class="text-3xl font-bold text-blue-400">{{ Object.values(store.abcAnalysis).filter(v => v === 'B').length }}</p>
+              <p class="text-sm text-slate-400 mt-1">Rotación constante y saludable</p>
             </div>
-          </div>
 
-          <div v-if="store.tenantInventoryMovements.length" class="movement-list">
-            <article v-for="movement in store.tenantInventoryMovements.slice(0, 6)" :key="movement.id" class="movement-item">
-              <div class="movement-header">
-                <strong>{{ movement.productName }}</strong>
-                <span :class="movement.type === 'salida' ? 'status-badge status-danger' : 'status-badge status-acceptada'">
-                  {{ movement.type }}
-                </span>
+            <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 group hover:bg-slate-700/50 transition-all">
+              <div class="flex items-center justify-between mb-4">
+                <span class="px-2 py-0.5 bg-slate-600 text-white text-[10px] font-black rounded uppercase">Clase C</span>
+                <span class="text-2xl">⏱️</span>
               </div>
-              <p>Cantidad {{ movement.quantity }} - {{ movement.note }} <span v-if="movement.reason">({{ movement.reason }})</span></p>
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 4px;">
-                <p class="label-soft" style="margin: 0;">{{ formatDate(movement.at) }} - Usuario: {{ movement.userId || 'Sistema' }}</p>
-                <button v-if="movement.referenceId && movement.reason === 'venta'" type="button" class="secondary-button" style="padding: 2px 8px; font-size: 12px;" @click="viewReceipt(movement.referenceId)">
-                  Ver comprobante
-                </button>
-              </div>
-            </article>
-          </div>
-          <p v-else class="empty-state">Aun no hay movimientos de inventario en esta empresa.</p>
-        </article>
-      </div>
-    </div>
-
-    <div v-if="activeTab === 'operaciones'" class="two-column">
-      <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Stock y Valorizacion</p>
-              <h3>Operaciones Logisticas</h3>
+              <p class="text-3xl font-bold text-slate-400">{{ Object.values(store.abcAnalysis).filter(v => v === 'C').length }}</p>
+              <p class="text-sm text-slate-400 mt-1">Artículos de baja rotación</p>
             </div>
-          </div>
-          <div style="padding: 0 20px 20px;">
-            <p style="font-size: 14px; color: var(--text-color); margin-bottom: 12px;">Traslado de Mercancia</p>
-            <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: flex-end;">
-              <label class="field" style="flex: 2; min-width: 200px;">
-                <span>Producto</span>
-                <select v-model="transferForm.productId">
-                  <option disabled value="">Seleccionar...</option>
-                  <option v-for="p in sortedProducts.filter(p => p.isInventoriable)" :key="p.id" :value="p.id">{{ p.name }}</option>
-                </select>
-              </label>
-              <label class="field" style="flex: 1; min-width: 120px;">
-                <span>Origen</span>
-                <select v-model="transferForm.fromLocId">
-                  <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-                </select>
-              </label>
-              <label class="field" style="flex: 1; min-width: 120px;">
-                <span>Destino</span>
-                <select v-model="transferForm.toLocId">
-                  <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
-                </select>
-              </label>
-              <label class="field" style="width: 80px;">
-                <span>Cant.</span>
-                <input type="number" v-model.number="transferForm.quantity" min="1" />
-              </label>
-              <button class="primary-button" type="button" @click="handleTransfer">Trasladar</button>
-            </div>
-            <div v-if="lastTransfer" style="margin-top: 16px; padding: 12px; background: var(--surface-2); border-radius: 8px; display: flex; justify-content: space-between; align-items: center;">
-              <div>
-                <p style="margin: 0; font-size: 14px;"><strong>Ultimo traslado:</strong> {{ lastTransfer.quantity }}x {{ lastTransfer.productName }}</p>
-                <p class="label-soft" style="margin: 0;">{{ lastTransfer.fromLoc }} &rarr; {{ lastTransfer.toLoc }}</p>
-              </div>
-              <button type="button" class="secondary-button" @click="printRemision">Imprimir Remision</button>
-            </div>
-
-            <div style="margin-top: 32px;">
-              <h4 style="margin-bottom: 12px;">Traslados en Transito</h4>
-              <div v-if="store.inventoryTransfers.filter(t => t.status === 'en_transito').length === 0" class="empty-state" style="padding:16px;">
-                No hay traslados pendientes.
-              </div>
-              <div v-for="t in store.inventoryTransfers.filter(t => t.status === 'en_transito')" :key="t.id" style="display:flex; justify-content:space-between; align-items:center; padding:12px; border-bottom:1px solid var(--border-color);">
-                <div>
-                  <strong>{{ t.quantity }}x {{ t.productName }}</strong>
-                  <p class="label-soft" style="margin:0;">Hacia: {{ store.tenantLocations.find(l => l.id === t.toLocId)?.name }} | Emitido: {{ formatDate(t.date) }}</p>
-                </div>
-                <button type="button" class="primary-button" style="font-size:12px; padding:4px 8px;" @click="confirmReceiveTransfer(t.id)">Recibir (Simular QR)</button>
-              </div>
-            </div>
-          </div>
-        </article>
-    </div>
-
-    <div v-if="activeTab === 'inteligencia'" class="two-column">
-      <div class="stack-column" style="grid-column: span 2;">
-        
-        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="margin-bottom: 24px;">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Finanzas</p>
-              <h3>Analisis ABC de Ingresos</h3>
-            </div>
-          </div>
-          <div style="padding: 0 20px 20px;">
-             <p class="label-soft">Clasificacion de productos segun su contribucion a los ingresos totales.</p>
-             <div style="display: flex; gap: 20px; margin-top: 16px;">
-               <div style="flex: 1; padding: 12px; background: rgba(var(--success-color-rgb), 0.1); border-radius: 8px; border: 1px solid var(--success-color);">
-                 <strong>Categoria A (80%)</strong>
-                 <p style="font-size: 24px; margin: 8px 0;">{{ Object.values(store.abcAnalysis).filter(v => v === 'A').length }}</p>
-                 <span class="label-soft">Productos Criticos</span>
-               </div>
-               <div style="flex: 1; padding: 12px; background: rgba(var(--accent-color-rgb), 0.1); border-radius: 8px; border: 1px solid var(--accent-color);">
-                 <strong>Categoria B (15%)</strong>
-                 <p style="font-size: 24px; margin: 8px 0;">{{ Object.values(store.abcAnalysis).filter(v => v === 'B').length }}</p>
-                 <span class="label-soft">Rotacion Media</span>
-               </div>
-               <div style="flex: 1; padding: 12px; background: rgba(var(--warning-color-rgb), 0.1); border-radius: 8px; border: 1px solid var(--warning-color);">
-                 <strong>Categoria C (5%)</strong>
-                 <p style="font-size: 24px; margin: 8px 0;">{{ Object.values(store.abcAnalysis).filter(v => v === 'C').length }}</p>
-                 <span class="label-soft">Baja Rotacion</span>
-               </div>
-             </div>
-          </div>
-        </article>
-
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Analisis</p>
-            <h3>Inteligencia de Inventario</h3>
           </div>
         </div>
-        
-        <article v-if="store.deadInventory.length" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="border: 1px solid var(--danger-color);">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow" style="color: var(--danger-color);">Alerta Financiera</p>
-              <h3>Inventario Muerto (Sin salidas > 90 dias)</h3>
-            </div>
-          </div>
-          <div class="movement-list">
-            <article v-for="product in store.deadInventory" :key="product.id" class="movement-item">
-              <div class="movement-header">
-                <strong>{{ product.name }}</strong>
-                <span class="status-badge status-danger">Inmovilizado</span>
-              </div>
-              <p>Stock: {{ product.stock }} - Capital Estancado: {{ formatCurrency(product.stock * product.cost) }}</p>
-            </article>
-          </div>
-        </article>
+      </article>
 
-        <article v-if="Object.keys(store.reorderSuggestions).length" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm" style="border: 1px solid var(--accent-color);">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow" style="color: var(--accent-color);">Abastecimiento Automatizado</p>
-              <h3>Sugerencias de Compra</h3>
-            </div>
+      <!-- Dead Inventory Alert -->
+      <article v-if="store.deadInventory.length" class="bg-red-500/5 border border-red-500/20 rounded-xl p-6 shadow-xl">
+        <h3 class="text-lg font-bold text-red-400 flex items-center gap-2 mb-4">
+          <span>⚠️</span> Inventario Muerto
+        </h3>
+        <p class="text-xs text-slate-400 mb-6">Ítems sin movimiento en los últimos 90 días. Riesgo de obsolescencia.</p>
+        <div class="space-y-3">
+          <div v-for="p in store.deadInventory.slice(0, 3)" :key="p.id" class="p-3 bg-red-500/5 border border-red-500/10 rounded-lg flex justify-between items-center">
+            <span class="text-sm text-white">{{ p.name }}</span>
+            <span class="text-xs font-bold text-red-400">{{ formatCurrency(p.stock * p.cost) }}</span>
           </div>
-          <div style="padding: 0 20px 20px;">
-            <div v-for="(items, supplier) in store.reorderSuggestions" :key="supplier" style="margin-bottom: 16px;">
-              <h4 style="margin: 0 0 8px 0; border-bottom: 1px solid var(--border-color); padding-bottom: 4px;">Proveedor: {{ supplier }}</h4>
-              <ul style="list-style: none; padding: 0; margin: 0;">
-                <li v-for="item in items" :key="item.productId" style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px;">
-                  <span>{{ item.name }} (Stock: {{ item.stock }})</span>
-                  <strong>Pedir: {{ item.quantityToOrder }}</strong>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </article>
+        </div>
+      </article>
 
-      </div>
+      <!-- Reorder Suggestions -->
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl md:col-span-2">
+        <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+          <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
+          Sugerencias de Abastecimiento
+        </h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div v-for="(items, supplier) in store.reorderSuggestions" :key="supplier" class="p-4 bg-slate-900 border border-slate-800 rounded-xl">
+            <h4 class="text-sm font-bold text-amber-400 mb-3 flex items-center justify-between">
+              {{ supplier }}
+              <span class="text-[10px] px-1.5 py-0.5 bg-amber-500/10 rounded border border-amber-500/20">Proveedor</span>
+            </h4>
+            <ul class="space-y-2">
+              <li v-for="item in items" :key="item.productId" class="flex justify-between text-xs">
+                <span class="text-slate-300">{{ item.name }}</span>
+                <span class="font-bold text-white">Pedir: {{ item.quantityToOrder }}</span>
+              </li>
+            </ul>
+          </div>
+          <div v-if="!Object.keys(store.reorderSuggestions).length" class="col-span-2 py-12 text-center text-slate-500">
+            <p>El stock actual se encuentra por encima del punto de reorden.</p>
+          </div>
+        </div>
+      </article>
     </div>
   </section>
 </template>
 
 <style scoped>
-.tab-button.active {
-  border-bottom-color: var(--accent-color) !important;
-  color: var(--accent-color) !important;
+/* Transiciones suaves */
+.animate-in {
+  animation-duration: 0.3s;
+  animation-fill-mode: both;
 }
-</style>
 
-<style scoped>
-.form-fieldset {
-  border: 0;
-  display: grid;
-  gap: 20px;
-  margin: 0;
-  min-inline-size: 0;
-  padding: 0;
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(1rem); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.animate-in.fade-in { animation-name: fade-in; }
+.animate-in.slide-in-from-bottom-4 { animation-name: slide-in-from-bottom; }
+.animate-in.zoom-in-95 { animation-name: zoom-in; }
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 </style>

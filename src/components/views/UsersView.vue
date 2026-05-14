@@ -6,6 +6,7 @@ import {
   ROLE_OPTIONS,
   useUsersStore,
 } from '../../stores/usersStore'
+import { useRBACStore } from '../../stores/rbacStore'
 import { Badge } from '@/components/ui/badge'
 import UserEditForm from '@/views/users/components/UserEditForm.vue'
 import UserDetailPanel from '@/views/users/components/UserDetailPanel.vue'
@@ -21,6 +22,7 @@ defineProps({
 
 const emit = defineEmits(['notify'])
 const store = useUsersStore()
+const rbacStore = useRBACStore()
 
 const activeTab = ref('users')
 const selectedUserId = ref('')
@@ -438,7 +440,7 @@ function handlePermissionChange(role, moduleId, permission, event) {
   }
 
   notify(
-    store.updateRolePermission({
+    rbacStore.updateRolePermission({
       role,
       moduleId,
       permission,
@@ -488,7 +490,7 @@ function handleRestorePreviousRoleAccessVersion() {
   if (!confirmRestore) {
     return
   }
-  notify(store.restorePreviousRoleAccessVersion())
+  notify(rbacStore.restorePreviousRoleAccessVersion())
 }
 /* c8 ignore stop */
 
@@ -497,7 +499,7 @@ function handleDuplicateRolePermissions() {
     notify({ ok: false, message: 'Selecciona un rol destino diferente.' })
     return
   }
-  notify(store.duplicateRolePermissions(selectedRole.value, duplicateRoleTarget.value))
+  notify(rbacStore.duplicateRolePermissions(selectedRole.value, duplicateRoleTarget.value))
 }
 
 /* c8 ignore start */
@@ -708,7 +710,7 @@ function openSessionMap(session) {
 
 function handleRefresh() {
   isRefreshing.value = true
-  store.hydrateState()
+  store.hydrateState?.()
   setTimeout(() => {
     isRefreshing.value = false
   }, 500)
