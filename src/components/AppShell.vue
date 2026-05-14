@@ -190,10 +190,5 @@ onUnmounted(() => {
     </main>
     <ChatAssistant @navigate="store.setActiveView" />
 
-    <div v-if="store.currentUser?.isSystemOwner" class="version-pill" :class="systemStats?.systemStatus">
-      <span class="version-dot"></span>
-      {{ systemStats?.systemStatus === 'healthy' ? 'Sistema saludable' : systemStats ? 'Atencion requerida' : 'Sistema' }}
-      <span class="version-tag">v{{ systemStats?.version || '...' }}</span>
-    </div>
   </div>
 </template>
