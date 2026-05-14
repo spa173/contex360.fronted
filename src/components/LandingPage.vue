@@ -482,7 +482,7 @@ onMounted(() => {
     </section>
 
     <!-- ───── FOOTER ───── -->
-    <footer class="bg-gray-900 text-gray-400 py-14">
+    <footer class="bg-[#1a0f00] text-orange-200/60 py-14">
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-10">
           <div>
@@ -490,14 +490,14 @@ onMounted(() => {
               <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center">
                 <Layers class="w-4 h-4 text-white" />
               </div>
-              <span class="text-white font-bold tracking-tight">Contex<span class="text-orange-400">360</span></span>
+              <span class="text-orange-50 font-bold tracking-tight">Contex<span class="text-orange-400">360</span></span>
             </div>
-            <p class="text-sm leading-relaxed max-w-xs">ERP colombiano certificado DIAN para empresas que necesitan crecer con control.</p>
+            <p class="text-sm leading-relaxed max-w-xs text-orange-200/50">ERP colombiano certificado DIAN para empresas que necesitan crecer con control.</p>
           </div>
 
           <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
             <div>
-              <p class="text-white font-semibold mb-3">Producto</p>
+              <p class="text-orange-100 font-semibold mb-3">Producto</p>
               <ul class="space-y-2">
                 <li><a href="#features" class="hover:text-orange-400 transition-colors">Características</a></li>
                 <li><a href="#stats" class="hover:text-orange-400 transition-colors">Precios</a></li>
@@ -505,14 +505,14 @@ onMounted(() => {
               </ul>
             </div>
             <div>
-              <p class="text-white font-semibold mb-3">Empresa</p>
+              <p class="text-orange-100 font-semibold mb-3">Empresa</p>
               <ul class="space-y-2">
                 <li><a href="#" class="hover:text-orange-400 transition-colors">Nosotros</a></li>
                 <li><button @click="emit('request-demo')" class="hover:text-orange-400 transition-colors">Contacto</button></li>
               </ul>
             </div>
             <div>
-              <p class="text-white font-semibold mb-3">Legal</p>
+              <p class="text-orange-100 font-semibold mb-3">Legal</p>
               <ul class="space-y-2">
                 <li><a href="#" class="hover:text-orange-400 transition-colors">Privacidad</a></li>
                 <li><a href="#" class="hover:text-orange-400 transition-colors">Términos</a></li>
@@ -521,7 +521,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="border-t border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+        <div class="border-t border-orange-900/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <p>© 2026 Contex360. Todos los derechos reservados.</p>
           <p class="flex items-center gap-1.5">
             <ShieldCheck class="w-3.5 h-3.5 text-orange-400" />
