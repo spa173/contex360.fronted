@@ -14,15 +14,15 @@ const users = useUsersStore()
 const emit = defineEmits(['navigate'])
 
 const totalRevenue = computed(() =>
-  billing.tenantInvoices.reduce((sum, invoice) => sum + invoice.total, 0),
+  (billing.tenantInvoices || []).reduce((sum, invoice) => sum + (invoice?.total || 0), 0),
 )
 
 const acceptedCount = computed(
-  () => billing.tenantInvoices.filter((invoice) => invoice.status === 'aceptada').length,
+  () => (billing.tenantInvoices || []).filter((invoice) => invoice?.status === 'aceptada').length,
 )
 
 const lowStockCount = computed(
-  () => inventory.tenantProducts.filter((product) => product.stock <= product.minStock).length,
+  () => (inventory.tenantProducts || []).filter((product) => (product?.stock || 0) <= (product?.minStock || 0)).length,
 )
 
 const isDashboard = computed(() => auth.activeView === 'dashboard')
@@ -69,13 +69,13 @@ const isDashboard = computed(() => auth.activeView === 'dashboard')
     <div class="grid-4 compact-metrics">
       <div class="metric-card">
         <div class="metric-label">Usuarios Acceso</div>
-        <div class="metric-val">{{ users.usersForActiveTenant.length }}</div>
+        <div class="metric-val">{{ users.usersForActiveTenant?.length || 0 }}</div>
         <div class="metric-sub">Activos en tenant</div>
       </div>
       <div class="metric-card">
         <div class="metric-label">Ingresos Totales</div>
         <div class="metric-val">{{ formatCurrency(totalRevenue) }}</div>
-        <div class="metric-sub">{{ billing.tenantInvoices.length }} facturas</div>
+        <div class="metric-sub">{{ billing.tenantInvoices?.length || 0 }} facturas</div>
       </div>
       <div class="metric-card">
         <div class="metric-label">DIAN Aceptados</div>

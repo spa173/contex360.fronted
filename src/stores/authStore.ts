@@ -22,6 +22,8 @@ export const useAuthStore = defineStore('auth', () => {
   const currentUser = computed(() => root.currentUser)
   const isAuthenticated = computed(() => !!currentUser.value)
   const activeMembership = computed(() => root.activeMembership)
+  const activeTenant = computed(() => root.activeTenant)
+  const accessibleTenants = computed(() => root.tenants || [])
   const activeView = computed(() => root.activeView)
   const isSystemOwner = computed(() => !!currentUser.value?.isSystemOwner)
   const isAdmin = computed(() => isSystemOwner.value || activeMembership.value?.role === 'Administrador')
@@ -149,6 +151,8 @@ export const useAuthStore = defineStore('auth', () => {
     activeView,
     isSystemOwner,
     isAdmin,
+    activeTenant,
+    accessibleTenants,
     checkCurrentSessionHealth: () => root.checkCurrentSessionHealth(),
     processScheduledDeactivations: () => root.processScheduledDeactivations(),
     setActiveView: (view: string) => root.setActiveView(view),
