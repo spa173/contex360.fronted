@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
-import { Invoice } from '../types/billing'
+import { Invoice, InvoiceStatus } from '../types/billing'
 import { useAccountingStore } from './accountingStore'
 import { invoiceSchema } from '../schemas/invoice.schema'
 
@@ -68,7 +68,7 @@ export const useBillingStore = defineStore('billing', () => {
   }
 
   function createInvoiceEntry(invoice: Invoice, clientName: string) {
-    return { id: uid('entry'), tenantId: invoice.tenantId, reference: `COMP-${invoice.number}`, description: `Factura ${invoice.number} - ${clientName}`, sourceInvoiceId: invoice.id, ownerUserId: invoice.ownerUserId || null, createdAt: new Date().toISOString(), lines: [{ account: '130505', label: 'Clientes nacionales', debit: invoice.total, credit: 0 }, { account: '413595', label: 'Ingresos operacionales', debit: 0, credit: invoice.subtotal }, { account: '240805', label: 'IVA generado', debit: 0, credit: invoice.taxTotal }] }
+    return { id: uid('entry'), tenantId: invoice.tenantId, referenceType: 'invoice', referenceId: invoice.id, description: `Factura ${invoice.number} - ${clientName}`, amount: invoice.total, entryAt: new Date().toISOString(), createdAt: new Date().toISOString(), lines: [{ account: '130505', label: 'Clientes nacionales', debit: invoice.total, credit: 0 }, { account: '413595', label: 'Ingresos operacionales', debit: 0, credit: invoice.subtotal }, { account: '240805', label: 'IVA generado', debit: 0, credit: invoice.taxTotal }] }
   }
 
   function scheduleDianUpdates(invoiceId: string, tenantId: string) {
@@ -79,7 +79,8 @@ export const useBillingStore = defineStore('billing', () => {
       const timerId = setTimeout(() => {
         const inv = invoices.value.find(i => i.id === invoiceId)
         if (!inv) return
-        inv.status = transition.status
+        inv.status = transition.status as InvoiceStatus
+        if (!inv.timeline) inv.timeline = []
         inv.timeline.push({ id: uid('tl'), status: transition.status, note: transition.note, at: new Date().toISOString() })
         appendAuditEvent(root.$state, { tenantId, entity: 'dian', action: 'Actualizar estado', description: transition.audit, actor: 'Worker DIAN' })
         root.saveState()

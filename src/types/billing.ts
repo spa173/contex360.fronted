@@ -1,5 +1,10 @@
+export type InvoiceStatus = 'draft' | 'emitted' | 'sent' | 'accepted' | 'cancelled'
+
 export interface InvoiceItem {
-  productId: string
+  id?: string
+  invoiceId?: string
+  lineNumber?: number
+  productId: string | null
   productName: string
   quantity: number
   unitPrice: number
@@ -8,6 +13,8 @@ export interface InvoiceItem {
   subtotal: number
   taxAmount: number
   total: number
+  createdAt?: string
+  updatedAt?: string
   [key: string]: unknown
 }
 
@@ -22,18 +29,20 @@ export interface Invoice {
   id: string
   tenantId: string
   number: string
-  clientId: string
-  status: string
-  paymentTermDays: number
+  clientId: string | null
+  ownerUserId?: string | null
+  status: InvoiceStatus
   subtotal: number
   taxTotal: number
   total: number
-  notes?: string
-  createdAt: string
-  dueAt: string
-  ownerUserId?: string | null
+  paymentTermDays: number
+  notes?: string | null
+  issuedAt: string
+  dueAt?: string | null
+  timeline?: InvoiceTimelineEvent[] | null
   items: InvoiceItem[]
-  timeline: InvoiceTimelineEvent[]
+  createdAt: string
+  updatedAt?: string
   files?: {
     xml?: boolean
     pdf?: boolean
@@ -42,20 +51,26 @@ export interface Invoice {
 }
 
 export interface LedgerLine {
+  id?: string
+  ledgerEntryId?: string
   account: string
   label: string
   debit: number
   credit: number
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface LedgerEntry {
   id: string
   tenantId: string
-  reference: string
+  referenceType: string
+  referenceId?: string | null
   description: string
-  sourceInvoiceId?: string | null
-  ownerUserId?: string | null
+  amount: number
+  entryAt: string
   createdAt: string
+  updatedAt?: string
   lines: LedgerLine[]
   [key: string]: unknown
 }

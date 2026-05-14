@@ -1,20 +1,27 @@
 
 export interface AccountLine {
+  id?: string
+  ledgerEntryId?: string
   account: string
   label: string
   debit: number
   credit: number
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface LedgerEntry {
   id: string
   tenantId: string
-  reference: string
+  referenceType: string
+  referenceId?: string | null
   description: string
-  sourceInvoiceId?: string
-  ownerUserId?: string | null
+  amount: number
+  entryAt: string
   createdAt: string
+  updatedAt?: string
   lines: AccountLine[]
+  [key: string]: unknown
 }
 
 export interface AccountNode {
