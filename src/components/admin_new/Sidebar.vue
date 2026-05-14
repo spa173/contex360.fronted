@@ -1,6 +1,6 @@
 
 <template>
-  <aside class="w-64 bg-[#0f0f14] border-r border-white/5 flex flex-col h-screen">
+  <aside class="hidden md:flex w-64 bg-[#0f0f14] border-r border-white/5 flex-col h-screen sticky top-0">
     <!-- Header -->
     <div class="p-6 border-b border-white/5">
       <h1 class="text-2xl font-bold text-white">Contex360</h1>
@@ -54,7 +54,7 @@
 </template>
 
 <script setup>
-import { LayoutDashboard, Building2, Users, Settings, ScrollText, ShieldCheck, AlertTriangle } from 'lucide-vue-next'
+import { LayoutDashboard, Building2, Users, Settings, ScrollText, ShieldCheck, AlertTriangle, TrendingUp } from 'lucide-vue-next'
 
 defineProps({
   activeView: {
@@ -68,7 +68,8 @@ defineEmits(['view-change'])
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'tenants', label: 'Empresas', icon: Building2 },
-  { id: 'demo', label: 'Leads / Demos', icon: Users },
+  { id: 'users', label: 'Usuarios', icon: Users },
+  { id: 'demo', label: 'Leads / Demos', icon: TrendingUp },
   { id: 'logs', label: 'Logs Auditoria', icon: ScrollText },
   { id: 'compliance', label: 'Cumplimiento ISO', icon: ShieldCheck },
   { id: 'breach', label: 'Alertas Seguridad', icon: AlertTriangle }

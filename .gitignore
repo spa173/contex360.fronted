@@ -29,3 +29,6 @@ dist-ssr
 *.sw?
 .vercel
 .env*.local
+
+# Pruebas locales privadas
+tests-local/

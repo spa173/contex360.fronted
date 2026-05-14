@@ -1,6 +1,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import { Menu } from 'lucide-vue-next'
 import { businessApi } from '../../services/businessApi'
 import { formatDate } from '../../utils/ui'
 import TenantSettingsView from '../root/TenantSettingsView.vue'
@@ -163,6 +164,17 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 
       <!-- Contenido Principal -->
       <main class="flex-1 overflow-auto bg-[#0a0a0f]">
+        <!-- Mobile Header -->
+        <header class="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0f0f14]">
+          <div class="flex items-center gap-2">
+            <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">C</div>
+            <span class="text-sm font-bold text-white tracking-tight">Contex360</span>
+          </div>
+          <button class="p-2 text-slate-400">
+             <Menu class="w-6 h-6" />
+          </button>
+        </header>
+
         <div v-if="loading" class="h-full flex flex-col items-center justify-center space-y-4">
           <div class="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
           <p class="text-slate-500 font-medium animate-pulse">Sincronizando infraestructura...</p>

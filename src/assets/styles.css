@@ -19,13 +19,44 @@
   --success: #10b981;
   --danger: #ef4444;
 
-  /* SaaS Redesign Theme */
+  /* SaaS Redesign Theme (Vibrant Emerald Dark) */
   --emerald: #10b981;
   --emerald-light: #34d399;
   --emerald-dark: #059669;
-  --background-saas: #0a0a0f;
-  --card-bg-saas: #14141b;
-  --sidebar-bg-saas: #0f0f14;
+  
+  /* System Tokens mapping for Tailwind */
+  --background: #ffffff;
+  --foreground: #030213;
+  --card: #ffffff;
+  --card-foreground: #030213;
+  --primary: #030213;
+  --primary-foreground: #ffffff;
+  --muted: #ececf0;
+  --muted-foreground: #717182;
+  --accent: #e9ebef;
+  --accent-foreground: #030213;
+  --border: rgba(0, 0, 0, 0.1);
+  --radius: 0.625rem;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #030213;
+  --sidebar-border: #e2e8f0;
+
+  &.dark {
+    --background: #0a0a0f;
+    --foreground: #f8fafc;
+    --card: #14141b;
+    --card-foreground: #f8fafc;
+    --primary: #10b981;
+    --primary-foreground: #ffffff;
+    --muted: #1e1e2d;
+    --muted-foreground: #94a3b8;
+    --accent: #1e1e2d;
+    --accent-foreground: #f8fafc;
+    --border: #1e1e2d;
+    --sidebar: #0f0f14;
+    --sidebar-foreground: #f8fafc;
+    --sidebar-border: #1e1e2d;
+  }
 
   /* Legacy Mappings (compatibilidad con el resto del código) */
   --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
