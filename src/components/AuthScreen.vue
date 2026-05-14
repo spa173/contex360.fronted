@@ -432,16 +432,16 @@ const toggleRecoveryHelp = () => {
 
 <style scoped>
 .auth-page {
-  --auth-page-bg: #f5f7fb;
-  --auth-page-text: #0f172a;
-  --auth-page-muted: #334155;
+  --auth-page-bg: #ffffff;
+  --auth-page-text: #020617;
+  --auth-page-muted: #475569;
   --auth-surface: rgba(255, 255, 255, 0.96);
   --auth-surface-alt: rgba(247, 250, 255, 0.86);
   --auth-surface-strong: #ffffff;
   --auth-border: rgba(208, 217, 231, 0.92);
   --auth-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
   --auth-input-bg: #ffffff;
-  --auth-input-border: #d6dbe5;
+  --auth-input-border: #cbd5e1;
   --auth-input-text: #0f172a;
   --auth-input-placeholder: #94a3b8;
   --auth-action-bg: #3d4654;
@@ -617,7 +617,7 @@ const toggleRecoveryHelp = () => {
   font-size: clamp(2.35rem, 3.8vw, 3.6rem);
   font-weight: 400;
   letter-spacing: -0.06em;
-  line-height: 1;
+  line-height: 1.1;
   margin: 0 0 20px;
   max-width: 520px;
 }
@@ -800,10 +800,10 @@ const toggleRecoveryHelp = () => {
 
 .auth-form-head h2 {
   color: var(--auth-page-text);
-  font-size: 1.875rem;
-  font-weight: 700;
-  letter-spacing: -0.025em;
-  line-height: 1.2;
+  font-size: 2.25rem;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
   margin: 0 0 8px;
 }
 
@@ -835,7 +835,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-form {
   display: grid;
-  gap: 16px;
+  gap: 24px;
 }
 
 .auth-field {
@@ -846,7 +846,7 @@ const toggleRecoveryHelp = () => {
 .auth-field > span,
 .auth-field__header > span {
   color: var(--auth-page-muted);
-  font-size: 0.875rem;
+  font-size: 1rem;
   font-weight: 600;
 }
 
@@ -897,7 +897,7 @@ const toggleRecoveryHelp = () => {
   background: transparent;
   border: 0;
   color: var(--auth-input-text);
-  font-size: 1rem;
+  font-size: 1.125rem;
   height: 48px;
   padding: 0;
   width: 100%;
@@ -966,14 +966,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary {
-  background: var(--auth-action-bg);
+  background: #0f172a;
   border: 0;
   border-radius: 11px;
   color: var(--auth-action-text);
   cursor: pointer;
-  font-size: 0.96rem;
+  font-size: 1.125rem;
   font-weight: 600;
-  min-height: 46px;
+  min-height: 52px;
   padding: 0 18px;
   transition:
     background 160ms ease,
@@ -1023,15 +1023,15 @@ const toggleRecoveryHelp = () => {
   background: var(--auth-surface-strong);
   border: 1px solid var(--auth-border);
   border-radius: 11px;
-  color: var(--auth-page-text);
+  color: #334155;
   cursor: pointer;
   display: inline-flex;
   font-size: 0.92rem;
   font-weight: 500;
   gap: 10px;
   justify-content: center;
-  min-height: 44px;
-  padding: 0 16px;
+  min-height: 48px;
+  padding: 0 20px;
   transition:
     background 160ms ease,
     border-color 160ms ease,
