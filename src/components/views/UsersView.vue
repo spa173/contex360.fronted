@@ -7,6 +7,8 @@ import {
   useUsersStore,
 } from '../../stores/usersStore'
 import { Badge } from '@/components/ui/badge'
+import UserEditForm from '@/views/users/components/UserEditForm.vue'
+import UserDetailPanel from '@/views/users/components/UserDetailPanel.vue'
 import UserTable from '../users/UserTable.vue'
 import { formatDate } from '../../utils/ui'
 
@@ -35,24 +37,9 @@ const filters = reactive({
   twoFactor: 'all',
 })
 
-const userForm = reactive({
-  name: '',
-  email: '',
-  password: '',
-  status: 'active',
-  title: '',
-  role: ROLE_OPTIONS[0],
-  initialTasks: [],
-})
+// Forms are now handled in child components
 
-const membershipForm = reactive({
-  tenantId: '',
-  role: ROLE_OPTIONS[0],
-})
-const offboardingForm = reactive({
-  date: '',
-  reassignToUserId: '',
-})
+// Forms are now handled in child components
 
 const tenantSearch = ref('')
 
@@ -326,18 +313,6 @@ function getActiveMembership(userId) {
   )
 }
 
-function getTenantName(tenantId) {
-  return store.tenants.find((tenant) => tenant.id === tenantId)?.name || tenantId
-}
-
-function getTenantPrefix(tenantId) {
-  return store.tenants.find((tenant) => tenant.id === tenantId)?.prefix || tenantId
-}
-
-function formatSessionLabel(session) {
-  return `${session.device} · ${session.ip}`
-}
-
 function notify(result) {
   emit('notify', {
     message: result.message,
@@ -345,13 +320,9 @@ function notify(result) {
   })
 }
 
-async function handleUserSubmit() {
-  const result = await store.createUser(userForm)
-  notify(result)
-
-  if (result.ok) {
-    resetUserForm()
-  }
+function handleUserSubmit() {
+  // Handled by UserEditForm component
+  isCreatePanelOpen.value = false
 }
 
 function isSelected(userId) {
@@ -825,74 +796,12 @@ watch(
 
     <div v-if="activeTab === 'users'" class="users-workspace">
       <div class="stack-column">
-        <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm user-create-panel" :class="{ collapsed: !isCreatePanelOpen }">
-          <div class="card-head">
-            <div>
-              <p class="eyebrow">Alta controlada</p>
-              <h3>Crear usuario con clave temporal</h3>
-            </div>
-            <button class="btn-sm" type="button" @click="isCreatePanelOpen = !isCreatePanelOpen">
-              {{ isCreatePanelOpen ? 'Ocultar' : 'Mostrar' }}
-            </button>
-          </div>
-
-          <form class="form-layout" @submit.prevent="handleUserSubmit">
-            <fieldset class="form-fieldset" :disabled="!canUsers || !isCreatePanelOpen">
-              <div class="field-grid three">
-                <label class="field">
-                  <span>Nombre</span>
-                  <input v-model="userForm.name" placeholder="Ana Gomez" required type="text" />
-                </label>
-                <label class="field">
-                  <span>Email</span>
-                  <input v-model="userForm.email" placeholder="ana@contex360.local" required type="email" />
-                </label>
-                <label class="field">
-                  <span>Cargo</span>
-                  <input v-model="userForm.title" placeholder="Analista contable" required type="text" />
-                </label>
-              </div>
-
-              <div class="field-grid three">
-                <label class="field">
-                  <span>Clave temporal</span>
-                  <input
-                    v-model="userForm.password"
-                    autocomplete="new-password"
-                    placeholder="ClaveTemporal123"
-                    required
-                    type="password"
-                  />
-                </label>
-                <label class="field">
-                  <span>Rol inicial</span>
-                  <select v-model="userForm.role">
-                    <option v-for="role in ROLE_OPTIONS" :key="role" :value="role">{{ role }}</option>
-                  </select>
-                </label>
-                <label class="field">
-                  <span>Estado</span>
-                  <select v-model="userForm.status">
-                    <option value="active">Activo</option>
-                    <option value="inactive">Inactivo</option>
-                  </select>
-                </label>
-              </div>
-
-              <label class="field">
-                <span>Tareas iniciales</span>
-                <select v-model="userForm.initialTasks" multiple>
-                  <option v-for="task in ONBOARDING_TASK_OPTIONS" :key="task" :value="task">{{ task }}</option>
-                </select>
-                <small>Selecciona una o varias tareas para el onboarding del usuario.</small>
-              </label>
-
-              <div class="form-actions">
-                <button class="btn-primary" type="submit">Guardar usuario</button>
-              </div>
-            </fieldset>
-          </form>
-        </article>
+        <UserEditForm
+          :is-open="isCreatePanelOpen"
+          :can-edit="canUsers"
+          @toggle="isCreatePanelOpen = !isCreatePanelOpen"
+          @submit="handleUserSubmit"
+        />
 
         <article class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm">
           <div class="toolbar-grid">
@@ -968,152 +877,21 @@ watch(
         </article>
       </div>
 
-      <aside v-if="selectedRow" class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm user-detail-panel">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Detalle</p>
-            <h3>{{ selectedRow.user.name }}</h3>
-            <p class="label-soft">{{ selectedRow.user.email }}</p>
-          </div>
-          <Badge
-            :class="selectedRow.security.riskLevel === 'review' ? 'bg-amber-500/15 text-amber-500 border-none' : 'bg-slate-700/50 text-slate-400 border-none'"
-          >
-            Riesgo {{ selectedRow.security.riskLevel === 'review' ? 'revisar' : 'normal' }}
-          </Badge>
-        </div>
-
-        <div class="detail-section">
-          <div class="split-head">
-            <div>
-              <p class="eyebrow">Seguridad</p>
-              <h4>Credenciales y 2FA</h4>
-            </div>
-          </div>
-          <div class="summary-grid">
-            <div class="summary-row">
-              <span class="label-soft">Cambio de clave</span>
-              <strong>{{ selectedRow.security.passwordResetRequired ? 'Requerido' : 'Al dia' }}</strong>
-            </div>
-            <div class="summary-row">
-              <span class="label-soft">Clave temporal</span>
-              <strong>{{ selectedRow.security.tempPasswordExpiresAt ? 'Activa' : 'No' }}</strong>
-            </div>
-            <div class="summary-row">
-              <span class="label-soft">2FA obligatorio</span>
-              <strong>{{ selectedRow.security.twoFactorRequired ? 'Si' : 'No' }}</strong>
-            </div>
-            <div class="summary-row">
-              <span class="label-soft">2FA configurado</span>
-              <strong>{{ selectedRow.security.twoFactorEnabled ? 'Si' : 'No' }}</strong>
-            </div>
-          </div>
-          <div class="button-grid">
-            <button class="btn-sm" type="button" @click="handleForceReset(selectedRow.user.id)">Forzar clave</button>
-            <button class="btn-sm" type="button" @click="handleGenerateTemporaryPassword(selectedRow.user.id)">
-              Clave temporal
-            </button>
-            <button
-              class="btn-sm"
-              type="button"
-              @click="handleRequireTwoFactor(selectedRow.user.id, !selectedRow.security.twoFactorRequired)"
-            >
-              {{ selectedRow.security.twoFactorRequired ? '2FA opcional' : 'Exigir 2FA' }}
-            </button>
-            <button class="btn-sm" type="button" @click="handleToggleTwoFactor(selectedRow.user.id)">
-              {{ selectedRow.security.twoFactorEnabled ? 'Marcar 2FA off' : 'Marcar 2FA on' }}
-            </button>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <div class="split-head">
-            <div>
-              <p class="eyebrow">Empresas</p>
-              <h4>Roles por tenant</h4>
-            </div>
-          </div>
-          <form class="inline-admin-form" @submit.prevent="handleMembershipSubmit">
-            <div class="field">
-              <input
-                v-model="tenantSearch"
-                class="tenant-search"
-                placeholder="Buscar empresa..."
-                type="search"
-              />
-            </div>
-            <select v-model="membershipForm.tenantId" class="tenant-select">
-              <option v-for="tenant in filteredTenants" :key="tenant.id" :value="tenant.id">
-                {{ tenant.name }} ({{ tenant.prefix }})
-              </option>
-            </select>
-            <select v-model="membershipForm.role">
-              <option v-for="role in ROLE_OPTIONS" :key="role" :value="role">{{ role }}</option>
-            </select>
-            <button class="btn-primary" type="submit">Guardar</button>
-          </form>
-          <div class="list-grid">
-            <div v-for="membership in selectedRow.memberships" :key="membership.tenantId" class="module-row">
-              <div>
-                <p>{{ getTenantName(membership.tenantId) }}</p>
-                <p class="label-soft">{{ membership.role }}</p>
-              </div>
-              <button class="btn-sm" type="button" @click="handleRemoveMembership(membership.tenantId)">
-                Revocar
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <div class="detail-section">
-          <div class="split-head">
-            <div>
-              <p class="eyebrow">Sesiones</p>
-              <h4>Control activo</h4>
-            </div>
-            <button class="btn-sm" type="button" @click="handleRevokeSessions(selectedRow.user.id)">
-              Cerrar todas
-            </button>
-          </div>
-          <div v-if="selectedRow.sessions.length" class="list-grid">
-            <div v-for="session in selectedRow.sessions" :key="session.id" class="module-row">
-              <div>
-                <p>{{ formatSessionLabel(session) }}</p>
-                <p class="label-soft">{{ session.location }} · {{ formatDate(session.lastSeenAt) }}</p>
-              </div>
-              <button class="btn-sm" type="button" @click="handleRevokeSession(session.id)">Cerrar</button>
-            </div>
-          </div>
-          <p v-else class="empty-state">No tiene sesiones activas.</p>
-        </div>
-
-        <div class="detail-section">
-          <div class="split-head">
-            <div>
-              <p class="eyebrow">Offboarding</p>
-              <h4>Baja programada</h4>
-            </div>
-          </div>
-          <div class="inline-admin-form">
-            <label class="field">
-              <span>Fecha</span>
-              <input v-model="offboardingForm.date" type="date" />
-            </label>
-            <label class="field">
-              <span>Reasignar a</span>
-              <select v-model="offboardingForm.reassignToUserId">
-                <option value="">Sin reasignación</option>
-                <option v-for="row in userRows" :key="`off-${row.user.id}`" :value="row.user.id">
-                  {{ row.user.name }}
-                </option>
-              </select>
-            </label>
-            <button class="btn-sm" type="button" @click="handleScheduleDeactivation(selectedRow.user.id)">
-              Programar baja
-            </button>
-          </div>
-        </div>
-
-      </aside>
+      <UserDetailPanel
+        v-if="selectedRow"
+        :row="selectedRow"
+        :user-rows="userRows"
+        :can-edit="canUsers"
+        @force-reset="handleForceReset"
+        @generate-temp-password="handleGenerateTemporaryPassword"
+        @require-two-factor="handleRequireTwoFactor"
+        @toggle-two-factor="handleToggleTwoFactor"
+        @revoke-sessions="handleRevokeSessions"
+        @revoke-session="handleRevokeSession"
+        @membership-submit="(tenantId, role) => { membershipForm.tenantId = tenantId; membershipForm.role = role; handleMembershipSubmit(); }"
+        @remove-membership="handleRemoveMembership"
+        @schedule-deactivation="(userId, date, reassignId) => { offboardingForm.date = date; offboardingForm.reassignToUserId = reassignId; handleScheduleDeactivation(userId); }"
+      />
     </div>
 
     <div v-else-if="activeTab === 'roles'" class="stack-column">
