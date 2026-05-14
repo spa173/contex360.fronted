@@ -10,7 +10,7 @@
     <!-- Menu Items -->
     <div class="flex-1 px-3 py-6">
       <div class="space-y-1">
-        <p class="px-4 text-xs font-medium text-slate-500 uppercase tracking-wider mb-3">
+        <p class="px-4 text-xs font-medium text-slate-400 uppercase tracking-wider mb-3">
           SaaS Admin
         </p>
         
@@ -21,17 +21,17 @@
           :class="[
             'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 relative group',
             activeView === item.id
-              ? 'bg-white/5 text-blue-500'
+              ? 'bg-slate-800/50 text-white'
               : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
           ]"
         >
           <!-- Indicador activo -->
           <div
             v-if="activeView === item.id"
-            class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full"
+            class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-r-full"
           />
           
-          <component :is="item.icon" :class="['w-5 h-5 stroke-[1.5]', activeView === item.id ? 'text-blue-500' : '']" />
+          <component :is="item.icon" :class="['w-5 h-5 stroke-[1.5]', activeView === item.id ? 'text-emerald-500' : '']" />
           <span class="text-sm font-medium">{{ item.label }}</span>
         </button>
       </div>
@@ -45,7 +45,7 @@
         </div>
         <div class="flex-1 text-left">
           <p class="text-sm font-medium text-white">Administrador</p>
-          <p class="text-xs text-slate-500">Super Admin</p>
+          <p class="text-xs text-slate-400">Super Admin</p>
         </div>
         <Settings class="w-4 h-4 stroke-[1.5]" />
       </button>

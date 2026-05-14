@@ -63,8 +63,9 @@ function handleSubmit() {
 
 <template>
   <section :class="['view', { active: isActive }]">
-    <div class="two-column">
-      <article class="panel-card">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Columna Izquierda: Input -->
+      <article class="panel-card h-full">
         <div class="card-head">
           <div>
             <p class="eyebrow">RF-27 y RF-28</p>
@@ -80,19 +81,22 @@ function handleSubmit() {
               <span>Texto o contenido OCR del soporte</span>
               <textarea
                 v-model="ocrForm.source"
+                class="min-h-[400px] bg-black/20 border-white/10 text-slate-300 focus:border-blue-500/50"
                 placeholder="Pega aqui texto de una factura o comprobante. Ejemplo: Factura FE-1024, NIT 900123456-7, fecha 2026-04-22, subtotal 1500000, IVA 285000, total 1785000."
-                rows="10"
               ></textarea>
             </label>
 
-            <div class="form-actions">
-              <button class="primary-button" type="submit">Analizar documento</button>
+            <div class="form-actions mt-4">
+              <button class="w-full py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all shadow-lg shadow-blue-600/20" type="submit">
+                Analizar documento
+              </button>
             </div>
           </fieldset>
         </form>
       </article>
 
-      <div class="stack-column">
+      <!-- Columna Derecha: Resultados y Sugerencias -->
+      <div class="space-y-8">
         <article class="panel-card">
           <div class="card-head">
             <div>
@@ -102,28 +106,26 @@ function handleSubmit() {
           </div>
 
           <template v-if="store.selectedOcrRun">
-            <div class="summary-grid">
-              <div class="summary-row">
-                <span class="label-soft">Confianza</span>
-                <strong class="value-strong">{{ Math.round(store.selectedOcrRun.confidence * 100) }}%</strong>
-              </div>
-              <div class="summary-row">
-                <span class="label-soft">Procesado</span>
-                <strong class="value-strong">{{ formatDate(store.selectedOcrRun.createdAt) }}</strong>
+            <div class="summary-grid mb-6">
+              <div class="flex justify-between items-center bg-white/5 p-4 rounded-xl">
+                <span class="text-sm text-slate-400">Confianza del análisis</span>
+                <strong class="text-xl text-emerald-400">{{ Math.round(store.selectedOcrRun.confidence * 100) }}%</strong>
               </div>
             </div>
 
-            <div class="ocr-grid">
-              <article v-for="(value, key) in store.selectedOcrRun.fields" :key="key" class="ocr-field">
-                <div class="ocr-header">
-                  <strong>{{ key }}</strong>
-                  <span class="small-pill">OCR</span>
+            <div class="grid grid-cols-2 gap-4">
+              <article v-for="(value, key) in store.selectedOcrRun.fields" :key="key" class="bg-white/5 p-4 rounded-lg border border-white/5">
+                <div class="flex items-center justify-between mb-1">
+                  <strong class="text-[10px] uppercase tracking-wider text-slate-500">{{ key }}</strong>
+                  <span class="text-[8px] bg-blue-500/20 text-blue-400 px-1 rounded">OCR</span>
                 </div>
-                <p>{{ value || 'No detectado' }}</p>
+                <p class="text-sm text-white font-medium truncate">{{ value || 'No detectado' }}</p>
               </article>
             </div>
           </template>
-          <p v-else class="empty-state">Analiza un documento para ver los campos extraidos y el score.</p>
+          <div v-else class="h-48 flex items-center justify-center border-2 border-dashed border-white/5 rounded-xl">
+            <p class="text-slate-500 text-sm">Analiza un documento para ver resultados</p>
+          </div>
         </article>
 
         <article class="panel-card">
@@ -134,32 +136,21 @@ function handleSubmit() {
             </div>
           </div>
 
-          <div class="suggestions-grid">
-            <article class="suggestion-card">
-              <div class="ocr-header">
-                <strong>Cuenta sugerida</strong>
-                <span class="small-pill">Score 0.91</span>
+          <div class="space-y-4">
+            <article class="bg-blue-500/5 border border-blue-500/10 p-4 rounded-xl">
+              <div class="flex items-center justify-between mb-2">
+                <strong class="text-xs text-blue-400">Cuenta sugerida</strong>
+                <span class="text-[10px] font-bold text-slate-500">SCORE 0.91</span>
               </div>
-              <p>413595 - Ingresos operacionales. La mayoria de facturas del tenant siguen este patron.</p>
+              <p class="text-sm text-slate-300">413595 - Ingresos operacionales. Patrón detectado en el histórico.</p>
             </article>
 
-            <article class="suggestion-card">
-              <div class="ocr-header">
-                <strong>Retencion potencial</strong>
-                <span class="small-pill">Score 0.74</span>
+            <article class="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-xl">
+              <div class="flex items-center justify-between mb-2">
+                <strong class="text-xs text-emerald-400">Retencion potencial</strong>
+                <span class="text-[10px] font-bold text-slate-500">SCORE 0.74</span>
               </div>
-              <p>
-                Aplicar validacion de retencion en la fuente cuando el total supere el ticket promedio
-                de {{ formatCurrency(averageTicket) }}.
-              </p>
-            </article>
-
-            <article class="suggestion-card">
-              <div class="ocr-header">
-                <strong>Producto recomendado</strong>
-                <span class="small-pill">Score 0.67</span>
-              </div>
-              <p>{{ topProduct?.name || 'Sin datos' }}: util para sugerir plantillas de venta y centros de costo.</p>
+              <p class="text-sm text-slate-300">Aplicar validación de retención (Total > {{ formatCurrency(averageTicket) }}).</p>
             </article>
           </div>
         </article>
