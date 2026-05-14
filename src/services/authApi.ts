@@ -1,7 +1,8 @@
 import { getApiBaseUrl } from './apiBase'
+import { encryptData, decryptData } from '../utils/security'
 
-const AUTH_TOKEN_KEY = 'contex360-auth-token'
-const REFRESH_TOKEN_KEY = 'contex360-refresh-token'
+const AUTH_TOKEN_KEY = 'contex360-auth-token-v2'
+const REFRESH_TOKEN_KEY = 'contex360-refresh-token-v2'
 
 export interface BackendAuthUser {
   id: string
@@ -70,15 +71,20 @@ export function getAuthToken() {
     return ''
   }
 
-  return globalThis.localStorage.getItem(AUTH_TOKEN_KEY) || ''
+  const raw = globalThis.localStorage.getItem(AUTH_TOKEN_KEY) || ''
+  if (!raw) return ''
+  
+  // Try to decrypt. If it fails or is not encrypted, it might be legacy or wrong.
+  const decrypted = decryptData(raw)
+  return decrypted || raw
 }
 
 export function storeAuthToken(token: string) {
-  if (typeof globalThis === 'undefined') {
+  if (typeof globalThis === 'undefined' || !token) {
     return
   }
 
-  globalThis.localStorage.setItem(AUTH_TOKEN_KEY, token)
+  globalThis.localStorage.setItem(AUTH_TOKEN_KEY, encryptData(token))
 }
 
 export function clearAuthToken() {
@@ -92,12 +98,14 @@ export function clearAuthToken() {
 
 export function getRefreshToken() {
   if (typeof globalThis === 'undefined') return ''
-  return globalThis.localStorage.getItem(REFRESH_TOKEN_KEY) || ''
+  const raw = globalThis.localStorage.getItem(REFRESH_TOKEN_KEY) || ''
+  if (!raw) return ''
+  return decryptData(raw) || raw
 }
 
 export function storeRefreshToken(token: string) {
-  if (typeof globalThis === 'undefined') return
-  globalThis.localStorage.setItem(REFRESH_TOKEN_KEY, token)
+  if (typeof globalThis === 'undefined' || !token) return
+  globalThis.localStorage.setItem(REFRESH_TOKEN_KEY, encryptData(token))
 }
 
 export async function refreshAccessToken(): Promise<BackendAuthResponse | null> {
@@ -216,4 +224,3 @@ export async function revokeBackendSession() {
     clearAuthToken()
   }
 }
-

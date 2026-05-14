@@ -167,7 +167,10 @@ const userRows = computed(() =>
     const activeMembership = getActiveMembership(user.id)
     const security = getSecurity(user.id)
     const sessions = activeSessions.value.filter((session) => session.userId === user.id)
-    const tenantLabels = memberships.map((membership) => getTenantPrefix(membership.tenantId))
+    const tenantLabels = memberships.map((membership) => {
+      const t = store.tenants.find(ten => ten.id === membership.tenantId)
+      return t ? (t.prefix || t.name) : ''
+    })
 
     return {
       user,
@@ -523,7 +526,7 @@ function handleDuplicateRolePermissions() {
 function handleInvitationSubmit() {
   const previewMessage = [
     `Para: ${invitationForm.email}`,
-    `Empresa: ${getTenantName(invitationForm.tenantId)}`,
+    `Empresa: ${store.tenants.find(t => t.id === invitationForm.tenantId)?.name || 'Empresa seleccionada'}`,
     `Rol: ${invitationForm.role}`,
     '',
     invitationForm.customMessage || 'Sin mensaje personalizado.',

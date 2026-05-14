@@ -32,23 +32,26 @@ const ai = useAiStore()
 const users = useUsersStore()
 
 const totalRevenue = computed(() =>
-  billing.tenantInvoices.reduce((sum, invoice) => sum + invoice.total, 0),
+  billing.tenantInvoices?.reduce((sum, invoice) => sum + (invoice?.total || 0), 0) || 0,
 )
 
 const lowStockCount = computed(() =>
-  inventory.tenantProducts.filter((p) => p.stock <= p.minStock).length
+  inventory.tenantProducts?.filter((p) => (p?.stock || 0) <= (p?.minStock || 0)).length || 0
 )
 
 const activeUsersCount = computed(() =>
-  rootUsers.value.filter(u => u.status === 'active').length
+  rootUsers.value?.filter(u => u?.status === 'active').length || 0
 )
 
 const rootUsers = computed(() => users.users || [])
 
 const pipeline = computed(() => {
-  const total = Math.max(billing.tenantInvoices.length, 1)
-  const counts = billing.tenantInvoices.reduce((accumulator, invoice) => {
-    accumulator[invoice.status] = (accumulator[invoice.status] || 0) + 1
+  const invoices = billing.tenantInvoices || []
+  const total = Math.max(invoices.length, 1)
+  const counts = invoices.reduce((accumulator, invoice) => {
+    if (invoice?.status) {
+      accumulator[invoice.status] = (accumulator[invoice.status] || 0) + 1
+    }
     return accumulator
   }, {})
 
@@ -66,9 +69,9 @@ const pipeline = computed(() => {
 })
 
 const pipelineChartData = computed(() => ({
-  labels: pipeline.value.map(p => p.label),
+  labels: pipeline.value?.map(p => p.label) || [],
   datasets: [{
-    data: pipeline.value.map(p => p.count),
+    data: pipeline.value?.map(p => p.count) || [],
     backgroundColor: [
       '#4b5563', // Borrador
       '#06b6d4', // Emitida
@@ -85,16 +88,17 @@ const revenueTrendData = computed(() => {
   const months = []
   const values = []
   const now = new Date()
+  const invoices = billing.tenantInvoices || []
   
   for (let i = 5; i >= 0; i--) {
     const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const monthName = d.toLocaleString('es-CO', { month: 'short' })
     months.push(monthName)
     
-    const monthTotal = billing.tenantInvoices.reduce((sum, inv) => {
-      const invDate = new Date(inv.issuedAt || inv.createdAt)
+    const monthTotal = invoices.reduce((sum, inv) => {
+      const invDate = new Date(inv?.issuedAt || inv?.createdAt)
       if (invDate.getMonth() === d.getMonth() && invDate.getFullYear() === d.getFullYear()) {
-        return sum + inv.total
+        return sum + (inv?.total || 0)
       }
       return sum
     }, 0)
@@ -129,9 +133,12 @@ const revenueTrendData = computed(() => {
 })
 
 const stockValueData = computed(() => {
-  const categoryMap = inventory.tenantProducts.reduce((acc, p) => {
-    const value = (p.stock || 0) * (p.cost || 0)
-    acc[p.category] = (acc[p.category] || 0) + value
+  const products = inventory.tenantProducts || []
+  const categoryMap = products.reduce((acc, p) => {
+    const value = (p?.stock || 0) * (p?.cost || 0)
+    if (p?.category) {
+      acc[p.category] = (acc[p.category] || 0) + value
+    }
     return acc
   }, {})
 
@@ -325,7 +332,7 @@ const kpis = computed(() => [
             </div>
           </CardHeader>
           <CardContent class="p-4">
-            <div v-if="lowStockProducts.length" class="space-y-3">
+            <div v-if="lowStockProducts?.length" class="space-y-3">
               <div v-for="product in lowStockProducts.slice(0, 3)" :key="product.id" class="p-3 bg-rose-500/5 border border-rose-500/10 rounded-xl">
                 <div class="flex justify-between items-start mb-1">
                   <p class="text-xs font-bold text-rose-200">{{ product.name }}</p>
@@ -360,7 +367,7 @@ const kpis = computed(() => [
                  class="h-[180px]"
                />
                <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                 <span class="text-2xl font-bold text-white">{{ billing.tenantInvoices.length }}</span>
+                 <span class="text-2xl font-bold text-white">{{ billing.tenantInvoices?.length || 0 }}</span>
                  <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Facturas</span>
                </div>
              </div>
@@ -381,7 +388,7 @@ const kpis = computed(() => [
             <CardTitle class="text-md font-bold text-white">Bitácora de Auditoría</CardTitle>
           </CardHeader>
           <CardContent class="p-4">
-            <div v-if="users.auditEvents.length" class="space-y-4">
+            <div v-if="users.auditEvents?.length" class="space-y-4">
               <div v-for="event in users.auditEvents.slice(0, 3)" :key="event.id" class="relative pl-6 before:absolute before:left-0 before:top-1.5 before:w-1.5 before:h-1.5 before:rounded-full before:bg-slate-700">
                 <p class="text-xs font-bold text-slate-300 leading-tight mb-0.5">{{ event.action }} {{ event.entity }}</p>
                 <p class="text-[10px] text-slate-500 truncate mb-1">{{ event.description }}</p>
@@ -400,10 +407,6 @@ const kpis = computed(() => [
 </template>
 
 <style scoped>
-.dashboard-grid {
-  /* Layout is handled by Tailwind grid classes in the template */
-}
-
 /* Custom shadow for cards */
 .card {
   box-shadow: var(--shadow-sm);

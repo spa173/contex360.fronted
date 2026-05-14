@@ -9,21 +9,11 @@ export const useInventoryStore = defineStore('inventory', () => {
   const root = useStateStore()
 
   // State initialization with robust safety
-  const products = ref<Product[]>(
-    Array.isArray(root.products) && root.products.length > 0 
-      ? [...root.products] 
-      : []
-  )
+  const products = ref<Product[]>([])
 
-  const inventoryMovements = ref<InventoryMovement[]>(
-    Array.isArray(root.inventoryMovements) && root.inventoryMovements.length > 0
-      ? [...root.inventoryMovements]
-      : []
-  )
+  const inventoryMovements = ref<InventoryMovement[]>([])
 
-  const inventoryTransfers = ref<InventoryTransfer[]>(
-    Array.isArray(root.inventoryTransfers) ? [...root.inventoryTransfers] : []
-  )
+  const inventoryTransfers = ref<InventoryTransfer[]>([])
 
   // Getters
   const activeTenantId = computed(() => root.activeTenantId)

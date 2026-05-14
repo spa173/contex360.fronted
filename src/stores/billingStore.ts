@@ -13,9 +13,7 @@ export const useBillingStore = defineStore('billing', () => {
   const root = useStateStore()
   const accounting = useAccountingStore()
 
-  const invoices = ref<Invoice[]>(
-    Array.isArray(root.invoices) ? [...root.invoices] : []
-  )
+  const invoices = ref<Invoice[]>([])
 
   const selections = ref({
     invoiceId: null as string | null,
