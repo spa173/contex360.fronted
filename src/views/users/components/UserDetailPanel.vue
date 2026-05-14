@@ -105,7 +105,6 @@ function handleSecurityAction(action: any) {
 </script>
 
 <template>
-<template>
   <aside class="bg-[#131926] border border-slate-800/60 rounded-2xl p-0 shadow-2xl overflow-hidden user-detail-panel transition-all duration-300">
     <!-- Header: The Identity -->
     <div class="px-8 py-7 bg-gradient-to-br from-slate-800/20 to-transparent border-b border-slate-800/40">
@@ -210,7 +209,7 @@ function handleSecurityAction(action: any) {
           </button>
         </div>
 
-        <div v-if="row.sessions.length" class="space-y-2">
+        <div v-if="row.sessions?.length" class="space-y-2">
           <div v-for="session in row.sessions" :key="session.id" 
             class="p-4 bg-slate-800/10 rounded-xl border border-slate-800/40 flex justify-between items-center">
             <div class="space-y-1">
@@ -254,6 +253,7 @@ function handleSecurityAction(action: any) {
           <button @click="handleScheduleDeactivation"
             class="w-full py-2.5 bg-rose-900/40 hover:bg-rose-900/60 text-rose-200 text-[10px] font-bold rounded-lg transition-all border border-rose-500/20">
             Programar Baja Permanente
+          </button>
         </div>
       </section>
     </div>
