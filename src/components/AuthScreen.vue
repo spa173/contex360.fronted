@@ -433,8 +433,8 @@ const toggleRecoveryHelp = () => {
 <style scoped>
 .auth-page {
   --auth-page-bg: #f5f7fb;
-  --auth-page-text: #0f1727;
-  --auth-page-muted: #68778f;
+  --auth-page-text: #0f172a;
+  --auth-page-muted: #334155;
   --auth-surface: rgba(255, 255, 255, 0.96);
   --auth-surface-alt: rgba(247, 250, 255, 0.86);
   --auth-surface-strong: #ffffff;
@@ -442,7 +442,7 @@ const toggleRecoveryHelp = () => {
   --auth-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
   --auth-input-bg: #ffffff;
   --auth-input-border: #d6dbe5;
-  --auth-input-text: #101828;
+  --auth-input-text: #0f172a;
   --auth-input-placeholder: #94a3b8;
   --auth-action-bg: #3d4654;
   --auth-action-bg-hover: #2f3946;
@@ -800,16 +800,16 @@ const toggleRecoveryHelp = () => {
 
 .auth-form-head h2 {
   color: var(--auth-page-text);
-  font-size: clamp(1.9rem, 2.55vw, 2.35rem);
+  font-size: 1.875rem;
   font-weight: 700;
-  letter-spacing: -0.05em;
-  line-height: 1.05;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
   margin: 0 0 8px;
 }
 
 .auth-form-head p {
   color: var(--auth-page-muted);
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   margin: 0;
 }
 
@@ -845,9 +845,9 @@ const toggleRecoveryHelp = () => {
 
 .auth-field > span,
 .auth-field__header > span {
-  color: var(--auth-page-text);
-  font-size: 0.93rem;
-  font-weight: 500;
+  color: var(--auth-page-muted);
+  font-size: 0.875rem;
+  font-weight: 600;
 }
 
 .auth-field__header {
@@ -897,8 +897,8 @@ const toggleRecoveryHelp = () => {
   background: transparent;
   border: 0;
   color: var(--auth-input-text);
-  font-size: 0.96rem;
-  min-height: 50px;
+  font-size: 1rem;
+  height: 48px;
   padding: 0;
   width: 100%;
 }
