@@ -133,7 +133,7 @@ const userInitials = computed(() => {
         <div class="avatar" title="Sesion activa">{{ userInitials || 'U' }}</div>
         <div class="user-strip-copy">
           <div class="user-name">{{ store.currentUser?.name || 'Usuario' }}</div>
-          <div class="user-role">{{ store.activeMembership?.role || 'Sin rol' }}</div>
+          <div class="user-role">{{ store.isSystemOwner ? 'System Owner' : (store.activeMembership?.role || 'Sin rol') }}</div>
           <div v-if="isReadOnly" class="readonly-badge">Solo lectura</div>
         </div>
       </button>

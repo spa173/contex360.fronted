@@ -23,19 +23,17 @@ export const useAuthStore = defineStore('auth', () => {
   const isAuthenticated = computed(() => !!currentUser.value)
   const activeMembership = computed(() => root.activeMembership)
   const activeView = computed(() => root.activeView)
-  const activeTenantId = computed(() => root.activeTenantId)
-  const activeTenant = computed(() => root.activeTenant)
-  const accessibleTenants = computed(() => root.tenants)
+  const isSystemOwner = computed(() => !!currentUser.value?.isSystemOwner)
+  const isAdmin = computed(() => isSystemOwner.value || activeMembership.value?.role === 'Administrador')
 
   const visibleViews = computed(() => {
-    // Si es System Owner (Root), tiene acceso a TODO por definición
-    if (currentUser.value?.isSystemOwner) {
+    // Si es root, tiene acceso a todo siempre
+    if (isSystemOwner.value) {
       return ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile']
     }
 
     const role = activeMembership.value?.role
     if (!role) return ['dashboard', 'profile']
-    
     const definitions: any = {
       'Administrador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile'],
       'Contador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile'],
@@ -48,52 +46,57 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading.value = true
     authError.value = null
     
-    const tenantIdForRequest = root.activeTenantId || 'tenant-a'
+    const activeTenantId = root.activeTenantId || 'tenant-a'
     
+    console.log('[DEBUG] Login Request:', {
+      email: credentials.email,
+      password: '***',
+      activeTenantId: activeTenantId,
+      hasTotp: !!credentials.totpCode
+    })
+
     try {
       // Intentar login con el Backend Real
       try {
         const response = await apiLoginWithBackend(credentials)
+        console.log('[DEBUG] Backend Login Success:', response)
         
+        // Actualizar estado local con datos del backend
         if (response.user) {
+          // Si el usuario no existe localmente lo agregamos para la reactividad
           const exists = root.users.find(u => u.id === response.user.id)
-          if (!exists) {
-            root.users.push({
-              ...response.user,
-              status: response.user.status || 'active',
-              isSystemOwner: !!response.user.isSystemOwner,
-              isDemoAccount: !!response.user.isDemoAccount
-            } as any)
-          } else {
-            // Actualizar propiedades críticas si cambiaron en el backend
-            exists.isSystemOwner = !!response.user.isSystemOwner
-            exists.status = response.user.status || 'active'
-          }
+          if (!exists) root.users.push(response.user as any)
           
           root.session.currentUserId = response.user.id
           root.session.currentSessionId = response.session?.id || uid('sess')
-          root.activeTenantId = response.activeTenantId || tenantIdForRequest
+          root.activeTenantId = response.activeTenantId || activeTenantId
           
+          // Sincronizar membresias si vienen del backend
           if (response.memberships) {
             root.memberships = response.memberships as any
-          }
-          
-          if (response.accessibleTenants) {
-            root.tenants = response.accessibleTenants as any
           }
 
           root.saveState()
           return { ok: true, user: response.user }
         }
       } catch (backendError: any) {
-        // Fallback a login local
+        console.warn('[DEBUG] Backend Login Failed:', backendError.message)
+        
+        // Si el error es 401 o Not Found, limpiar tenant por si es basura antigua
+        if (backendError.message.includes('401') || backendError.message.toLowerCase().includes('not found') || backendError.message.toLowerCase().includes('no encontrado')) {
+           console.log('[DEBUG] Cleaning legacy tenant state due to auth failure')
+           localStorage.removeItem('contex360-active-tenant')
+           root.activeTenantId = 'tenant-a' 
+        }
+
+        // Fallback a login local si el backend falla o es una cuenta de seed
         const user = root.users.find(u => u.email === credentials.email)
         if (user && user.isDemoAccount) {
           const isValid = await verifyPassword(user, credentials.password)
           if (isValid) {
             root.session.currentUserId = user.id
             root.session.currentSessionId = uid('sess')
-            root.activeTenantId = tenantIdForRequest
+            root.activeTenantId = activeTenantId
             root.saveState()
             return { ok: true, user }
           }
@@ -117,29 +120,6 @@ export const useAuthStore = defineStore('auth', () => {
     clearAuthToken()
     root.setActiveView('dashboard')
     root.saveState()
-    return { ok: true }
-  }
-
-  function setActiveView(viewId: string) {
-    if (visibleViews.value.includes(viewId)) {
-      root.setActiveView(viewId)
-      return { ok: true }
-    }
-    return { ok: false, message: 'No tienes permisos para ver esta sección.' }
-  }
-
-  function setActiveTenant(tenantId: string) {
-    root.setActiveTenant(tenantId)
-    return { ok: true }
-  }
-
-  function checkCurrentSessionHealth() {
-    if (!isAuthenticated.value) return { revoked: true, message: 'Sesión expirada' }
-    return { revoked: false }
-  }
-
-  function processScheduledDeactivations() {
-    // Logic for scheduled deactivations if needed
   }
 
   async function refreshSessionWithBackend() {
@@ -151,18 +131,13 @@ export const useAuthStore = defineStore('auth', () => {
     authError,
     currentUser,
     isAuthenticated,
-    activeTenantId,
-    activeTenant,
-    accessibleTenants,
     loginWithBackend,
     logout,
-    setActiveView,
-    setActiveTenant,
     refreshSessionWithBackend,
-    checkCurrentSessionHealth,
-    processScheduledDeactivations,
     visibleViews,
     activeMembership,
     activeView,
+    isSystemOwner,
+    isAdmin,
   }
 })

@@ -82,7 +82,6 @@ export const useStateStore = defineStore('state', {
     },
 
     can(permission: string): boolean { 
-      if (this.currentUser?.isSystemOwner) return true
       return (this.rolePermissions || []).includes(permission) 
     },
 
