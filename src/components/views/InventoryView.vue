@@ -135,8 +135,8 @@ function handleTransfer() {
   emit('notify', { message: result.message })
   if (result.ok) {
     const prod = store.tenantProducts.find(p => p.id === transferForm.productId)
-    const fromLoc = store.tenantLocations.find(l => l.id === transferForm.fromLocId)?.name
-    const toLoc = store.tenantLocations.find(l => l.id === transferForm.toLocId)?.name
+    const fromLoc = store.tenantLocations.find((l: any) => l.id === transferForm.fromLocId)?.name
+    const toLoc = store.tenantLocations.find((l: any) => l.id === transferForm.toLocId)?.name
     lastTransfer.value = { ...transferForm, productName: prod?.name, fromLoc, toLoc, date: new Date() }
     transferForm.productId = ''
     transferForm.quantity = 1
@@ -181,7 +181,7 @@ function handleFileUpload(event: any) {
     const result = store.importProductsCSV(content)
     emit('notify', {
       message: result.message,
-      detail: result.detail || '',
+      detail: (result as any).detail || '',
     })
     event.target.value = ''
   })
@@ -196,7 +196,7 @@ function exportCSV() {
   const encodedUri = encodeURI(csvContent)
   const link = document.createElement("a")
   link.setAttribute("href", encodedUri)
-  link.setAttribute("download", `inventario_${store.activeTenantId}.csv`)
+  link.setAttribute("download", `inventario_${(store as any).activeTenantId || 'export'}.csv`)
   document.body.appendChild(link)
   link.click()
   link.remove()
@@ -488,7 +488,7 @@ function exportCSV() {
             <div v-for="t in store.inventoryTransfers.filter(t => t.status === 'en_transito')" :key="t.id" class="p-4 bg-slate-900/50 border border-slate-800/50 rounded-xl flex items-center justify-between">
               <div>
                 <p class="text-sm font-semibold text-white">{{ t.quantity }}x {{ t.productName }}</p>
-                <p class="text-xs text-slate-500">Destino: {{ store.tenantLocations.find(l => l.id === t.toLocId)?.name }}</p>
+                <p class="text-xs text-slate-500">Destino: {{ store.tenantLocations.find((l: any) => l.id === t.toLocId)?.name }}</p>
                 <p class="text-[10px] text-slate-600 mt-1">{{ formatDate(t.date as string) }}</p>
               </div>
               <button @click="confirmReceiveTransfer(t.id)" class="px-4 py-2 bg-emerald-600/10 text-emerald-400 border border-emerald-500/20 rounded-lg text-xs font-semibold hover:bg-emerald-500/20 transition-all">
