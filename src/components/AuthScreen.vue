@@ -700,14 +700,20 @@ const toggleRecoveryHelp = () => {
 
 .auth-mobile-brand {
   align-items: center;
-  background: linear-gradient(180deg, var(--auth-surface), var(--auth-surface-alt));
-  border: 1px solid var(--auth-border);
+  background: linear-gradient(180deg, #ffffff, rgba(247, 250, 255, 0.86));
+  border: 1px solid rgba(208, 217, 231, 0.92);
   border-radius: 18px;
-  box-shadow: var(--auth-shadow);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
   display: none;
   gap: 10px;
   padding: 10px 12px;
   font-weight: 700;
+}
+
+:global(html.dark) .auth-mobile-brand {
+  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(17, 24, 39, 0.96));
+  border-color: rgba(148, 163, 184, 0.2);
+  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
 }
 
 .auth-mobile-brand__mark {
@@ -724,18 +730,26 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__name {
-  color: var(--auth-page-text);
+  color: #020617;
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1;
 }
 
+:global(html.dark) .auth-mobile-brand__name {
+  color: #e5e7eb;
+}
+
 .auth-mobile-brand__subtitle {
-  color: var(--auth-page-muted);
+  color: #475569;
   font-size: 0.72rem;
   font-weight: 500;
   line-height: 1.2;
+}
+
+:global(html.dark) .auth-mobile-brand__subtitle {
+  color: #94a3b8;
 }
 
 .auth-form-panel__main {
