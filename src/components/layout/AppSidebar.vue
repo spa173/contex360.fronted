@@ -51,7 +51,7 @@ const navGroups = computed(() =>
   navBlueprint
     .map((group) => ({
       ...group,
-      items: group.items.filter((item) => store.visibleViews.includes(item.id)),
+      items: (group.items || []).filter((item) => (store.visibleViews || []).includes(item.id)),
     }))
     .filter((group) => group.items.length),
 )

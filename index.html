@@ -6,9 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Contex360</title>
     <script>
+      // --- THEME ---
       localStorage.setItem('contex360-theme', 'dark');
       document.documentElement.classList.add('dark');
       document.documentElement.classList.remove('light');
+
+      // --- VERSION CHECK ---
+      (function() {
+        var SCHEMA_VERSION = 'v2';
+        var CURRENT_VERSION = localStorage.getItem('contex360_schema_version');
+        if (CURRENT_VERSION !== SCHEMA_VERSION) {
+          localStorage.clear();
+          localStorage.setItem('contex360_schema_version', SCHEMA_VERSION);
+          window.location.reload();
+        }
+      })();
     </script>
   </head>
   <body>

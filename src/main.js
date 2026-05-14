@@ -13,13 +13,20 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
-try {
-  const stateStore = useStateStore(pinia)
-  const themeStore = useThemeStore(pinia)
-  themeStore.initializeTheme()
-  await stateStore.migrateSecrets()
-} catch (error) {
-  console.warn('No fue posible migrar las credenciales locales.', error)
+async function bootstrap() {
+  try {
+    const stateStore = useStateStore(pinia)
+    const themeStore = useThemeStore(pinia)
+    themeStore.initializeTheme()
+    
+    // Migracion segura si el metodo existe
+    if (typeof stateStore.migrateSecrets === 'function') {
+      await stateStore.migrateSecrets()
+    }
+  } catch (error) {
+    console.warn('Bootstrap error:', error)
+  }
+  app.mount('#app')
 }
 
-app.mount('#app')
+bootstrap()

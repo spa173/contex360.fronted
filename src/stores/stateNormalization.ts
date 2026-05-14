@@ -15,7 +15,10 @@ export function createInitialState(): AppState {
 
 export function normalizeState(source: any = {}): AppState {
   const base = createInitialState()
-  const getArray = (key: string) => (Array.isArray(source[key]) ? source[key] : base[key as keyof AppState])
+  const getArray = (key: string) => {
+    const val = source?.[key]
+    return Array.isArray(val) ? val : (base[key as keyof AppState] || [])
+  }
 
   const normalized: AppState = {
     ...base,

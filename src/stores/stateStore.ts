@@ -81,7 +81,9 @@ export const useStateStore = defineStore('state', {
       this.saveState()
     },
 
-    can(permission: string): boolean { return this.rolePermissions.includes(permission) },
+    can(permission: string): boolean { 
+      return (this.rolePermissions || []).includes(permission) 
+    },
 
     async refreshSessionWithBackend() {
       try {

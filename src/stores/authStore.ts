@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
+import { useRBACStore } from './rbacStore'
 import {
   getAuthToken,
   storeAuthToken,
@@ -19,6 +20,20 @@ export const useAuthStore = defineStore('auth', () => {
 
   const currentUser = computed(() => root.currentUser)
   const isAuthenticated = computed(() => !!currentUser.value)
+  const activeMembership = computed(() => root.activeMembership)
+  const activeView = computed(() => root.activeView)
+
+  const visibleViews = computed(() => {
+    const role = activeMembership.value?.role
+    if (!role) return ['dashboard', 'profile']
+    // Simple logic for now, using the role definitions
+    const definitions: any = {
+      'Administrador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile'],
+      'Contador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile'],
+      'Visor': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile']
+    }
+    return definitions[role] || ['dashboard', 'profile']
+  })
 
   async function login(credentials: { email: string; password: string; totpCode?: string }) {
     isLoading.value = true
@@ -85,9 +100,9 @@ export const useAuthStore = defineStore('auth', () => {
     isLoading,
     authError,
     currentUser,
-    isAuthenticated,
-    login,
-    logout,
     refreshSessionWithBackend,
+    visibleViews,
+    activeMembership,
+    activeView,
   }
 })

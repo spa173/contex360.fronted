@@ -3,7 +3,15 @@ import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import { createPasswordCredentials } from './stateSecurity'
-import { ROLE_OPTIONS, getMembershipsForUser, getMembershipForTenant } from './rbacStore'
+import { 
+  ROLE_OPTIONS, 
+  PERMISSION_MODULES, 
+  PERMISSION_ACTIONS,
+  getMembershipsForUser, 
+  getMembershipForTenant 
+} from './rbacStore'
+
+export { ROLE_OPTIONS, PERMISSION_MODULES, PERMISSION_ACTIONS }
 
 export const useUsersStore = defineStore('users', () => {
   const root = useStateStore()

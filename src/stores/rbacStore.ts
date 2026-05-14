@@ -54,7 +54,7 @@ export const useRBACStore = defineStore('rbac', () => {
     if (!root.roleAccess[payload.role]) root.roleAccess[payload.role] = {}
     if (!root.roleAccess[payload.role][payload.moduleId]) root.roleAccess[payload.role][payload.moduleId] = []
     
-    const perms = new Set(root.roleAccess[payload.role][payload.moduleId])
+    const perms = new Set(Array.isArray(root.roleAccess?.[payload.role]?.[payload.moduleId]) ? root.roleAccess[payload.role][payload.moduleId] : [])
     if (payload.allowed) perms.add(payload.permission)
     else perms.delete(payload.permission)
     
@@ -81,7 +81,7 @@ export const useRBACStore = defineStore('rbac', () => {
   }
 
   function duplicateRolePermissions(sourceRole: string, targetRole: string) {
-    if (root.roleAccess[sourceRole]) {
+    if (root.roleAccess?.[sourceRole]) {
       root.roleAccess[targetRole] = JSON.parse(JSON.stringify(root.roleAccess[sourceRole]))
       root.saveState()
       return { ok: true, message: `Permisos copiados de ${sourceRole} a ${targetRole}.` }
