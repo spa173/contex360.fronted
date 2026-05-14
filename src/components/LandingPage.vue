@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import {
   BarChart3, Package, Users, TrendingUp, ShieldCheck,
@@ -19,30 +19,30 @@ const activeFeature = ref(0)
 const features = [
   {
     icon: Receipt,
-    label: 'FacturaciÃ³n DIAN',
-    title: 'FacturaciÃ³n electrÃ³nica certificada',
-    desc: 'Emite facturas electrÃ³nicas vÃ¡lidas ante la DIAN en segundos. ValidaciÃ³n automÃ¡tica, PDF y envÃ­o al cliente integrado.',
+    label: 'Facturación DIAN',
+    title: 'Facturación electrónica certificada',
+    desc: 'Emite facturas electrónicas válidas ante la DIAN en segundos. Validación automática, PDF y envío al cliente integrado.',
     stat: '12.400+', statLabel: 'facturas emitidas',
   },
   {
     icon: Package,
     label: 'Inventario',
     title: 'Control de inventario en tiempo real',
-    desc: 'Maneja mÃºltiples bodegas, traslados entre sedes, alertas de stock mÃ­nimo y anÃ¡lisis ABC automÃ¡tico.',
-    stat: '99.8%', statLabel: 'precisiÃ³n de stock',
+    desc: 'Maneja múltiples bodegas, traslados entre sedes, alertas de stock mínimo y análisis ABC automático.',
+    stat: '99.8%', statLabel: 'precisión de stock',
   },
   {
     icon: BarChart3,
-    label: 'AnalÃ­tica',
+    label: 'Analítica',
     title: 'Dashboard financiero inteligente',
-    desc: 'KPIs empresariales en tiempo real. MÃ¡rgenes, flujo de caja, cuentas por cobrar y proyecciones automÃ¡ticas.',
-    stat: '3.2Ã—', statLabel: 'decisiones mÃ¡s rÃ¡pidas',
+    desc: 'KPIs empresariales en tiempo real. Márgenes, flujo de caja, cuentas por cobrar y proyecciones automáticas.',
+    stat: '3.2Á—', statLabel: 'decisiones más rápidas',
   },
   {
     icon: Users,
     label: 'Equipos',
     title: 'Control de acceso por roles',
-    desc: 'Define permisos precisos por cargo. Contador, vendedor, administrador â€” cada uno ve solo lo que necesita.',
+    desc: 'Define permisos precisos por cargo. Contador, vendedor, administrador "” cada uno ve solo lo que necesita.',
     stat: '100%', statLabel: 'auditable y seguro',
   },
 ]
@@ -56,14 +56,14 @@ const stats = [
 
 const testimonials = [
   {
-    name: 'Camila RodrÃ­guez',
-    role: 'CFO Â· Distribuidora BoyacÃ¡',
-    quote: 'Antes tardÃ¡bamos 3 dÃ­as en cerrar el mes. Con Contex360 lo hacemos el mismo dÃ­a. La visibilidad financiera cambiÃ³ completamente nuestra operaciÃ³n.',
+    name: 'Camila Rodríguez',
+    role: 'CFO Â· Distribuidora Boyacá',
+    quote: 'Antes tardábamos 3 días en cerrar el mes. Con Contex360 lo hacemos el mismo día. La visibilidad financiera cambió completamente nuestra operación.',
     rating: 5,
     avatar: 'CR',
   },
   {
-    name: 'AndrÃ©s Morales',
+    name: 'Andrés Morales',
     role: 'Gerente General Â· Construcciones AM',
     quote: 'El control de inventario entre obras nos costaba errores costosos. Ahora tenemos trazabilidad completa de materiales en tiempo real.',
     rating: 5,
@@ -72,7 +72,7 @@ const testimonials = [
   {
     name: 'Laura Venegas',
     role: 'Contadora Â· Servicios LV',
-    quote: 'La integraciÃ³n DIAN es perfecta. Cero rechazos en 8 meses. Y el soporte responde en menos de una hora.',
+    quote: 'La integración DIAN es perfecta. Cero rechazos en 8 meses. Y el soporte responde en menos de una hora.',
     rating: 5,
     avatar: 'LV',
   },
@@ -115,7 +115,7 @@ onMounted(() => {
 
         <!-- Links desktop -->
         <div class="hidden md:flex items-center gap-8">
-          <a href="#features" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">CaracterÃ­sticas</a>
+          <a href="#features" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Características</a>
           <a href="#stats" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Resultados</a>
           <a href="#testimonials" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Clientes</a>
         </div>
@@ -126,7 +126,7 @@ onMounted(() => {
             @click="emit('login')"
             class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2"
           >
-            Iniciar sesiÃ³n
+            Iniciar sesión
           </button>
           <button
             @click="emit('request-demo')"
@@ -145,11 +145,11 @@ onMounted(() => {
 
       <!-- Mobile menu -->
       <div v-if="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-4 shadow-lg">
-        <a href="#features" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">CaracterÃ­sticas</a>
+        <a href="#features" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Características</a>
         <a href="#stats" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Resultados</a>
         <a href="#testimonials" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Clientes</a>
         <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-          <button @click="emit('login'); mobileMenuOpen = false" class="w-full text-center text-sm font-medium border border-gray-200 rounded-lg py-2.5 text-gray-700">Iniciar sesiÃ³n</button>
+          <button @click="emit('login'); mobileMenuOpen = false" class="w-full text-center text-sm font-medium border border-gray-200 rounded-lg py-2.5 text-gray-700">Iniciar sesión</button>
           <button @click="emit('request-demo'); mobileMenuOpen = false" class="w-full text-center text-sm font-semibold bg-blue-800 text-white rounded-lg py-2.5">Solicitar demo</button>
         </div>
       </div>
@@ -179,7 +179,7 @@ onMounted(() => {
             </h1>
 
             <p class="text-lg text-gray-500 leading-relaxed max-w-lg mb-10">
-              FacturaciÃ³n DIAN, inventario multi-bodega, analÃ­tica financiera y control de equipo â€” todo en una plataforma. Sin complicaciones.
+              Facturación DIAN, inventario multi-bodega, analítica financiera y control de equipo "” todo en una plataforma. Sin complicaciones.
             </p>
 
             <div class="flex flex-col sm:flex-row gap-3 mb-12">
@@ -264,7 +264,7 @@ onMounted(() => {
                 <!-- Chart bar mockup -->
                 <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm mb-3">
                   <div class="flex items-center justify-between mb-4">
-                    <p class="text-xs font-semibold text-gray-700">Flujo de caja â€” Mayo 2026</p>
+                    <p class="text-xs font-semibold text-gray-700">Flujo de caja "” Mayo 2026</p>
                     <span class="text-[10px] text-blue-700 font-medium bg-blue-50 px-2 py-0.5 rounded-full">En tiempo real</span>
                   </div>
                   <div class="flex items-end gap-1.5 h-20">
@@ -287,8 +287,8 @@ onMounted(() => {
                   </div>
                   <div v-for="item in [
                     { label: 'FE-20240512-001', sub: 'Comercial Andina Â· $2.4M', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
-                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades Â· Prod. X220', color: 'bg-blue-100 text-blue-800', tag: 'En trÃ¡nsito' },
-                    { label: 'FE-20240511-098', sub: 'FerreterÃ­a LÃ³pez Â· $780K', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
+                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades Â· Prod. X220', color: 'bg-blue-100 text-blue-800', tag: 'En tránsito' },
+                    { label: 'FE-20240511-098', sub: 'Ferretería López Â· $780K', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
                   ]" :key="item.label"
                     class="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 last:border-0"
                   >
@@ -309,7 +309,7 @@ onMounted(() => {
               </div>
               <div>
                 <p class="text-xs font-bold text-gray-900">Certificado DIAN</p>
-                <p class="text-[10px] text-gray-400">ObligaciÃ³n fiscal cumplida</p>
+                <p class="text-[10px] text-gray-400">Obligación fiscal cumplida</p>
               </div>
             </div>
           </div>
@@ -337,7 +337,7 @@ onMounted(() => {
           <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
             Todo lo que necesita<br/>tu empresa
           </h2>
-          <p class="text-lg text-gray-400 max-w-xl mx-auto">Sin mÃ³dulos separados, sin integraciones complejas. Un solo sistema que crece contigo.</p>
+          <p class="text-lg text-gray-400 max-w-xl mx-auto">Sin módulos separados, sin integraciones complejas. Un solo sistema que crece contigo.</p>
         </div>
 
         <!-- Feature tabs -->
@@ -375,7 +375,7 @@ onMounted(() => {
                 @click="emit('request-demo')"
                 class="group flex items-center gap-2 text-sm font-semibold text-blue-700 hover:text-blue-800 transition-colors"
               >
-                Ver demostraciÃ³n
+                Ver demostración
                 <ChevronRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </button>
             </div>
@@ -445,14 +445,14 @@ onMounted(() => {
       <div class="relative max-w-4xl mx-auto px-6 text-center">
         <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-8">
           <Building2 class="w-3.5 h-3.5 text-white" />
-          <span class="text-xs font-semibold text-white tracking-wide uppercase">Sin tarjeta de crÃ©dito</span>
+          <span class="text-xs font-semibold text-white tracking-wide uppercase">Sin tarjeta de crédito</span>
         </div>
 
         <h2 class="text-5xl md:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">
           Empieza en menos<br/>de dos horas
         </h2>
         <p class="text-xl text-blue-100 mb-12 max-w-xl mx-auto">
-          Nuestro equipo configura tu empresa, migra tus datos y capacita tu equipo. Sin complicaciones tÃ©cnicas.
+          Nuestro equipo configura tu empresa, migra tus datos y capacita tu equipo. Sin complicaciones técnicas.
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
@@ -473,7 +473,7 @@ onMounted(() => {
 
         <!-- Checklist -->
         <div class="mt-12 flex flex-wrap justify-center gap-6 text-sm text-blue-100">
-          <div v-for="item in ['Prueba 30 dÃ­as gratis', 'Sin contrato mÃ­nimo', 'Soporte incluido', 'Datos seguros']" :key="item" class="flex items-center gap-2">
+          <div v-for="item in ['Prueba 30 días gratis', 'Sin contrato mínimo', 'Soporte incluido', 'Datos seguros']" :key="item" class="flex items-center gap-2">
             <CheckCircle class="w-4 h-4 text-white" />
             {{ item }}
           </div>
@@ -499,7 +499,7 @@ onMounted(() => {
             <div>
               <p class="text-blue-100 font-semibold mb-3">Producto</p>
               <ul class="space-y-2">
-                <li><a href="#features" class="hover:text-slate-500 transition-colors">CaracterÃ­sticas</a></li>
+                <li><a href="#features" class="hover:text-slate-500 transition-colors">Características</a></li>
                 <li><a href="#stats" class="hover:text-slate-500 transition-colors">Precios</a></li>
                 <li><button @click="emit('login')" class="hover:text-slate-500 transition-colors">Acceso</button></li>
               </ul>
@@ -515,7 +515,7 @@ onMounted(() => {
               <p class="text-blue-100 font-semibold mb-3">Legal</p>
               <ul class="space-y-2">
                 <li><a href="#" class="hover:text-slate-500 transition-colors">Privacidad</a></li>
-                <li><a href="#" class="hover:text-slate-500 transition-colors">TÃ©rminos</a></li>
+                <li><a href="#" class="hover:text-slate-500 transition-colors">Términos</a></li>
               </ul>
             </div>
           </div>
@@ -525,7 +525,7 @@ onMounted(() => {
           <p>Â© 2026 Contex360. Todos los derechos reservados.</p>
           <p class="flex items-center gap-1.5">
             <ShieldCheck class="w-3.5 h-3.5 text-slate-500" />
-            Proveedor tecnolÃ³gico certificado por la DIAN
+            Proveedor tecnológico certificado por la DIAN
           </p>
         </div>
       </div>

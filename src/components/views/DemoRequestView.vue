@@ -1,4 +1,4 @@
-﻿<script setup lang="ts">
+<script setup lang="ts">
 import { ref } from 'vue'
 import { businessApi } from '../../services/businessApi'
 
@@ -32,7 +32,7 @@ const handleSubmit = async () => {
 
   try {
     const response = await businessApi.createDemoRequest(form.value)
-    successMessage.value = response.message || 'Solicitud enviada correctamente. Nuestro equipo te contactarÃ¡ pronto.'
+    successMessage.value = response.message || 'Solicitud enviada correctamente. Nuestro equipo te contactará pronto.'
     form.value = { nombre: '', empresa: '', correo: '', telefono: '', mensaje: '', nit: '', ciudad: '', direccion: '', sector: '' }
   } catch (error: any) {
     errorMessage.value = error.message || 'Error al enviar la solicitud. Intenta nuevamente.'
@@ -45,7 +45,7 @@ const handleSubmit = async () => {
 <template>
   <div class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-slate-50/30 font-sans antialiased">
 
-    <!-- Navbar mÃ­nimo -->
+    <!-- Navbar mínimo -->
     <header class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-blue-100/60 px-6 h-14 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-800 to-blue-700 flex items-center justify-center">
@@ -66,13 +66,13 @@ const handleSubmit = async () => {
       <!-- Header -->
       <div class="text-center mb-10">
         <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-5">
-          Sin compromiso Â· 30 dÃ­as gratis
+          Sin compromiso Â· 30 días gratis
         </div>
         <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
           Solicita una Demo
         </h1>
         <p class="text-gray-500 text-base leading-relaxed">
-          Descubre cÃ³mo Contex360 puede transformar la gestiÃ³n financiera de tu empresa
+          Descubre cómo Contex360 puede transformar la gestión financiera de tu empresa
         </p>
       </div>
 
@@ -83,7 +83,7 @@ const handleSubmit = async () => {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-        <p class="font-semibold text-gray-900 mb-1">Â¡Solicitud enviada!</p>
+        <p class="font-semibold text-gray-900 mb-1">¡Solicitud enviada!</p>
         <p class="text-sm text-gray-500">{{ successMessage }}</p>
         <button @click="successMessage = ''" class="mt-4 text-sm text-blue-700 hover:text-blue-800 font-medium transition-colors">
           Enviar otra solicitud â†’
@@ -128,7 +128,7 @@ const handleSubmit = async () => {
 
         <div class="space-y-1.5">
           <label class="block text-sm font-semibold text-gray-700">
-            Correo electrÃ³nico <span class="text-blue-700">*</span>
+            Correo electrónico <span class="text-blue-700">*</span>
           </label>
           <input
             v-model="form.correo"
@@ -152,7 +152,7 @@ const handleSubmit = async () => {
             />
           </div>
           <div class="space-y-1.5">
-            <label class="block text-sm font-semibold text-gray-700">TelÃ©fono</label>
+            <label class="block text-sm font-semibold text-gray-700">Teléfono</label>
             <input
               v-model="form.telefono"
               type="tel"
@@ -185,10 +185,10 @@ const handleSubmit = async () => {
               <option value="comercio">Comercio</option>
               <option value="servicios">Servicios</option>
               <option value="manufactura">Manufactura</option>
-              <option value="construccion">ConstrucciÃ³n</option>
+              <option value="construccion">Construcción</option>
               <option value="salud">Salud</option>
-              <option value="educacion">EducaciÃ³n</option>
-              <option value="tecnologia">TecnologÃ­a</option>
+              <option value="educacion">Educación</option>
+              <option value="tecnologia">Tecnología</option>
               <option value="agropecuario">Agropecuario</option>
               <option value="otro">Otro</option>
             </select>
@@ -196,7 +196,7 @@ const handleSubmit = async () => {
         </div>
 
         <div class="space-y-1.5">
-          <label class="block text-sm font-semibold text-gray-700">DirecciÃ³n</label>
+          <label class="block text-sm font-semibold text-gray-700">Dirección</label>
           <input
             v-model="form.direccion"
             type="text"
@@ -211,7 +211,7 @@ const handleSubmit = async () => {
           <textarea
             v-model="form.mensaje"
             rows="4"
-            placeholder="CuÃ©ntanos sobre tus necesidades..."
+            placeholder="Cuéntanos sobre tus necesidades..."
             :disabled="isLoading"
             class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent focus:bg-white transition-all disabled:opacity-50 resize-none"
           />
@@ -226,7 +226,7 @@ const handleSubmit = async () => {
         </button>
 
         <p class="text-center text-xs text-gray-400">
-          Al enviar aceptas nuestra <a href="#" class="text-blue-700 hover:underline">polÃ­tica de privacidad</a>
+          Al enviar aceptas nuestra <a href="#" class="text-blue-700 hover:underline">política de privacidad</a>
         </p>
       </form>
 
