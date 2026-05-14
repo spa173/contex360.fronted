@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import {
-  BarChart3, FileText, Package, Users, TrendingUp, ShieldCheck,
-  ArrowRight, CheckCircle, ChevronRight, Star, Zap, Globe,
-  Building2, Receipt, Layers, Menu, X, Play
+  BarChart3, Package, Users, TrendingUp, ShieldCheck,
+  ArrowRight, CheckCircle, Star, Zap, Globe,
+  Building2, Receipt, Layers, Menu, X, Play,
+  FileText, Lock, Clock
 } from 'lucide-vue-next'
 
 const emit = defineEmits<{
@@ -22,7 +23,6 @@ const features = [
     title: 'Facturación electrónica certificada',
     desc: 'Emite facturas electrónicas válidas ante la DIAN en segundos. Validación automática, PDF y envío al cliente integrado.',
     stat: '12.400+', statLabel: 'facturas emitidas',
-    color: 'from-orange-500 to-amber-400',
   },
   {
     icon: Package,
@@ -30,7 +30,6 @@ const features = [
     title: 'Control de inventario en tiempo real',
     desc: 'Maneja múltiples bodegas, traslados entre sedes, alertas de stock mínimo y análisis ABC automático.',
     stat: '99.8%', statLabel: 'precisión de stock',
-    color: 'from-orange-400 to-red-400',
   },
   {
     icon: BarChart3,
@@ -38,7 +37,6 @@ const features = [
     title: 'Dashboard financiero inteligente',
     desc: 'KPIs empresariales en tiempo real. Márgenes, flujo de caja, cuentas por cobrar y proyecciones automáticas.',
     stat: '3.2×', statLabel: 'decisiones más rápidas',
-    color: 'from-amber-500 to-orange-500',
   },
   {
     icon: Users,
@@ -46,7 +44,6 @@ const features = [
     title: 'Control de acceso por roles',
     desc: 'Define permisos precisos por cargo. Contador, vendedor, administrador — cada uno ve solo lo que necesita.',
     stat: '100%', statLabel: 'auditable y seguro',
-    color: 'from-orange-600 to-amber-500',
   },
 ]
 
@@ -363,7 +360,7 @@ onMounted(() => {
         <!-- Active feature -->
         <div class="grid md:grid-cols-2 gap-12 items-center bg-gray-50 rounded-3xl p-8 md:p-12 border border-gray-100">
           <div>
-            <div :class="['inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br items-center justify-center mb-6 shadow-lg', features[activeFeature].color]">
+            <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-orange-500 to-amber-400 items-center justify-center mb-6 shadow-lg shadow-orange-200">
               <component :is="features[activeFeature].icon" class="w-7 h-7 text-white" />
             </div>
             <h3 class="text-3xl font-bold text-gray-900 mb-4">{{ features[activeFeature].title }}</h3>
