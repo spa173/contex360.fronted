@@ -157,7 +157,7 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 
 <template>
   <section :class="['view-container', { active: isActive }]">
-    <div class="flex h-screen bg-[#0a0a0f] text-slate-300 font-sans selection:bg-emerald-500/30">
+    <div class="flex h-screen bg-[#020617] text-slate-300 font-sans selection:bg-blue-500/30">
       
       <!-- Nuevo Sidebar -->
       <Sidebar :active-view="activeSubView" @view-change="(v) => activeSubView = v" />
@@ -167,7 +167,7 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
         <!-- Mobile Header -->
         <header class="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0f0f14]">
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-white font-bold text-xs">C</div>
+            <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-xs">C</div>
             <span class="text-sm font-bold text-white tracking-tight">Contex360</span>
           </div>
           <button class="p-2 text-slate-400">
@@ -176,7 +176,7 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
         </header>
 
         <div v-if="loading" class="h-full flex flex-col items-center justify-center space-y-4">
-          <div class="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+          <div class="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
           <p class="text-slate-500 font-medium animate-pulse">Sincronizando infraestructura...</p>
         </div>
 

@@ -1,10 +1,10 @@
 
 <template>
-  <aside class="hidden md:flex w-64 bg-[#0f0f14] border-r border-white/5 flex-col h-screen sticky top-0">
+  <aside class="hidden md:flex w-64 bg-[#030712] border-r border-white/5 flex-col h-screen sticky top-0">
     <!-- Header -->
     <div class="p-6 border-b border-white/5">
       <h1 class="text-2xl font-bold text-white">Contex360</h1>
-      <p class="text-xs text-emerald-400 mt-1 uppercase tracking-wider">Panel Administrador</p>
+      <p class="text-xs text-blue-500 mt-1 uppercase tracking-wider">Panel Administrador</p>
     </div>
 
     <!-- Menu Items -->
@@ -21,17 +21,17 @@
           :class="[
             'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 relative group',
             activeView === item.id
-              ? 'bg-white/5 text-emerald-400'
+              ? 'bg-white/5 text-blue-500'
               : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
           ]"
         >
           <!-- Indicador activo -->
           <div
             v-if="activeView === item.id"
-            class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-r-full"
+            class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-blue-500 rounded-r-full"
           />
           
-          <component :is="item.icon" :class="['w-5 h-5 stroke-[1.5]', activeView === item.id ? 'text-emerald-400' : '']" />
+          <component :is="item.icon" :class="['w-5 h-5 stroke-[1.5]', activeView === item.id ? 'text-blue-500' : '']" />
           <span class="text-sm font-medium">{{ item.label }}</span>
         </button>
       </div>
@@ -40,7 +40,7 @@
     <!-- User Profile -->
     <div class="p-4 border-t border-white/5">
       <button class="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:text-white hover:bg-white/[0.02] rounded-lg transition-colors">
-        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center text-white font-semibold text-sm">
+        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-white font-semibold text-sm">
           A
         </div>
         <div class="flex-1 text-left">

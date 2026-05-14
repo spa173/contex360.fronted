@@ -93,12 +93,12 @@ const revenueTrendData = computed(() => {
     datasets: [{
       label: 'Ventas mensuales',
       data: values,
-      borderColor: '#10b981',
-      backgroundColor: 'rgba(16, 185, 129, 0.12)',
+      borderColor: '#3B82F6',
+      backgroundColor: 'rgba(59, 130, 246, 0.12)',
       fill: 'start',
       borderWidth: 2.5,
-      pointBackgroundColor: '#15232D',
-      pointBorderColor: '#10b981',
+      pointBackgroundColor: '#020617',
+      pointBorderColor: '#3B82F6',
       pointBorderWidth: 2,
       pointRadius: 4,
       pointHoverRadius: 6

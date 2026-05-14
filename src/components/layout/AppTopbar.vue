@@ -117,10 +117,10 @@ function handleTenantChange(event) {
 }
 
 .btn-root {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: rgba(59, 130, 246, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.3);
   border-radius: 8px;
-  color: #10b981;
+  color: #3b82f6;
   cursor: pointer;
   font-size: 0.8rem;
   font-weight: 600;
@@ -128,7 +128,7 @@ function handleTenantChange(event) {
   transition: background 150ms;
 }
 .btn-root:hover {
-  background: rgba(16, 185, 129, 0.22);
+  background: rgba(59, 130, 246, 0.22);
 }
 
 .theme-toggle-button {

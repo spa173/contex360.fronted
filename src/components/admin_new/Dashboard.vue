@@ -22,8 +22,8 @@
 
     <!-- Actividad Reciente y Solicitudes -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <div class="bg-[#14141b] border border-white/5 rounded-xl p-6">
-        <h3 class="text-lg font-semibold text-white mb-4">Solicitudes Recientes</h3>
+      <div class="bg-[#111827] border border-white/5 rounded-xl p-6">
+        <h3 class="text-lg font-semibold text-white mb-4">Solicitudes de Demo</h3>
         <div class="space-y-4">
           <div
             v-for="(req, index) in demoRequests.slice(0, 5)"
@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <div class="bg-[#14141b] border border-white/5 rounded-xl p-6">
+      <div class="bg-[#111827] border border-white/5 rounded-xl p-6">
         <h3 class="text-lg font-semibold text-white mb-4">Estado de Cumplimiento</h3>
         <div class="space-y-4">
           <div v-for="check in complianceChecks.slice(0, 5)" :key="check.id" class="flex items-center gap-3 py-2">

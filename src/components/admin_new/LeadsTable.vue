@@ -7,7 +7,7 @@
         <h2 class="text-2xl font-bold text-white mb-1">Solicitudes de Demo</h2>
         <p class="text-sm text-slate-400">{{ demoRequests.length }} leads registrados</p>
       </div>
-      <button class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+      <button class="px-6 py-2.5 bg-blue-500 hover:bg-blue-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-lg shadow-blue-500/20">
         <Calendar class="w-4 h-4" />
         Agendar Demo
       </button>
@@ -20,12 +20,12 @@
         v-model="searchQuery"
         type="text"
         placeholder="Buscar lead..."
-        class="w-full bg-[#14141b] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all"
+        class="w-full bg-[#111827] border border-white/5 rounded-xl pl-12 pr-4 py-3 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500/30 transition-all"
       />
     </div>
 
     <!-- Table -->
-    <div class="bg-[#14141b] border border-white/5 rounded-xl overflow-hidden">
+    <div class="bg-[#111827] border border-white/5 rounded-xl overflow-hidden">
       <div class="overflow-x-auto">
         <table class="w-full">
           <thead>
@@ -66,7 +66,7 @@
               </td>
               <td class="px-6 py-4">
                 <select
-                  class="bg-white/5 border border-white/10 rounded-md text-xs text-slate-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                  class="bg-white/5 border border-white/10 rounded-md text-xs text-slate-300 px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
                   @change="$emit('update-status', req.id, $event.target.value)"
                 >
                   <option value="nuevo" :selected="req.estado === 'nuevo'">Nuevo</option>
@@ -81,7 +81,7 @@
               <td class="px-6 py-4">
                 <button 
                   v-if="req.estado !== 'convertido' && req.estado !== 'cliente'"
-                  class="px-3 py-1.5 text-xs font-medium text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 rounded-lg transition-colors border border-emerald-500/20"
+                  class="px-3 py-1.5 text-xs font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 rounded-lg transition-colors border border-blue-500/20"
                   @click="$emit('convert', req.id)"
                 >
                   Convertir

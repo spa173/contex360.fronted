@@ -113,7 +113,7 @@ onMounted(fetchCompanies)
         <h2 class="section-title">Empresas</h2>
         <p class="section-sub">{{ companies.length }} empresas registradas en la plataforma</p>
       </div>
-      <button class="btn-emerald" @click="showModal = true">+ Registrar nuevo Tenant</button>
+      <button class="btn-primary" @click="showModal = true">+ Registrar nuevo Tenant</button>
     </div>
 
     <div class="search-bar">
@@ -309,8 +309,8 @@ onMounted(fetchCompanies)
 
 .company-name-cell { display: flex; align-items: center; gap: 10px; }
 .company-avatar {
-  width: 34px; height: 34px; border-radius: 8px; background: rgba(16,185,129,0.15);
-  border: 1px solid rgba(16,185,129,0.3); color: #10b981; font-size: 0.72rem;
+  width: 34px; height: 34px; border-radius: 8px; background: rgba(59,130,246,0.15);
+  border: 1px solid rgba(59,130,246,0.3); color: #3b82f6; font-size: 0.72rem;
   font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
 }
 .company-name { font-weight: 600; }
@@ -333,10 +333,11 @@ onMounted(fetchCompanies)
 .error-text { color: #ef4444; }
 
 .btn-primary {
-  background: var(--accent); border: none; border-radius: 10px; color: #fff;
+  background: var(--primary); border: none; border-radius: var(--radius-md); color: #fff;
   cursor: pointer; font-size: 0.9rem; font-weight: 600; padding: 10px 20px;
+  transition: var(--transition);
 }
-.btn-primary:hover { background: var(--accent-strong); }
+.btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); }
 .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 
 .btn-emerald {
@@ -348,9 +349,11 @@ onMounted(fetchCompanies)
 .btn-emerald:hover { background: #059669; transform: translateY(-1px); box-shadow: 0 6px 15px rgba(16, 185, 129, 0.3); }
 .btn-emerald:active { transform: translateY(0); }
 .btn-ghost {
-  background: transparent; border: 1px solid var(--border); border-radius: 10px;
+  background: transparent; border: 1px solid var(--border); border-radius: var(--radius-md);
   color: var(--text); cursor: pointer; font-size: 0.9rem; padding: 10px 20px;
+  transition: var(--transition);
 }
+.btn-ghost:hover { background: var(--surface-hover); }
 
 .modal-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex;

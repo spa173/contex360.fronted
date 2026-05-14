@@ -11,7 +11,7 @@
       <div 
         v-for="check in complianceChecks" 
         :key="check.id"
-        class="bg-[#14141b] border border-white/5 rounded-xl p-6 relative overflow-hidden group"
+        class="bg-[#111827] border border-white/5 rounded-xl p-6 relative overflow-hidden group"
       >
         <div class="flex items-center justify-between mb-4">
           <Shield class="w-5 h-5 text-emerald-500" />
@@ -34,7 +34,7 @@
     </div>
 
     <!-- Access Review Section -->
-    <div v-if="accessReview" class="bg-[#14141b] border border-white/5 rounded-xl p-8">
+    <div v-if="accessReview" class="bg-[#111827] border border-white/5 rounded-xl p-8">
       <div class="flex items-start justify-between mb-8">
         <div>
           <h3 class="text-xl font-bold text-white mb-2">Revisión de Accesos (Access Review)</h3>
@@ -43,7 +43,7 @@
         <button 
           @click="$emit('run-review')"
           :disabled="runningReview"
-          class="px-6 py-2 bg-emerald-500 hover:bg-emerald-600 disabled:opacity-50 text-white rounded-lg font-semibold transition-all flex items-center gap-2"
+          class="px-6 py-2 bg-blue-500 hover:bg-blue-600 disabled:opacity-50 text-white rounded-lg font-semibold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/20"
         >
           <RotateCw v-if="runningReview" class="w-4 h-4 animate-spin" />
           <Play v-else class="w-4 h-4" />
