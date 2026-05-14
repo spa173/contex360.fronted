@@ -6,6 +6,7 @@ import {
   ROLE_OPTIONS,
   useUsersStore,
 } from '../../stores/usersStore'
+import UserTable from '../users/UserTable.vue'
 import { formatDate } from '../../utils/ui'
 
 defineProps({
@@ -954,81 +955,15 @@ watch(
             <button class="btn-sm" type="button" @click="clearSelection">Limpiar</button>
           </div>
 
-          <div class="admin-table-wrap">
-            <table class="admin-table users-table">
-              <thead>
-                <tr>
-                  <th class="check-cell">
-                    <input
-                      :checked="filteredRows.length && selectedIds.length === filteredRows.length"
-                      type="checkbox"
-                      @change="toggleAllRows"
-                    />
-                  </th>
-                  <th>Usuario</th>
-                  <th>Estado</th>
-                  <th>Rol activo</th>
-                  <th>Empresas</th>
-                  <th>2FA</th>
-                  <th>Sesiones</th>
-                  <th>Ultimo acceso</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
-                  v-for="row in filteredRows"
-                  :key="row.user.id"
-                  :class="{ selected: selectedRow?.user.id === row.user.id }"
-                  @click="selectedUserId = row.user.id"
-                >
-                  <td class="check-cell" @click.stop>
-                    <input :checked="isSelected(row.user.id)" type="checkbox" @change="toggleRowSelection(row.user.id)" />
-                  </td>
-                  <td>
-                    <strong>{{ row.user.name }}</strong>
-                    <span v-if="row.isCurrentUser" class="current-user-badge">(Yo)</span>
-                    <div class="label-soft">{{ row.user.email }}</div>
-                    <div class="label-soft">{{ row.user.title }}</div>
-                  </td>
-                  <td>
-                    <span :class="row.user.status === 'active' ? 'status-badge status-active' : 'status-badge status-inactive'">
-                      {{ row.user.status === 'active' ? 'Activo' : 'Inactivo' }}
-                    </span>
-                  </td>
-                  <td>
-                    <span class="small-pill">{{ row.activeMembership?.role || 'Sin acceso' }}</span>
-                  </td>
-                  <td>
-                    <span class="tenant-stack">
-                      <span v-for="label in row.tenantLabels.slice(0, 2)" :key="label" class="role-chip">{{ label }}</span>
-                      <span v-if="row.tenantLabels.length > 2" class="role-chip">+{{ row.tenantLabels.length - 2 }}</span>
-                    </span>
-                  </td>
-                  <td>
-                    <span
-                      :class="
-                        row.security.twoFactorEnabled
-                          ? 'status-badge status-active'
-                          : row.security.twoFactorRequired
-                            ? 'status-badge status-contingencia'
-                            : 'status-badge'
-                      "
-                    >
-                      {{
-                        row.security.twoFactorEnabled
-                          ? 'Activo'
-                          : row.security.twoFactorRequired
-                            ? 'Pendiente'
-                            : 'Opcional'
-                      }}
-                    </span>
-                  </td>
-                  <td>{{ row.sessions.length }}</td>
-                  <td>{{ row.user.lastLoginAt ? formatDate(row.user.lastLoginAt) : 'Sin ingreso' }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+          <UserTable
+            :rows="filteredRows"
+            :selected-ids="selectedIds"
+            :selected-user-id="selectedUserId"
+            :current-user-id="store.currentUser?.id"
+            @select="(id) => selectedUserId = id"
+            @toggle-selection="toggleRowSelection"
+            @toggle-all="(selected) => selectedIds = selected ? filteredRows.map(r => r.user.id) : []"
+          />
         </article>
       </div>
 
