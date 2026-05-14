@@ -43,99 +43,144 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="demo-wrap">
-    <div class="demo-page">
-      <button class="demo-back" @click="emit('back')">
-        ← Volver al login
+  <div class="min-h-screen bg-gradient-to-br from-orange-50 via-white to-amber-50/30 font-sans antialiased">
+
+    <!-- Navbar mínimo -->
+    <header class="sticky top-0 z-10 bg-white/80 backdrop-blur-md border-b border-orange-100/60 px-6 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-orange-500 to-amber-400 flex items-center justify-center">
+          <span class="text-white font-black text-xs">C</span>
+        </div>
+        <span class="font-bold text-gray-900 text-sm">Contex<span class="text-orange-500">360</span></span>
+      </div>
+      <button
+        @click="emit('back')"
+        class="text-sm text-gray-400 hover:text-orange-500 transition-colors flex items-center gap-1.5"
+      >
+        ← Volver al inicio
       </button>
+    </header>
 
-      <div class="demo-header">
-        <h1 class="demo-title">Solicita una Demo</h1>
-        <p class="demo-subtitle">Descubre cómo Contex360 puede transformar la gestión financiera de tu empresa</p>
+    <div class="max-w-xl mx-auto px-6 py-12">
+
+      <!-- Header -->
+      <div class="text-center mb-10">
+        <div class="inline-flex items-center gap-2 bg-orange-100 text-orange-600 rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider mb-5">
+          Sin compromiso · 30 días gratis
+        </div>
+        <h1 class="text-4xl font-extrabold text-gray-900 tracking-tight mb-3">
+          Solicita una Demo
+        </h1>
+        <p class="text-gray-500 text-base leading-relaxed">
+          Descubre cómo Contex360 puede transformar la gestión financiera de tu empresa
+        </p>
       </div>
 
-      <div v-if="successMessage" class="demo-alert demo-alert--success">
-        {{ successMessage }}
+      <!-- Success -->
+      <div v-if="successMessage" class="bg-orange-50 border border-orange-200 rounded-2xl p-6 text-center mb-6">
+        <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-6 h-6 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <p class="font-semibold text-gray-900 mb-1">¡Solicitud enviada!</p>
+        <p class="text-sm text-gray-500">{{ successMessage }}</p>
+        <button @click="successMessage = ''" class="mt-4 text-sm text-orange-500 hover:text-orange-600 font-medium transition-colors">
+          Enviar otra solicitud →
+        </button>
       </div>
 
-      <div v-if="errorMessage" class="demo-alert demo-alert--error">
+      <!-- Error -->
+      <div v-if="errorMessage" class="bg-red-50 border border-red-200 rounded-xl p-4 mb-6 text-sm text-red-600">
         {{ errorMessage }}
       </div>
 
-      <form v-if="!successMessage" @submit.prevent="handleSubmit" class="demo-form">
-        <div class="demo-field">
-          <label for="nombre">Nombre completo <span class="demo-required">*</span></label>
+      <!-- Form -->
+      <form v-if="!successMessage" @submit.prevent="handleSubmit" class="bg-white rounded-2xl border border-gray-100 shadow-sm shadow-orange-100/50 p-8 space-y-5">
+
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-gray-700">
+            Nombre completo <span class="text-orange-500">*</span>
+          </label>
           <input
-            id="nombre"
             v-model="form.nombre"
             type="text"
             placeholder="Tu nombre"
             required
             :disabled="isLoading"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
           />
         </div>
 
-        <div class="demo-field">
-          <label for="empresa">Empresa <span class="demo-required">*</span></label>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-gray-700">
+            Empresa <span class="text-orange-500">*</span>
+          </label>
           <input
-            id="empresa"
             v-model="form.empresa"
             type="text"
             placeholder="Nombre de tu empresa"
             required
             :disabled="isLoading"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
           />
         </div>
 
-        <div class="demo-field">
-          <label for="correo">Correo electrónico <span class="demo-required">*</span></label>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-gray-700">
+            Correo electrónico <span class="text-orange-500">*</span>
+          </label>
           <input
-            id="correo"
             v-model="form.correo"
             type="email"
             placeholder="tu@empresa.com"
             required
             :disabled="isLoading"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
           />
         </div>
 
-        <div class="demo-field-row">
-          <div class="demo-field">
-            <label for="nit">NIT de la empresa</label>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-sm font-semibold text-gray-700">NIT</label>
             <input
-              id="nit"
               v-model="form.nit"
               type="text"
-              placeholder="Ej: 900.123.456-1"
+              placeholder="900.123.456-1"
               :disabled="isLoading"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
             />
           </div>
-          <div class="demo-field">
-            <label for="telefono">Teléfono</label>
+          <div class="space-y-1.5">
+            <label class="block text-sm font-semibold text-gray-700">Teléfono</label>
             <input
-              id="telefono"
               v-model="form.telefono"
               type="tel"
               placeholder="+57 300 123 4567"
               :disabled="isLoading"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
             />
           </div>
         </div>
 
-        <div class="demo-field-row">
-          <div class="demo-field">
-            <label for="ciudad">Ciudad</label>
+        <div class="grid grid-cols-2 gap-4">
+          <div class="space-y-1.5">
+            <label class="block text-sm font-semibold text-gray-700">Ciudad</label>
             <input
-              id="ciudad"
               v-model="form.ciudad"
               type="text"
-              placeholder="Ej: Sogamoso"
+              placeholder="Sogamoso"
               :disabled="isLoading"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
             />
           </div>
-          <div class="demo-field">
-            <label for="sector">Sector / Industria</label>
-            <select id="sector" v-model="form.sector" :disabled="isLoading">
+          <div class="space-y-1.5">
+            <label class="block text-sm font-semibold text-gray-700">Sector</label>
+            <select
+              v-model="form.sector"
+              :disabled="isLoading"
+              class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50 appearance-none"
+            >
               <option value="">Sin especificar</option>
               <option value="comercio">Comercio</option>
               <option value="servicios">Servicios</option>
@@ -150,225 +195,41 @@ const handleSubmit = async () => {
           </div>
         </div>
 
-        <div class="demo-field">
-          <label for="direccion">Dirección</label>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-gray-700">Dirección</label>
           <input
-            id="direccion"
             v-model="form.direccion"
             type="text"
-            placeholder="Ej: Calle 11 #15-20, Sogamoso"
+            placeholder="Calle 11 #15-20, Sogamoso"
             :disabled="isLoading"
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50"
           />
         </div>
 
-        <div class="demo-field">
-          <label for="mensaje">Mensaje / Necesidades</label>
+        <div class="space-y-1.5">
+          <label class="block text-sm font-semibold text-gray-700">Mensaje / Necesidades</label>
           <textarea
-            id="mensaje"
             v-model="form.mensaje"
             rows="4"
             placeholder="Cuéntanos sobre tus necesidades..."
             :disabled="isLoading"
-          ></textarea>
+            class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-orange-400 focus:border-transparent focus:bg-white transition-all disabled:opacity-50 resize-none"
+          />
         </div>
 
-        <button type="submit" class="demo-submit" :disabled="isLoading">
-          {{ isLoading ? 'Enviando...' : 'Solicitar Demo' }}
+        <button
+          type="submit"
+          :disabled="isLoading"
+          class="w-full py-4 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold text-sm shadow-lg shadow-orange-200 hover:shadow-orange-300 transition-all disabled:opacity-60 disabled:cursor-not-allowed hover:-translate-y-0.5 active:translate-y-0"
+        >
+          {{ isLoading ? 'Enviando...' : 'Solicitar Demo gratis' }}
         </button>
+
+        <p class="text-center text-xs text-gray-400">
+          Al enviar aceptas nuestra <a href="#" class="text-orange-500 hover:underline">política de privacidad</a>
+        </p>
       </form>
 
-      <div v-if="successMessage" class="demo-cta">
-        <button @click="successMessage = ''" class="demo-secondary">
-          Enviar otra solicitud
-        </button>
-      </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-.demo-wrap {
-  padding: 24px 16px 48px;
-}
-
-.demo-back {
-  background: none;
-  border: none;
-  color: #94a3b8;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 0 0 8px;
-  transition: color 0.15s;
-}
-
-.demo-back:hover {
-  color: #e2e8f0;
-}
-
-.demo-page {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  margin: 0 auto;
-  max-width: 600px;
-}
-
-.demo-header {
-  text-align: center;
-}
-
-.demo-title {
-  color: #e2e8f0;
-  font-size: 2rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0 0 12px;
-}
-
-.demo-subtitle {
-  color: #94a3b8;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 0;
-}
-
-.demo-alert {
-  border-radius: 12px;
-  font-size: 0.95rem;
-  line-height: 1.5;
-  padding: 16px 20px;
-}
-
-.demo-alert--success {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.28);
-  color: #6ee7b7;
-}
-
-.demo-alert--error {
-  background: rgba(239, 68, 68, 0.12);
-  border: 1px solid rgba(239, 68, 68, 0.28);
-  color: #fca5a5;
-}
-
-.demo-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.demo-field-row {
-  display: grid;
-  gap: 16px;
-  grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 520px) {
-  .demo-field-row { grid-template-columns: 1fr; }
-}
-
-.demo-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.demo-field label {
-  color: #cbd5e1;
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-.demo-required {
-  color: #ef4444;
-}
-
-.demo-field select {
-  appearance: none;
-  background: rgba(255, 255, 255, 0.06) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  color: #f1f5f9;
-  font-size: 0.95rem;
-  padding: 12px 16px;
-  transition: border-color 0.15s;
-  width: 100%;
-}
-
-.demo-field select:focus {
-  outline: none;
-  border-color: #10b981;
-}
-
-.demo-field select option {
-  background: #1e2a38;
-  color: #f1f5f9;
-}
-
-.demo-field input,
-.demo-field textarea {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 10px;
-  color: #f1f5f9;
-  font-size: 0.95rem;
-  padding: 12px 16px;
-  transition: border-color 0.15s;
-}
-
-.demo-field input:focus,
-.demo-field textarea:focus {
-  outline: none;
-  border-color: #10b981;
-}
-
-.demo-field input:disabled,
-.demo-field textarea:disabled {
-  opacity: 0.6;
-}
-
-.demo-field textarea {
-  resize: vertical;
-}
-
-.demo-submit {
-  background: #10b981;
-  border: none;
-  border-radius: 10px;
-  color: #ffffff;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 600;
-  padding: 14px 24px;
-  transition: opacity 0.15s;
-}
-
-.demo-submit:hover:not(:disabled) {
-  opacity: 0.9;
-}
-
-.demo-submit:disabled {
-  cursor: not-allowed;
-  opacity: 0.6;
-}
-
-.demo-cta {
-  text-align: center;
-}
-
-.demo-secondary {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  color: #cbd5e1;
-  cursor: pointer;
-  font-size: 0.9rem;
-  padding: 12px 24px;
-  transition: all 0.15s;
-}
-
-.demo-secondary:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.3);
-}
-</style>
