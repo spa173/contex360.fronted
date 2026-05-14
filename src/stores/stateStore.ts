@@ -108,7 +108,6 @@ export const useStateStore = defineStore('state', {
         clearAuthToken()
         return false
       }
-      }
     },
 
     checkCurrentSessionHealth() {
