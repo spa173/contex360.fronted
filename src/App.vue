@@ -6,6 +6,7 @@ import AppShell from './components/AppShell.vue'
 import RootShell from './components/RootShell.vue'
 import AuthScreen from './components/AuthScreen.vue'
 import DemoRequestView from './components/views/DemoRequestView.vue'
+import LandingPage from './components/LandingPage.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import { Toaster } from 'vue-sonner'
@@ -15,6 +16,7 @@ const store = useStateStore()
 const themeStore = useThemeStore()
 const { toasts } = useToasts()
 const showDemo = ref(false)
+const showAuth = ref(false)
 const viewingAdminPanel = ref(false)
 
 const showRootPanel = computed(
@@ -33,10 +35,23 @@ onMounted(async () => {
 
 <template>
   <div class="app-root">
-    <DemoRequestView v-if="!store.currentUser && showDemo" @back="showDemo = false" />
-    <AuthScreen v-else-if="!store.currentUser" @request-demo="showDemo = true" />
-    <RootShell v-else-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
-    <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
+    <!-- Authenticated states -->
+    <template v-if="store.currentUser">
+      <RootShell v-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
+      <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
+    </template>
+
+    <!-- Public states (unauthenticated) -->
+    <template v-else>
+      <DemoRequestView v-if="showDemo" @back="showDemo = false" />
+      <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @back="showAuth = false" />
+      <LandingPage
+        v-else
+        @login="showAuth = true"
+        @request-demo="showDemo = true"
+      />
+    </template>
+
     <SessionRecoveryModal />
     <Toaster position="top-right" richColors />
     <ToastStack :toasts="toasts" />
