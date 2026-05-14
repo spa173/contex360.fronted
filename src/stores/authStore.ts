@@ -40,10 +40,23 @@ export const useAuthStore = defineStore('auth', () => {
     return definitions[role] || ['dashboard', 'profile']
   })
 
-  async function loginWithBackend(credentials: { email: string; password: string; totpCode?: string }) {
+  async function loginWithBackend(credentials: { 
+    email: string; 
+    password: string; 
+    totpCode?: string;
+    privacyAccepted?: boolean;
+    rememberMe?: boolean;
+  }) {
     isLoading.value = true
     authError.value = null
     const activeTenantId = root.activeTenantId || 'tenant-a'
+
+    // Handle "Remember Me" persistence logic
+    if (credentials.rememberMe) {
+      localStorage.setItem('contex360-remember-email', credentials.email)
+    } else {
+      localStorage.removeItem('contex360-remember-email')
+    }
 
     try {
       try {
@@ -60,6 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
           return { ok: true, user: response.user }
         }
       } catch (backendError: any) {
+        // Fallback for demo accounts if backend fails or is not present
         const user = root.users.find(u => u.email === credentials.email)
         if (user && user.isDemoAccount) {
           const isValid = await verifyPassword(user, credentials.password)

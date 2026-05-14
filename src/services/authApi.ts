@@ -183,7 +183,13 @@ async function requestJson<T>(path: string, init: { method?: string; body?: unkn
   return responseBody as T
 }
 
-export async function loginWithBackend(credentials: { email: string; password: string }) {
+export async function loginWithBackend(credentials: { 
+  email: string; 
+  password: string; 
+  totpCode?: string;
+  privacyAccepted?: boolean;
+  rememberMe?: boolean;
+}) {
   const response = await requestJson<BackendAuthResponse>('/auth/login', {
     method: 'POST',
     body: credentials,

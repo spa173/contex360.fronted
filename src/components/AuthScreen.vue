@@ -3,6 +3,8 @@ import { computed, ref } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
+import { toast } from 'vue-sonner'
+import { onMounted } from 'vue'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
@@ -29,15 +31,37 @@ const hasAcceptedPrivacy = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
+onMounted(() => {
+  const savedEmail = localStorage.getItem('contex360-remember-email')
+  if (savedEmail) {
+    email.value = savedEmail
+    rememberMe.value = true
+  }
+})
+
 const handleSubmit = async () => {
   if (!isFormValid.value) return
+
+  if (!hasAcceptedPrivacy.value) {
+    toast.warning('Debe aceptar la política de tratamiento de datos para continuar.', {
+      description: 'Cumplimiento obligatorio Ley 1581 de 2012',
+      duration: 4000,
+    })
+    return
+  }
 
   isLoading.value = true
   errorMessage.value = ''
   statusMessage.value = ''
 
   try {
-    const credentials = { email: email.value, password: password.value, totpCode: undefined }
+    const credentials = { 
+      email: email.value, 
+      password: password.value, 
+      totpCode: undefined,
+      privacyAccepted: hasAcceptedPrivacy.value,
+      rememberMe: rememberMe.value
+    }
     if (requiresTotp.value && totpCode.value) {
       credentials.totpCode = totpCode.value
     }
@@ -332,7 +356,7 @@ const toggleRecoveryHelp = () => {
 
               <div class="auth-row" style="margin-top: 8px;">
                 <label class="auth-remember">
-                  <input v-model="hasAcceptedPrivacy" type="checkbox" required />
+                  <input v-model="hasAcceptedPrivacy" type="checkbox" />
                   <span>Acepto la Política de Tratamiento de Datos (Ley 1581)</span>
                 </label>
               </div>
@@ -348,7 +372,7 @@ const toggleRecoveryHelp = () => {
                 Contacta a tu administrador para restablecer el acceso.
               </p>
 
-              <button class="auth-primary" :disabled="!isFormValid || isLoading || !hasAcceptedPrivacy || (requiresTotp && totpCode.length < 6)" type="submit">
+              <button class="auth-primary" :disabled="isLoading || (requiresTotp && totpCode.length < 6)" type="submit">
                 <span aria-hidden="true">{{ isLoading ? 'Verificando...' : 'Iniciar sesión' }}</span>
                 <span class="sr-only">{{ isLoading ? 'Verificando...' : 'Iniciar sesion' }}</span>
               </button>

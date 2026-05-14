@@ -8,6 +8,7 @@ import AuthScreen from './components/AuthScreen.vue'
 import DemoRequestView from './components/views/DemoRequestView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
+import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
 
 const store = useStateStore()
@@ -37,6 +38,7 @@ onMounted(async () => {
     <RootShell v-else-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
     <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
     <SessionRecoveryModal />
+    <Toaster position="top-right" richColors />
     <ToastStack :toasts="toasts" />
   </div>
 </template>
