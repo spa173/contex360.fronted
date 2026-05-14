@@ -25,6 +25,7 @@ const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
 const showTermsModal = ref(false)
 const showPrivacyModal = ref(false)
+const hasAcceptedPrivacy = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
 
@@ -329,6 +330,13 @@ const toggleRecoveryHelp = () => {
                 <p class="auth-totp-hint">Ingresa el código de 6 dígitos de tu app autenticadora.</p>
               </div>
 
+              <div class="auth-row" style="margin-top: 8px;">
+                <label class="auth-remember">
+                  <input v-model="hasAcceptedPrivacy" type="checkbox" required />
+                  <span>Acepto la Política de Tratamiento de Datos (Ley 1581)</span>
+                </label>
+              </div>
+
               <div class="auth-row">
                 <label class="auth-remember">
                   <input v-model="rememberMe" type="checkbox" />
@@ -340,7 +348,7 @@ const toggleRecoveryHelp = () => {
                 Contacta a tu administrador para restablecer el acceso.
               </p>
 
-              <button class="auth-primary" :disabled="!isFormValid || isLoading || (requiresTotp && totpCode.length < 6)" type="submit">
+              <button class="auth-primary" :disabled="!isFormValid || isLoading || !hasAcceptedPrivacy || (requiresTotp && totpCode.length < 6)" type="submit">
                 <span aria-hidden="true">{{ isLoading ? 'Verificando...' : 'Iniciar sesión' }}</span>
                 <span class="sr-only">{{ isLoading ? 'Verificando...' : 'Iniciar sesion' }}</span>
               </button>

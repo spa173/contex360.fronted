@@ -1,18 +1,17 @@
 import { defineStore } from 'pinia'
 import { businessApi } from '../services/businessApi'
 import { refreshAccessToken, storeAuthToken, clearAuthToken } from '../services/authApi'
-import { createTimerRegistry } from './stateRuntime'
 import { 
   getMembershipForTenant, 
-  getVisibleViewsForRole, 
   normalizeRoleAccess,
   Membership,
   RoleAccessHistoryEntry
 } from './rbacStore'
 import { createInitialState, normalizeState } from './stateNormalization'
 import { Product, InventoryMovement, InventoryTransfer } from '../types/inventory'
+import { encryptData, decryptData } from '../utils/security'
 
-const STORAGE_KEY = 'contex360-mvp-state'
+const STORAGE_KEY = 'contex360-mvp-state-v2'
 
 // Types
 export interface User {
@@ -36,6 +35,19 @@ export interface AppState {
   [key: string]: any
 }
 
+function loadState() {
+  const raw = localStorage.getItem(STORAGE_KEY)
+  if (!raw) return createInitialState()
+  
+  try {
+    const decrypted = decryptData(raw)
+    const parsed = JSON.parse(decrypted || raw)
+    return normalizeState(parsed)
+  } catch {
+    return createInitialState()
+  }
+}
+
 export const useStateStore = defineStore('state', {
   state: (): AppState => loadState(),
   getters: {
@@ -53,7 +65,11 @@ export const useStateStore = defineStore('state', {
     }
   },
   actions: {
-    saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(this.$state)) },
+    saveState() {
+      const serialized = JSON.stringify(this.$state)
+      const encrypted = encryptData(serialized)
+      localStorage.setItem(STORAGE_KEY, encrypted)
+    },
     
     setActiveView(view: string) {
       this.activeView = view
@@ -119,17 +135,7 @@ export const useStateStore = defineStore('state', {
     },
 
     processScheduledDeactivations() {
-      const now = new Date()
-      // Lógica para procesar bajas programadas (placeholder para persistencia local)
+      // Logic for scheduled deactivations
     }
   }
 })
-
-function loadState() {
-  const raw = localStorage.getItem(STORAGE_KEY)
-  try {
-    return normalizeState(raw ? JSON.parse(raw) : {})
-  } catch {
-    return createInitialState()
-  }
-}

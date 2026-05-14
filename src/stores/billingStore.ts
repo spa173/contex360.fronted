@@ -5,6 +5,7 @@ import { businessApi } from '../services/businessApi'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import { Invoice } from '../types/billing'
 import { useAccountingStore } from './accountingStore'
+import { invoiceSchema } from '../schemas/invoice.schema'
 
 const scheduledDianTimers = new Map<string, any[]>()
 
@@ -12,7 +13,6 @@ export const useBillingStore = defineStore('billing', () => {
   const root = useStateStore()
   const accounting = useAccountingStore()
 
-  // State with robust initialization
   const invoices = ref<Invoice[]>(
     Array.isArray(root.invoices) ? [...root.invoices] : []
   )
@@ -21,7 +21,6 @@ export const useBillingStore = defineStore('billing', () => {
     invoiceId: null as string | null,
   })
 
-  // Getters
   const activeTenantId = computed(() => root.activeTenantId)
   
   const tenantInvoices = computed(() => 
@@ -36,7 +35,6 @@ export const useBillingStore = defineStore('billing', () => {
 
   const canEmitInvoice = computed(() => root.can('emit_invoice'))
 
-  // Actions
   async function fetchInvoices() {
     if (!activeTenantId.value) return
     try {
@@ -47,7 +45,10 @@ export const useBillingStore = defineStore('billing', () => {
 
   async function emitInvoice(payload: Record<string, any>) {
     if (!canEmitInvoice.value) return { ok: false, message: 'Tu rol actual no permite emitir documentos.' }
+    
     try {
+      invoiceSchema.parse(payload)
+
       const response = await businessApi.createInvoice(payload)
       const invoice = response as Invoice
       invoices.value.unshift(invoice)
@@ -57,7 +58,12 @@ export const useBillingStore = defineStore('billing', () => {
       appendAuditEvent(root.$state, { tenantId: invoice.tenantId, entity: 'factura', action: 'Emitir', description: `Se emitió la factura ${invoice.number} por ${invoice.total}.`, actor: root.currentUser?.name || 'Sistema', severity: 'info' })
       scheduleDianUpdates(invoice.id, invoice.tenantId)
       return { ok: true, message: 'Factura emitida correctamente.', invoice }
-    } catch (error) { return { ok: false, message: error instanceof Error ? error.message : 'Error al emitir factura.' } }
+    } catch (error) { 
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
+        return { ok: false, message: 'Datos de factura inválidos. Revisa los campos obligatorios.' }
+      }
+      return { ok: false, message: error instanceof Error ? error.message : 'Error al emitir factura.' } 
+    }
   }
 
   function createInvoiceEntry(invoice: Invoice, clientName: string) {
@@ -90,10 +96,8 @@ export const useBillingStore = defineStore('billing', () => {
     }
   }
 
-  // Sync back to root
   watch(invoices, () => { (root.$state as any).invoices = invoices.value; }, { deep: true, immediate: true })
 
-  // Auto-fetch
   watch([activeTenantId, () => root.session.currentUserId], ([newId, userId]) => {
     if (newId && userId) fetchInvoices()
   }, { immediate: true })
