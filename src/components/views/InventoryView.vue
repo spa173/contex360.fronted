@@ -209,7 +209,7 @@ function exportCSV() {
     <header class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-6">
       <div>
         <h1 class="text-3xl font-bold text-white tracking-tight">Gestión de Inventario</h1>
-        <p class="text-slate-500 mt-1">{{ permissionNote }}</p>
+        <p class="text-slate-400 mt-1">{{ permissionNote }}</p>
       </div>
       
       <nav class="flex p-1 bg-slate-900/50 rounded-lg border border-slate-800">
@@ -231,7 +231,7 @@ function exportCSV() {
     <div v-if="activeTab === 'general'" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Create Product Form -->
       <aside class="lg:col-span-1 space-y-6">
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl p-6 shadow-xl">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-6">
             <div class="w-10 h-10 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -240,50 +240,50 @@ function exportCSV() {
             </div>
             <div>
               <h2 class="text-lg font-semibold text-white">Nuevo Producto</h2>
-              <p class="text-sm text-slate-500">Registrar ítem en el maestro</p>
+              <p class="text-xs text-slate-400">Registrar ítem en el maestro</p>
             </div>
           </div>
 
           <form @submit.prevent="handleSubmit" class="space-y-4">
             <div class="space-y-4" :class="{ 'opacity-50 pointer-events-none': !canInventory }">
               <div class="space-y-1">
-                <label class="text-sm font-medium text-slate-500 ml-1">Nombre del Producto</label>
+                <label class="text-xs font-medium text-slate-400 ml-1">Nombre del Producto</label>
                 <input v-model="productForm.name" type="text" placeholder="Ej: Consultoría Contable" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition-all outline-none" required />
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">SKU</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">SKU</label>
                   <input v-model="productForm.sku" type="text" placeholder="SKU-001" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" required />
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">Categoría</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">Categoría</label>
                   <input v-model="productForm.category" type="text" placeholder="General" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none" />
                 </div>
               </div>
 
               <div class="grid grid-cols-3 gap-4">
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">Precio</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">Precio</label>
                   <input v-model.number="productForm.price" type="number" step="0.01" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none" required />
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">Costo</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">Costo</label>
                   <input v-model.number="productForm.cost" type="number" step="0.01" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none" required />
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">IVA %</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">IVA %</label>
                   <input v-model.number="productForm.taxRate" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-white outline-none" />
                 </div>
               </div>
 
               <div class="grid grid-cols-2 gap-4">
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">Stock Inicial</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">Stock Inicial</label>
                   <input v-model.number="productForm.stock" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none" />
                 </div>
                 <div class="space-y-1">
-                  <label class="text-sm font-medium text-slate-500 ml-1">Mínimo</label>
+                  <label class="text-xs font-medium text-slate-400 ml-1">Mínimo</label>
                   <input v-model.number="productForm.minStock" type="number" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none" />
                 </div>
               </div>
@@ -301,16 +301,16 @@ function exportCSV() {
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl p-6 shadow-xl">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
           <h3 class="text-sm font-semibold text-white mb-4 uppercase tracking-wider">Acciones Rápidas</h3>
           <div class="grid grid-cols-2 gap-3">
             <button @click="exportCSV" class="flex flex-col items-center gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl hover:border-emerald-500/50 transition-colors">
               <span class="text-xl">📊</span>
-              <span class="text-sm text-slate-500">Exportar CSV</span>
+              <span class="text-xs text-slate-400">Exportar CSV</span>
             </button>
             <label class="flex flex-col items-center gap-2 p-3 bg-slate-900 border border-slate-800 rounded-xl hover:border-emerald-500/50 transition-colors cursor-pointer">
               <span class="text-xl">📥</span>
-              <span class="text-sm text-slate-500">Importar CSV</span>
+              <span class="text-xs text-slate-400">Importar CSV</span>
               <input type="file" accept=".csv" class="hidden" @change="handleFileUpload" />
             </label>
             <button @click="toggleAuditMode" :class="[
@@ -328,7 +328,7 @@ function exportCSV() {
 
       <!-- Products Table -->
       <main class="lg:col-span-2 space-y-6">
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl shadow-xl overflow-hidden">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl shadow-xl overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
@@ -388,7 +388,7 @@ function exportCSV() {
         </div>
 
         <!-- Recent Movements -->
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl p-6 shadow-xl">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
           <div class="flex items-center justify-between mb-6">
             <h3 class="text-lg font-semibold text-white flex items-center gap-2">
               <span class="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
@@ -408,7 +408,7 @@ function exportCSV() {
                 </div>
                 <div>
                   <p class="text-sm font-medium text-white">{{ movement.productName }}</p>
-                  <p class="text-sm text-slate-500">{{ movement.note }} • {{ formatDate(movement.at) }}</p>
+                  <p class="text-xs text-slate-400">{{ movement.note }} • {{ formatDate(movement.at) }}</p>
                 </div>
               </div>
               <div class="text-right">
@@ -430,7 +430,7 @@ function exportCSV() {
     <div v-if="activeTab === 'operaciones'" class="space-y-8 animate-in slide-in-from-bottom-4">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         <!-- Stock Transfers -->
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl p-6 shadow-xl">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
           <div class="flex items-center gap-3 mb-6 border-b border-slate-800 pb-4">
             <div class="w-10 h-10 rounded-lg bg-blue-500/10 flex items-center justify-center text-blue-400">
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -439,13 +439,13 @@ function exportCSV() {
             </div>
             <div>
               <h2 class="text-lg font-semibold text-white">Traslado de Mercancía</h2>
-              <p class="text-sm text-slate-500">Movimiento entre bodegas</p>
+              <p class="text-xs text-slate-400">Movimiento entre bodegas</p>
             </div>
           </div>
 
           <div class="space-y-4">
             <div class="space-y-1">
-              <label class="text-sm font-medium text-slate-500 ml-1">Producto a trasladar</label>
+              <label class="text-xs font-medium text-slate-400 ml-1">Producto a trasladar</label>
               <select v-model="transferForm.productId" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none focus:border-blue-500 transition-all">
                 <option value="" disabled>Seleccione un producto...</option>
                 <option v-for="p in sortedProducts.filter(p => p.isInventoriable)" :key="p.id" :value="p.id">
@@ -456,13 +456,13 @@ function exportCSV() {
 
             <div class="grid grid-cols-2 gap-4">
               <div class="space-y-1">
-                <label class="text-sm font-medium text-slate-500 ml-1">Bodega Origen</label>
+                <label class="text-xs font-medium text-slate-400 ml-1">Bodega Origen</label>
                 <select v-model="transferForm.fromLocId" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none">
                   <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
                 </select>
               </div>
               <div class="space-y-1">
-                <label class="text-sm font-medium text-slate-500 ml-1">Bodega Destino</label>
+                <label class="text-xs font-medium text-slate-400 ml-1">Bodega Destino</label>
                 <select v-model="transferForm.toLocId" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none">
                   <option v-for="loc in store.tenantLocations" :key="loc.id" :value="loc.id">{{ loc.name }}</option>
                 </select>
@@ -470,7 +470,7 @@ function exportCSV() {
             </div>
 
             <div class="space-y-1">
-              <label class="text-sm font-medium text-slate-500 ml-1">Cantidad</label>
+              <label class="text-xs font-medium text-slate-400 ml-1">Cantidad</label>
               <input v-model.number="transferForm.quantity" type="number" min="1" class="w-full bg-slate-900 border border-slate-800 rounded-lg px-4 py-2.5 text-white outline-none" />
             </div>
 
@@ -481,7 +481,7 @@ function exportCSV() {
         </div>
 
         <!-- Pending Transfers -->
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl p-6 shadow-xl">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl">
           <h2 class="text-lg font-semibold text-white mb-6 border-b border-slate-800 pb-4">Traslados en Tránsito</h2>
           
           <div class="space-y-4">
@@ -506,7 +506,7 @@ function exportCSV() {
     <!-- Tab Content: Inteligencia -->
     <div v-if="activeTab === 'inteligencia'" class="grid grid-cols-1 md:grid-cols-3 gap-8 animate-in zoom-in-95">
       <!-- ABC Analysis -->
-      <article class="md:col-span-3 bg-[#131926] border border-slate-800/60 rounded-2xl p-8 shadow-2xl overflow-hidden relative">
+      <article class="md:col-span-3 bg-[#131926] border border-slate-800/50 rounded-2xl p-8 shadow-2xl overflow-hidden relative">
         <div class="absolute top-0 right-0 p-8 opacity-5">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-32 w-32" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -524,7 +524,7 @@ function exportCSV() {
                 <span class="text-2xl">💎</span>
               </div>
               <p class="text-3xl font-bold text-emerald-400">{{ Object.values(store.abcAnalysis).filter(v => v === 'A').length }}</p>
-              <p class="text-sm text-slate-500 mt-1">Generan el 80% de tus ingresos</p>
+              <p class="text-sm text-slate-400 mt-1">Generan el 80% de tus ingresos</p>
             </div>
             
             <div class="bg-blue-500/5 border border-blue-500/20 rounded-2xl p-6 group hover:bg-blue-500/10 transition-all">
@@ -533,7 +533,7 @@ function exportCSV() {
                 <span class="text-2xl">📦</span>
               </div>
               <p class="text-3xl font-bold text-blue-400">{{ Object.values(store.abcAnalysis).filter(v => v === 'B').length }}</p>
-              <p class="text-sm text-slate-500 mt-1">Rotación constante y saludable</p>
+              <p class="text-sm text-slate-400 mt-1">Rotación constante y saludable</p>
             </div>
 
             <div class="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6 group hover:bg-slate-700/50 transition-all">
@@ -542,7 +542,7 @@ function exportCSV() {
                 <span class="text-2xl">⏱️</span>
               </div>
               <p class="text-3xl font-bold text-slate-400">{{ Object.values(store.abcAnalysis).filter(v => v === 'C').length }}</p>
-              <p class="text-sm text-slate-500 mt-1">Artículos de baja rotación</p>
+              <p class="text-sm text-slate-400 mt-1">Artículos de baja rotación</p>
             </div>
           </div>
         </div>
@@ -553,7 +553,7 @@ function exportCSV() {
         <h3 class="text-lg font-bold text-red-400 flex items-center gap-2 mb-4">
           <span>⚠️</span> Inventario Muerto
         </h3>
-        <p class="text-sm text-slate-500 mb-6">Ítems sin movimiento en los últimos 90 días. Riesgo de obsolescencia.</p>
+        <p class="text-xs text-slate-400 mb-6">Ítems sin movimiento en los últimos 90 días. Riesgo de obsolescencia.</p>
         <div class="space-y-3">
           <div v-for="p in store.deadInventory.slice(0, 3)" :key="p.id" class="p-3 bg-red-500/5 border border-red-500/10 rounded-lg flex justify-between items-center">
             <span class="text-sm text-white">{{ p.name }}</span>
@@ -563,7 +563,7 @@ function exportCSV() {
       </article>
 
       <!-- Reorder Suggestions -->
-      <article class="bg-[#131926] border border-slate-800/60 rounded-xl p-6 shadow-xl md:col-span-2">
+      <article class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-xl md:col-span-2">
         <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
           <span class="w-1.5 h-6 bg-amber-500 rounded-full"></span>
           Sugerencias de Abastecimiento

@@ -134,16 +134,16 @@ const stockValueData = computed(() => {
 <template>
   <section :class="['view', { active: isActive }]">
     <div class="dashboard-grid">
-      <Card class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
         <CardHeader class="pb-4">
-          <p class="text-slate-500 font-medium text-sm uppercase tracking-wider">Control operativo</p>
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Control operativo</p>
           <CardTitle class="text-slate-50 font-bold text-2xl">Alertas y prioridades</CardTitle>
         </CardHeader>
         <CardContent>
           <div v-if="lowStockProducts.length" class="grid gap-3">
             <div v-for="product in lowStockProducts.slice(0, 4)" :key="product.id" class="flex items-center justify-between bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
               <div>
-                <p class="text-slate-300 font-medium">{{ product.name }}</p>
+                <p class="text-slate-200 font-medium">{{ product.name }}</p>
                 <p class="text-slate-500 text-sm">SKU {{ product.sku }} - minimo {{ product.minStock }}</p>
               </div>
               <Badge class="bg-rose-500/15 text-rose-500 border-none">Stock {{ product.stock }}</Badge>
@@ -155,9 +155,9 @@ const stockValueData = computed(() => {
         </CardContent>
       </Card>
 
-      <Card class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
         <CardHeader class="pb-4">
-          <p class="text-slate-500 font-medium text-sm uppercase tracking-wider">Logistica</p>
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Logistica</p>
           <CardTitle class="text-slate-50 font-bold text-2xl">Valor del Stock por Categoria</CardTitle>
         </CardHeader>
         <CardContent>
@@ -173,9 +173,9 @@ const stockValueData = computed(() => {
         </CardContent>
       </Card>
 
-      <Card class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30 col-span-2">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30 col-span-2">
         <CardHeader class="pb-4">
-          <p class="text-slate-500 font-medium text-sm uppercase tracking-wider">Desempeño</p>
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Desempeño</p>
           <CardTitle class="text-slate-50 font-bold text-2xl">Tendencia de Ventas (Ultimos 6 meses)</CardTitle>
         </CardHeader>
         <CardContent>
@@ -193,9 +193,9 @@ const stockValueData = computed(() => {
         </CardContent>
       </Card>
 
-      <Card class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
         <CardHeader class="pb-4">
-          <p class="text-slate-500 font-medium text-sm uppercase tracking-wider">Cumplimiento</p>
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Cumplimiento</p>
           <CardTitle class="text-slate-50 font-bold text-2xl">Pipeline DIAN</CardTitle>
         </CardHeader>
         <CardContent>
@@ -212,15 +212,15 @@ const stockValueData = computed(() => {
         </CardContent>
       </Card>
 
-      <Card class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
         <CardHeader class="pb-4">
-          <p class="text-slate-500 font-medium text-sm uppercase tracking-wider">Resumen</p>
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Resumen</p>
           <CardTitle class="text-slate-50 font-bold text-2xl">Estado de modulos</CardTitle>
         </CardHeader>
         <CardContent class="grid gap-3">
           <div v-for="[name, status, note] in moduleRows" :key="name" class="flex items-center justify-between bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
             <div>
-              <p class="text-slate-300 font-medium">{{ name }}</p>
+              <p class="text-slate-200 font-medium">{{ name }}</p>
               <p class="text-slate-500 text-sm">{{ note }}</p>
             </div>
             <Badge variant="outline" class="border-slate-600 text-slate-400">{{ status }}</Badge>
@@ -228,20 +228,20 @@ const stockValueData = computed(() => {
         </CardContent>
       </Card>
 
-      <Card class="bg-[#131926] border border-slate-800/60 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
         <CardHeader class="pb-4">
-          <p class="text-slate-500 font-medium text-sm uppercase tracking-wider">Actividad reciente</p>
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Actividad reciente</p>
           <CardTitle class="text-slate-50 font-bold text-2xl">Bitacora del tenant</CardTitle>
         </CardHeader>
         <CardContent>
           <div v-if="users.auditEvents.length" class="grid gap-3">
             <div v-for="event in users.auditEvents.slice(0, 4)" :key="event.id" class="bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
               <div class="flex items-center justify-between mb-1">
-                <strong class="text-slate-300 font-medium">{{ event.action }} - {{ event.entity }}</strong>
+                <strong class="text-slate-200 font-medium">{{ event.action }} - {{ event.entity }}</strong>
                 <span class="text-slate-500 text-sm">{{ formatDate(event.at) }}</span>
               </div>
               <p class="text-slate-400 text-sm">{{ event.description }}</p>
-              <p class="text-slate-500 text-sm mt-1">Actor: {{ event.actor }}</p>
+              <p class="text-slate-500 text-xs mt-1">Actor: {{ event.actor }}</p>
             </div>
           </div>
           <p v-else class="text-slate-500 text-sm">Todavia no hay actividad registrada en este tenant.</p>

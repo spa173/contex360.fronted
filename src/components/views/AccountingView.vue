@@ -83,34 +83,34 @@ const summary = computed(() =>
 
     <!-- Quick Stats Bar -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      <div class="bg-[#131926] border border-slate-800/60 p-5 rounded-2xl">
+      <div class="bg-[#131926] border border-slate-800/50 p-5 rounded-2xl">
         <div class="flex items-center gap-3 mb-3">
           <div class="p-2 bg-blue-500/10 rounded-lg text-blue-400"><Wallet class="w-5 h-5" /></div>
-          <span class="text-sm font-medium text-slate-500 uppercase tracking-wider">CxC Estimada</span>
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">CxC Estimada</span>
         </div>
         <p class="text-xl font-bold text-white">{{ formatCurrency(summary.receivable) }}</p>
       </div>
       
-      <div class="bg-[#131926] border border-slate-800/60 p-5 rounded-2xl">
+      <div class="bg-[#131926] border border-slate-800/50 p-5 rounded-2xl">
         <div class="flex items-center gap-3 mb-3">
           <div class="p-2 bg-emerald-500/10 rounded-lg text-emerald-400"><TrendingUp class="w-5 h-5" /></div>
-          <span class="text-sm font-medium text-slate-500 uppercase tracking-wider">Ingresos (4135)</span>
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Ingresos (4135)</span>
         </div>
         <p class="text-xl font-bold text-white">{{ formatCurrency(summary.revenue) }}</p>
       </div>
 
-      <div class="bg-[#131926] border border-slate-800/60 p-5 rounded-2xl">
+      <div class="bg-[#131926] border border-slate-800/50 p-5 rounded-2xl">
         <div class="flex items-center gap-3 mb-3">
           <div class="p-2 bg-amber-500/10 rounded-lg text-amber-400"><Receipt class="w-5 h-5" /></div>
-          <span class="text-sm font-medium text-slate-500 uppercase tracking-wider">IVA por Pagar</span>
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">IVA por Pagar</span>
         </div>
         <p class="text-xl font-bold text-white">{{ formatCurrency(summary.tax) }}</p>
       </div>
 
-      <div class="bg-[#131926] border border-slate-800/60 p-5 rounded-2xl">
+      <div class="bg-[#131926] border border-slate-800/50 p-5 rounded-2xl">
         <div class="flex items-center gap-3 mb-3">
           <div class="p-2 bg-slate-500/10 rounded-lg text-slate-400"><ArrowRightLeft class="w-5 h-5" /></div>
-          <span class="text-sm font-medium text-slate-500 uppercase tracking-wider">Partida Doble</span>
+          <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Partida Doble</span>
         </div>
         <div class="flex items-center gap-2">
           <div :class="['w-2 h-2 rounded-full', Math.abs(summary.debit - summary.credit) < 1 ? 'bg-emerald-500' : 'bg-rose-500']"></div>
@@ -127,7 +127,7 @@ const summary = computed(() =>
       <div class="lg:col-span-8">
         
         <!-- Tab: Ledger -->
-        <div v-if="activeTab === 'ledger'" class="bg-[#131926] border border-slate-800/60 rounded-2xl overflow-hidden shadow-xl">
+        <div v-if="activeTab === 'ledger'" class="bg-[#131926] border border-slate-800/50 rounded-2xl overflow-hidden shadow-xl">
           <div class="p-6 border-b border-slate-800/50 flex items-center justify-between">
             <h2 class="font-semibold text-white">Comprobantes de Diario</h2>
             <div class="flex gap-2">
@@ -156,7 +156,7 @@ const summary = computed(() =>
                     entry.id === store.selections.entryId ? 'bg-emerald-500/10' : ''
                   ]"
                 >
-                  <td class="px-6 py-4 text-sm text-slate-500 font-mono">{{ formatDate(entry.createdAt) }}</td>
+                  <td class="px-6 py-4 text-sm text-slate-400 font-mono">{{ formatDate(entry.createdAt) }}</td>
                   <td class="px-6 py-4">
                     <span class="text-sm font-semibold text-white group-hover:text-emerald-400 transition-colors">
                       {{ entry.reference }}
@@ -178,7 +178,7 @@ const summary = computed(() =>
             { title: 'Activos', data: store.balanceSheet.assets, color: 'text-blue-400' },
             { title: 'Pasivos', data: store.balanceSheet.liabilities, color: 'text-amber-400' },
             { title: 'Patrimonio', data: store.balanceSheet.equity, color: 'text-emerald-400' }
-          ]" :key="section.title" class="bg-[#131926] border border-slate-800/60 rounded-2xl overflow-hidden shadow-xl">
+          ]" :key="section.title" class="bg-[#131926] border border-slate-800/50 rounded-2xl overflow-hidden shadow-xl">
             <div class="p-6 border-b border-slate-800/50 flex items-center justify-between">
               <h2 class="font-semibold text-white">{{ section.title }}</h2>
               <span class="text-sm font-bold" :class="section.color">
@@ -203,7 +203,7 @@ const summary = computed(() =>
         </div>
 
         <!-- Tab: P&L -->
-        <div v-if="activeTab === 'pnl'" class="bg-[#131926] border border-slate-800/60 rounded-2xl overflow-hidden shadow-xl">
+        <div v-if="activeTab === 'pnl'" class="bg-[#131926] border border-slate-800/50 rounded-2xl overflow-hidden shadow-xl">
            <div class="p-8 border-b border-slate-800/50 bg-slate-800/10">
              <div class="flex items-center justify-between mb-8">
                <h2 class="text-xl font-bold text-white">Estado de Resultados</h2>
@@ -232,14 +232,14 @@ const summary = computed(() =>
              </div>
            </div>
            <div class="p-6">
-             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest font-bold">Resumen Certificado Contex360</p>
+             <p class="text-[10px] text-slate-500 text-center uppercase tracking-widest font-bold">Resumen Certificado Contex360</p>
            </div>
         </div>
       </div>
 
       <!-- Right side: Selection Detail -->
       <div class="lg:col-span-4 space-y-6">
-        <div v-if="store.selectedEntry" class="bg-[#131926] border border-slate-800/60 rounded-2xl overflow-hidden shadow-xl animate-in slide-in-from-right-4">
+        <div v-if="store.selectedEntry" class="bg-[#131926] border border-slate-800/50 rounded-2xl overflow-hidden shadow-xl animate-in slide-in-from-right-4">
           <div class="p-6 border-b border-slate-800/50 bg-slate-800/20">
             <div class="flex items-center justify-between mb-2">
               <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Detalle de Asiento</span>
@@ -285,7 +285,7 @@ const summary = computed(() =>
           </div>
         </div>
 
-        <div v-else class="bg-[#131926] border border-slate-800/60 rounded-2xl p-12 text-center flex flex-col items-center gap-4">
+        <div v-else class="bg-[#131926] border border-slate-800/50 rounded-2xl p-12 text-center flex flex-col items-center gap-4">
           <div class="p-4 bg-slate-800/50 rounded-full text-slate-600">
             <ArrowRightLeft class="w-8 h-8" />
           </div>

@@ -211,7 +211,7 @@ function getStatusColor(status) {
           <Receipt class="w-6 h-6 text-emerald-400" />
           Facturación Electrónica
         </h1>
-        <p class="text-sm text-slate-500 mt-1">Gestión de documentos tributarios y ciclos DIAN</p>
+        <p class="text-slate-400 text-sm mt-1">Gestión de documentos tributarios y ciclos DIAN</p>
       </div>
       
       <div class="flex items-center gap-3">
@@ -225,7 +225,7 @@ function getStatusColor(status) {
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
       <!-- Left Column: Form -->
       <div class="lg:col-span-7 space-y-6">
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl overflow-hidden shadow-xl shadow-black/20">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20">
           <div class="p-6 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-white flex items-center gap-2">
               <Plus class="w-5 h-5 text-emerald-400" />
@@ -236,7 +236,7 @@ function getStatusColor(status) {
           <form @submit.prevent="handleSubmit" class="p-6 space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-500 uppercase tracking-wider">Cliente</label>
+                <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Cliente</label>
                 <select 
                   v-model="invoiceForm.clientId" 
                   required
@@ -251,7 +251,7 @@ function getStatusColor(status) {
               </div>
 
               <div class="space-y-2">
-                <label class="text-sm font-medium text-slate-500 uppercase tracking-wider">Condición de Pago</label>
+                <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Condición de Pago</label>
                 <select 
                   v-model.number="invoiceForm.paymentTermDays"
                   class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-4 py-2.5 text-slate-200 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/50 transition-all outline-none"
@@ -265,7 +265,7 @@ function getStatusColor(status) {
             </div>
 
             <div class="space-y-2">
-              <label class="text-sm font-medium text-slate-500 uppercase tracking-wider">Notas Comerciales</label>
+              <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Notas Comerciales</label>
               <textarea
                 v-model="invoiceForm.notes"
                 placeholder="Observaciones visibles en el documento..."
@@ -345,9 +345,9 @@ function getStatusColor(status) {
       <!-- Right Column: Previews & History -->
       <div class="lg:col-span-5 space-y-6">
         <!-- Totals Card -->
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl overflow-hidden shadow-xl shadow-black/20">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20">
           <div class="p-5 border-b border-slate-800/50 bg-slate-800/20">
-            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-widest">Resumen de Liquidación</h2>
+            <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-widest">Resumen de Liquidación</h2>
           </div>
           
           <div class="p-6 space-y-4">
@@ -378,9 +378,9 @@ function getStatusColor(status) {
         </div>
 
         <!-- History Card -->
-        <div class="bg-[#131926] border border-slate-800/60 rounded-xl overflow-hidden shadow-xl shadow-black/20">
+        <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20">
           <div class="p-5 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-slate-500 uppercase tracking-widest">Últimas Facturas</h2>
+            <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-widest">Últimas Facturas</h2>
             <FileText class="w-4 h-4 text-slate-500" />
           </div>
 
@@ -421,7 +421,7 @@ function getStatusColor(status) {
         </div>
 
         <!-- DIAN Workflow Card -->
-        <div v-if="billingStore.selectedInvoice" class="bg-[#131926] border border-slate-800/60 rounded-xl overflow-hidden shadow-xl shadow-black/20 animate-in slide-in-from-bottom-4">
+        <div v-if="billingStore.selectedInvoice" class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20 animate-in slide-in-from-bottom-4">
           <div class="p-5 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
             <h2 class="text-sm font-semibold text-emerald-400 uppercase tracking-widest">Trazabilidad DIAN</h2>
             <button 
