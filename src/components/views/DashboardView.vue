@@ -83,14 +83,14 @@ const revenueTrendData = computed(() => {
     datasets: [{
       label: 'Ventas mensuales',
       data: values,
-      borderColor: '#10b981',
+      borderColor: '#F97316',
       backgroundColor: (context) => {
         const chart = context.chart;
         const {ctx, chartArea} = chart;
         if (!chartArea) return null;
         const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-        gradient.addColorStop(0, 'rgba(16, 185, 129, 0.15)');
-        gradient.addColorStop(1, 'rgba(16, 185, 129, 0)');
+        gradient.addColorStop(0, 'rgba(249, 115, 22, 0.15)');
+        gradient.addColorStop(1, 'rgba(249, 115, 22, 0)');
         return gradient;
       },
       fill: 'start',
@@ -107,7 +107,7 @@ const kpis = computed(() => [
     title: 'Revenue Total',
     value: formatCOP(totalRevenue.value),
     icon: DollarSign,
-    color: 'emerald',
+    color: 'orange',
     trend: '+12.5%'
   },
   {
@@ -142,33 +142,37 @@ const healthModules = [
 </script>
 
 <template>
-  <section :class="['view', { active: isActive }]" class="bg-[#0B0F1A] min-h-screen">
+  <section :class="['view', { active: isActive }, 'bg-[var(--bg)]', 'min-h-screen']">
     <!-- Header -->
     <div class="mb-10">
-      <h2 class="text-3xl font-black text-white tracking-tight mb-1">Panel de Control</h2>
-      <p class="text-slate-500 font-medium">Visualización de métricas críticas y salud operativa.</p>
+      <h2 class="text-3xl font-black text-slate-900 dark:text-white tracking-tight mb-1">Panel de Control</h2>
+      <p class="text-slate-600 dark:text-slate-400 font-medium">Visualización de métricas críticas y salud operativa.</p>
     </div>
 
     <!-- KPI Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
-      <Card v-for="kpi in kpis" :key="kpi.title" class="bg-[#131926] border-slate-800/60 shadow-xl overflow-hidden group">
+      <Card v-for="kpi in kpis" :key="kpi.title" :class="['bg-[var(--surface)]', 'border-[var(--border)]', 'shadow-xl', 'overflow-hidden', 'group', 'hover:border-[var(--primary)]', 'transition-all']">
         <div class="p-6">
           <div class="flex justify-between items-start mb-4">
             <div :class="[
               'w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300',
-              kpi.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-400' : 
-              kpi.color === 'amber' ? 'bg-amber-500/10 text-amber-400' :
-              kpi.color === 'blue' ? 'bg-blue-500/10 text-blue-400' :
-              'bg-purple-500/10 text-purple-400'
+              kpi.color === 'orange' ? 'bg-orange-500/10 text-orange-500' :
+              kpi.color === 'emerald' ? 'bg-emerald-500/10 text-emerald-500' : 
+              kpi.color === 'amber' ? 'bg-amber-500/10 text-amber-500' :
+              kpi.color === 'blue' ? 'bg-blue-500/10 text-blue-500' :
+              'bg-purple-500/10 text-purple-500'
             ]">
-              <component :is="kpi.icon" class="w-5 h-5" />
+              <DollarSign v-if="kpi.icon === DollarSign" class="w-5 h-5" />
+              <Package v-else-if="kpi.icon === Package" class="w-5 h-5" />
+              <UsersIcon v-else-if="kpi.icon === UsersIcon" class="w-5 h-5" />
+              <Activity v-else class="w-5 h-5" />
             </div>
             <Badge variant="outline" class="border-slate-800 text-slate-500 font-mono text-[10px] uppercase tracking-widest">
               {{ kpi.trend }}
             </Badge>
           </div>
           <p class="text-xs font-bold uppercase tracking-[0.15em] text-slate-500 mb-1">{{ kpi.title }}</p>
-          <h3 class="text-2xl font-black text-white tracking-tighter font-mono">{{ kpi.value }}</h3>
+          <h3 class="text-2xl font-black text-slate-900 dark:text-white tracking-tighter font-mono">{{ kpi.value }}</h3>
         </div>
       </Card>
     </div>
@@ -177,14 +181,14 @@ const healthModules = [
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Chart Column -->
       <div class="lg:col-span-2">
-        <Card class="bg-[#131926] border-slate-800/60 shadow-xl h-full flex flex-col">
+        <Card class="bg-white dark:bg-[#131926] border-slate-200 dark:border-slate-800 shadow-xl h-full flex flex-col">
           <CardHeader class="px-8 pt-8 pb-4">
             <div class="flex justify-between items-center">
               <div>
-                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500 mb-1">Métricas de Desempeño</p>
-                <CardTitle class="text-xl font-bold text-white tracking-tight">Tendencia de Ingresos Mensuales</CardTitle>
+                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-orange-500 mb-1">Métricas de Desempeño</p>
+                <CardTitle class="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Tendencia de Ingresos Mensuales</CardTitle>
               </div>
-              <TrendingUp class="w-5 h-5 text-emerald-500 opacity-50" />
+              <TrendingUp class="w-5 h-5 text-orange-500 opacity-50" />
             </div>
           </CardHeader>
           <CardContent class="p-8 flex-grow flex flex-col justify-center">
@@ -213,7 +217,7 @@ const healthModules = [
                 <h4 class="text-lg font-bold text-slate-300 tracking-tight">Sin historial de ingresos</h4>
                 <p class="text-slate-500 text-sm max-w-[280px] mx-auto mt-2">Agrega facturas para comenzar a visualizar las tendencias financieras.</p>
               </div>
-              <Button @click="auth.setActiveView('billing')" variant="outline" class="border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/10">
+              <Button @click="auth.setActiveView('billing')" variant="outline" class="border-orange-500/20 text-orange-600 hover:bg-orange-500/10">
                 <Plus class="w-4 h-4 mr-2" /> Agregar primera factura
               </Button>
             </div>
@@ -224,23 +228,24 @@ const healthModules = [
       <!-- Health & Operations Column -->
       <div class="space-y-8">
         <!-- System Health -->
-        <Card class="bg-[#131926] border-slate-800/60 shadow-xl">
-          <CardHeader class="px-6 py-5 border-b border-slate-800/40">
+        <Card class="bg-white dark:bg-[#131926] border-slate-200 dark:border-slate-800 shadow-xl">
+          <CardHeader class="px-6 py-5 border-b border-slate-100 dark:border-slate-800">
             <div class="flex items-center gap-3">
-              <Activity class="w-5 h-5 text-emerald-500" />
-              <CardTitle class="text-md font-bold text-white tracking-tight">Salud del Sistema</CardTitle>
+              <Activity class="w-5 h-5 text-orange-500" />
+              <CardTitle class="text-md font-bold text-slate-900 dark:text-white tracking-tight">Salud del Sistema</CardTitle>
             </div>
           </CardHeader>
           <CardContent class="p-4">
             <div class="space-y-1">
-              <div v-for="module in healthModules" :key="module.name" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/30 transition-colors">
+              <div v-for="module in healthModules" :key="module.name" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800/30 transition-colors">
                 <div class="flex items-center gap-3">
-                  <div class="p-2 bg-slate-800/40 rounded-lg">
-                    <component :is="module.icon" class="w-4 h-4 text-emerald-500" />
+                  <div class="p-2 bg-slate-50 dark:bg-slate-800/40 rounded-lg">
+                    <CheckCircle2 v-if="module.name !== 'Cifrado de Datos AES-256'" class="w-4 h-4 text-orange-500" />
+                    <ShieldCheck v-else class="w-4 h-4 text-orange-500" />
                   </div>
-                  <span class="text-xs font-semibold text-slate-300">{{ module.name }}</span>
+                  <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">{{ module.name }}</span>
                 </div>
-                <Badge class="bg-emerald-500/10 text-emerald-400 border-emerald-500/20 font-mono text-[9px] uppercase tracking-widest">
+                <Badge class="bg-orange-500/10 text-orange-600 border-orange-500/20 font-mono text-[9px] uppercase tracking-widest">
                   {{ module.status }}
                 </Badge>
               </div>
@@ -249,19 +254,19 @@ const healthModules = [
         </Card>
 
         <!-- AI Insights Sparkle -->
-        <Card class="bg-gradient-to-br from-[#131926] to-[#1e1b4b] border-slate-800/60 shadow-xl relative overflow-hidden">
+        <Card class="bg-gradient-to-br from-white to-slate-50 dark:from-[#131926] dark:to-[#1e1b4b] border-slate-200 dark:border-slate-800 shadow-xl relative overflow-hidden">
           <div class="absolute top-0 right-0 p-4">
-            <Sparkles class="w-10 h-10 text-purple-400/20 rotate-12" />
+            <Sparkles class="w-10 h-10 text-orange-400 opacity-10 rotate-12" />
           </div>
           <CardHeader class="p-6">
-            <CardTitle class="text-md font-bold text-white tracking-tight flex items-center gap-2">
-              <div class="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>
+            <CardTitle class="text-md font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-2">
+              <div class="w-2 h-2 rounded-full bg-orange-500 animate-pulse"></div>
               Inteligencia Artificial
             </CardTitle>
           </CardHeader>
           <CardContent class="p-6 pt-0">
-            <p class="text-slate-400 text-xs leading-relaxed mb-4">La IA está analizando los flujos de caja y el inventario en tiempo real.</p>
-            <Button @click="auth.setActiveView('ai')" variant="secondary" class="w-full bg-purple-600 hover:bg-purple-500 text-white border-none shadow-lg shadow-purple-900/20">
+            <p class="text-slate-500 dark:text-slate-400 text-xs leading-relaxed mb-4">La IA está analizando los flujos de caja y el inventario en tiempo real.</p>
+            <Button @click="auth.setActiveView('ai')" variant="default" class="w-full bg-orange-500 hover:bg-orange-600 text-white border-none shadow-lg shadow-orange-500/20">
               Consultar Asistente
             </Button>
           </CardContent>

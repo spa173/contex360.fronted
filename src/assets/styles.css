@@ -35,16 +35,16 @@
 }
 
 html.light {
-  --bg: #F8FAFC;
-  --bg-strong: #FFFFFF;
-  --bg-secondary: #FFFFFF;
+  --bg: #FFFFFF;
+  --bg-strong: #F8FAFC;
+  --bg-secondary: #F8FAFC;
   --surface: #FFFFFF;
-  --surface-hover: #F1F5F9;
+  --surface-hover: #FFF7ED; /* Very subtle orange tint */
   --border: #E2E8F0;
   --text: #0F172A;
   --text-secondary: #475569;
   --text-muted: #64748B;
-  --primary: #2563EB;
+  --primary: #F97316; /* Orange 500 */
 
   --background: var(--bg);
   --foreground: var(--text);
@@ -69,12 +69,12 @@ html.light .app .sidebar {
   }
 
 html.light .main.main-panel {
-  background: #f4f6f8;
+  background: #FFFFFF;
 }
 
 html.light .topbar {
   background: rgba(255, 255, 255, 0.98);
-  border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+  border-bottom: 1px solid #F1F5F9;
 }
 
 html.light .metric-card {
@@ -99,9 +99,9 @@ html.light .invoice-line {
 }
 
 html.light .toast {
-  background: rgba(255, 255, 255, 0.98);
-  border-color: rgba(59, 130, 246, 0.25);
-  color: #0f172a;
+  background: #FFFFFF;
+  border-color: #F97316;
+  color: #0F172A;
 }
 
 html.light .ghost-button,

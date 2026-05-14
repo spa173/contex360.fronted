@@ -26,6 +26,9 @@ const props = defineProps<{
       id: string
       location: string
       lastSeenAt: string
+      deviceType?: string
+      browser?: string
+      os?: string
     }>
   }
   userRows: Array<{
@@ -64,14 +67,14 @@ const offboardingForm = reactive({
 const filteredTenants = computed(() => {
   const query = tenantSearch.value.toLowerCase()
   return store.tenants.filter(
-    (tenant) =>
+    (tenant: any) =>
       tenant.name.toLowerCase().includes(query) ||
       tenant.prefix.toLowerCase().includes(query),
   )
 })
 
 function getTenantName(tenantId: string) {
-  return store.tenants.find((t) => t.id === tenantId)?.name || tenantId
+  return store.tenants.find((t: any) => t.id === tenantId)?.name || tenantId
 }
 
 function formatSessionLabel(session: { deviceType?: string; browser?: string; os?: string }) {
@@ -85,168 +88,174 @@ function handleMembershipSubmit() {
 function handleScheduleDeactivation() {
   emit('scheduleDeactivation', props.row.user.id, offboardingForm.date, offboardingForm.reassignToUserId)
 }
+const securityActions = computed(() => [
+  { label: 'Forzar Clave', emit: 'forceReset' as const, args: undefined },
+  { label: 'Generar Temporal', emit: 'generateTempPassword' as const, args: undefined },
+  { label: props.row.security.twoFactorRequired ? '2FA Opcional' : 'Exigir 2FA', emit: 'requireTwoFactor' as const, args: !props.row.security.twoFactorRequired },
+  { label: props.row.security.twoFactorEnabled ? 'Baja 2FA' : 'Alta 2FA', emit: 'toggleTwoFactor' as const, args: undefined }
+])
+
+function handleSecurityAction(action: any) {
+  if (action.args !== undefined) {
+    emit(action.emit, props.row.user.id, action.args)
+  } else {
+    emit(action.emit, props.row.user.id)
+  }
+}
 </script>
 
 <template>
-  <aside class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm user-detail-panel">
-    <div class="card-head">
-      <div>
-        <p class="eyebrow">Detalle</p>
-        <h3>{{ row.user.name }}</h3>
-        <p class="label-soft">{{ row.user.email }}</p>
-      </div>
-      <Badge
-        :class="
-          row.security.riskLevel === 'review'
-            ? 'bg-amber-500/15 text-amber-500 border-none'
-            : 'bg-slate-700/50 text-slate-400 border-none'
-        "
-      >
-        Riesgo {{ row.security.riskLevel === 'review' ? 'revisar' : 'normal' }}
-      </Badge>
-    </div>
-
-    <div class="detail-section">
-      <div class="split-head">
+<template>
+  <aside class="bg-[#131926] border border-slate-800/60 rounded-2xl p-0 shadow-2xl overflow-hidden user-detail-panel transition-all duration-300">
+    <!-- Header: The Identity -->
+    <div class="px-8 py-7 bg-gradient-to-br from-slate-800/20 to-transparent border-b border-slate-800/40">
+      <div class="flex justify-between items-start mb-4">
         <div>
-          <p class="eyebrow">Seguridad</p>
-          <h4>Credenciales y 2FA</h4>
+          <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500 mb-2">Perfil de Usuario</p>
+          <h3 class="text-2xl font-black text-white tracking-tighter">{{ row.user.name }}</h3>
+          <p class="text-sm font-mono text-slate-500 tracking-tight">{{ row.user.email }}</p>
         </div>
-      </div>
-      <div class="summary-grid">
-        <div class="summary-row">
-          <span class="label-soft">Cambio de clave</span>
-          <strong>{{ row.security.passwordResetRequired ? 'Requerido' : 'Al dia' }}</strong>
+        <div :class="[
+          'px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest border',
+          row.security.riskLevel === 'review' 
+            ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' 
+            : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20'
+        ]">
+          Riesgo {{ row.security.riskLevel === 'review' ? 'Crítico' : 'Controlado' }}
         </div>
-        <div class="summary-row">
-          <span class="label-soft">Clave temporal</span>
-          <strong>{{ row.security.tempPasswordExpiresAt ? 'Activa' : 'No' }}</strong>
-        </div>
-        <div class="summary-row">
-          <span class="label-soft">2FA obligatorio</span>
-          <strong>{{ row.security.twoFactorRequired ? 'Si' : 'No' }}</strong>
-        </div>
-        <div class="summary-row">
-          <span class="label-soft">2FA configurado</span>
-          <strong>{{ row.security.twoFactorEnabled ? 'Si' : 'No' }}</strong>
-        </div>
-      </div>
-      <div class="button-grid">
-        <button class="btn-sm" type="button" @click="$emit('forceReset', row.user.id)">
-          Forzar clave
-        </button>
-        <button class="btn-sm" type="button" @click="$emit('generateTempPassword', row.user.id)">
-          Clave temporal
-        </button>
-        <button
-          class="btn-sm"
-          type="button"
-          @click="$emit('requireTwoFactor', row.user.id, !row.security.twoFactorRequired)"
-        >
-          {{ row.security.twoFactorRequired ? '2FA opcional' : 'Exigir 2FA' }}
-        </button>
-        <button class="btn-sm" type="button" @click="$emit('toggleTwoFactor', row.user.id)">
-          {{ row.security.twoFactorEnabled ? 'Marcar 2FA off' : 'Marcar 2FA on' }}
-        </button>
       </div>
     </div>
 
-    <div class="detail-section">
-      <div class="split-head">
-        <div>
-          <p class="eyebrow">Empresas</p>
-          <h4>Roles por tenant</h4>
+    <div class="p-8 space-y-10">
+      <!-- Section: Security Pulse -->
+      <section>
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></div>
+          <h4 class="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">Seguridad & Credenciales</h4>
         </div>
-      </div>
-      <form class="inline-admin-form" @submit.prevent="handleMembershipSubmit">
-        <div class="field">
-          <input
-            v-model="tenantSearch"
-            class="tenant-search"
-            placeholder="Buscar empresa..."
-            type="search"
-          />
-        </div>
-        <select v-model="membershipForm.tenantId" class="tenant-select">
-          <option v-for="tenant in filteredTenants" :key="tenant.id" :value="tenant.id">
-            {{ tenant.name }} ({{ tenant.prefix }})
-          </option>
-        </select>
-        <select v-model="membershipForm.role">
-          <option v-for="role in ROLE_OPTIONS" :key="role" :value="role">{{ role }}</option>
-        </select>
-        <button class="btn-primary" type="submit">Guardar</button>
-      </form>
-      <div class="list-grid">
-        <div
-          v-for="membership in row.memberships"
-          :key="membership.tenantId"
-          class="module-row"
-        >
-          <div>
-            <p>{{ getTenantName(membership.tenantId) }}</p>
-            <p class="label-soft">{{ membership.role }}</p>
+        
+        <div class="grid grid-cols-2 gap-px bg-slate-800/20 rounded-xl border border-slate-800/40 overflow-hidden">
+          <div v-for="(val, label) in {
+            'Cambio de clave': row.security.passwordResetRequired ? 'Requerido' : 'Al día',
+            'Clave temporal': row.security.tempPasswordExpiresAt ? 'Activa' : 'No',
+            '2FA Obligatorio': row.security.twoFactorRequired ? 'Sí' : 'No',
+            '2FA Configurado': row.security.twoFactorEnabled ? 'Sí' : 'No'
+          }" :key="label" class="bg-[#131926] p-4 flex flex-col gap-1">
+            <span class="text-[9px] uppercase font-bold text-slate-500 tracking-wider">{{ label }}</span>
+            <span :class="['text-xs font-mono font-bold', val === 'Requerido' || val === 'Sí' ? 'text-amber-400' : 'text-slate-300']">
+              {{ val }}
+            </span>
           </div>
-          <button
-            class="btn-sm"
-            type="button"
-            @click="$emit('removeMembership', membership.tenantId)"
-          >
-            Revocar
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 mt-5">
+          <button v-for="action in securityActions" :key="action.label" 
+          @click="handleSecurityAction(action)"
+          class="px-4 py-2 bg-slate-800/30 hover:bg-slate-800/60 border border-slate-700/30 text-[10px] font-bold text-slate-300 rounded-lg transition-all">
+            {{ action.label }}
           </button>
         </div>
-      </div>
-    </div>
+      </section>
 
-    <div class="detail-section">
-      <div class="split-head">
-        <div>
-          <p class="eyebrow">Sesiones</p>
-          <h4>Control activo</h4>
-        </div>
-        <button class="btn-sm" type="button" @click="$emit('revokeSessions', row.user.id)">
-          Cerrar todas
-        </button>
-      </div>
-      <div v-if="row.sessions.length" class="list-grid">
-        <div v-for="session in row.sessions" :key="session.id" class="module-row">
-          <div>
-            <p>{{ formatSessionLabel(session) }}</p>
-            <p class="label-soft">{{ session.location }} · {{ formatDate(session.lastSeenAt) }}</p>
+      <!-- Section: Access Ledger -->
+      <section>
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+            <h4 class="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">Control de Acceso</h4>
           </div>
-          <button class="btn-sm" type="button" @click="$emit('revokeSession', session.id)">
-            Cerrar
+        </div>
+
+        <div class="space-y-1">
+          <div v-for="membership in row.memberships" :key="membership.tenantId" 
+            class="group flex items-center justify-between p-3 rounded-xl hover:bg-slate-800/30 border border-transparent hover:border-slate-800/60 transition-all">
+            <div>
+              <p class="text-xs font-bold text-slate-200">{{ getTenantName(membership.tenantId) }}</p>
+              <p class="text-[10px] font-mono text-slate-500">{{ membership.role }}</p>
+            </div>
+            <button @click="$emit('removeMembership', membership.tenantId)"
+              class="opacity-0 group-hover:opacity-100 text-[9px] font-bold text-rose-500/80 hover:text-rose-400 uppercase tracking-widest transition-all">
+              Revocar
+            </button>
+          </div>
+        </div>
+
+        <form class="mt-6 p-4 bg-slate-800/10 rounded-xl border border-dashed border-slate-800/60 space-y-4" @submit.prevent="handleMembershipSubmit">
+          <div class="grid grid-cols-1 gap-3">
+            <select v-model="membershipForm.tenantId" class="bg-slate-900 border-slate-800 text-xs text-slate-300 rounded-lg focus:ring-emerald-500">
+              <option value="">Seleccionar empresa...</option>
+              <option v-for="tenant in store.tenants" :key="tenant.id" :value="tenant.id">
+                {{ tenant.name }}
+              </option>
+            </select>
+            <select v-model="membershipForm.role" class="bg-slate-900 border-slate-800 text-xs text-slate-300 rounded-lg focus:ring-emerald-500">
+              <option v-for="role in ROLE_OPTIONS" :key="role" :value="role">{{ role }}</option>
+            </select>
+          </div>
+          <button class="w-full py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-[10px] font-bold rounded-lg transition-all" type="submit">
+            Asignar Nuevo Rol
+          </button>
+        </form>
+      </section>
+
+      <!-- Section: Active Sessions -->
+      <section>
+        <div class="flex items-center justify-between mb-5">
+          <div class="flex items-center gap-2">
+            <div class="w-1.5 h-1.5 rounded-full bg-purple-500"></div>
+            <h4 class="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">Sesiones Activas</h4>
+          </div>
+          <button class="text-[9px] font-bold text-slate-500 hover:text-slate-300 uppercase tracking-widest" @click="$emit('revokeSessions', row.user.id)">
+            Revocar Todas
           </button>
         </div>
-      </div>
-      <p v-else class="empty-state">No tiene sesiones activas.</p>
-    </div>
 
-    <div class="detail-section">
-      <div class="split-head">
-        <div>
-          <p class="eyebrow">Offboarding</p>
-          <h4>Baja programada</h4>
+        <div v-if="row.sessions.length" class="space-y-2">
+          <div v-for="session in row.sessions" :key="session.id" 
+            class="p-4 bg-slate-800/10 rounded-xl border border-slate-800/40 flex justify-between items-center">
+            <div class="space-y-1">
+              <p class="text-[10px] font-mono font-bold text-slate-300 leading-none">{{ formatSessionLabel(session) }}</p>
+              <p class="text-[9px] text-slate-500 leading-none tracking-tight">{{ session.location }} · {{ formatDate(session.lastSeenAt) }}</p>
+            </div>
+            <button @click="$emit('revokeSession', session.id)" 
+              class="p-2 hover:bg-rose-500/10 text-slate-600 hover:text-rose-500 rounded-lg transition-all">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
         </div>
-      </div>
-      <div class="inline-admin-form">
-        <label class="field">
-          <span>Fecha</span>
-          <input v-model="offboardingForm.date" type="date" />
-        </label>
-        <label class="field">
-          <span>Reasignar a</span>
-          <select v-model="offboardingForm.reassignToUserId">
-            <option value="">Sin reasignación</option>
-            <option v-for="userRow in userRows" :key="`off-${userRow.user.id}`" :value="userRow.user.id">
-              {{ userRow.user.name }}
-            </option>
-          </select>
-        </label>
-        <button class="btn-sm" type="button" @click="handleScheduleDeactivation">
-          Programar baja
-        </button>
-      </div>
+        <div v-else class="py-10 text-center bg-slate-800/5 rounded-2xl border border-dashed border-slate-800/40">
+          <p class="text-xs text-slate-600 font-medium">Sin actividad reciente detectada.</p>
+        </div>
+      </section>
+
+      <!-- Section: Offboarding -->
+      <section class="pt-6 border-t border-slate-800/40">
+        <div class="flex items-center gap-2 mb-5">
+          <div class="w-1.5 h-1.5 rounded-full bg-rose-500"></div>
+          <h4 class="text-xs font-bold uppercase tracking-[0.15em] text-slate-400">Ciclo de Vida</h4>
+        </div>
+        
+        <div class="p-4 bg-rose-500/[0.03] border border-rose-500/10 rounded-xl space-y-4">
+          <div class="grid grid-cols-1 gap-4">
+            <div class="space-y-1.5">
+              <span class="text-[9px] uppercase font-bold text-slate-500 tracking-wider">Fecha de Desactivación</span>
+              <input v-model="offboardingForm.date" type="date" class="w-full bg-slate-900 border-slate-800 text-xs text-slate-300 rounded-lg">
+            </div>
+            <div class="space-y-1.5">
+              <span class="text-[9px] uppercase font-bold text-slate-500 tracking-wider">Reasignar Auditoría a</span>
+              <select v-model="offboardingForm.reassignToUserId" class="w-full bg-slate-900 border-slate-800 text-xs text-slate-300 rounded-lg">
+                <option value="">Sin reasignación</option>
+                <option v-for="userRow in userRows" :key="`off-${userRow.user.id}`" :value="userRow.user.id">
+                  {{ userRow.user.name }}
+                </option>
+              </select>
+            </div>
+          </div>
+          <button @click="handleScheduleDeactivation"
+            class="w-full py-2.5 bg-rose-900/40 hover:bg-rose-900/60 text-rose-200 text-[10px] font-bold rounded-lg transition-all border border-rose-500/20">
+            Programar Baja Permanente
+        </div>
+      </section>
     </div>
   </aside>
 </template>

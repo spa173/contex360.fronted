@@ -32,7 +32,7 @@ function getStoredTheme(): ThemeMode {
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    theme: 'dark' as ThemeMode,
+    theme: 'light' as ThemeMode,
     initialized: false,
   }),
 

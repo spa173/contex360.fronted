@@ -182,10 +182,42 @@ export const useUsersStore = defineStore('users', () => {
     return { ok: true, message: 'Exportación iniciada.' }
   }
 
-  function panicLogoutAll() {
-    root.userSessions.forEach(s => { if (!s.revokedAt) s.revokedAt = new Date().toISOString() })
+  async function createUser(payload: any) {
+    const id = uid('user')
+    const user = {
+      id,
+      name: payload.name,
+      email: payload.email,
+      title: payload.title || '',
+      status: 'active' as const,
+      isSystemOwner: false,
+      isDemoAccount: false,
+      lastLoginAt: null
+    }
+    
+    const creds = await createPasswordCredentials(payload.password || 'Contex123*')
+    const security = {
+      userId: id,
+      passwordHash: creds.passwordHash,
+      passwordSalt: creds.passwordSalt,
+      passwordResetRequired: true,
+      twoFactorEnabled: false,
+      twoFactorRequired: false,
+      trustedFingerprints: []
+    }
+
+    root.users.push(user as any)
+    root.userSecurity.push(security as any)
+    
+    appendAuditEvent(root.$state, {
+      entity: 'usuario',
+      action: 'Crear',
+      description: `Usuario ${user.name} creado exitosamente.`,
+      actor: root.currentUser?.name || 'Sistema',
+    })
+    
     root.saveState()
-    return { ok: true, message: 'Todas las sesiones revocadas.' }
+    return { ok: true, message: 'Usuario creado.', detail: 'Se requiere cambio de contraseña en el primer ingreso.' }
   }
 
   return {
@@ -198,6 +230,7 @@ export const useUsersStore = defineStore('users', () => {
     roleAccess,
     roleAccessHistory,
     currentUser,
+    createUser,
     toggleUserStatus,
     forcePasswordReset,
     generateTemporaryPasswordForUser,

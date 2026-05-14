@@ -34,7 +34,7 @@ const form = reactive({
 
 async function handleSubmit() {
   const result = await store.createUser({ ...form })
-  if (result.success) {
+  if (result.ok) {
     // Reset form
     form.name = ''
     form.email = ''
