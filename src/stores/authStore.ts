@@ -83,6 +83,28 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function reauthenticate(password: string) {
+    if (!currentUser.value) return { ok: false, message: 'No hay una sesión activa para recuperar.' }
+    isLoading.value = true
+    try {
+      const response = await apiLoginWithBackend({
+        email: currentUser.value.email,
+        password
+      })
+      if (response.user) {
+        storeAuthToken(response.accessToken)
+        isSessionExpired.value = false
+        root.saveState()
+        return { ok: true }
+      }
+      return { ok: false, message: 'Contraseña incorrecta.' }
+    } catch (error: any) {
+      return { ok: false, message: error.message || 'Error al re-autenticar.' }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   function logout() {
     root.session.currentUserId = null
     root.session.currentSessionId = null
@@ -105,6 +127,7 @@ export const useAuthStore = defineStore('auth', () => {
     currentUser,
     isAuthenticated,
     loginWithBackend,
+    reauthenticate,
     logout,
     refreshSessionWithBackend,
     visibleViews,
