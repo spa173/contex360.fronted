@@ -57,21 +57,21 @@ const stats = [
 const testimonials = [
   {
     name: 'Camila Rodríguez',
-    role: 'CFO Â· Distribuidora Boyacá',
+    role: 'CFO · Distribuidora Boyacá',
     quote: 'Antes tardábamos 3 días en cerrar el mes. Con Contex360 lo hacemos el mismo día. La visibilidad financiera cambió completamente nuestra operación.',
     rating: 5,
     avatar: 'CR',
   },
   {
     name: 'Andrés Morales',
-    role: 'Gerente General Â· Construcciones AM',
+    role: 'Gerente General · Construcciones AM',
     quote: 'El control de inventario entre obras nos costaba errores costosos. Ahora tenemos trazabilidad completa de materiales en tiempo real.',
     rating: 5,
     avatar: 'AM',
   },
   {
     name: 'Laura Venegas',
-    role: 'Contadora Â· Servicios LV',
+    role: 'Contadora · Servicios LV',
     quote: 'La integración DIAN es perfecta. Cero rechazos en 8 meses. Y el soporte responde en menos de una hora.',
     rating: 5,
     avatar: 'LV',
@@ -286,9 +286,9 @@ onMounted(() => {
                     <p class="text-xs font-semibold text-gray-700">Actividad reciente</p>
                   </div>
                   <div v-for="item in [
-                    { label: 'FE-20240512-001', sub: 'Comercial Andina Â· $2.4M', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
-                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades Â· Prod. X220', color: 'bg-blue-100 text-blue-800', tag: 'En tránsito' },
-                    { label: 'FE-20240511-098', sub: 'Ferretería López Â· $780K', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
+                    { label: 'FE-20240512-001', sub: 'Comercial Andina · $2.4M', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
+                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades · Prod. X220', color: 'bg-blue-100 text-blue-800', tag: 'En tránsito' },
+                    { label: 'FE-20240511-098', sub: 'Ferretería López · $780K', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
                   ]" :key="item.label"
                     class="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 last:border-0"
                   >
