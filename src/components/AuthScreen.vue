@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { computed, ref } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
@@ -490,25 +490,25 @@ const toggleRecoveryHelp = () => {
   background:
     radial-gradient(circle at 70% 22%, rgba(255, 255, 255, 0.05), transparent 18%),
     radial-gradient(circle at 84% 84%, rgba(255, 255, 255, 0.05), transparent 22%),
-    linear-gradient(180deg, #182833 0%, #15232d 52%, #1b2b35 100%);
-  color: #f7fbff;
+    linear-gradient(160deg, #1a0f00 0%, #2d1800 50%, #1f1000 100%);
+  color: #fff7ed;
   overflow: hidden;
   position: relative;
 }
 
 .auth-story::before {
   background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(255, 165, 0, 0.07) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 165, 0, 0.07) 1px, transparent 1px);
   background-size: 72px 72px;
   content: '';
   inset: 0;
-  opacity: 0.16;
+  opacity: 0.5;
   position: absolute;
 }
 
 .auth-story__orb {
-  border: 1px solid rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 165, 0, 0.15);
   border-radius: 50%;
   position: absolute;
 }
@@ -546,8 +546,8 @@ const toggleRecoveryHelp = () => {
 .auth-brand__mark,
 .auth-mobile-brand__mark {
   align-items: center;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: linear-gradient(135deg, #f97316, #f59e0b);
+  border: 1px solid rgba(255, 165, 0, 0.3);
   border-radius: 12px;
   display: inline-flex;
   flex-shrink: 0;
@@ -567,7 +567,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-brand__subtitle {
-  color: rgba(224, 233, 242, 0.62);
+  color: rgba(253, 186, 116, 0.70);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   margin-top: 5px;
@@ -580,7 +580,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-eyebrow {
-  color: #27e0d2;
+  color: #fb923c;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -603,7 +603,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-story__lead {
-  color: rgba(234, 240, 248, 0.78);
+  color: rgba(253, 230, 195, 0.78);
   font-size: 0.95rem;
   line-height: 1.64;
   margin: 0;
@@ -619,14 +619,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-metric dt {
-  color: #ffffff;
+  color: #fef3c7;
   font-size: clamp(1.9rem, 2.45vw, 2.6rem);
   font-weight: 400;
   line-height: 1;
 }
 
 .auth-metric dd {
-  color: rgba(221, 230, 240, 0.62);
+  color: rgba(253, 186, 116, 0.65);
   font-size: 0.82rem;
   margin: 8px 0 0;
 }
@@ -649,7 +649,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-features svg {
-  color: #27e0d2;
+  color: #fb923c;
   flex-shrink: 0;
   height: 18px;
   width: 18px;
@@ -657,7 +657,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-story__footer {
   align-items: center;
-  color: rgba(221, 230, 240, 0.55);
+  color: rgba(253, 186, 116, 0.55);
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
@@ -671,7 +671,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-story__footer a:hover {
-  color: #ffffff;
+  color: #fed7aa;
 }
 
 .auth-form-panel {
@@ -749,7 +749,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__mark {
-  background: #182430;
+  background: linear-gradient(135deg, #f97316, #f59e0b);
   border-color: transparent;
   height: 36px;
   width: 36px;
@@ -893,8 +893,8 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-input-shell:focus-within {
-  border-color: #020617;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.08);
+  border-color: #f97316;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
 }
 
 :global(html.dark) .auth-input-shell:focus-within {
@@ -970,7 +970,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-remember input {
-  accent-color: #020617;
+  accent-color: #f97316;
   height: 16px;
   width: 16px;
 }
@@ -992,7 +992,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary {
-  background: #0f172a;
+  background: linear-gradient(135deg, #f97316, #f59e0b);
   border: 0;
   border-radius: 11px;
   color: #ffffff;
@@ -1013,8 +1013,8 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary:hover:not(:disabled) {
-  background: #1e293b;
-  box-shadow: 0 10px 22px rgba(15, 23, 42, 0.12);
+  background: linear-gradient(135deg, #ea6c0e, #d97706);
+  box-shadow: 0 10px 22px rgba(249, 115, 22, 0.30);
   transform: translateY(-1px);
 }
 
@@ -1115,7 +1115,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-demo a {
-  color: #0f1727;
+  color: #ea580c;
   font-weight: 700;
   text-decoration: none;
 }
@@ -1125,6 +1125,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-demo a:hover {
+  color: #c2410c;
   text-decoration: underline;
 }
 
