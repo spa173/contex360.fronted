@@ -21,7 +21,7 @@
           :class="[
             'w-full flex items-center gap-3 px-4 py-2.5 rounded-lg transition-all duration-200 relative group',
             activeView === item.id
-              ? 'bg-white/5 text-white'
+              ? 'bg-white/5 text-emerald-400'
               : 'text-slate-400 hover:text-white hover:bg-white/[0.02]'
           ]"
         >
@@ -31,7 +31,7 @@
             class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-8 bg-emerald-500 rounded-r-full"
           />
           
-          <component :is="item.icon" class="w-5 h-5 stroke-[1.5]" />
+          <component :is="item.icon" :class="['w-5 h-5 stroke-[1.5]', activeView === item.id ? 'text-emerald-400' : '']" />
           <span class="text-sm font-medium">{{ item.label }}</span>
         </button>
       </div>

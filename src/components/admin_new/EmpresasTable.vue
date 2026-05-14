@@ -7,7 +7,7 @@
         <h2 class="text-2xl font-bold text-white mb-1">Empresas (Tenants)</h2>
         <p class="text-sm text-slate-400">{{ tenants.length }} empresas registradas en la plataforma</p>
       </div>
-      <button class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2">
+      <button class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-lg shadow-emerald-500/20">
         <span class="text-lg">+</span>
         Registrar nuevo Tenant
       </button>

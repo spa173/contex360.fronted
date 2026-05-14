@@ -7,6 +7,10 @@
         <h2 class="text-2xl font-bold text-white mb-1">Solicitudes de Demo</h2>
         <p class="text-sm text-slate-400">{{ demoRequests.length }} leads registrados</p>
       </div>
+      <button class="px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl font-medium transition-colors flex items-center gap-2 shadow-lg shadow-emerald-500/20">
+        <Calendar class="w-4 h-4" />
+        Agendar Demo
+      </button>
     </div>
 
     <!-- Search -->
@@ -97,7 +101,7 @@
 
 <script setup>
 import { ref, computed } from 'vue'
-import { Search, Mail } from 'lucide-vue-next'
+import { Search, Mail, Calendar } from 'lucide-vue-next'
 import { formatDate } from '../../utils/ui'
 
 const props = defineProps({

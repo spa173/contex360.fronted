@@ -131,31 +131,6 @@ const stockValueData = computed(() => {
 
 <template>
   <section :class="['view', { active: isActive }]">
-    <div class="metrics-grid">
-      <article class="metric-card">
-        <p class="metric-label">Facturacion acumulada</p>
-        <p class="metric-value">{{ formatCurrency(totalRevenue) }}</p>
-        <p class="metric-note">{{ billing.tenantInvoices.length }} documentos emitidos en el tenant activo</p>
-      </article>
-      <article class="metric-card">
-        <p class="metric-label">Cartera estimada</p>
-        <p class="metric-value">{{ formatCurrency(receivable) }}</p>
-        <p class="metric-note">Base para CxC y alertas de vencimiento</p>
-      </article>
-      <article class="metric-card">
-        <p class="metric-label">Productos bajo minimo</p>
-        <p class="metric-value">{{ lowStockProducts.length }}</p>
-        <p class="metric-note">
-          {{ lowStockProducts.length ? 'Necesitan reposicion o ajuste' : 'Sin alertas criticas' }}
-        </p>
-      </article>
-      <article class="metric-card">
-        <p class="metric-label">Corridas OCR</p>
-        <p class="metric-value">{{ ai.tenantOcrRuns.length }}</p>
-        <p class="metric-note">Analisis documental disponibles para revision</p>
-      </article>
-    </div>
-
     <div class="dashboard-grid">
       <article class="panel-card">
         <div class="card-head">

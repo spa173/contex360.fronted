@@ -68,21 +68,26 @@ const isDashboard = computed(() => auth.activeView === 'dashboard')
 
     <div class="grid-4 compact-metrics">
       <div class="metric-card">
-        <div class="metric-label">Usuarios con acceso</div>
+        <div class="metric-label">Usuarios Acceso</div>
         <div class="metric-val">{{ users.usersForActiveTenant.length }}</div>
+        <div class="metric-sub">Activos en tenant</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">Ingresos acumulados</div>
+        <div class="metric-label">Ingresos Totales</div>
         <div class="metric-val">{{ formatCurrency(totalRevenue) }}</div>
+        <div class="metric-sub">{{ billing.tenantInvoices.length }} facturas</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">DIAN aceptados</div>
+        <div class="metric-label">DIAN Aceptados</div>
         <div class="metric-val">{{ acceptedCount }}</div>
+        <div class="metric-sub">Cumplimiento DIAN</div>
       </div>
       <div class="metric-card">
-        <div class="metric-label">Stock minimo</div>
-        <div class="metric-val">{{ lowStockCount }}</div>
+        <div class="metric-label">Alertas Stock</div>
+        <div class="metric-val" :class="{ 'text-danger': lowStockCount > 0 }">{{ lowStockCount }}</div>
+        <div class="metric-sub">Bajo stock minimo</div>
       </div>
     </div>
+
   </section>
 </template>

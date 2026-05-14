@@ -1,62 +1,35 @@
-
 :root {
-  /* === 60% FONDO BASE: Gris Carbón === */
-  --bg: #212121;
-  --bg-strong: #181818;
-  --surface: rgba(33, 33, 33, 0.92);
-  --surface-alt: rgba(42, 42, 42, 0.95);
-  --surface-soft: rgba(55, 55, 55, 0.7);
-  --border: rgba(16, 185, 129, 0.15);
-
-  /* === 10% ACENTO: Blanco Hueso (texto y contraste) === */
-  --text: #F1F5F9;
-  --muted: #94a3b8;
-
-  /* === 30% DETALLES: Verde Esmeralda === */
+  /* === Color Palette: Emerald/Dark === */
+  --bg: #0a0a0f;
+  --bg-strong: #050507;
+  --surface: #1f2937;
+  --surface-alt: #374151;
+  --surface-soft: #4b5563;
+  --border: rgba(16, 185, 129, 0.2);
+  
+  --text: #f9fafb;
+  --text-muted: #9ca3af;
+  
   --accent: #10b981;
   --accent-strong: #059669;
-  --teal: #10b981;
   --success: #10b981;
   --danger: #ef4444;
+  --info: #3b82f6;
+  --warning: #f59e0b;
 
-  /* SaaS Redesign Theme (Vibrant Emerald Dark) */
-  --emerald: #10b981;
-  --emerald-light: #34d399;
-  --emerald-dark: #059669;
-  
-  /* System Tokens mapping for Tailwind */
-  --background: #ffffff;
-  --foreground: #030213;
-  --card: #ffffff;
-  --card-foreground: #030213;
-  --primary: #030213;
+  /* Tailwind / System Token Mapping */
+  --background: var(--bg);
+  --foreground: var(--text);
+  --card: var(--surface);
+  --card-foreground: var(--text);
+  --primary: var(--accent);
   --primary-foreground: #ffffff;
-  --muted: #ececf0;
-  --muted-foreground: #717182;
-  --accent: #e9ebef;
-  --accent-foreground: #030213;
-  --border: rgba(0, 0, 0, 0.1);
-  --radius: 0.625rem;
-  --sidebar: #f8fafc;
-  --sidebar-foreground: #030213;
-  --sidebar-border: #e2e8f0;
-
-  &.dark {
-    --background: #0a0a0f;
-    --foreground: #f8fafc;
-    --card: #14141b;
-    --card-foreground: #f8fafc;
-    --primary: #10b981;
-    --primary-foreground: #ffffff;
-    --muted: #1e1e2d;
-    --muted-foreground: #94a3b8;
-    --accent: #1e1e2d;
-    --accent-foreground: #f8fafc;
-    --border: #1e1e2d;
-    --sidebar: #0f0f14;
-    --sidebar-foreground: #f8fafc;
-    --sidebar-border: #1e1e2d;
-  }
+  --muted: var(--surface-soft);
+  --muted-foreground: var(--text-muted);
+  --radius: 0.75rem;
+  --sidebar: var(--bg-strong);
+  --sidebar-foreground: var(--text);
+  --sidebar-border: var(--border);
 
   /* Legacy Mappings (compatibilidad con el resto del código) */
   --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
@@ -67,7 +40,7 @@
   --color-border-secondary: rgba(16, 185, 129, 0.12);
   --color-border-tertiary: rgba(16, 185, 129, 0.08);
   --color-text-primary: var(--text);
-  --color-text-secondary: var(--muted);
+  --color-text-secondary: var(--text-muted);
   --color-text-tertiary: #64748b;
   --color-text-info: var(--accent);
   --color-text-success: #34d399;
@@ -87,13 +60,14 @@
   --radius-lg: 10px;
   --radius-md: 7px;
 
-  /* Fondo principal — gris carbón con toque de verde */
+  /* Fondo principal */
   --page-background:
     radial-gradient(circle at 10% 15%, rgba(16, 185, 129, 0.07), transparent 22%),
     radial-gradient(circle at 85% 20%, rgba(5, 150, 105, 0.05), transparent 25%),
     radial-gradient(circle at 60% 80%, rgba(16, 185, 129, 0.04), transparent 28%),
-    linear-gradient(160deg, #242424 0%, #181818 100%);
+    linear-gradient(160deg, #111827 0%, #030712 100%);
 }
+
 
 
 html.light {
@@ -550,8 +524,25 @@ textarea {
 }
 
 .metric-label {
-  color: var(--muted);
-  margin: 0 0 10px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0 0 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.metric-val {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+
+.metric-sub {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 400;
 }
 
 .metric-value {
@@ -561,8 +552,8 @@ textarea {
 }
 
 .metric-note {
-  color: var(--muted);
-  font-size: 0.92rem;
+  color: var(--text-muted);
+  font-size: 0.85rem;
   margin: 0;
 }
 
