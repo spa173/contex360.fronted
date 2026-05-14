@@ -252,8 +252,8 @@ export const useInventoryStore = defineStore('inventory', () => {
   }, { deep: true, immediate: true })
 
   // Auto-fetch
-  watch(activeTenantId, (newId) => {
-    if (newId) fetchProducts()
+  watch([activeTenantId, () => root.session.currentUserId], ([newId, userId]) => {
+    if (newId && userId) fetchProducts()
   }, { immediate: true })
 
   return { products, inventoryMovements, inventoryTransfers, tenantProducts, tenantInventoryMovements, activeTenantTransfers, tenantLocations, deadInventory, reorderSuggestions, abcAnalysis, createProduct, transferStock, receiveTransfer, auditInventory, receiveInventory, importProductsCSV, canManageInventory }

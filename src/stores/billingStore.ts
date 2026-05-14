@@ -94,7 +94,9 @@ export const useBillingStore = defineStore('billing', () => {
   watch(invoices, () => { (root.$state as any).invoices = invoices.value; }, { deep: true, immediate: true })
 
   // Auto-fetch
-  watch(activeTenantId, (newId) => { if (newId) fetchInvoices() }, { immediate: true })
+  watch([activeTenantId, () => root.session.currentUserId], ([newId, userId]) => {
+    if (newId && userId) fetchInvoices()
+  }, { immediate: true })
 
   return { invoices, selectedInvoice, canEmitInvoice, fetchInvoices, emitInvoice, scheduleDianUpdates, clearScheduledDianUpdates }
 })

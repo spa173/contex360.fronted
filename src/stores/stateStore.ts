@@ -73,11 +73,14 @@ export const useStateStore = defineStore('state', {
     },
 
     async fetchBusinessData() {
-      if (!this.activeTenantId) return
+      if (!this.activeTenantId || !this.session.currentUserId) return
       try {
         const thirdParties = await businessApi.getThirdParties()
         this.thirdParties = thirdParties
-      } catch (error) { console.error(error) }
+      } catch (error: any) { 
+        if (error.message?.includes('403') || error.message?.includes('401')) return
+        console.error(error) 
+      }
       this.saveState()
     },
 
@@ -100,6 +103,8 @@ export const useStateStore = defineStore('state', {
           await this.fetchBusinessData()
           return true
         }
+        this.session.currentUserId = null
+        this.activeTenantId = null
         clearAuthToken()
         return false
       }
