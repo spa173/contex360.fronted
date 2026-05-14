@@ -6,6 +6,8 @@ import { useInventoryStore } from '../../stores/inventoryStore'
 import { useUsersStore } from '../../stores/usersStore'
 import { formatCurrency, formatDate, moduleRows } from '../../utils/ui'
 import BusinessChart from '../analytics/BusinessChart.vue'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 
 defineProps({
   isActive: {
@@ -132,35 +134,33 @@ const stockValueData = computed(() => {
 <template>
   <section :class="['view', { active: isActive }]">
     <div class="dashboard-grid">
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Control operativo</p>
-            <h3>Alertas y prioridades</h3>
-          </div>
-        </div>
-        <div v-if="lowStockProducts.length" class="list-grid">
-          <div v-for="product in lowStockProducts.slice(0, 4)" :key="product.id" class="alert-row">
-            <div>
-              <p>{{ product.name }}</p>
-              <p class="label-soft">SKU {{ product.sku }} - minimo {{ product.minStock }}</p>
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+        <CardHeader class="pb-4">
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Control operativo</p>
+          <CardTitle class="text-slate-50 font-bold text-2xl">Alertas y prioridades</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div v-if="lowStockProducts.length" class="grid gap-3">
+            <div v-for="product in lowStockProducts.slice(0, 4)" :key="product.id" class="flex items-center justify-between bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
+              <div>
+                <p class="text-slate-200 font-medium">{{ product.name }}</p>
+                <p class="text-slate-500 text-sm">SKU {{ product.sku }} - minimo {{ product.minStock }}</p>
+              </div>
+              <Badge class="bg-rose-500/15 text-rose-500 border-none">Stock {{ product.stock }}</Badge>
             </div>
-            <span class="status-badge status-danger">Stock {{ product.stock }}</span>
           </div>
-        </div>
-        <p v-else class="empty-state">
-          No hay alertas activas. El inventario esta por encima del minimo configurado.
-        </p>
-      </article>
+          <p v-else class="text-slate-500 text-sm">
+            No hay alertas activas. El inventario esta por encima del minimo configurado.
+          </p>
+        </CardContent>
+      </Card>
 
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Logistica</p>
-            <h3>Valor del Stock por Categoria</h3>
-          </div>
-        </div>
-        <div class="list-grid">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+        <CardHeader class="pb-4">
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Logistica</p>
+          <CardTitle class="text-slate-50 font-bold text-2xl">Valor del Stock por Categoria</CardTitle>
+        </CardHeader>
+        <CardContent>
            <BusinessChart 
              type="bar" 
              :data="stockValueData" 
@@ -170,17 +170,15 @@ const stockValueData = computed(() => {
                plugins: { legend: { display: false } }
              }" 
            />
-        </div>
-      </article>
+        </CardContent>
+      </Card>
 
-      <article class="panel-card" style="grid-column: span 2;">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Desempeño</p>
-            <h3>Tendencia de Ventas (Ultimos 6 meses)</h3>
-          </div>
-        </div>
-        <div class="list-grid">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30 col-span-2">
+        <CardHeader class="pb-4">
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Desempeño</p>
+          <CardTitle class="text-slate-50 font-bold text-2xl">Tendencia de Ventas (Ultimos 6 meses)</CardTitle>
+        </CardHeader>
+        <CardContent>
            <BusinessChart 
              type="line" 
              :data="revenueTrendData" 
@@ -192,17 +190,15 @@ const stockValueData = computed(() => {
                tension: 0.4
              }" 
            />
-        </div>
-      </article>
+        </CardContent>
+      </Card>
 
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Cumplimiento</p>
-            <h3>Pipeline DIAN</h3>
-          </div>
-        </div>
-        <div class="list-grid">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+        <CardHeader class="pb-4">
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Cumplimiento</p>
+          <CardTitle class="text-slate-50 font-bold text-2xl">Pipeline DIAN</CardTitle>
+        </CardHeader>
+        <CardContent>
            <BusinessChart 
              type="doughnut" 
              :data="pipelineChartData" 
@@ -213,46 +209,44 @@ const stockValueData = computed(() => {
                cutout: '70%'
              }" 
            />
-        </div>
-      </article>
+        </CardContent>
+      </Card>
 
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Resumen</p>
-            <h3>Estado de modulos</h3>
-          </div>
-        </div>
-        <div class="list-grid">
-          <div v-for="[name, status, note] in moduleRows" :key="name" class="module-row">
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+        <CardHeader class="pb-4">
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Resumen</p>
+          <CardTitle class="text-slate-50 font-bold text-2xl">Estado de modulos</CardTitle>
+        </CardHeader>
+        <CardContent class="grid gap-3">
+          <div v-for="[name, status, note] in moduleRows" :key="name" class="flex items-center justify-between bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
             <div>
-              <p>{{ name }}</p>
-              <p class="label-soft">{{ note }}</p>
+              <p class="text-slate-200 font-medium">{{ name }}</p>
+              <p class="text-slate-500 text-sm">{{ note }}</p>
             </div>
-            <span class="small-pill">{{ status }}</span>
+            <Badge variant="outline" class="border-slate-600 text-slate-400">{{ status }}</Badge>
           </div>
-        </div>
-      </article>
+        </CardContent>
+      </Card>
 
-      <article class="panel-card">
-        <div class="card-head">
-          <div>
-            <p class="eyebrow">Actividad reciente</p>
-            <h3>Bitacora del tenant</h3>
-          </div>
-        </div>
-        <div v-if="users.auditEvents.length" class="activity-list">
-          <div v-for="event in users.auditEvents.slice(0, 4)" :key="event.id" class="activity-item">
-            <div class="activity-header">
-              <strong>{{ event.action }} - {{ event.entity }}</strong>
-              <span class="label-soft">{{ formatDate(event.at) }}</span>
+      <Card class="bg-[#131926] border border-slate-800/50 rounded-xl px-6 py-5 shadow-sm transition-all duration-200 hover:shadow-md hover:border-emerald-500/30">
+        <CardHeader class="pb-4">
+          <p class="text-slate-400 font-medium text-sm uppercase tracking-wider">Actividad reciente</p>
+          <CardTitle class="text-slate-50 font-bold text-2xl">Bitacora del tenant</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div v-if="users.auditEvents.length" class="grid gap-3">
+            <div v-for="event in users.auditEvents.slice(0, 4)" :key="event.id" class="bg-slate-800/30 rounded-lg px-4 py-3 border border-slate-700/30">
+              <div class="flex items-center justify-between mb-1">
+                <strong class="text-slate-200 font-medium">{{ event.action }} - {{ event.entity }}</strong>
+                <span class="text-slate-500 text-sm">{{ formatDate(event.at) }}</span>
+              </div>
+              <p class="text-slate-400 text-sm">{{ event.description }}</p>
+              <p class="text-slate-500 text-xs mt-1">Actor: {{ event.actor }}</p>
             </div>
-            <p>{{ event.description }}</p>
-            <p class="label-soft">Actor: {{ event.actor }}</p>
           </div>
-        </div>
-        <p v-else class="empty-state">Todavia no hay actividad registrada en este tenant.</p>
-      </article>
+          <p v-else class="text-slate-500 text-sm">Todavia no hay actividad registrada en este tenant.</p>
+        </CardContent>
+      </Card>
     </div>
   </section>
 </template>
