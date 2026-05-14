@@ -19,6 +19,14 @@
   --success: #10b981;
   --danger: #ef4444;
 
+  /* SaaS Redesign Theme */
+  --emerald: #10b981;
+  --emerald-light: #34d399;
+  --emerald-dark: #059669;
+  --background-saas: #0a0a0f;
+  --card-bg-saas: #14141b;
+  --sidebar-bg-saas: #0f0f14;
+
   /* Legacy Mappings (compatibilidad con el resto del código) */
   --font-sans: "Aptos", "Segoe UI Variable", "Segoe UI", Arial, sans-serif;
   --color-background-primary: var(--surface);
