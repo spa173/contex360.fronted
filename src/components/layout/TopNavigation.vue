@@ -15,26 +15,21 @@ const props = defineProps({
 
 const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'toggle-theme', 'navigate'])
 
-const sessionPill = computed(
-  () => `${props.user?.name || 'Sin sesion'} - ${props.user?.title || '-'}`,
-)
-
-const rolePill = computed(
-  () => `${props.activeMembership?.role || 'Sin rol'} - ${props.activeTenant?.city || '-'}`,
+const isOwner = computed(() => 
+  props.activeMembership?.role === 'Administrador' || props.user?.isSystemOwner
 )
 
 const viewSubtitles = {
-  dashboard: 'Resumen financiero y alertas del tenant',
-  billing: 'Facturacion, impuestos, DIAN y cartera',
-  inventory: 'Productos, stock y movimientos recientes',
-  accounting: 'Libro diario, comprobantes y balance rapido',
-  'third-parties': 'Clientes, proveedores y perfiles tributarios',
-  users: 'Roles, permisos y acceso multiempresa',
-  ai: 'OCR, extraccion y sugerencias contables',
+  dashboard: 'Control central y métricas clave',
+  billing: 'Facturación electrónica y gestión DIAN',
+  inventory: 'Control de existencias y logística',
+  accounting: 'Asientos contables y libro diario',
+  'third-parties': 'Gestión de clientes y proveedores',
+  users: 'Administración de accesos y roles',
+  ai: 'Automatización OCR e inteligencia de datos',
 }
 
 const pageTitle = computed(() => viewLabels[props.activeView] || 'Dashboard')
-const pageSubtitle = computed(() => viewSubtitles[props.activeView] || 'Operacion del sistema')
 
 function handleTenantChange(event) {
   emit('tenant-change', event.target.value)
@@ -42,115 +37,99 @@ function handleTenantChange(event) {
 </script>
 
 <template>
-  <header class="topbar">
-    <div class="topbar-title">
-      <button :class="['hamburger', { 'is-open': props.sidebarOpen }]" aria-label="Abrir menu" type="button" @click="emit('toggle-sidebar')">
-        <span></span>
-        <span></span>
-        <span></span>
+  <header class="h-16 bg-[#131926] border-b border-white/10 flex items-center justify-between px-6 sticky top-0 z-50">
+    <!-- Left: Navigation & Context -->
+    <div class="flex items-center gap-6">
+      <button 
+        @click="emit('toggle-sidebar')"
+        class="text-slate-400 hover:text-white transition-colors"
+      >
+        <svg v-if="!sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
       </button>
-      <div>
-        <div class="page-title">{{ pageTitle }}</div>
-        <div class="page-sub">{{ pageSubtitle }}</div>
+
+      <div class="flex items-center gap-3">
+        <div class="flex flex-col">
+          <span class="text-[10px] font-bold text-[#F97316] uppercase tracking-[0.2em] leading-none mb-1">Empresa</span>
+          <div class="flex items-center gap-2">
+            <select
+              :disabled="!canSwitchTenant"
+              :value="activeTenant?.id"
+              @change="handleTenantChange"
+              class="bg-transparent border-none text-white font-bold text-sm p-0 focus:ring-0 cursor-pointer hover:text-[#F97316] transition-colors appearance-none pr-6"
+            >
+              <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id" class="bg-[#131926] text-white">
+                {{ tenant.name }}
+              </option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="h-8 w-px bg-white/10 mx-2"></div>
+
+      <div class="flex flex-col">
+        <span class="text-[10px] font-bold text-slate-500 uppercase tracking-[0.15em] leading-none mb-1">Módulo</span>
+        <h1 class="text-sm font-bold text-white tracking-tight">{{ pageTitle }}</h1>
       </div>
     </div>
 
-    <div class="topbar-right topbar-actions">
-      <span class="badge badge-success">Sistema activo</span>
+    <!-- Right: Identity & Actions -->
+    <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3 bg-white/5 rounded-full pl-4 pr-1 py-1 border border-white/10">
+        <div class="flex flex-col items-end">
+          <span class="text-[11px] font-bold text-white leading-none">{{ user?.name || 'Invitado' }}</span>
+          <span class="text-[9px] font-medium text-slate-400 uppercase tracking-wider">{{ activeMembership?.role || 'Sin Rol' }}</span>
+        </div>
+        
+        <div v-if="isOwner" class="h-6 px-2 bg-[#F97316]/20 border border-[#F97316]/30 rounded-full flex items-center">
+          <span class="text-[8px] font-black text-[#F97316] uppercase tracking-tighter">Owner</span>
+        </div>
 
-      <label class="topbar-select">
-        <span class="sr-only">Empresa activa</span>
-        <select
-          :disabled="!props.canSwitchTenant"
-          :title="!props.canSwitchTenant ? 'Tu rol no permite cambiar de empresa' : 'Cambiar empresa activa'"
-          :value="props.activeTenant?.id"
-          @change="handleTenantChange"
+        <button @click="emit('logout')" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-rose-500 transition-all group">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button 
+          v-if="user?.isSystemOwner"
+          @click="emit('open-admin-panel')"
+          class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors border border-slate-700/50"
+          title="Administración Global"
         >
-          <option v-for="tenant in props.accessibleTenants" :key="tenant.id" :value="tenant.id">
-            {{ tenant.name }}
-          </option>
-        </select>
-      </label>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </button>
 
-      <span class="badge badge-info">{{ rolePill }}</span>
-      <span class="badge badge-muted">{{ sessionPill }}</span>
-
-      <button
-        v-if="props.user?.isSystemOwner"
-        class="btn-root"
-        type="button"
-        title="Ir al Panel de Administracion SaaS"
-        @click="emit('open-admin-panel')"
-      >⚙ Panel Admin</button>
-      
-      <button class="btn-outline" type="button" @click="emit('navigate', 'two-factor')" title="Configurar 2FA">🔐 2FA</button>
-      
-      <button
-        class="theme-toggle-button"
-        type="button"
-        :title="props.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-        :aria-label="props.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-        @click="emit('toggle-theme')"
-      >
-        <svg v-if="props.isDark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/>
-          <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-        </svg>
-        <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      
-      <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
+        <button 
+          @click="emit('navigate', 'two-factor')"
+          class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors border border-slate-700/50"
+          title="Seguridad"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+          </svg>
+        </button>
+      </div>
     </div>
   </header>
 </template>
 
 <style scoped>
-.hamburger.is-open span:nth-child(1) {
-  transform: translateY(5.5px) rotate(45deg);
-}
-.hamburger.is-open span:nth-child(2) {
-  opacity: 0;
-  transform: scaleX(0);
-}
-.hamburger.is-open span:nth-child(3) {
-  transform: translateY(-5.5px) rotate(-45deg);
-}
-
-.btn-root {
-  background: rgba(59, 130, 246, 0.12);
-  border: 1px solid rgba(59, 130, 246, 0.3);
-  border-radius: 8px;
-  color: #3b82f6;
-  cursor: pointer;
-  font-size: 0.8rem;
-  font-weight: 600;
-  padding: 6px 14px;
-  transition: background 150ms;
-}
-.btn-root:hover {
-  background: rgba(59, 130, 246, 0.22);
-}
-
-.theme-toggle-button {
-  background: none;
-  border: none;
-  border-radius: 8px;
-  color: var(--muted);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px;
-  transition: color 150ms ease, transform 200ms ease;
-}
-.theme-toggle-button:hover {
-  color: var(--accent);
-  transform: rotate(20deg);
-}
-.theme-toggle-button svg {
-  height: 20px;
-  width: 20px;
+select {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23F97316' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
 }
 </style>
