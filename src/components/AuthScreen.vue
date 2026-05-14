@@ -769,6 +769,7 @@ const toggleRecoveryHelp = () => {
   margin: 0;
 }
 
+.auth-feedback {
   color: #be123c;
   background: #fff1f2;
   border: 1px solid #fecdd3;
