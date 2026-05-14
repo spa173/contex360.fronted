@@ -6,10 +6,11 @@ import {
   storeAuthToken,
   clearAuthToken,
   refreshAccessToken,
+  loginWithBackend as apiLoginWithBackend
 } from '../services/authApi'
 import { businessApi } from '../services/businessApi'
 import { useStateStore } from './stateStore'
-import { verifyPassword, createPasswordCredentials } from './stateSecurity'
+import { verifyPassword } from './stateSecurity'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -37,46 +38,69 @@ export const useAuthStore = defineStore('auth', () => {
   async function loginWithBackend(credentials: { email: string; password: string; totpCode?: string }) {
     isLoading.value = true
     authError.value = null
+    
+    const activeTenantId = root.activeTenantId || 'tenant-a'
+    
+    console.log('[DEBUG] Login Request:', {
+      email: credentials.email,
+      password: '***',
+      activeTenantId: activeTenantId,
+      hasTotp: !!credentials.totpCode
+    })
+
     try {
-      // Intentar login local primero (para el MVP/Simulacion)
-      const user = root.users.find(u => u.email === credentials.email)
-      if (!user) return { ok: false, message: 'Usuario no encontrado.' }
+      // Intentar login con el Backend Real
+      try {
+        const response = await apiLoginWithBackend(credentials)
+        console.log('[DEBUG] Backend Login Success:', response)
+        
+        // Actualizar estado local con datos del backend
+        if (response.user) {
+          // Si el usuario no existe localmente lo agregamos para la reactividad
+          const exists = root.users.find(u => u.id === response.user.id)
+          if (!exists) root.users.push(response.user as any)
+          
+          root.session.currentUserId = response.user.id
+          root.session.currentSessionId = response.session?.id || uid('sess')
+          root.activeTenantId = response.activeTenantId || activeTenantId
+          
+          // Sincronizar membresias si vienen del backend
+          if (response.memberships) {
+            root.memberships = response.memberships as any
+          }
 
-      const isValid = await verifyPassword(user, credentials.password)
-      if (!isValid) return { ok: false, message: 'Credenciales inválidas.' }
+          root.saveState()
+          return { ok: true, user: response.user }
+        }
+      } catch (backendError: any) {
+        console.warn('[DEBUG] Backend Login Failed:', backendError.message)
+        
+        // Si el error es 401 o Not Found, limpiar tenant por si es basura antigua
+        if (backendError.message.includes('401') || backendError.message.toLowerCase().includes('not found') || backendError.message.toLowerCase().includes('no encontrado')) {
+           console.log('[DEBUG] Cleaning legacy tenant state due to auth failure')
+           localStorage.removeItem('contex360-active-tenant')
+           root.activeTenantId = 'tenant-a' 
+        }
 
-      if (user.status === 'inactive') return { ok: false, message: 'Tu cuenta está desactivada.' }
-
-      const security = root.userSecurity.find(s => s.userId === user.id)
-      if (security?.twoFactorEnabled && !credentials.totpCode) {
-        return { ok: true, requiresTwoFactor: true, userId: user.id }
+        // Fallback a login local si el backend falla o es una cuenta de seed
+        const user = root.users.find(u => u.email === credentials.email)
+        if (user && user.isDemoAccount) {
+          const isValid = await verifyPassword(user, credentials.password)
+          if (isValid) {
+            root.session.currentUserId = user.id
+            root.session.currentSessionId = uid('sess')
+            root.activeTenantId = activeTenantId
+            root.saveState()
+            return { ok: true, user }
+          }
+        }
+        
+        return { ok: false, message: backendError.message || 'Usuario no encontrado.' }
       }
 
-      root.session.currentUserId = user.id
-      root.session.currentSessionId = uid('sess')
-      
-      const session = {
-        id: root.session.currentSessionId,
-        userId: user.id,
-        tenantId: root.activeTenantId || 'tenant-a',
-        ip: '127.0.0.1',
-        device: 'Web Browser',
-        createdAt: new Date().toISOString(),
-        lastSeenAt: new Date().toISOString(),
-      }
-      root.userSessions.push(session)
-      
-      appendAuditEvent(root.$state, {
-        entity: 'auth',
-        action: 'Login',
-        description: `Inicio de sesión exitoso para ${user.name}.`,
-        actor: user.name,
-      })
-      
-      root.saveState()
-      return { ok: true, user }
-    } catch (error) {
-      authError.value = 'Error de conexión con el servidor'
+      return { ok: false, message: 'Usuario no encontrado.' }
+    } catch (error: any) {
+      authError.value = error.message || 'Error de conexión con el servidor'
       return { ok: false, message: authError.value }
     } finally {
       isLoading.value = false
