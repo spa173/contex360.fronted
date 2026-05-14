@@ -108,6 +108,20 @@ export const useStateStore = defineStore('state', {
         clearAuthToken()
         return false
       }
+      }
+    },
+
+    checkCurrentSessionHealth() {
+      const session = this.userSessions.find(s => s.id === this.session.currentSessionId)
+      if (session?.revokedAt) {
+        return { revoked: true, message: 'Tu sesion ha sido revocada por un administrador.' }
+      }
+      return { revoked: false }
+    },
+
+    processScheduledDeactivations() {
+      const now = new Date()
+      // Lógica para procesar bajas programadas (placeholder para persistencia local)
     }
   }
 })

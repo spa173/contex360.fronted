@@ -26,6 +26,9 @@ export const useUsersStore = defineStore('users', () => {
   const roleAccess = computed(() => root.roleAccess)
   const roleAccessHistory = computed(() => root.roleAccessHistory)
   const currentUser = computed(() => root.currentUser)
+  const currentClientIp = computed(() => root.currentClientIp || '127.0.0.1')
+  const tenants = computed(() => root.tenants)
+  const activeTenant = computed(() => root.activeTenant)
 
   // Actions
   function toggleUserStatus(userId: string) {
@@ -212,6 +215,7 @@ export const useUsersStore = defineStore('users', () => {
     scheduleUserDeactivation,
     exportUsers,
     panicLogoutAll,
+    saveState: () => root.saveState(),
     canManageUsers: computed(() => root.can('manage_users')),
   }
 })

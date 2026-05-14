@@ -139,5 +139,9 @@ export const useAuthStore = defineStore('auth', () => {
     activeView,
     isSystemOwner,
     isAdmin,
+    checkCurrentSessionHealth: () => root.checkCurrentSessionHealth(),
+    processScheduledDeactivations: () => root.processScheduledDeactivations(),
+    setActiveView: (view: string) => root.setActiveView(view),
+    setActiveTenant: (tenantId: string) => root.setActiveTenant(tenantId),
   }
 })

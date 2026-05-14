@@ -39,9 +39,26 @@ const filters = reactive({
   twoFactor: 'all',
 })
 
-// Forms are now handled in child components
+// Forms
+const userForm = reactive({
+  name: '',
+  email: '',
+  password: '',
+  status: 'active',
+  title: '',
+  role: ROLE_OPTIONS[0],
+  initialTasks: [],
+})
 
-// Forms are now handled in child components
+const membershipForm = reactive({
+  tenantId: '',
+  role: ROLE_OPTIONS[0],
+})
+
+const offboardingForm = reactive({
+  date: '',
+  reassignToUserId: null,
+})
 
 const tenantSearch = ref('')
 
@@ -128,7 +145,7 @@ const PERMISSION_HELP = {
 
 const canUsers = computed(() => store.canManageUsers)
 const currentClientIp = computed(() => store.currentClientIp || '')
-const isCurrentUserSystemOwner = computed(() => Boolean(store.isCurrentUserSystemOwner))
+const isCurrentUserSystemOwner = computed(() => Boolean(store.currentUser?.isSystemOwner))
 
 const permissionNote = computed(() =>
   canUsers.value
