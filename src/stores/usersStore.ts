@@ -7,7 +7,7 @@ export {
   PERMISSION_ACTIONS,
   PERMISSION_MODULES,
   ROLE_OPTIONS,
-} from './stateStore'
+} from './rbacStore'
 
 export const useUsersStore = defineStore('users', () => {
   const state = useStateStore()

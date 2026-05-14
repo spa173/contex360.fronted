@@ -10,6 +10,29 @@ import { formatDate } from '../utils/ui'
 import { businessApi } from '../services/businessApi'
 import { loginWithBackend } from '../services/authApi'
 import { getAuthToken, storeAuthToken, clearAuthToken, refreshAccessToken } from '../services/authApi'
+import {
+  PERMISSION_MODULES,
+  PERMISSION_ACTIONS,
+  ROLE_OPTIONS,
+  ROLE_PERMISSIONS,
+  ROLE_VIEWS,
+  DEFAULT_ROLE_ACCESS,
+  hasEqualOrHigherPermissions,
+  // NEW: Modularized RBAC exports
+  RoleAccessHistoryEntry,
+  Membership,
+  getVisibleViewsForRole,
+  hasRolePermission,
+  getRoleModulePermissions,
+  normalizeRoleAccess,
+  getMembershipsForUser,
+  getMembershipForTenant,
+  getAccessibleTenantIdsForUser,
+  hasTenantAccess,
+  buildVisibleViews,
+  canAccessView,
+  createDefaultRBACState,
+} from './rbacStore'
 
 const STORAGE_KEY = 'contex360-mvp-state'
 const scheduledDianTimers = createTimerRegistry()
@@ -58,11 +81,7 @@ export interface Tenant {
   [key: string]: unknown
 }
 
-export interface Membership {
-  userId: string
-  tenantId: string
-  role: string
-}
+// Membership now imported from rbacStore
 
 export interface Invoice {
   id: string
@@ -151,18 +170,7 @@ export interface AuditEvent {
   attachmentUrl?: string | null
 }
 
-export interface RoleAccessHistoryEntry {
-  id: string
-  at: string
-  actor: string
-  role: string
-  moduleId: string
-  permission: string
-  before: boolean
-  after: boolean
-  snapshot: Record<string, Record<string, string[]>>
-  [key: string]: unknown
-}
+// RoleAccessHistoryEntry now imported from rbacStore
 
 export interface ThirdParty {
   id: string
@@ -294,130 +302,7 @@ export interface AuditPayload {
   [key: string]: unknown
 }
 
-export const PERMISSION_MODULES = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'billing', label: 'Facturacion' },
-  { id: 'inventory', label: 'Inventario' },
-  { id: 'accounting', label: 'Contabilidad' },
-  { id: 'third-parties', label: 'Terceros' },
-  { id: 'users', label: 'Usuarios' },
-  { id: 'ai', label: 'IA / OCR' },
-]
-
-export const PERMISSION_ACTIONS = [
-  { id: 'view', label: 'Ver' },
-  { id: 'create', label: 'Crear' },
-  { id: 'edit', label: 'Editar' },
-  { id: 'approve', label: 'Aprobar' },
-  { id: 'export', label: 'Exportar' },
-  { id: 'configure', label: 'Configurar' },
-]
-
-const ROLE_DEFINITIONS = [
-  {
-    id: 'owner',
-    permissions: ['emit_invoice', 'manage_inventory', 'manage_third_parties', 'run_ocr', 'manage_users'],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai'],
-    access: {
-      dashboard: ['view', 'export', 'configure'],
-      billing: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      inventory: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      accounting: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      'third-parties': ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      users: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      ai: ['view', 'create', 'edit', 'export', 'configure'],
-    }
-  },
-  {
-    id: 'Administrador',
-    permissions: ['emit_invoice', 'manage_inventory', 'manage_third_parties', 'run_ocr', 'manage_users'],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'profile'],
-    access: {
-      dashboard: ['view', 'export', 'configure'],
-      billing: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      inventory: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      accounting: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      'third-parties': ['view', 'create', 'edit', 'export', 'configure'],
-      users: ['view', 'create', 'edit', 'approve', 'export', 'configure'],
-      ai: ['view', 'create', 'edit', 'export', 'configure'],
-    }
-  },
-  {
-    id: 'Contador',
-    permissions: ['emit_invoice', 'manage_inventory', 'manage_third_parties', 'run_ocr'],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'ai', 'profile'],
-    access: {
-      dashboard: ['view', 'export'],
-      billing: ['view', 'create', 'edit', 'export'],
-      inventory: ['view', 'create', 'edit', 'export'],
-      accounting: ['view', 'create', 'edit', 'approve', 'export'],
-      'third-parties': ['view', 'create', 'edit'],
-      users: [],
-      ai: ['view', 'create'],
-    }
-  },
-  {
-    id: 'Auxiliar contable',
-    permissions: ['emit_invoice', 'manage_third_parties', 'run_ocr'],
-    views: ['dashboard', 'billing', 'accounting', 'third-parties', 'ai', 'profile'],
-    access: {
-      dashboard: ['view'],
-      billing: ['view', 'create'],
-      inventory: ['view'],
-      accounting: ['view', 'create'],
-      'third-parties': ['view', 'create'],
-      users: [],
-      ai: ['view', 'create'],
-    }
-  },
-  {
-    id: 'Usuario nomina',
-    permissions: [],
-    views: ['dashboard'],
-    access: {
-      dashboard: ['view'],
-      billing: [],
-      inventory: [],
-      accounting: [],
-      'third-parties': ['view'],
-      users: [],
-      ai: [],
-    }
-  },
-  {
-    id: 'Gerencia',
-    permissions: [],
-    views: ['dashboard', 'accounting', 'profile'],
-    access: {
-      dashboard: ['view', 'export'],
-      billing: ['view', 'export'],
-      inventory: ['view', 'export'],
-      accounting: ['view', 'export'],
-      'third-parties': ['view'],
-      users: [],
-      ai: ['view'],
-    }
-  },
-  {
-    id: 'Visor',
-    permissions: [],
-    views: ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile'],
-    access: {
-      dashboard: ['view', 'export'],
-      billing: ['view', 'export'],
-      inventory: ['view', 'export'],
-      accounting: ['view', 'export'],
-      'third-parties': ['view', 'export'],
-      users: [],
-      ai: [],
-    }
-  }
-];
-
-export const ROLE_OPTIONS = ROLE_DEFINITIONS.map(r => r.id);
-export const ROLE_PERMISSIONS = Object.fromEntries(ROLE_DEFINITIONS.map(r => [r.id, r.permissions]));
-export const ROLE_VIEWS = Object.fromEntries(ROLE_DEFINITIONS.map(r => [r.id, r.views]));
-export const DEFAULT_ROLE_ACCESS = Object.fromEntries(ROLE_DEFINITIONS.map(r => [r.id, r.access]));
+// RBAC Constants moved to rbacStore.ts
 
 
 export const DEFAULT_TENANT_SECURITY_SETTINGS = {
@@ -893,19 +778,9 @@ function createInitialState(): AppState {
   return JSON.parse(JSON.stringify(seedState as any)) as AppState
 }
 
-function getMembershipsForUser(userId: string, sourceState: AppState) {
-  return sourceState.memberships.filter((membership) => membership.userId === userId)
-}
-
 function getAccessibleTenantsForUser(userId: string, sourceState: AppState) {
-  const tenantIds = new Set(getMembershipsForUser(userId, sourceState).map((item: Membership) => item.tenantId))
+  const tenantIds = new Set(getMembershipsForUser(userId, sourceState.memberships).map((item) => item.tenantId))
   return sourceState.tenants.filter((tenant) => tenantIds.has(tenant.id))
-}
-
-function getMembershipForTenant(userId: string, tenantId: string, sourceState: AppState) {
-  return sourceState.memberships.find(
-    (membership: Membership) => membership.userId === userId && membership.tenantId === tenantId,
-  )
 }
 
 function getVisibleViewsForState(sourceState: AppState): string[] {
@@ -915,8 +790,8 @@ function getVisibleViewsForState(sourceState: AppState): string[] {
     return ['dashboard']
   }
 
-  const membership = getMembershipForTenant(currentUserId, sourceState.activeTenantId || '', sourceState)
-  return membership ? ROLE_VIEWS[membership.role] || ['dashboard'] : ['dashboard']
+  const membership = getMembershipForTenant(currentUserId, sourceState.activeTenantId || '', sourceState.memberships)
+  return getVisibleViewsForRole(membership?.role)
 }
 
 function ensureActiveTenantAccess(targetState: AppState) {
@@ -1042,23 +917,7 @@ function inferSessionDeviceMetadata(session: { browser?: string; os?: string; de
   }
 }
 
-function normalizeRoleAccess(sourceRoleAccess: Record<string, Record<string, string[]>> = {}) {
-  const normalized = JSON.parse(JSON.stringify(DEFAULT_ROLE_ACCESS))
-
-  ROLE_OPTIONS.forEach((role) => {
-    normalized[role] = {
-      ...normalized[role],
-      ...sourceRoleAccess[role],
-    }
-
-    PERMISSION_MODULES.forEach((module) => {
-      const permissions = normalized[role][module.id]
-      normalized[role][module.id] = Array.isArray(permissions) ? [...new Set(permissions)] : []
-    })
-  })
-
-  return normalized
-}
+// normalizeRoleAccess now imported from rbacStore
 
 function normalizeSecurityProfiles(sourceProfiles: UserSecurityProfile[], baseProfiles: UserSecurityProfile[], users: User[]) {
   const profiles = Array.isArray(sourceProfiles) ? sourceProfiles : baseProfiles
@@ -1271,16 +1130,7 @@ function sanitizeAuditDescription(value: unknown) {
     .replaceAll(/authorization\s*[:=]\s*\S+/gi, 'authorization=[REDACTED]')
 }
 
-function hasEqualOrHigherPermissions(targetRole: string, sourceRole: string) {
-  const sourcePermissions = new Set(ROLE_PERMISSIONS[sourceRole] || [])
-  const targetPermissions = new Set(ROLE_PERMISSIONS[targetRole] || [])
-  for (const permission of sourcePermissions) {
-    if (!targetPermissions.has(permission)) {
-      return false
-    }
-  }
-  return true
-}
+// hasEqualOrHigherPermissions moved to rbacStore.ts
 
 function getClientIpForUser(userId: string): string {
   return generateSimulatedIp(userId)
@@ -1651,18 +1501,8 @@ export const useStateStore = defineStore('state', {
       return this.activeMembership ? ROLE_PERMISSIONS[this.activeMembership.role] || [] : []
     },
     visibleViews(): string[] {
-      const views = this.activeMembership ? [...(ROLE_VIEWS[this.activeMembership.role] || ['dashboard'])] : ['dashboard']
-      
-      // Always include profile and other essential views for authenticated users
-      if (!views.includes('profile')) views.push('profile')
-      
-      if (this.currentUser?.isSystemOwner) {
-        // Super Admins ALWAYS get the Admin Console regardless of their role in the current tenant
-        if (!views.includes('admin-console')) {
-          views.push('admin-console')
-        }
-      }
-      return [...new Set(views)]
+      // Use centralized RBAC helper that handles profile + admin-console for system owners
+      return buildVisibleViews(this.activeMembership?.role, this.currentUser?.isSystemOwner)
     },
     tenantThirdParties(): ThirdParty[] {
       return getTenantItems(this.thirdParties, this.activeTenantId)
