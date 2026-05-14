@@ -2,9 +2,7 @@
   /* === SAAS ENTERPRISE PALETTE - Slate/Emerald === */
   --primary: #10B981;
   --primary-hover: #059669;
-  --success: #10B981;
-  --warning: #F59E0B;
-  --error: #EF4444;
+  /* Nota: --success, --warning, --error eliminados - usar Tailwind: text-emerald-500, text-amber-500, text-rose-500 */
   --radius-lg: 16px;
   --radius-md: 12px;
   --radius-sm: 8px;
@@ -36,13 +34,7 @@
   --shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
   --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.5);
   --page-background: #0B0F1A;
-  
-  /* Emeral Accent Variants */
-  --emerald-50: rgba(16, 185, 129, 0.05);
-  --emerald-100: rgba(16, 185, 129, 0.10);
-  --emerald-200: rgba(16, 185, 129, 0.20);
-  --emerald-500: #10B981;
-  --emerald-600: #059669;
+  /* Nota: --emerald-* eliminados - usar Tailwind: bg-emerald-500, bg-emerald-500/10, etc. */
 }
 
 html.light {
