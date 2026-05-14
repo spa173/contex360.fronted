@@ -1,10 +1,11 @@
 <script setup>
 import { onMounted, onUnmounted, ref } from 'vue'
 import { useAuthStore } from '../stores/authStore'
+import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
 import { useToasts } from '../composables/useToasts'
 import AppSidebar from './layout/AppSidebar.vue'
-import AppTopbar from './layout/AppTopbar.vue'
+import TopNavigation from './layout/TopNavigation.vue'
 import HeroSummary from './layout/HeroSummary.vue'
 import AccountingView from './views/AccountingView.vue'
 import AiView from './views/AiView.vue'
@@ -23,6 +24,7 @@ import ProfileView from './views/ProfileView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
+const themeStore = useThemeStore()
 const { pushToast } = useToasts()
 const isSidebarOpen = ref(false)
 const systemStats = ref(null)
@@ -117,11 +119,20 @@ onUnmounted(() => {
     />
 
     <main class="main main-panel">
-      <AppTopbar
+      <TopNavigation
+        :user="store.currentUser"
+        :active-tenant="store.activeTenant"
+        :accessible-tenants="store.accessibleTenants"
+        :active-membership="store.activeMembership"
+        :active-view="store.activeView"
         :sidebar-open="isSidebarOpen"
+        :is-dark="themeStore.isDark"
+        :can-switch-tenant="store.accessibleTenants.length > 1 && store.isAdmin"
         @logout="handleLogout"
         @tenant-change="handleTenantChange"
         @toggle-sidebar="handleSidebarToggle"
+        @toggle-theme="themeStore.toggleTheme"
+        @navigate="handleNavigate"
         @open-admin-panel="emit('open-admin-panel')"
         @exit-erp="emit('exit-erp')"
       />

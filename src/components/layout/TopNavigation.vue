@@ -1,27 +1,26 @@
 <script setup>
 import { computed } from 'vue'
-import { useAuthStore } from '../../stores/authStore'
-import { useStateStore } from '../../stores/stateStore'
-import { useThemeStore } from '../../stores/themeStore'
 import { viewLabels } from '../../utils/ui'
 
-const store = useAuthStore()
-const stateStore = useStateStore()
-const themeStore = useThemeStore()
+const props = defineProps({
+  user: { type: Object, default: null },
+  activeTenant: { type: Object, default: null },
+  accessibleTenants: { type: Array, default: () => [] },
+  activeMembership: { type: Object, default: null },
+  activeView: { type: String, default: 'dashboard' },
+  sidebarOpen: { type: Boolean, default: false },
+  isDark: { type: Boolean, default: false },
+  canSwitchTenant: { type: Boolean, default: false }
+})
 
-const canSwitchTenant = computed(
-  () => store.accessibleTenants.length > 1 && stateStore.can('manage_users'),
-)
-
-const props = defineProps({ sidebarOpen: { type: Boolean, default: false } })
-const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'exit-erp'])
+const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'toggle-theme', 'navigate'])
 
 const sessionPill = computed(
-  () => `${store.currentUser?.name || 'Sin sesion'} - ${store.currentUser?.title || '-'}`,
+  () => `${props.user?.name || 'Sin sesion'} - ${props.user?.title || '-'}`,
 )
 
 const rolePill = computed(
-  () => `${store.activeMembership?.role || 'Sin rol'} - ${store.activeTenant?.city || '-'}`,
+  () => `${props.activeMembership?.role || 'Sin rol'} - ${props.activeTenant?.city || '-'}`,
 )
 
 const viewSubtitles = {
@@ -34,8 +33,8 @@ const viewSubtitles = {
   ai: 'OCR, extraccion y sugerencias contables',
 }
 
-const pageTitle = computed(() => viewLabels[store.activeView] || 'Dashboard')
-const pageSubtitle = computed(() => viewSubtitles[store.activeView] || 'Operacion del sistema')
+const pageTitle = computed(() => viewLabels[props.activeView] || 'Dashboard')
+const pageSubtitle = computed(() => viewSubtitles[props.activeView] || 'Operacion del sistema')
 
 function handleTenantChange(event) {
   emit('tenant-change', event.target.value)
@@ -62,12 +61,12 @@ function handleTenantChange(event) {
       <label class="topbar-select">
         <span class="sr-only">Empresa activa</span>
         <select
-          :disabled="!canSwitchTenant"
-          :title="!canSwitchTenant ? 'Tu rol no permite cambiar de empresa' : 'Cambiar empresa activa'"
-          :value="store.activeTenantId"
+          :disabled="!props.canSwitchTenant"
+          :title="!props.canSwitchTenant ? 'Tu rol no permite cambiar de empresa' : 'Cambiar empresa activa'"
+          :value="props.activeTenant?.id"
           @change="handleTenantChange"
         >
-          <option v-for="tenant in store.accessibleTenants" :key="tenant.id" :value="tenant.id">
+          <option v-for="tenant in props.accessibleTenants" :key="tenant.id" :value="tenant.id">
             {{ tenant.name }}
           </option>
         </select>
@@ -77,21 +76,23 @@ function handleTenantChange(event) {
       <span class="badge badge-muted">{{ sessionPill }}</span>
 
       <button
-        v-if="stateStore.currentUser?.isSystemOwner"
+        v-if="props.user?.isSystemOwner"
         class="btn-root"
         type="button"
         title="Ir al Panel de Administracion SaaS"
         @click="emit('open-admin-panel')"
       >⚙ Panel Admin</button>
-      <button class="btn-outline" type="button" @click="store.setActiveView('two-factor')" title="Configurar 2FA">🔐 2FA</button>
+      
+      <button class="btn-outline" type="button" @click="emit('navigate', 'two-factor')" title="Configurar 2FA">🔐 2FA</button>
+      
       <button
         class="theme-toggle-button"
         type="button"
-        :title="themeStore.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-        :aria-label="themeStore.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
-        @click="themeStore.toggleTheme()"
+        :title="props.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        :aria-label="props.isDark ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'"
+        @click="emit('toggle-theme')"
       >
-        <svg v-if="themeStore.isDark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <svg v-if="props.isDark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <circle cx="12" cy="12" r="4.5" stroke="currentColor" stroke-width="1.8"/>
           <path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
         </svg>
@@ -99,6 +100,7 @@ function handleTenantChange(event) {
           <path d="M21 12.79A9 9 0 1 1 11.21 3a7 7 0 0 0 9.79 9.79Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </button>
+      
       <button class="btn-primary" type="button" @click="emit('logout')">Cerrar sesion</button>
     </div>
   </header>
