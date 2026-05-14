@@ -46,7 +46,7 @@ const permissionNote = computed(() =>
 )
 
 const sortedThirdParties = computed(() =>
-  [...store.tenantThirdParties].sort((left, right) => left.name.localeCompare(right.name, 'es')),
+  [...(store.tenantThirdParties || [])].sort((left, right) => (left.name || '').localeCompare(right.name || '', 'es')),
 )
 
 function handleSubmit() {

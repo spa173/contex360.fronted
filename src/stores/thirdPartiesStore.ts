@@ -31,8 +31,11 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     if (!activeTenantId.value) return
     try {
       const data = await businessApi.getThirdParties()
-      thirdParties.value = data
-    } catch (error) { console.error(error) }
+      thirdParties.value = Array.isArray(data) ? data : []
+    } catch (error) { 
+      console.error('Error fetching third parties:', error)
+      thirdParties.value = []
+    }
   }
 
   // Sync back to root
