@@ -15,9 +15,13 @@ const props = defineProps({
 
 const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'toggle-theme', 'navigate'])
 
-const isOwner = computed(() => 
-  props.activeMembership?.role === 'Administrador' || props.user?.isSystemOwner
+const isOwner = computed(() =>
+  props.activeMembership?.role === 'owner' ||
+  props.activeMembership?.role === 'Administrador' ||
+  props.user?.isSystemOwner
 )
+
+const isSystemActive = computed(() => !!props.activeTenant?.id)
 
 const viewSubtitles = {
   dashboard: 'Control central y métricas clave',
@@ -88,6 +92,10 @@ function handleTenantChange(event) {
         
         <div v-if="isOwner" class="h-6 px-2 bg-[#F97316]/20 border border-[#F97316]/30 rounded-full flex items-center">
           <span class="text-[8px] font-black text-[#F97316] uppercase tracking-tighter">Owner</span>
+        </div>
+        <div v-if="isSystemActive" class="h-6 px-2 bg-emerald-500/15 border border-emerald-500/25 rounded-full flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span class="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Sistema activo</span>
         </div>
 
         <button @click="emit('logout')" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-rose-500 transition-all group">

@@ -88,8 +88,11 @@ function handleLogout() {
           <div class="topbar-page-sub">Panel de administración SaaS — Contex360</div>
         </div>
         <div class="root-topbar-right">
-          <span class="root-badge">🔑 Root</span>
-          <span class="root-badge green">Sistema activo</span>
+          <span class="root-badge">⚡ Super Admin</span>
+          <span class="root-badge green">
+            <span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;animation:pulse 2s infinite"></span>
+            Sistema activo
+          </span>
         </div>
       </header>
 
@@ -179,17 +182,20 @@ function handleLogout() {
 
 .root-topbar {
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 28px; border-bottom: 1px solid var(--border);
-  background: var(--surface); flex-shrink: 0;
+  padding: 16px 28px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  background: #131926; flex-shrink: 0;
 }
-.topbar-page-title { font-size: 1.1rem; font-weight: 700; color: var(--text); }
-.topbar-page-sub { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+.topbar-page-title { font-size: 1.1rem; font-weight: 700; color: #ffffff; }
+.topbar-page-sub { font-size: 0.78rem; color: #64748b; margin-top: 2px; }
 .root-topbar-right { display: flex; gap: 8px; align-items: center; }
 .root-badge {
   padding: 4px 12px; border-radius: 999px; font-size: 0.75rem; font-weight: 600;
-  background: rgba(59,130,246,0.12); color: #3b82f6; border: 1px solid rgba(59,130,246,0.25);
+  background: rgba(249,115,22,0.12); color: #f97316; border: 1px solid rgba(249,115,22,0.25);
 }
-.root-badge.green { background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.25); }
+.root-badge.green {
+  display: flex; align-items: center; gap: 5px;
+  background: rgba(16,185,129,0.12); color: #10b981; border-color: rgba(16,185,129,0.25);
+}
 
 .root-content { flex: 1; padding: 28px; overflow-y: auto; }
 
