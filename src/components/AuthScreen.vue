@@ -3,6 +3,14 @@ import { computed, ref } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
+import { 
+  ShieldCheck, 
+  Lock, 
+  Globe, 
+  HelpCircle,
+  Mail,
+  ArrowRight
+} from 'lucide-vue-next'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
@@ -106,7 +114,7 @@ const toggleRecoveryHelp = () => {
 <template>
   <div class="login-wrapper">
     <div class="login-split">
-      <!-- PANEL IZQUIERDO: Branding & Info (Visible solo en LG+) -->
+      <!-- PANEL IZQUIERDO: Branding & Impacto Visual -->
       <aside class="side-info">
         <div class="info-inner">
           <header class="brand-header">
@@ -119,7 +127,7 @@ const toggleRecoveryHelp = () => {
 
           <div class="hero-text">
             <span class="eyebrow">Solución ERP de Próxima Generación</span>
-            <h1>Plataforma Integral de <br/><span>Gestión Empresarial</span></h1>
+            <h1 class="main-title">Plataforma Integral de <br/><span>Gestión Empresarial</span></h1>
             <p class="description">
               Controla tus finanzas, inventarios y cumplimiento tributario con una suite diseñada para la escala y la precisión.
             </p>
@@ -135,6 +143,23 @@ const toggleRecoveryHelp = () => {
               <span>{{ feat }}</span>
             </li>
           </ul>
+
+          <div class="metrics-row">
+            <div class="metric-item">
+              <span class="m-val">+500</span>
+              <span class="m-label">Empresas</span>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-item">
+              <span class="m-val">99.9%</span>
+              <span class="m-label">Uptime</span>
+            </div>
+            <div class="metric-divider"></div>
+            <div class="metric-item">
+              <span class="m-val">24/7</span>
+              <span class="m-label">Soporte</span>
+            </div>
+          </div>
         </div>
         
         <footer class="side-footer">
@@ -142,10 +167,19 @@ const toggleRecoveryHelp = () => {
         </footer>
       </aside>
 
-      <!-- PANEL DERECHO: Formulario (Blanco siempre) -->
+      <!-- PANEL DERECHO: Formulario & Acceso -->
       <section class="side-form">
+        <!-- Top Help Header -->
+        <header class="top-help">
+          <div class="help-box">
+            <HelpCircle class="icon-s" />
+            <span>¿Necesitas ayuda?</span>
+            <button class="ghost-link">Contactar soporte</button>
+          </div>
+        </header>
+
         <div class="form-box">
-          <!-- Mobile Brand (Solo visible en pantallas pequeñas) -->
+          <!-- Mobile Brand -->
           <div class="mobile-logo lg-hidden">
             <div class="logo-square small">C</div>
             <span class="bold">Contex360</span>
@@ -180,13 +214,32 @@ const toggleRecoveryHelp = () => {
               <p>Ingresa tus credenciales para acceder al sistema</p>
             </div>
 
+            <!-- Social Login Section -->
+            <div class="social-login">
+              <button class="social-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" />
+                <span>Google</span>
+              </button>
+              <button class="social-btn">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/4/44/Microsoft_logo.svg" alt="Microsoft" />
+                <span>Microsoft</span>
+              </button>
+            </div>
+
+            <div class="divider-text">
+              <span>o continúa con</span>
+            </div>
+
             <div v-if="errorMessage" class="msg error">{{ errorMessage }}</div>
             <div v-if="statusMessage" class="msg success">{{ statusMessage }}</div>
 
             <form @submit.prevent="handleSubmit" class="vertical-form">
               <div class="field-group">
                 <label>Correo electrónico</label>
-                <input v-model="email" type="email" placeholder="usuario@empresa.com" required />
+                <div class="input-with-icon">
+                  <Mail class="input-icon" />
+                  <input v-model="email" type="email" placeholder="usuario@empresa.com" required />
+                </div>
               </div>
 
               <div class="field-group">
@@ -216,7 +269,8 @@ const toggleRecoveryHelp = () => {
               </div>
 
               <button type="submit" class="primary-btn" :disabled="isLoading">
-                {{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}
+                <span>{{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}</span>
+                <ArrowRight v-if="!isLoading" class="btn-icon" />
               </button>
             </form>
 
@@ -225,10 +279,18 @@ const toggleRecoveryHelp = () => {
             </div>
 
             <div class="security-badges">
-              <span>SSL</span>
-              <span>AES-256</span>
-              <span>ISO 27001</span>
-              <span>SOC 2</span>
+              <div class="badge-item">
+                <ShieldCheck class="badge-icon" />
+                <span>ISO 27001</span>
+              </div>
+              <div class="badge-item">
+                <Lock class="badge-icon" />
+                <span>SOC 2</span>
+              </div>
+              <div class="badge-item">
+                <Globe class="badge-icon" />
+                <span>Enterprise</span>
+              </div>
             </div>
           </template>
         </div>
@@ -276,13 +338,13 @@ const toggleRecoveryHelp = () => {
 
 /* --- PANEL IZQUIERDO (ASIDE) --- */
 .side-info {
-  flex: 1;
+  flex: 1.1;
   background-color: #0B0F1A;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  padding: 60px 80px;
+  padding: 60px 100px;
   position: relative;
 }
 
@@ -293,14 +355,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .info-inner {
-  max-width: 520px;
+  max-width: 600px;
 }
 
 .brand-header {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 64px;
+  margin-bottom: 80px;
 }
 
 .logo-square {
@@ -340,40 +402,41 @@ const toggleRecoveryHelp = () => {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.2em;
-  margin-bottom: 20px;
+  margin-bottom: 24px;
   display: block;
 }
 
-.hero-text h1 {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 24px;
+.main-title {
+  font-size: 5rem;
+  font-weight: 900;
+  line-height: 1.05;
+  margin-bottom: 28px;
+  letter-spacing: -0.05em;
   color: #ffffff !important;
 }
 
-.hero-text h1 span {
+.main-title span {
   color: #10B981;
 }
 
 .description {
-  font-size: 1.125rem;
+  font-size: 1.25rem;
   color: #94a3b8;
   line-height: 1.6;
-  margin-bottom: 48px;
+  margin-bottom: 56px;
 }
 
 .features {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: 0 0 64px 0;
 }
 
 .features li {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
   color: #cbd5e1;
   font-weight: 500;
 }
@@ -381,12 +444,12 @@ const toggleRecoveryHelp = () => {
 .check-circle {
   width: 24px;
   height: 24px;
-  background-color: rgba(16, 185, 129, 0.15);
+  background-color: #10B981;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #10B981;
+  color: #ffffff;
   flex-shrink: 0;
 }
 
@@ -395,27 +458,78 @@ const toggleRecoveryHelp = () => {
   height: 14px;
 }
 
+.metrics-row {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+}
+
+.metric-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.m-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.m-label {
+  font-size: 0.85rem;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.metric-divider {
+  width: 1px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
 .side-footer {
   position: absolute;
   bottom: 40px;
-  left: 80px;
+  left: 100px;
   font-size: 0.8rem;
   color: #475569;
 }
 
 /* --- PANEL DERECHO (FORM) --- */
 .side-form {
-  flex: 1;
+  flex: 0.9;
   background-color: #ffffff;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 40px;
+  position: relative;
+}
+
+.top-help {
+  position: absolute;
+  top: 32px;
+  right: 40px;
+}
+
+.help-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  color: #64748b;
+}
+
+.icon-s {
+  width: 16px;
+  height: 16px;
 }
 
 .form-box {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
 }
 
 .mobile-logo {
@@ -443,33 +557,93 @@ const toggleRecoveryHelp = () => {
 }
 
 .header-group {
-  margin-bottom: 32px;
+  margin-bottom: 40px;
 }
 
 .header-group h2 {
   color: #0f172a !important;
-  font-size: 2.25rem;
+  font-size: 2.5rem;
   font-weight: 800;
   letter-spacing: -0.04em;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .header-group p {
   color: #64748b;
-  font-size: 1rem;
+  font-size: 1.1rem;
   margin: 0;
+}
+
+/* Social Login */
+.social-login {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  height: 52px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #1e293b;
+  transition: all 0.2s;
+}
+
+.social-btn:hover {
+  background-color: #f1f5f9;
+  border-color: #cbd5e1;
+}
+
+.social-btn img {
+  width: 20px;
+  height: 20px;
+}
+
+.divider-text {
+  position: relative;
+  text-align: center;
+  margin: 24px 0;
+}
+
+.divider-text::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background-color: #e2e8f0;
+}
+
+.divider-text span {
+  position: relative;
+  background-color: #ffffff;
+  padding: 0 16px;
+  font-size: 0.85rem;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 500;
 }
 
 .vertical-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 .field-group {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
 }
 
 .label-split {
@@ -479,16 +653,30 @@ const toggleRecoveryHelp = () => {
 }
 
 .field-group label {
-  color: #475569 !important;
-  font-size: 0.875rem;
+  color: #1e293b !important;
+  font-size: 0.95rem;
   font-weight: 600;
+}
+
+.input-with-icon {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 18px;
+  height: 18px;
+  color: #94a3b8;
 }
 
 .field-group input {
   width: 100%;
-  height: 48px !important;
+  height: 56px !important;
   border: 1px solid #e2e8f0 !important;
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0 16px;
   font-size: 1rem;
   color: #0f172a !important;
@@ -496,10 +684,14 @@ const toggleRecoveryHelp = () => {
   box-sizing: border-box;
 }
 
+.input-with-icon input {
+  padding-left: 48px;
+}
+
 .field-group input:focus {
   border-color: #0f172a !important;
   outline: none;
-  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.05);
+  box-shadow: 0 0 0 4px rgba(15, 23, 42, 0.04);
 }
 
 .input-relative {
@@ -508,20 +700,21 @@ const toggleRecoveryHelp = () => {
 
 .eye-toggle {
   position: absolute;
-  right: 12px;
+  right: 16px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
   opacity: 0.4;
+  display: flex;
 }
 
 .totp-container {
   background-color: #f8fafc;
   padding: 24px;
-  border-radius: 14px;
+  border-radius: 16px;
   border: 1px solid #e2e8f0;
   display: flex;
   flex-direction: column;
@@ -549,55 +742,62 @@ const toggleRecoveryHelp = () => {
 .custom-checkbox {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   cursor: pointer;
   color: #64748b;
-  font-size: 0.875rem;
+  font-size: 0.95rem;
 }
 
 .custom-checkbox input {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   cursor: pointer;
+  border-radius: 6px;
 }
 
 .primary-btn {
-  background-color: #0f172a;
+  background-color: #2D3748;
   color: #ffffff;
   border: none;
-  border-radius: 10px;
+  border-radius: 8px;
   width: 100%;
-  height: 48px;
-  font-weight: 600;
-  font-size: 1rem;
+  height: 56px;
+  font-weight: 700;
+  font-size: 1.1rem;
   cursor: pointer;
-  transition: transform 0.1s, background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  transition: all 0.2s;
 }
 
 .primary-btn:hover {
-  background-color: #1e293b;
+  background-color: #1a202c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(45, 55, 72, 0.2);
 }
 
 .primary-btn:active {
-  transform: scale(0.98);
+  transform: translateY(0);
 }
 
 .primary-btn:disabled {
   background-color: #cbd5e1;
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-.primary-btn.small {
-  height: 40px;
-  width: auto;
-  padding: 0 24px;
+.btn-icon {
+  width: 20px;
+  height: 20px;
 }
 
 .form-footer-action {
-  margin-top: 32px;
+  margin-top: 40px;
   text-align: center;
   color: #64748b;
-  font-size: 0.875rem;
+  font-size: 1rem;
 }
 
 .ghost-link {
@@ -607,7 +807,7 @@ const toggleRecoveryHelp = () => {
   font-weight: 600;
   cursor: pointer;
   padding: 0;
-  font-size: 0.875rem;
+  font-size: 0.9rem;
 }
 
 .ghost-link.bold {
@@ -619,11 +819,11 @@ const toggleRecoveryHelp = () => {
 }
 
 .msg {
-  padding: 12px 16px;
-  border-radius: 10px;
-  font-size: 0.875rem;
+  padding: 16px 20px;
+  border-radius: 12px;
+  font-size: 1rem;
   font-weight: 500;
-  margin-bottom: 24px;
+  margin-bottom: 32px;
 }
 
 .msg.error {
@@ -639,19 +839,30 @@ const toggleRecoveryHelp = () => {
 }
 
 .security-badges {
-  margin-top: 48px;
-  padding-top: 32px;
+  margin-top: 64px;
+  padding-top: 40px;
   border-top: 1px solid #f1f5f9;
   display: flex;
   justify-content: center;
-  gap: 24px;
-  opacity: 0.3;
+  gap: 32px;
 }
 
-.security-badges span {
-  font-size: 0.7rem;
-  font-weight: 800;
-  color: #0f172a;
+.badge-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #94a3b8;
+}
+
+.badge-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.badge-item span {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
   letter-spacing: 0.05em;
 }
 
@@ -660,7 +871,7 @@ const toggleRecoveryHelp = () => {
   position: fixed;
   inset: 0;
   background-color: rgba(15, 23, 42, 0.7);
-  backdrop-filter: blur(4px);
+  backdrop-filter: blur(8px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -671,14 +882,14 @@ const toggleRecoveryHelp = () => {
 .modal-card {
   background-color: #ffffff;
   width: 100%;
-  max-width: 600px;
-  border-radius: 20px;
+  max-width: 640px;
+  border-radius: 24px;
   overflow: hidden;
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
 }
 
 .modal-header {
-  padding: 24px 32px;
+  padding: 28px 36px;
   border-bottom: 1px solid #f1f5f9;
   display: flex;
   justify-content: space-between;
@@ -688,29 +899,31 @@ const toggleRecoveryHelp = () => {
 .modal-header h3 {
   margin: 0;
   color: #0f172a;
-  font-size: 1.25rem;
-  font-weight: 700;
+  font-size: 1.5rem;
+  font-weight: 800;
 }
 
 .close-btn {
   background: none;
   border: none;
-  font-size: 2rem;
+  font-size: 2.5rem;
   line-height: 1;
   color: #64748b;
   cursor: pointer;
 }
 
 .modal-body {
-  padding: 32px;
+  padding: 40px;
   color: #475569;
-  line-height: 1.6;
+  line-height: 1.7;
+  font-size: 1.1rem;
 }
 
 .modal-footer {
-  padding: 20px 32px;
+  padding: 24px 36px;
   border-top: 1px solid #f1f5f9;
   display: flex;
   justify-content: flex-end;
 }
 </style>
+
