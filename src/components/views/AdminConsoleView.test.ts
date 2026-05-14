@@ -46,18 +46,20 @@ describe('AdminConsoleView', () => {
     })
 
     await flushPromises()
-    expect(wrapper.text()).toContain('Consola de Administracion')
-    expect(wrapper.text()).toContain('Empresas (Tenants)')
+    expect(wrapper.text()).toContain('Panel Administrador')
+    expect(wrapper.text()).toContain('SaaS Admin')
   })
 
-  it('has tab buttons', async () => {
+  it('has sidebar menu items', async () => {
     const wrapper = mount(AdminConsoleView, {
       props: { isActive: true },
     })
 
     await flushPromises()
-    expect(wrapper.text()).toContain('Usuarios Globales')
-    expect(wrapper.text()).toContain('Logs de Auditoria')
+    expect(wrapper.text()).toContain('Dashboard SaaS')
+    expect(wrapper.text()).toContain('Empresas')
+    expect(wrapper.text()).toContain('Leads / Demos')
+    expect(wrapper.text()).toContain('Logs Auditoria')
     expect(wrapper.text()).toContain('Cumplimiento ISO')
   })
 })

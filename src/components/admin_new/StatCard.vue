@@ -17,7 +17,7 @@
 defineProps({
   title: String,
   value: [String, Number],
-  icon: Object,
+  icon: [Object, Function],
   iconColor: String,
   iconBg: String
 })

@@ -6,14 +6,14 @@ import { formatDate } from '../../utils/ui'
 import TenantSettingsView from '../root/TenantSettingsView.vue'
 
 // Nuevos componentes del rediseño
-import Sidebar from './admin_new/Sidebar.vue'
-import Dashboard from './admin_new/Dashboard.vue'
-import EmpresasTable from './admin_new/EmpresasTable.vue'
-import UsersTable from './admin_new/UsersTable.vue'
-import LeadsTable from './admin_new/LeadsTable.vue'
-import LogsTable from './admin_new/LogsTable.vue'
-import ComplianceView from './admin_new/ComplianceView.vue'
-import BreachView from './admin_new/BreachView.vue'
+import Sidebar from '../admin_new/Sidebar.vue'
+import Dashboard from '../admin_new/Dashboard.vue'
+import EmpresasTable from '../admin_new/EmpresasTable.vue'
+import UsersTable from '../admin_new/UsersTable.vue'
+import LeadsTable from '../admin_new/LeadsTable.vue'
+import LogsTable from '../admin_new/LogsTable.vue'
+import ComplianceView from '../admin_new/ComplianceView.vue'
+import BreachView from '../admin_new/BreachView.vue'
 
 defineProps({
   isActive: { type: Boolean, default: false },
@@ -107,7 +107,6 @@ const convertToCustomer = async (id) => {
   if (!confirm('¿Convertir esta solicitud en cliente? Esto creará una empresa y un usuario administrador, y enviará credenciales por correo electrónico.')) return
   try {
     const result = await businessApi.convertToCustomer(id)
-    console.log('Conversion result:', result)
     
     // Update local list
     const fresh = await businessApi.getDemoRequests()
