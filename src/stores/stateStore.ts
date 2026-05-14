@@ -91,7 +91,7 @@ export const useStateStore = defineStore('state', {
     async fetchBusinessData() {
       if (!this.activeTenantId || !this.session.currentUserId) return
       try {
-        const thirdParties = await businessApi.getThirdParties()
+        const thirdParties = await businessApi.getThirdParties(undefined, this.activeTenantId)
         this.thirdParties = Array.isArray(thirdParties) ? thirdParties : []
       } catch (error: any) { 
         this.thirdParties = []

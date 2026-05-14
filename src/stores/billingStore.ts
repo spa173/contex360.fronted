@@ -36,7 +36,7 @@ export const useBillingStore = defineStore('billing', () => {
   async function fetchInvoices() {
     if (!activeTenantId.value) return
     try {
-      const data = await businessApi.getInvoices()
+      const data = await businessApi.getInvoices(activeTenantId.value)
       invoices.value = Array.isArray(data) ? data : []
     } catch (error) { 
       console.error('Error fetching invoices:', error)

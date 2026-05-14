@@ -1,12 +1,16 @@
 import { getAuthToken } from './authApi'
 import { getApiBaseUrl } from './apiBase'
 
-async function request<T>(path: string, init: { method?: string; body?: unknown } = {}) {
+async function request<T>(path: string, init: { method?: string; body?: unknown; tenantId?: string | null } = {}) {
   const token = getAuthToken()
   const headers: Record<string, string> = {}
 
   if (token) {
     headers['authorization'] = `Bearer ${token}`
+  }
+
+  if (init.tenantId) {
+    headers['x-tenant-id'] = init.tenantId
   }
 
   if (init.body !== undefined) {
@@ -47,42 +51,42 @@ export const businessApi = {
   },
 
   // Third Parties
-  async getThirdParties(kind?: string) {
+  async getThirdParties(kind?: string, tenantId?: string | null) {
     const query = kind ? `?kind=${kind}` : ''
-    return request<any[]>(`/third-parties${query}`)
+    return request<any[]>(`/third-parties${query}`, { tenantId })
   },
-  async createThirdParty(data: any) {
-    return request<any>('/third-parties', { method: 'POST', body: data })
+  async createThirdParty(data: any, tenantId?: string | null) {
+    return request<any>('/third-parties', { method: 'POST', body: data, tenantId })
   },
 
   // Invoices
-  async getInvoices() {
-    return request<any[]>('/invoices')
+  async getInvoices(tenantId?: string | null) {
+    return request<any[]>('/invoices', { tenantId })
   },
-  async createInvoice(data: any) {
-    return request<any>('/invoices', { method: 'POST', body: data })
+  async createInvoice(data: any, tenantId?: string | null) {
+    return request<any>('/invoices', { method: 'POST', body: data, tenantId })
   },
 
   // Products
-  async getProducts() {
-    return request<any[]>('/products')
+  async getProducts(tenantId?: string | null) {
+    return request<any[]>('/products', { tenantId })
   },
 
   // Inventory
-  async getMovements(productId?: string) {
+  async getMovements(productId?: string, tenantId?: string | null) {
     const query = productId ? `?productId=${productId}` : ''
-    return request<any[]>(`/inventory/movements${query}`)
+    return request<any[]>(`/inventory/movements${query}`, { tenantId })
   },
-  async createMovement(data: any) {
-    return request<any>('/inventory/movements', { method: 'POST', body: data })
+  async createMovement(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/movements', { method: 'POST', body: data, tenantId })
   },
 
   // Analytics
-  async getDashboardKpis() {
-    return request<any>('/analytics/dashboard')
+  async getDashboardKpis(tenantId?: string | null) {
+    return request<any>('/analytics/dashboard', { tenantId })
   },
-  async getSalesByMonth() {
-    return request<any[]>('/analytics/sales-by-month')
+  async getSalesByMonth(tenantId?: string | null) {
+    return request<any[]>('/analytics/sales-by-month', { tenantId })
   },
   getExportInvoicesUrl() {
     return `${getApiBaseUrl()}/analytics/export/invoices`
