@@ -18,6 +18,7 @@ export interface Product {
   productType: 'standard' | 'kit' | 'service'
   kitComponents?: { productId: string; quantity: number }[]
   unit: string
+  preferredSupplier?: string
   [key: string]: unknown
 }
 

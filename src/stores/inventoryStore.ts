@@ -61,12 +61,12 @@ export const useInventoryStore = defineStore('inventory', () => {
         preferredSupplier: p.preferredSupplier || 'Sin Proveedor'
       }))
 
-    return suggestions.reduce((acc: any, curr) => {
+    return suggestions.reduce((acc, curr) => {
       const sup = curr.preferredSupplier
       if (!acc[sup]) acc[sup] = []
       acc[sup].push(curr)
       return acc
-    }, {})
+    }, {} as Record<string, any[]>)
   })
 
   const abcAnalysis = computed(() => {
