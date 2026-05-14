@@ -1,7 +1,7 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { Menu } from 'lucide-vue-next'
+import { Menu, CheckCircle, Copy, AlertTriangle, Check } from 'lucide-vue-next'
 import { businessApi } from '../../services/businessApi'
 import { formatDate } from '../../utils/ui'
 import TenantSettingsView from '../root/TenantSettingsView.vue'
@@ -157,30 +157,33 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 
 <template>
   <section :class="['view-container', { active: isActive }]">
-    <div class="flex h-screen bg-[#020617] text-slate-300 font-sans selection:bg-blue-500/30">
+    <div class="flex h-screen bg-[#0B0F1A] text-slate-300 font-sans selection:bg-emerald-500/30">
       
-      <!-- Nuevo Sidebar -->
+      <!-- Sidebar SaaS -->
       <Sidebar :active-view="activeSubView" @view-change="(v) => activeSubView = v" />
 
       <!-- Contenido Principal -->
-      <main class="flex-1 overflow-auto bg-[#0a0a0f]">
+      <main class="flex-1 overflow-auto bg-[#0B0F1A]">
         <!-- Mobile Header -->
-        <header class="md:hidden flex items-center justify-between p-4 border-b border-white/5 bg-[#0f0f14]">
+        <header class="md:hidden flex items-center justify-between p-4 border-b border-slate-800/50 bg-[#131926]">
           <div class="flex items-center gap-2">
-            <div class="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center text-white font-bold text-xs">C</div>
-            <span class="text-sm font-bold text-white tracking-tight">Contex360</span>
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-tr from-emerald-600 to-emerald-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-emerald-500/20">C</div>
+            <span class="text-sm font-bold text-slate-50 tracking-tight">Contex360</span>
           </div>
-          <button class="p-2 text-slate-400">
+          <button class="p-2 text-slate-400 hover:text-emerald-400 transition-colors">
              <Menu class="w-6 h-6" />
           </button>
         </header>
 
-        <div v-if="loading" class="h-full flex flex-col items-center justify-center space-y-4">
-          <div class="w-12 h-12 border-4 border-blue-500/20 border-t-blue-500 rounded-full animate-spin"></div>
+        <div v-if="loading" class="h-full flex flex-col items-center justify-center space-y-6">
+          <div class="relative">
+            <div class="w-14 h-14 border-4 border-emerald-500/10 border-t-emerald-500 rounded-full animate-spin"></div>
+            <div class="absolute inset-0 w-14 h-14 border-4 border-emerald-500/5 rounded-full animate-ping opacity-20"></div>
+          </div>
           <p class="text-slate-500 font-medium animate-pulse">Sincronizando infraestructura...</p>
         </div>
 
-        <div v-else class="max-w-[1600px] mx-auto p-8 lg:p-12 animate-in fade-in duration-500">
+        <div v-else class="max-w-[1600px] mx-auto p-6 lg:p-10 animate-in fade-in duration-500">
           
           <!-- Vistas Dinámicas -->
           <Dashboard 
@@ -251,7 +254,9 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
       <div v-if="newCustomerCredentials" class="cred-overlay" @click.self="newCustomerCredentials = null">
         <div class="cred-modal" role="dialog" aria-modal="true">
           <div class="cred-header">
-            <span class="cred-icon">✅</span>
+            <div class="w-12 h-12 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+              <CheckCircle class="w-6 h-6 text-emerald-400" />
+            </div>
             <div>
               <h2 class="cred-title">Cliente creado exitosamente</h2>
               <p class="cred-subtitle">Guarda estas credenciales — también se enviaron al correo del cliente</p>
@@ -279,14 +284,20 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
               <div class="cred-value-group">
                 <code class="cred-code cred-code--password">{{ newCustomerCredentials.tempPassword }}</code>
                 <button class="copy-btn" @click="copyToClipboard(newCustomerCredentials.tempPassword)" title="Copiar contraseña">
-                  📋
+                  <Copy class="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <p class="cred-note">⚠️ El cliente deberá cambiar esta contraseña en su primer inicio de sesión.</p>
+            <p class="cred-note">
+              <AlertTriangle class="w-4 h-4 text-amber-400 flex-shrink-0" />
+              El cliente deberá cambiar esta contraseña en su primer inicio de sesión.
+            </p>
           </div>
           <div class="cred-footer">
-            <button class="cred-close-btn" @click="newCustomerCredentials = null">Entendido</button>
+            <button class="cred-close-btn" @click="newCustomerCredentials = null">
+              <Check class="w-4 h-4" />
+              Entendido
+            </button>
           </div>
         </div>
       </div>
@@ -323,89 +334,90 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 }
 
 .cred-modal {
-  background: #0f172a;
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 24px;
+  background: #131926;
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 20px;
   display: flex;
   flex-direction: column;
-  max-width: 500px;
+  max-width: 480px;
   overflow: hidden;
   width: 100%;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.6);
 }
 
 .cred-header {
-  align-items: flex-start;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  align-items: center;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
   display: flex;
   gap: 16px;
-  padding: 32px 32px 24px;
+  padding: 28px 28px 20px;
 }
 
-.cred-icon { font-size: 2rem; }
-
 .cred-title {
-  color: #fff;
-  font-size: 1.25rem;
+  color: #f8fafc;
+  font-size: 1.15rem;
   font-weight: 700;
   margin: 0 0 4px;
 }
 
 .cred-subtitle {
-  color: #94a3b8;
-  font-size: 0.85rem;
+  color: #64748b;
+  font-size: 0.8rem;
   margin: 0;
 }
 
 .cred-body {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  padding: 24px 32px;
+  gap: 10px;
+  padding: 20px 28px;
 }
 
 .cred-row {
   align-items: center;
-  border-radius: 12px;
+  border-radius: 10px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  padding: 12px 16px;
-  background: rgba(255,255,255,0.03);
+  padding: 10px 14px;
+  background: rgba(11, 15, 26, 0.6);
+  border: 1px solid rgba(148, 163, 184, 0.08);
 }
 
 .cred-row--highlight {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.2);
+  background: rgba(16, 185, 129, 0.08);
+  border: 1px solid rgba(16, 185, 129, 0.25);
 }
 
 .cred-label {
-  color: #94a3b8;
-  font-size: 0.8rem;
+  color: #64748b;
+  font-size: 0.75rem;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.06em;
+  font-weight: 600;
 }
 
 .cred-value {
-  color: #f1f5f9;
-  font-size: 0.95rem;
+  color: #e2e8f0;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
 .cred-code {
-  background: rgba(0,0,0,0.4);
-  border-radius: 8px;
-  color: #38bdf8;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 0.9rem;
-  padding: 4px 10px;
+  background: rgba(11, 15, 26, 0.8);
+  border-radius: 6px;
+  color: #10b981;
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+  font-size: 0.85rem;
+  padding: 4px 8px;
+  border: 1px solid rgba(16, 185, 129, 0.2);
 }
 
 .cred-code--password {
-  color: #10b981;
-  font-size: 1.1rem;
-  font-weight: 800;
-  letter-spacing: 0.1em;
+  color: #34d399;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .cred-value-group {
@@ -415,56 +427,69 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 }
 
 .copy-btn {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
   border-radius: 8px;
-  color: #fff;
+  color: #10b981;
   cursor: pointer;
   padding: 6px;
   transition: all 0.2s;
+  display: flex;
+  align-items: center;
 }
 
 .copy-btn:hover {
   background: rgba(16, 185, 129, 0.2);
   border-color: #10b981;
+  color: #34d399;
 }
 
 .cred-note {
-  color: #f59e0b;
-  font-size: 0.8rem;
-  margin-top: 12px;
+  color: #fbbf24;
+  font-size: 0.75rem;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(251, 191, 36, 0.08);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(251, 191, 36, 0.15);
+}
+
+.cred-footer {
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+  display: flex;
+  justify-content: flex-end;
+  padding: 20px 28px;
+}
+
+.cred-close-btn {
+  background: linear-gradient(to right, #059669, #10b981);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 10px 24px;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.cred-footer {
-  border-top: 1px solid rgba(255,255,255,0.06);
-  display: flex;
-  justify-content: flex-end;
-  padding: 24px 32px;
+.cred-close-btn:hover { 
+  transform: translateY(-1px); 
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.35); 
 }
-
-.cred-close-btn {
-  background: #10b981;
-  border: none;
-  border-radius: 12px;
-  color: #fff;
-  cursor: pointer;
-  font-size: 0.95rem;
-  font-weight: 600;
-  padding: 12px 32px;
-  transition: all 0.2s;
-}
-
-.cred-close-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); }
 
 /* Tenant Drawer Overlay */
 .tenant-drawer-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
   z-index: 1000;
   display: flex;
   justify-content: flex-end;
@@ -473,8 +498,8 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
 .tenant-drawer {
   width: min(850px, 100vw);
   height: 100%;
-  background: #0f172a;
-  border-left: 1px solid rgba(255,255,255,0.1);
+  background: #0B0F1A;
+  border-left: 1px solid rgba(148, 163, 184, 0.1);
   overflow-y: auto;
   padding: 0;
   animation: slide-in 0.3s ease-out;
