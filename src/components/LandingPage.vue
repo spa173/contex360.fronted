@@ -1,11 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import {
-  BarChart3, Package, Users, TrendingUp, ShieldCheck,
-  ArrowRight, CheckCircle, Star, Zap, Globe,
-  Building2, Receipt, Layers, Menu, X, Play,
-  FileText, Lock, Clock
-} from 'lucide-vue-next'
 
 const emit = defineEmits<{
   (e: 'login'): void
@@ -15,71 +9,7 @@ const emit = defineEmits<{
   (e: 'show-about'): void
 }>()
 
-const mobileMenuOpen = ref(false)
 const scrolled = ref(false)
-const activeFeature = ref(0)
-
-const features = [
-  {
-    icon: Receipt,
-    label: 'Facturación DIAN',
-    title: 'Facturación electrónica certificada',
-    desc: 'Emite facturas electrónicas válidas ante la DIAN en segundos. Validación automática, PDF y envío al cliente integrado.',
-    stat: '12.400+', statLabel: 'facturas emitidas',
-  },
-  {
-    icon: Package,
-    label: 'Inventario',
-    title: 'Control de inventario en tiempo real',
-    desc: 'Maneja múltiples bodegas, traslados entre sedes, alertas de stock mínimo y análisis ABC automático.',
-    stat: '99.8%', statLabel: 'precisión de stock',
-  },
-  {
-    icon: BarChart3,
-    label: 'Analítica',
-    title: 'Dashboard financiero inteligente',
-    desc: 'KPIs empresariales en tiempo real. Márgenes, flujo de caja, cuentas por cobrar y proyecciones automáticas.',
-    stat: '3.2Á—', statLabel: 'decisiones más rápidas',
-  },
-  {
-    icon: Users,
-    label: 'Equipos',
-    title: 'Control de acceso por roles',
-    desc: 'Define permisos precisos por cargo. Contador, vendedor, administrador "” cada uno ve solo lo que necesita.',
-    stat: '100%', statLabel: 'auditable y seguro',
-  },
-]
-
-const stats = [
-  { value: '340+', label: 'empresas activas' },
-  { value: '$2.1B', label: 'en facturas procesadas' },
-  { value: '99.97%', label: 'uptime garantizado' },
-  { value: '< 2h', label: 'tiempo de onboarding' },
-]
-
-const testimonials = [
-  {
-    name: 'Camila Rodríguez',
-    role: 'CFO · Distribuidora Boyacá',
-    quote: 'Antes tardábamos 3 días en cerrar el mes. Con Contex360 lo hacemos el mismo día. La visibilidad financiera cambió completamente nuestra operación.',
-    rating: 5,
-    avatar: 'CR',
-  },
-  {
-    name: 'Andrés Morales',
-    role: 'Gerente General · Construcciones AM',
-    quote: 'El control de inventario entre obras nos costaba errores costosos. Ahora tenemos trazabilidad completa de materiales en tiempo real.',
-    rating: 5,
-    avatar: 'AM',
-  },
-  {
-    name: 'Laura Venegas',
-    role: 'Contadora · Servicios LV',
-    quote: 'La integración DIAN es perfecta. Cero rechazos en 8 meses. Y el soporte responde en menos de una hora.',
-    rating: 5,
-    avatar: 'LV',
-  },
-]
 
 const handleScroll = () => {
   scrolled.value = window.scrollY > 20
@@ -87,322 +17,94 @@ const handleScroll = () => {
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
-  const interval = setInterval(() => {
-    activeFeature.value = (activeFeature.value + 1) % features.length
-  }, 4000)
-  onUnmounted(() => {
-    window.removeEventListener('scroll', handleScroll)
-    clearInterval(interval)
-  })
+})
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll)
 })
 </script>
 
 <template>
-  <div class="min-h-screen bg-white font-sans antialiased text-gray-900 overflow-x-hidden">
-
-    <!-- â”€â”€â”€â”€â”€ NAV â”€â”€â”€â”€â”€ -->
-    <header
-      :class="[
-        'fixed top-0 inset-x-0 z-50 transition-all duration-300',
-        scrolled ? 'bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-100' : 'bg-transparent'
-      ]"
+  <div class="min-h-screen bg-[#FFFFFF] text-[#0b1c30] selection:bg-[#e5eeff] selection:text-[#00174b] font-['Inter']">
+    <!-- Top Navigation Bar -->
+    <nav 
+      class="flex justify-between items-center h-16 px-8 sticky top-0 z-40 transition-all duration-300 border-b"
+      :class="scrolled ? 'bg-white/80 backdrop-blur-md border-[#E2E8F0] shadow-sm' : 'bg-[#f8f9ff] border-transparent'"
     >
-      <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-        <!-- Logo -->
-        <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-700 to-emerald-600 flex items-center justify-center shadow-md shadow-emerald-200">
-            <Layers class="w-4.5 h-4.5 text-white" />
-          </div>
-          <span class="text-lg font-bold tracking-tight text-gray-900">Contex<span class="text-emerald-600">360</span></span>
-        </div>
-
-        <!-- Links desktop -->
-        <div class="hidden md:flex items-center gap-8">
-          <a href="#features" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Características</a>
-          <a href="#stats" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Resultados</a>
-          <a href="#testimonials" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Clientes</a>
-          <button @click="emit('show-about')" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Nosotros</button>
-        </div>
-
-        <!-- CTAs desktop -->
-        <div class="hidden md:flex items-center gap-3">
-          <button
-            @click="emit('login')"
-            class="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors px-4 py-2"
-          >
-            Iniciar sesión
-          </button>
-          <button
-            @click="emit('request-demo')"
-            class="text-sm font-semibold bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 rounded-lg transition-all shadow-md shadow-emerald-200 hover:shadow-emerald-300 hover:-translate-y-0.5 active:translate-y-0"
-          >
-            Solicitar demo
-          </button>
-        </div>
-
-        <!-- Mobile menu toggle -->
-        <button class="md:hidden p-2 text-gray-500" @click="mobileMenuOpen = !mobileMenuOpen">
-          <Menu v-if="!mobileMenuOpen" class="w-5 h-5" />
-          <X v-else class="w-5 h-5" />
+      <div class="flex items-center gap-2">
+        <span class="text-[20px] leading-[1.4] font-black text-[#000000]">Contex360</span>
+      </div>
+      <div class="hidden md:flex items-center gap-8">
+        <a class="text-[12px] leading-[1.2] font-[500] text-[#0b1c30] hover:text-[#0051d5] transition-all cursor-pointer" href="#producto">Producto</a>
+        <a class="text-[12px] leading-[1.2] font-[500] text-[#0b1c30] hover:text-[#0051d5] transition-all cursor-pointer" href="#beneficios">Beneficios</a>
+        <a class="text-[12px] leading-[1.2] font-[500] text-[#0b1c30] hover:text-[#0051d5] transition-all cursor-pointer" href="#precios">Precios</a>
+      </div>
+      <div class="flex items-center gap-4">
+        <a 
+          class="text-[12px] leading-[1.2] text-[#0051d5] font-bold px-4 py-2 hover:bg-[#eff4ff] rounded-lg transition-all cursor-pointer" 
+          @click="emit('login')"
+        >
+          Iniciar sesión
+        </a>
+        <button 
+          class="bg-[#000000] text-[#ffffff] text-[12px] leading-[1.2] px-6 py-2.5 rounded-lg hover:bg-opacity-90 transition-all font-bold"
+          @click="emit('request-demo')"
+        >
+          Solicitar demo
         </button>
-      </nav>
-
-      <!-- Mobile menu -->
-      <div v-if="mobileMenuOpen" class="md:hidden bg-white border-t border-gray-100 px-6 py-4 space-y-4 shadow-lg">
-        <a href="#features" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Características</a>
-        <a href="#stats" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Resultados</a>
-        <a href="#testimonials" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Clientes</a>
-        <button @click="emit('show-about'); mobileMenuOpen = false" class="block text-sm text-gray-600 text-left">Nosotros</button>
-        <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
-          <button @click="emit('login'); mobileMenuOpen = false" class="w-full text-center text-sm font-medium border border-gray-200 rounded-lg py-2.5 text-gray-700">Iniciar sesión</button>
-          <button @click="emit('request-demo'); mobileMenuOpen = false" class="w-full text-center text-sm font-semibold bg-emerald-700 text-white rounded-lg py-2.5">Solicitar demo</button>
-        </div>
       </div>
-    </header>
+    </nav>
 
-    <!-- â”€â”€â”€â”€â”€ HERO â”€â”€â”€â”€â”€ -->
-    <section class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
-      <!-- Background gradient -->
-      <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-slate-50/40 pointer-events-none" />
-      <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-emerald-100/60 to-transparent rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none" />
-
-      <div class="relative max-w-7xl mx-auto px-6">
-        <div class="grid lg:grid-cols-2 gap-16 items-center">
-
-          <!-- Left: copy -->
-          <div>
-            <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-full px-4 py-1.5 mb-8">
-              <span class="w-2 h-2 rounded-full bg-emerald-700 animate-pulse" />
-              <span class="text-xs font-semibold text-emerald-700 tracking-wide uppercase">ERP Colombiano 2026</span>
-            </div>
-
-            <h1 class="text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight text-gray-900 mb-6">
-              El ERP que tu empresa<br/>
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-emerald-500">
-                necesita hoy
-              </span>
-            </h1>
-
-            <p class="text-lg text-gray-500 leading-relaxed max-w-lg mb-10">
-              Facturación DIAN, inventario multi-bodega, analítica financiera y control de equipo "” todo en una plataforma. Sin complicaciones.
-            </p>
-
-            <div class="flex flex-col sm:flex-row gap-3 mb-12">
-              <button
-                @click="emit('request-demo')"
-                class="group flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 text-white font-semibold text-sm px-7 py-4 rounded-xl shadow-xl shadow-emerald-200 hover:shadow-emerald-300 transition-all hover:-translate-y-0.5 active:translate-y-0"
-              >
-                Pedir demo gratis
-                <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-              <button
-                @click="emit('login')"
-                class="flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-sm px-7 py-4 rounded-xl border border-gray-200 hover:border-gray-300 shadow-sm transition-all"
-              >
-                <Play class="w-4 h-4 text-emerald-600" />
-                Ya tengo cuenta
-              </button>
-            </div>
-
-            <!-- Trust badges -->
-            <div class="flex items-center gap-6 text-sm text-gray-400">
-              <div class="flex items-center gap-1.5">
-                <ShieldCheck class="w-4 h-4 text-slate-500" />
-                <span>Certificado DIAN</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <Zap class="w-4 h-4 text-slate-500" />
-                <span>Activo en &lt; 2 horas</span>
-              </div>
-              <div class="flex items-center gap-1.5">
-                <Globe class="w-4 h-4 text-slate-500" />
-                <span>Multi-empresa</span>
-              </div>
-            </div>
+    <!-- Hero Section -->
+    <section class="relative overflow-hidden bg-[#FFFFFF] pt-20 pb-24 lg:pt-32 lg:pb-40">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center">
+        <div class="z-10 text-left">
+          <span class="inline-block px-4 py-1.5 mb-6 text-[#0051d5] font-bold text-[12px] bg-[#dbe1ff] rounded-full">ERP de Próxima Generación</span>
+          <h1 class="text-[48px] leading-[1.1] tracking-[-0.02em] font-[700] text-[#000000] mb-6">
+            Construimos el ERP que <span class="text-[#0051d5]">Colombia</span> necesitaba.
+          </h1>
+          <p class="text-[16px] leading-[1.6] font-[400] text-[#45464d] mb-10 max-w-lg">
+            Simplifica tu contabilidad, inventarios y facturación con la plataforma líder diseñada específicamente para el entorno empresarial colombiano. Potencia tu crecimiento hoy.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4">
+            <button 
+              class="bg-[#000000] text-[#ffffff] text-[16px] px-8 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all flex items-center justify-center gap-2"
+              @click="emit('request-demo')"
+            >
+              Solicitar demo gratis
+              <span class="material-symbols-outlined">arrow_forward</span>
+            </button>
+            <button 
+              class="border-2 border-[#E2E8F0] text-[#000000] text-[16px] px-8 py-4 rounded-xl font-bold hover:bg-[#F8FAFC] transition-all flex items-center justify-center gap-2"
+              @click="emit('show-about')"
+            >
+              Ver funciones
+            </button>
           </div>
-
-          <!-- Right: Dashboard mockup -->
-          <div class="relative lg:pl-8">
-            <!-- Glow -->
-            <div class="absolute inset-0 bg-gradient-to-br from-emerald-200/30 to-emerald-100/20 rounded-3xl blur-3xl scale-110 pointer-events-none" />
-
-            <!-- Main card -->
-            <div class="relative bg-white rounded-2xl shadow-2xl shadow-gray-200/80 border border-gray-100 overflow-hidden">
-              <!-- Fake topbar -->
-              <div class="bg-gray-50 border-b border-gray-100 px-4 py-3 flex items-center gap-2">
-                <div class="w-2.5 h-2.5 rounded-full bg-red-300" />
-                <div class="w-2.5 h-2.5 rounded-full bg-amber-300" />
-                <div class="w-2.5 h-2.5 rounded-full bg-green-300" />
-                <div class="flex-1 mx-4 bg-gray-100 rounded-md h-5 text-[10px] text-gray-400 flex items-center justify-center">app.contex360.co/dashboard</div>
-              </div>
-
-              <!-- Dashboard content -->
-              <div class="p-5 bg-gray-50/50">
-                <!-- KPI row -->
-                <div class="grid grid-cols-3 gap-3 mb-4">
-                  <div class="bg-white rounded-xl p-3.5 border border-gray-100 shadow-sm">
-                    <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Ingresos</p>
-                    <p class="text-xl font-bold text-gray-900">$48.2M</p>
-                    <div class="flex items-center gap-1 mt-1">
-                      <TrendingUp class="w-3 h-3 text-emerald-500" />
-                      <span class="text-[10px] text-emerald-600 font-semibold">+12.4%</span>
-                    </div>
-                  </div>
-                  <div class="bg-white rounded-xl p-3.5 border border-gray-100 shadow-sm">
-                    <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Facturas</p>
-                    <p class="text-xl font-bold text-gray-900">1.247</p>
-                    <div class="flex items-center gap-1 mt-1">
-                      <CheckCircle class="w-3 h-3 text-slate-500" />
-                      <span class="text-[10px] text-emerald-600 font-semibold">98.6% ok</span>
-                    </div>
-                  </div>
-                  <div class="bg-white rounded-xl p-3.5 border border-gray-100 shadow-sm">
-                    <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Productos</p>
-                    <p class="text-xl font-bold text-gray-900">3.841</p>
-                    <div class="flex items-center gap-1 mt-1">
-                      <Package class="w-3 h-3 text-emerald-500" />
-                      <span class="text-[10px] text-emerald-500 font-semibold">4 bodegas</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Chart bar mockup -->
-                <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm mb-3">
-                  <div class="flex items-center justify-between mb-4">
-                    <p class="text-xs font-semibold text-gray-700">Flujo de caja "” Mayo 2026</p>
-                    <span class="text-[10px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">En tiempo real</span>
-                  </div>
-                  <div class="flex items-end gap-1.5 h-20">
-                    <div v-for="(h, i) in [55, 72, 48, 88, 65, 91, 70, 84, 60, 95, 78, 88]" :key="i"
-                      class="flex-1 rounded-t-sm transition-all"
-                      :class="i === 10 || i === 11 ? 'bg-emerald-600' : 'bg-emerald-100'"
-                      :style="`height: ${h}%`"
-                    />
-                  </div>
-                  <div class="flex justify-between mt-2">
-                    <span class="text-[9px] text-gray-400">May 1</span>
-                    <span class="text-[9px] text-gray-400">May 14</span>
-                  </div>
-                </div>
-
-                <!-- Recent activity -->
-                <div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-                  <div class="px-4 py-2.5 border-b border-gray-50">
-                    <p class="text-xs font-semibold text-gray-700">Actividad reciente</p>
-                  </div>
-                  <div v-for="item in [
-                    { label: 'FE-20240512-001', sub: 'Comercial Andina · $2.4M', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
-                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades · Prod. X220', color: 'bg-emerald-100 text-emerald-800', tag: 'En tránsito' },
-                    { label: 'FE-20240511-098', sub: 'Ferretería López · $780K', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
-                  ]" :key="item.label"
-                    class="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 last:border-0"
-                  >
-                    <div>
-                      <p class="text-[11px] font-semibold text-gray-800">{{ item.label }}</p>
-                      <p class="text-[10px] text-gray-400 mt-0.5">{{ item.sub }}</p>
-                    </div>
-                    <span :class="['text-[10px] font-semibold px-2 py-0.5 rounded-full', item.color]">{{ item.tag }}</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Floating badge -->
-            <div class="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-xl border border-gray-100 px-4 py-3 flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
-                <ShieldCheck class="w-4 h-4 text-emerald-700" />
-              </div>
-              <div>
-                <p class="text-xs font-bold text-gray-900">Certificado DIAN</p>
-                <p class="text-[10px] text-gray-400">Obligación fiscal cumplida</p>
-              </div>
-            </div>
+          <div class="mt-12 flex items-center gap-6 opacity-60">
+            <span class="text-[12px] font-[500] uppercase tracking-widest text-[#45464d]">Cumplimiento DIAN</span>
+            <span class="text-[12px] font-[500] uppercase tracking-widest text-[#45464d]">Soporte Local</span>
+            <span class="text-[12px] font-[500] uppercase tracking-widest text-[#45464d]">Cloud Nativo</span>
           </div>
         </div>
-      </div>
-    </section>
-
-    <!-- â”€â”€â”€â”€â”€ STATS â”€â”€â”€â”€â”€ -->
-    <section id="stats" class="py-16 border-y border-gray-100 bg-white">
-      <div class="max-w-5xl mx-auto px-6">
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
-          <div v-for="s in stats" :key="s.value" class="text-center">
-            <p class="text-4xl font-extrabold text-gray-900 mb-1">{{ s.value }}</p>
-            <p class="text-sm text-gray-400">{{ s.label }}</p>
+        <div class="relative">
+          <div class="absolute inset-0 bg-[#0051d5]/5 rounded-3xl -rotate-3 scale-105"></div>
+          <div class="relative bg-white p-4 rounded-3xl border border-[#E2E8F0] shadow-2xl">
+            <img 
+              alt="Dashboard Contex360" 
+              class="rounded-2xl w-full object-cover" 
+              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDevAbrAx6NG9DC4ljVlLz6U4hQtD34h0rbeGnn7sBe9MDCDpYEpB12WaJ2cLbAoyd398F5r0V1Dz6JDX9FJNiyK-j6rvnkyqe5KFT13O5PUy1nliG-EeION4WvPzneGzXs3Y22ANd7Ou6lGtNQeysqaXBGsqthigNPEJo9xASXe8NBY_W5GwgplryWlmnwtwtRhpOmcd-Cqz38--JKokTS9-ADDLn4Ark4GAkmeQ7NsXtepFFRmxVQKJ6wy3jazfpnh23T8hvsUgq"
+            />
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- â”€â”€â”€â”€â”€ FEATURES â”€â”€â”€â”€â”€ -->
-    <section id="features" class="py-24 md:py-32 bg-white">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="text-center mb-16">
-          <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3">Plataforma completa</p>
-          <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
-            Todo lo que necesita<br/>tu empresa
-          </h2>
-          <p class="text-lg text-gray-400 max-w-xl mx-auto">Sin módulos separados, sin integraciones complejas. Un solo sistema que crece contigo.</p>
-        </div>
-
-        <!-- Feature tabs -->
-        <div class="flex flex-wrap justify-center gap-2 mb-12">
-          <button
-            v-for="(f, i) in features" :key="i"
-            @click="activeFeature = i"
-            :class="[
-              'flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all',
-              activeFeature === i
-                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-200'
-                : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
-            ]"
-          >
-            <component :is="f.icon" class="w-4 h-4" />
-            {{ f.label }}
-          </button>
-        </div>
-
-        <!-- Active feature -->
-        <div class="grid md:grid-cols-2 gap-12 items-center bg-gray-50 rounded-3xl p-8 md:p-12 border border-gray-100">
-          <div>
-            <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-600 items-center justify-center mb-6 shadow-lg shadow-emerald-200">
-              <component :is="features[activeFeature].icon" class="w-7 h-7 text-white" />
-            </div>
-            <h3 class="text-3xl font-bold text-gray-900 mb-4">{{ features[activeFeature].title }}</h3>
-            <p class="text-gray-500 text-lg leading-relaxed mb-8">{{ features[activeFeature].desc }}</p>
+          <!-- Floating elements -->
+          <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-[#E2E8F0] hidden sm:block">
             <div class="flex items-center gap-4">
-              <div>
-                <p class="text-4xl font-extrabold text-emerald-600">{{ features[activeFeature].stat }}</p>
-                <p class="text-sm text-gray-400 mt-1">{{ features[activeFeature].statLabel }}</p>
+              <div class="w-12 h-12 rounded-full bg-[#047857]/10 flex items-center justify-center text-[#047857]">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
               </div>
-              <div class="w-px h-12 bg-gray-200" />
-              <button
-                @click="emit('request-demo')"
-                class="group flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
-              >
-                Ver demostración
-                <ChevronRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-              </button>
-            </div>
-          </div>
-
-          <!-- Feature mockup -->
-          <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div class="bg-gradient-to-r from-emerald-700 to-emerald-600 px-5 py-3 flex items-center justify-between">
-              <span class="text-white text-xs font-bold">{{ features[activeFeature].label }}</span>
-              <span class="text-emerald-100 text-xs">Contex360 ERP</span>
-            </div>
-            <div class="p-5 space-y-3">
-              <div v-for="row in [85, 62, 91, 48, 77]" :key="row" class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex-shrink-0" />
-                <div class="flex-1">
-                  <div class="h-2.5 bg-gray-100 rounded-full mb-1.5" :style="`width: ${row}%`" />
-                  <div class="h-2 bg-gray-50 rounded-full" :style="`width: ${row * 0.6}%`" />
-                </div>
-                <div class="text-right flex-shrink-0">
-                  <div class="h-2.5 w-12 bg-emerald-100 rounded-full mb-1" />
-                  <div class="h-2 w-8 bg-emerald-50 rounded-full ml-auto" />
-                </div>
+              <div class="text-left">
+                <p class="text-[14px] font-bold text-[#000000]">Facturación OK</p>
+                <p class="text-[12px] text-[#45464d]">Reporte DIAN enviado</p>
               </div>
             </div>
           </div>
@@ -410,130 +112,150 @@ onMounted(() => {
       </div>
     </section>
 
-    <!-- â”€â”€â”€â”€â”€ TESTIMONIALS â”€â”€â”€â”€â”€ -->
-    <section id="testimonials" class="py-24 bg-gradient-to-b from-orange-50/50 to-white">
-      <div class="max-w-6xl mx-auto px-6">
+    <!-- Benefits Bento Grid -->
+    <section id="beneficios" class="py-24 bg-[#f8f9ff]">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
         <div class="text-center mb-16">
-          <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3">Clientes reales</p>
-          <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">Lo que dicen las empresas</h2>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-6">
-          <div
-            v-for="t in testimonials" :key="t.name"
-            class="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-100 transition-all"
-          >
-            <!-- Stars -->
-            <div class="flex gap-0.5 mb-5">
-              <Star v-for="i in t.rating" :key="i" class="w-4 h-4 fill-orange-400 text-slate-500" />
-            </div>
-            <p class="text-gray-600 text-sm leading-relaxed mb-6">"{{ t.quote }}"</p>
-            <div class="flex items-center gap-3 pt-5 border-t border-gray-50">
-              <div class="w-10 h-10 rounded-full bg-gradient-to-br from-orange-400 to-amber-400 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
-                {{ t.avatar }}
-              </div>
-              <div>
-                <p class="text-sm font-semibold text-gray-900">{{ t.name }}</p>
-                <p class="text-xs text-gray-400">{{ t.role }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- â”€â”€â”€â”€â”€ CTA FINAL â”€â”€â”€â”€â”€ -->
-    <section class="py-24 md:py-32 relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-emerald-700 to-emerald-600" />
-      <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent)]" />
-
-      <div class="relative max-w-4xl mx-auto px-6 text-center">
-        <div class="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/20 rounded-full px-4 py-1.5 mb-8">
-          <Building2 class="w-3.5 h-3.5 text-white" />
-          <span class="text-xs font-semibold text-white tracking-wide uppercase">Sin tarjeta de crédito</span>
-        </div>
-
-        <h2 class="text-5xl md:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">
-          Empieza en menos<br/>de dos horas
-        </h2>
-        <p class="text-xl text-emerald-100 mb-12 max-w-xl mx-auto">
-          Nuestro equipo configura tu empresa, migra tus datos y capacita tu equipo. Sin complicaciones técnicas.
-        </p>
-
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <button
-            @click="emit('request-demo')"
-            class="group flex items-center justify-center gap-2 bg-white text-emerald-700 font-bold text-base px-8 py-4 rounded-xl shadow-xl shadow-emerald-700/30 hover:bg-emerald-50 transition-all hover:-translate-y-0.5"
-          >
-            Solicitar demo gratuita
-            <ArrowRight class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-          </button>
-          <button
-            @click="emit('login')"
-            class="flex items-center justify-center gap-2 bg-transparent text-white font-semibold text-base px-8 py-4 rounded-xl border-2 border-white/40 hover:border-white/70 hover:bg-white/10 transition-all"
-          >
-            Acceder a mi cuenta
-          </button>
-        </div>
-
-        <!-- Checklist -->
-        <div class="mt-12 flex flex-wrap justify-center gap-6 text-sm text-emerald-100">
-          <div v-for="item in ['Prueba 30 días gratis', 'Sin contrato mínimo', 'Soporte incluido', 'Datos seguros']" :key="item" class="flex items-center gap-2">
-            <CheckCircle class="w-4 h-4 text-white" />
-            {{ item }}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- â”€â”€â”€â”€â”€ FOOTER â”€â”€â”€â”€â”€ -->
-    <footer class="bg-[#0f172a] text-emerald-200/60 py-14">
-      <div class="max-w-7xl mx-auto px-6">
-        <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-10">
-          <div>
-            <div class="flex items-center gap-2.5 mb-3">
-              <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-700 to-emerald-600 flex items-center justify-center">
-                <Layers class="w-4 h-4 text-white" />
-              </div>
-              <span class="text-emerald-50 font-bold tracking-tight">Contex<span class="text-slate-400">360</span></span>
-            </div>
-            <p class="text-sm leading-relaxed max-w-xs text-emerald-200/50">ERP colombiano certificado DIAN para empresas que necesitan crecer con control.</p>
-          </div>
-
-          <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
-            <div>
-              <p class="text-emerald-100 font-semibold mb-3">Producto</p>
-              <ul class="space-y-2">
-                <li><a href="#features" class="hover:text-slate-500 transition-colors">Características</a></li>
-                <li><a href="#stats" class="hover:text-slate-500 transition-colors">Precios</a></li>
-                <li><button @click="emit('login')" class="hover:text-slate-500 transition-colors">Acceso</button></li>
-              </ul>
-            </div>
-            <div>
-              <p class="text-emerald-100 font-semibold mb-3">Empresa</p>
-              <ul class="space-y-2">
-                <li><button @click="emit('show-about')" class="hover:text-slate-500 transition-colors">Nosotros</button></li>
-                <li><button @click="emit('request-demo')" class="hover:text-slate-500 transition-colors">Contacto</button></li>
-              </ul>
-            </div>
-            <div>
-              <p class="text-emerald-100 font-semibold mb-3">Legal</p>
-              <ul class="space-y-2">
-                <li><button @click="emit('show-privacy')" class="hover:text-slate-500 transition-colors">Privacidad</button></li>
-                <li><button @click="emit('show-terms')" class="hover:text-slate-500 transition-colors">Términos</button></li>
-              </ul>
-            </div>
-          </div>
-        </div>
-
-        <div class="border-t border-emerald-900/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-          <p>Â© 2026 Contex360. Todos los derechos reservados.</p>
-          <p class="flex items-center gap-1.5">
-            <ShieldCheck class="w-3.5 h-3.5 text-slate-500" />
-            Proveedor tecnológico certificado por la DIAN
+          <h2 class="text-[32px] leading-[1.2] tracking-[-0.01em] font-[600] text-[#000000] mb-4">¿Por qué elegir Contex360?</h2>
+          <p class="text-[16px] leading-[1.6] font-[400] text-[#45464d] max-w-2xl mx-auto">
+            Diseñado para la agilidad empresarial, integrando cada proceso de tu negocio en una sola fuente de verdad.
           </p>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <!-- Benefit 1: Security -->
+          <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-[#E2E8F0] hover:border-[#0051d5] transition-colors group text-left">
+            <div class="w-14 h-14 bg-[#316bf3]/10 rounded-2xl flex items-center justify-center text-[#0051d5] mb-6 group-hover:bg-[#0051d5] group-hover:text-white transition-all">
+              <span class="material-symbols-outlined text-3xl">verified_user</span>
+            </div>
+            <h3 class="text-[20px] font-[600] text-[#000000] mb-3">Máxima Seguridad</h3>
+            <p class="text-[14px] leading-[1.5] font-[400] text-[#45464d]">
+              Encriptación de grado bancario y copias de seguridad automáticas en la nube para que tus datos financieros estén siempre protegidos.
+            </p>
+          </div>
+          <!-- Benefit 2: Speed -->
+          <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-[#E2E8F0] hover:border-[#0051d5] transition-colors group text-left">
+            <div class="w-14 h-14 bg-[#316bf3]/10 rounded-2xl flex items-center justify-center text-[#0051d5] mb-6 group-hover:bg-[#0051d5] group-hover:text-white transition-all">
+              <span class="material-symbols-outlined text-3xl">bolt</span>
+            </div>
+            <h3 class="text-[20px] font-[600] text-[#000000] mb-3">Velocidad Extrema</h3>
+            <p class="text-[14px] leading-[1.5] font-[400] text-[#45464d]">
+              Procesamiento de datos en tiempo real. Genera reportes contables complejos y estados financieros en segundos, no horas.
+            </p>
+          </div>
+          <!-- Benefit 3: Made for Colombia -->
+          <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-[#E2E8F0] hover:border-[#0051d5] transition-colors group text-left">
+            <div class="w-14 h-14 bg-[#316bf3]/10 rounded-2xl flex items-center justify-center text-[#0051d5] mb-6 group-hover:bg-[#0051d5] group-hover:text-white transition-all">
+              <span class="material-symbols-outlined text-3xl">apartment</span>
+            </div>
+            <h3 class="text-[20px] font-[600] text-[#000000] mb-3">Hecho para Colombia</h3>
+            <p class="text-[14px] leading-[1.5] font-[400] text-[#45464d]">
+              Totalmente adaptado a la normativa DIAN: Facturación electrónica, nómina electrónica y reportes de exógena integrados.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visual Feature Section -->
+    <section id="producto" class="py-24 bg-[#FFFFFF] overflow-hidden">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row items-center gap-16">
+          <div class="w-full lg:w-1/2 order-2 lg:order-1">
+            <div class="relative">
+              <img 
+                alt="Equipo trabajando" 
+                class="rounded-3xl shadow-2xl z-20 relative" 
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuB96NWBjNN2oxiXMtjnNqWAOwGTPiKfVh0PI8Pl9S_IjEJ7vsuYDFLTVYRQtmDUUeSg8T3Sx5SEE8R0zSGvYS3A8QRjMrfUh5d6TJ06L2CQywnAFYG4UB71pIcc9dJzm6eI0GudCxgelSBAtkFASa3jqtatFoFF7UDbnYPGhX0jy46MbWGWJrdW2tu_ndal-kktkPk8gQRvQ_3loG_eQvbzF7hF-9lu943shhR9a7r5tMqhUWa4z_PsO9nWn7zFMlTqqFVus9smYQ7q"
+              />
+              <div class="absolute -top-10 -right-10 w-64 h-64 bg-[#0051d5]/10 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+              <div class="absolute -bottom-10 -left-10 w-64 h-64 bg-[#000000]/5 rounded-full mix-blend-multiply filter blur-3xl opacity-70"></div>
+            </div>
+          </div>
+          <div class="w-full lg:w-1/2 order-1 lg:order-2 text-left">
+            <h2 class="text-[32px] leading-[1.2] font-[600] text-[#000000] mb-6">Administración sin complicaciones, resultados exponenciales.</h2>
+            <ul class="space-y-6">
+              <li class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
+                  <span class="material-symbols-outlined text-lg">check</span>
+                </div>
+                <div>
+                  <h4 class="text-[16px] font-bold text-[#000000]">Consolidación Multisede</h4>
+                  <p class="text-[14px] text-[#45464d]">Gestiona múltiples sucursales y bodegas desde una sola cuenta maestra con inventario sincronizado.</p>
+                </div>
+              </li>
+              <li class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
+                  <span class="material-symbols-outlined text-lg">check</span>
+                </div>
+                <div>
+                  <h4 class="text-[16px] font-bold text-[#000000]">Automatización Contable</h4>
+                  <p class="text-[14px] text-[#45464d]">Reduce el error humano automatizando los asientos contables recurrentes y conciliaciones bancarias.</p>
+                </div>
+              </li>
+              <li class="flex gap-4">
+                <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
+                  <span class="material-symbols-outlined text-lg">check</span>
+                </div>
+                <div>
+                  <h4 class="text-[16px] font-bold text-[#000000]">Inteligencia de Negocios</h4>
+                  <p class="text-[14px] text-[#45464d]">Tableros de control con KPIs clave para tomar decisiones basadas en datos reales, no en suposiciones.</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section id="precios" class="py-24 px-6">
+      <div class="max-w-5xl mx-auto bg-[#131b2e] rounded-[2.5rem] p-12 lg:p-20 text-center relative overflow-hidden">
+        <div class="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-[#0051d5] opacity-20 blur-[100px] rounded-full"></div>
+        <div class="absolute bottom-0 left-0 translate-y-1/2 -translate-x-1/4 w-96 h-96 bg-[#000000] opacity-30 blur-[100px] rounded-full"></div>
+        <div class="relative z-10">
+          <h2 class="text-[32px] leading-[1.2] font-[600] text-[#ffffff] mb-8">¿Listo para transformar tu empresa?</h2>
+          <p class="text-[16px] text-white/70 mb-12 max-w-2xl mx-auto">
+            Únete a más de 500 empresas colombianas que ya optimizaron sus procesos con Contex360. Comienza tu demo gratuita hoy mismo.
+          </p>
+          <div class="flex flex-col sm:flex-row justify-center gap-6">
+            <button 
+              class="bg-white text-[#000000] text-[16px] px-10 py-4 rounded-xl font-bold hover:bg-opacity-90 transition-all"
+              @click="emit('request-demo')"
+            >
+              Solicitar Demo Ahora
+            </button>
+            <button 
+              class="border border-white/20 text-white text-[16px] px-10 py-4 rounded-xl font-bold hover:bg-white/10 transition-all"
+              @click="emit('show-about')"
+            >
+              Hablar con un experto
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Simple Footer -->
+    <footer class="py-12 border-t border-[#E2E8F0] bg-[#f8f9ff]">
+      <div class="max-w-7xl mx-auto px-6 lg:px-8 flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-2">
+          <span class="text-[20px] font-black text-[#000000]">Contex360</span>
+          <span class="text-[#45464d] text-[12px]">| ERP Administrativo</span>
+        </div>
+        <div class="flex gap-8">
+          <a class="text-[12px] text-[#45464d] hover:text-[#0051d5] cursor-pointer" @click="emit('show-terms')">Términos</a>
+          <a class="text-[12px] text-[#45464d] hover:text-[#0051d5] cursor-pointer" @click="emit('show-privacy')">Privacidad</a>
+          <a class="text-[12px] text-[#45464d] hover:text-[#0051d5] cursor-pointer" @click="emit('show-about')">Contacto</a>
+        </div>
+        <p class="text-[12px] text-[#45464d]">© 2024 Contex360. Todos los derechos reservados. Colombia.</p>
       </div>
     </footer>
   </div>
 </template>
+
+<style scoped>
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+</style>
+
