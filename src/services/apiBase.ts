@@ -19,6 +19,12 @@ function resolveDefaultApiBaseUrl() {
 }
 
 export function getApiBaseUrl() {
-  const raw = String(import.meta.env.VITE_API_BASE_URL || resolveDefaultApiBaseUrl())
+  let raw = String(import.meta.env.VITE_API_BASE_URL || resolveDefaultApiBaseUrl())
+  
+  // Auto-fix: if the URL still points to Render, force the Railway URL
+  if (raw.includes('onrender.com')) {
+    raw = PRODUCTION_API_BASE_URL
+  }
+  
   return normalizeApiBaseUrl(raw)
 }
