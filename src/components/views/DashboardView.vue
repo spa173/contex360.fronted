@@ -83,14 +83,14 @@ const revenueTrendData = computed(() => {
     datasets: [{
       label: 'Ventas mensuales',
       data: values,
-      borderColor: '#AC8C49',
+      borderColor: '#2563EB',
       backgroundColor: (context) => {
         const chart = context.chart;
         const {ctx, chartArea} = chart;
         if (!chartArea) return null;
         const gradient = ctx.createLinearGradient(0, chartArea.top, 0, chartArea.bottom);
-        gradient.addColorStop(0, 'rgba(172, 140, 73, 0.18)');
-        gradient.addColorStop(1, 'rgba(172, 140, 73, 0)');
+        gradient.addColorStop(0, 'rgba(37, 99, 235, 0.20)');
+        gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
         return gradient;
       },
       fill: 'start',
@@ -107,7 +107,7 @@ const kpis = computed(() => [
     title: 'Revenue Total',
     value: formatCOP(totalRevenue.value),
     icon: DollarSign,
-    color: 'gold',
+    color: 'blue',
     trend: '+12.5%',
     trendOk: true
   },
@@ -115,7 +115,7 @@ const kpis = computed(() => [
     title: 'Inventario Crítico',
     value: lowStockCount.value === 0 ? 'Normal' : lowStockCount.value,
     icon: Package,
-    color: lowStockCount.value > 0 ? 'warn' : 'gold',
+    color: lowStockCount.value > 0 ? 'warn' : 'blue',
     trend: lowStockCount.value > 0 ? 'Requiere acción' : 'Optimizado',
     trendOk: lowStockCount.value === 0
   },
@@ -123,7 +123,7 @@ const kpis = computed(() => [
     title: 'Usuarios Activos',
     value: activeUsersCount.value,
     icon: UsersIcon,
-    color: 'gold',
+    color: 'blue',
     trend: 'En línea',
     trendOk: true
   },
@@ -131,7 +131,7 @@ const kpis = computed(() => [
     title: 'Salud del Sistema',
     value: '99.9%',
     icon: Activity,
-    color: 'gold',
+    color: 'blue',
     trend: 'Estable',
     trendOk: true
   }
@@ -149,17 +149,17 @@ const healthModules = [
   <section :class="['view', { active: isActive }, 'bg-[var(--bg)]', 'min-h-screen']">
     <!-- Header -->
     <div class="mb-6">
-      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#AC8C49] mb-1">Resumen ejecutivo</p>
-      <h2 class="text-2xl font-black text-[#F5EDDC] tracking-tight mb-0.5">Panel de Control</h2>
-      <p class="text-[#78694A] text-sm">Visualización de métricas críticas y salud operativa.</p>
+      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-500 mb-1">Resumen ejecutivo</p>
+      <h2 class="text-2xl font-black text-slate-100 tracking-tight mb-0.5">Panel de Control</h2>
+      <p class="text-slate-500 text-sm">Visualización de métricas críticas y salud operativa.</p>
     </div>
 
     <!-- KPI Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-      <Card v-for="kpi in kpis" :key="kpi.title" class="bg-[#454138] border border-[#AC8C49]/15 shadow-none overflow-hidden group hover:border-[#AC8C49]/35 transition-all duration-200">
+      <Card v-for="kpi in kpis" :key="kpi.title" class="bg-[#1E293B] border border-blue-500/15 shadow-none overflow-hidden group hover:border-blue-500/35 transition-all duration-200">
         <div class="p-5">
           <div class="flex justify-between items-start mb-5">
-            <div class="w-9 h-9 rounded-xl bg-[#AC8C49]/12 text-[#AC8C49] flex items-center justify-center transition-all duration-300">
+            <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center transition-all duration-300">
               <DollarSign v-if="kpi.icon === DollarSign" class="w-4 h-4" />
               <Package v-else-if="kpi.icon === Package" class="w-4 h-4" />
               <UsersIcon v-else-if="kpi.icon === UsersIcon" class="w-4 h-4" />
@@ -168,14 +168,14 @@ const healthModules = [
             <span :class="[
               'inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest',
               kpi.trendOk
-                ? 'bg-[#AC8C49]/12 text-[#E8C97A] border border-[#AC8C49]/25'
+                ? 'bg-blue-500/10 text-blue-400 border border-blue-500/25'
                 : 'bg-rose-900/30 text-rose-300 border border-rose-700/30'
             ]">
               {{ kpi.trend }}
             </span>
           </div>
-          <p class="text-[10px] font-semibold uppercase tracking-[0.12em] text-[#78694A] mb-1.5">{{ kpi.title }}</p>
-          <h3 class="text-2xl font-black text-[#F5EDDC] tracking-tight">{{ kpi.value }}</h3>
+          <p class="text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 mb-1.5">{{ kpi.title }}</p>
+          <h3 class="text-2xl font-black text-slate-100 tracking-tight">{{ kpi.value }}</h3>
         </div>
       </Card>
     </div>
@@ -184,15 +184,15 @@ const healthModules = [
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Chart Column -->
       <div class="lg:col-span-2">
-        <Card class="bg-[#454138] border border-[#AC8C49]/15 shadow-none h-full flex flex-col">
+        <Card class="bg-[#1E293B] border border-blue-500/15 shadow-none h-full flex flex-col">
           <CardHeader class="px-6 pt-6 pb-4">
             <div class="flex justify-between items-center">
               <div>
-                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#AC8C49] mb-1">Métricas de Desempeño</p>
-                <CardTitle class="text-base font-bold text-[#F5EDDC] tracking-tight">Tendencia de Ingresos Mensuales</CardTitle>
+                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-500 mb-1">Métricas de Desempeño</p>
+                <CardTitle class="text-base font-bold text-slate-100 tracking-tight">Tendencia de Ingresos Mensuales</CardTitle>
               </div>
-              <div class="w-8 h-8 rounded-xl bg-[#AC8C49]/12 flex items-center justify-center">
-                <TrendingUp class="w-4 h-4 text-[#AC8C49]" />
+              <div class="w-8 h-8 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                <TrendingUp class="w-4 h-4 text-blue-400" />
               </div>
             </div>
           </CardHeader>
@@ -205,9 +205,9 @@ const healthModules = [
                   scales: {
                     y: { 
                       grid: { color: 'rgba(148, 163, 184, 0.04)' },
-                      ticks: { color: '#78694A', font: { family: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', size: 10 }, callback: (v) => formatCompact(v) } 
+                      ticks: { color: '#64748B', font: { family: 'Inter, Geist, system-ui, sans-serif', size: 10 }, callback: (v) => formatCompact(v) } 
                     },
-                    x: { grid: { display: false }, ticks: { color: '#78694A', font: { family: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace', size: 10 } } }
+                    x: { grid: { display: false }, ticks: { color: '#64748B', font: { family: 'Inter, Geist, system-ui, sans-serif', size: 10 } } }
                   },
                   plugins: { legend: { display: false } },
                   maintainAspectRatio: false
@@ -215,14 +215,14 @@ const healthModules = [
               />
             </div>
             <div v-else class="flex flex-col items-center justify-center py-16 text-center space-y-5">
-              <div class="w-14 h-14 bg-[#332F28]/80 rounded-2xl flex items-center justify-center">
-                <BarChart3 class="w-7 h-7 text-[#78694A]" />
+              <div class="w-14 h-14 bg-[#0F172A]/80 rounded-2xl flex items-center justify-center">
+                <BarChart3 class="w-7 h-7 text-slate-600" />
               </div>
               <div>
-                <h4 class="text-sm font-bold text-[#B8A98A] tracking-tight">Sin historial de ingresos</h4>
-                <p class="text-[#78694A] text-xs max-w-[260px] mx-auto mt-1.5">Agrega facturas para visualizar tendencias financieras.</p>
+                <h4 class="text-sm font-bold text-slate-300 tracking-tight">Sin historial de ingresos</h4>
+                <p class="text-slate-500 text-xs max-w-[260px] mx-auto mt-1.5">Agrega facturas para visualizar tendencias financieras.</p>
               </div>
-              <Button @click="auth.setActiveView('billing')" variant="outline" class="border-[#AC8C49]/25 text-[#AC8C49] hover:bg-[#AC8C49]/10 text-xs">
+              <Button @click="auth.setActiveView('billing')" variant="outline" class="border-blue-500/25 text-blue-400 hover:bg-blue-500/10 text-xs">
                 <Plus class="w-3.5 h-3.5 mr-1.5" /> Agregar primera factura
               </Button>
             </div>
@@ -233,26 +233,26 @@ const healthModules = [
       <!-- Health & Operations Column -->
       <div class="space-y-5">
         <!-- System Health -->
-        <Card class="bg-[#454138] border border-[#AC8C49]/15 shadow-none">
-          <CardHeader class="px-5 py-4 border-b border-[#AC8C49]/10">
+        <Card class="bg-[#1E293B] border border-blue-500/15 shadow-none">
+          <CardHeader class="px-5 py-4 border-b border-blue-500/10">
             <div class="flex items-center gap-2.5">
-              <div class="w-7 h-7 rounded-lg bg-[#AC8C49]/12 flex items-center justify-center">
-                <Activity class="w-3.5 h-3.5 text-[#AC8C49]" />
+              <div class="w-7 h-7 rounded-lg bg-blue-500/10 flex items-center justify-center">
+                <Activity class="w-3.5 h-3.5 text-blue-400" />
               </div>
-              <CardTitle class="text-sm font-bold text-[#F5EDDC] tracking-tight">Salud del Sistema</CardTitle>
+              <CardTitle class="text-sm font-bold text-slate-100 tracking-tight">Salud del Sistema</CardTitle>
             </div>
           </CardHeader>
           <CardContent class="p-3">
             <div class="space-y-0.5">
-              <div v-for="module in healthModules" :key="module.name" class="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#332F28]/50 transition-colors">
+              <div v-for="module in healthModules" :key="module.name" class="flex items-center justify-between px-3 py-2.5 rounded-lg hover:bg-[#0F172A]/50 transition-colors">
                 <div class="flex items-center gap-2.5">
-                  <div class="w-6 h-6 bg-[#AC8C49]/10 rounded-md flex items-center justify-center flex-shrink-0">
-                    <CheckCircle2 v-if="module.name !== 'Cifrado de Datos AES-256'" class="w-3 h-3 text-[#AC8C49]" />
-                    <ShieldCheck v-else class="w-3 h-3 text-[#AC8C49]" />
+                  <div class="w-6 h-6 bg-blue-500/10 rounded-md flex items-center justify-center flex-shrink-0">
+                    <CheckCircle2 v-if="module.name !== 'Cifrado de Datos AES-256'" class="w-3 h-3 text-blue-400" />
+                    <ShieldCheck v-else class="w-3 h-3 text-blue-400" />
                   </div>
-                  <span class="text-[11px] font-medium text-[#B8A98A]">{{ module.name }}</span>
+                  <span class="text-[11px] font-medium text-slate-400">{{ module.name }}</span>
                 </div>
-                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest bg-[#AC8C49]/12 text-[#E8C97A] border border-[#AC8C49]/22">
+                <span class="inline-flex items-center px-1.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20">
                   {{ module.status }}
                 </span>
               </div>
@@ -261,19 +261,19 @@ const healthModules = [
         </Card>
 
         <!-- AI Card -->
-        <Card class="bg-[#454138] border border-[#AC8C49]/15 shadow-none relative overflow-hidden">
+        <Card class="bg-[#1E293B] border border-blue-500/15 shadow-none relative overflow-hidden">
           <div class="absolute top-2 right-3 pointer-events-none">
-            <Sparkles class="w-12 h-12 text-[#AC8C49] opacity-[0.07] rotate-12" />
+            <Sparkles class="w-12 h-12 text-blue-500 opacity-[0.07] rotate-12" />
           </div>
           <CardHeader class="px-5 pt-5 pb-3">
-            <CardTitle class="text-sm font-bold text-[#F5EDDC] tracking-tight flex items-center gap-2">
-              <span class="w-2 h-2 rounded-full bg-[#AC8C49] animate-pulse"></span>
+            <CardTitle class="text-sm font-bold text-slate-100 tracking-tight flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-blue-400 animate-pulse"></span>
               Inteligencia Artificial
             </CardTitle>
           </CardHeader>
           <CardContent class="px-5 pb-5 pt-0">
-            <p class="text-[#78694A] text-xs leading-relaxed mb-4">La IA analiza flujos de caja e inventario en tiempo real.</p>
-            <Button @click="auth.setActiveView('ai')" variant="default" class="w-full bg-[#AC8C49] hover:bg-[#78694A] text-[#1C1710] border-none text-xs font-semibold shadow-lg shadow-black/30">
+            <p class="text-slate-500 text-xs leading-relaxed mb-4">La IA analiza flujos de caja e inventario en tiempo real.</p>
+            <Button @click="auth.setActiveView('ai')" variant="default" class="w-full bg-blue-600 hover:bg-blue-700 text-white border-none text-xs font-semibold shadow-lg shadow-blue-900/40">
               Consultar Asistente
             </Button>
           </CardContent>

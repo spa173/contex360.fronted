@@ -488,18 +488,18 @@ const toggleRecoveryHelp = () => {
 
 .auth-story {
   background:
-    radial-gradient(circle at 70% 22%, rgba(255, 255, 255, 0.05), transparent 18%),
-    radial-gradient(circle at 84% 84%, rgba(255, 255, 255, 0.05), transparent 22%),
-    linear-gradient(160deg, #042f1e 0%, #064e3b 50%, #022c22 100%);
-  color: #f0fdf4;
+    radial-gradient(circle at 70% 22%, rgba(37, 99, 235, 0.08), transparent 22%),
+    radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.06), transparent 28%),
+    linear-gradient(160deg, #0F172A 0%, #1E293B 55%, #0A0F1E 100%);
+  color: #F1F5F9;
   overflow: hidden;
   position: relative;
 }
 
 .auth-story::before {
   background-image:
-    linear-gradient(rgba(16, 185, 129, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 185, 129, 0.07) 1px, transparent 1px);
+    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
   background-size: 72px 72px;
   content: '';
   inset: 0;
@@ -546,8 +546,8 @@ const toggleRecoveryHelp = () => {
 .auth-brand__mark,
 .auth-mobile-brand__mark {
   align-items: center;
-  background: linear-gradient(135deg, #059669, #10b981);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #1D4ED8, #2563EB);
+  border: 1px solid rgba(37, 99, 235, 0.3);
   border-radius: 12px;
   display: inline-flex;
   flex-shrink: 0;
@@ -749,7 +749,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__mark {
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #1D4ED8, #2563EB);
   border-color: transparent;
   height: 36px;
   width: 36px;
@@ -893,8 +893,8 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-input-shell:focus-within {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+  border-color: #2563EB;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
 }
 
 :global(html.dark) .auth-input-shell:focus-within {
@@ -992,7 +992,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary {
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #1D4ED8, #2563EB);
   border: 0;
   border-radius: 11px;
   color: #ffffff;
@@ -1013,8 +1013,8 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #047857, #059669);
-  box-shadow: 0 10px 22px rgba(5, 150, 105, 0.30);
+  background: linear-gradient(135deg, #1E40AF, #1D4ED8);
+  box-shadow: 0 10px 22px rgba(37, 99, 235, 0.30);
   transform: translateY(-1px);
 }
 
