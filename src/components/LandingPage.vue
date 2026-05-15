@@ -107,10 +107,10 @@ onMounted(() => {
       <nav class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
         <!-- Logo -->
         <div class="flex items-center gap-2.5">
-          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-800 to-blue-700 flex items-center justify-center shadow-md shadow-blue-200">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-700 to-emerald-600 flex items-center justify-center shadow-md shadow-emerald-200">
             <Layers class="w-4.5 h-4.5 text-white" />
           </div>
-          <span class="text-lg font-bold tracking-tight text-gray-900">Contex<span class="text-blue-700">360</span></span>
+          <span class="text-lg font-bold tracking-tight text-gray-900">Contex<span class="text-emerald-600">360</span></span>
         </div>
 
         <!-- Links desktop -->
@@ -130,7 +130,7 @@ onMounted(() => {
           </button>
           <button
             @click="emit('request-demo')"
-            class="text-sm font-semibold bg-blue-800 hover:bg-blue-900 text-white px-5 py-2.5 rounded-lg transition-all shadow-md shadow-blue-200 hover:shadow-blue-300 hover:-translate-y-0.5 active:translate-y-0"
+            class="text-sm font-semibold bg-emerald-700 hover:bg-emerald-800 text-white px-5 py-2.5 rounded-lg transition-all shadow-md shadow-emerald-200 hover:shadow-emerald-300 hover:-translate-y-0.5 active:translate-y-0"
           >
             Solicitar demo
           </button>
@@ -150,7 +150,7 @@ onMounted(() => {
         <a href="#testimonials" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Clientes</a>
         <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
           <button @click="emit('login'); mobileMenuOpen = false" class="w-full text-center text-sm font-medium border border-gray-200 rounded-lg py-2.5 text-gray-700">Iniciar sesión</button>
-          <button @click="emit('request-demo'); mobileMenuOpen = false" class="w-full text-center text-sm font-semibold bg-blue-800 text-white rounded-lg py-2.5">Solicitar demo</button>
+          <button @click="emit('request-demo'); mobileMenuOpen = false" class="w-full text-center text-sm font-semibold bg-emerald-700 text-white rounded-lg py-2.5">Solicitar demo</button>
         </div>
       </div>
     </header>
@@ -158,22 +158,22 @@ onMounted(() => {
     <!-- â”€â”€â”€â”€â”€ HERO â”€â”€â”€â”€â”€ -->
     <section class="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden">
       <!-- Background gradient -->
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-50 via-white to-slate-50/40 pointer-events-none" />
-      <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-blue-100/60 to-transparent rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none" />
+      <div class="absolute inset-0 bg-gradient-to-br from-emerald-50 via-white to-slate-50/40 pointer-events-none" />
+      <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-emerald-100/60 to-transparent rounded-full translate-x-1/3 -translate-y-1/4 pointer-events-none" />
 
       <div class="relative max-w-7xl mx-auto px-6">
         <div class="grid lg:grid-cols-2 gap-16 items-center">
 
           <!-- Left: copy -->
           <div>
-            <div class="inline-flex items-center gap-2 bg-blue-50 border border-blue-100 rounded-full px-4 py-1.5 mb-8">
-              <span class="w-2 h-2 rounded-full bg-blue-800 animate-pulse" />
-              <span class="text-xs font-semibold text-blue-800 tracking-wide uppercase">ERP Colombiano 2026</span>
+            <div class="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-100 rounded-full px-4 py-1.5 mb-8">
+              <span class="w-2 h-2 rounded-full bg-emerald-700 animate-pulse" />
+              <span class="text-xs font-semibold text-emerald-700 tracking-wide uppercase">ERP Colombiano 2026</span>
             </div>
 
             <h1 class="text-5xl md:text-6xl font-extrabold leading-[1.05] tracking-tight text-gray-900 mb-6">
               El ERP que tu empresa<br/>
-              <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-800 to-blue-700">
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-700 to-emerald-500">
                 necesita hoy
               </span>
             </h1>
@@ -185,7 +185,7 @@ onMounted(() => {
             <div class="flex flex-col sm:flex-row gap-3 mb-12">
               <button
                 @click="emit('request-demo')"
-                class="group flex items-center justify-center gap-2 bg-gradient-to-r from-blue-800 to-blue-700 hover:from-blue-900 hover:to-blue-800 text-white font-semibold text-sm px-7 py-4 rounded-xl shadow-xl shadow-blue-200 hover:shadow-blue-300 transition-all hover:-translate-y-0.5 active:translate-y-0"
+                class="group flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-700 to-emerald-600 hover:from-emerald-800 hover:to-emerald-700 text-white font-semibold text-sm px-7 py-4 rounded-xl shadow-xl shadow-emerald-200 hover:shadow-emerald-300 transition-all hover:-translate-y-0.5 active:translate-y-0"
               >
                 Pedir demo gratis
                 <ArrowRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -194,7 +194,7 @@ onMounted(() => {
                 @click="emit('login')"
                 class="flex items-center justify-center gap-2 bg-white hover:bg-gray-50 text-gray-700 font-semibold text-sm px-7 py-4 rounded-xl border border-gray-200 hover:border-gray-300 shadow-sm transition-all"
               >
-                <Play class="w-4 h-4 text-blue-700" />
+                <Play class="w-4 h-4 text-emerald-600" />
                 Ya tengo cuenta
               </button>
             </div>
@@ -219,7 +219,7 @@ onMounted(() => {
           <!-- Right: Dashboard mockup -->
           <div class="relative lg:pl-8">
             <!-- Glow -->
-            <div class="absolute inset-0 bg-gradient-to-br from-blue-200/30 to-blue-100/20 rounded-3xl blur-3xl scale-110 pointer-events-none" />
+            <div class="absolute inset-0 bg-gradient-to-br from-emerald-200/30 to-emerald-100/20 rounded-3xl blur-3xl scale-110 pointer-events-none" />
 
             <!-- Main card -->
             <div class="relative bg-white rounded-2xl shadow-2xl shadow-gray-200/80 border border-gray-100 overflow-hidden">
@@ -248,15 +248,15 @@ onMounted(() => {
                     <p class="text-xl font-bold text-gray-900">1.247</p>
                     <div class="flex items-center gap-1 mt-1">
                       <CheckCircle class="w-3 h-3 text-slate-500" />
-                      <span class="text-[10px] text-blue-700 font-semibold">98.6% ok</span>
+                      <span class="text-[10px] text-emerald-600 font-semibold">98.6% ok</span>
                     </div>
                   </div>
                   <div class="bg-white rounded-xl p-3.5 border border-gray-100 shadow-sm">
                     <p class="text-[10px] text-gray-400 font-medium uppercase tracking-wider mb-1">Productos</p>
                     <p class="text-xl font-bold text-gray-900">3.841</p>
                     <div class="flex items-center gap-1 mt-1">
-                      <Package class="w-3 h-3 text-blue-400" />
-                      <span class="text-[10px] text-blue-500 font-semibold">4 bodegas</span>
+                      <Package class="w-3 h-3 text-emerald-500" />
+                      <span class="text-[10px] text-emerald-500 font-semibold">4 bodegas</span>
                     </div>
                   </div>
                 </div>
@@ -265,12 +265,12 @@ onMounted(() => {
                 <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm mb-3">
                   <div class="flex items-center justify-between mb-4">
                     <p class="text-xs font-semibold text-gray-700">Flujo de caja "” Mayo 2026</p>
-                    <span class="text-[10px] text-blue-700 font-medium bg-blue-50 px-2 py-0.5 rounded-full">En tiempo real</span>
+                    <span class="text-[10px] text-emerald-700 font-medium bg-emerald-50 px-2 py-0.5 rounded-full">En tiempo real</span>
                   </div>
                   <div class="flex items-end gap-1.5 h-20">
                     <div v-for="(h, i) in [55, 72, 48, 88, 65, 91, 70, 84, 60, 95, 78, 88]" :key="i"
                       class="flex-1 rounded-t-sm transition-all"
-                      :class="i === 10 || i === 11 ? 'bg-blue-600' : 'bg-blue-100'"
+                      :class="i === 10 || i === 11 ? 'bg-emerald-600' : 'bg-emerald-100'"
                       :style="`height: ${h}%`"
                     />
                   </div>
@@ -287,7 +287,7 @@ onMounted(() => {
                   </div>
                   <div v-for="item in [
                     { label: 'FE-20240512-001', sub: 'Comercial Andina · $2.4M', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
-                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades · Prod. X220', color: 'bg-blue-100 text-blue-800', tag: 'En tránsito' },
+                    { label: 'Traslado BOGâ†’MED', sub: '84 unidades · Prod. X220', color: 'bg-emerald-100 text-emerald-800', tag: 'En tránsito' },
                     { label: 'FE-20240511-098', sub: 'Ferretería López · $780K', color: 'bg-emerald-100 text-emerald-600', tag: 'Aprobada' },
                   ]" :key="item.label"
                     class="flex items-center justify-between px-4 py-2.5 border-b border-gray-50 last:border-0"
@@ -304,8 +304,8 @@ onMounted(() => {
 
             <!-- Floating badge -->
             <div class="absolute -bottom-4 -left-4 bg-white rounded-xl shadow-xl border border-gray-100 px-4 py-3 flex items-center gap-3">
-              <div class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center">
-                <ShieldCheck class="w-4 h-4 text-blue-700" />
+              <div class="w-8 h-8 rounded-lg bg-emerald-50 flex items-center justify-center">
+                <ShieldCheck class="w-4 h-4 text-emerald-700" />
               </div>
               <div>
                 <p class="text-xs font-bold text-gray-900">Certificado DIAN</p>
@@ -333,7 +333,7 @@ onMounted(() => {
     <section id="features" class="py-24 md:py-32 bg-white">
       <div class="max-w-7xl mx-auto px-6">
         <div class="text-center mb-16">
-          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest mb-3">Plataforma completa</p>
+          <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3">Plataforma completa</p>
           <h2 class="text-4xl md:text-5xl font-extrabold text-gray-900 tracking-tight mb-4">
             Todo lo que necesita<br/>tu empresa
           </h2>
@@ -348,7 +348,7 @@ onMounted(() => {
             :class="[
               'flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-semibold transition-all',
               activeFeature === i
-                ? 'bg-blue-800 text-white shadow-md shadow-blue-200'
+                ? 'bg-emerald-700 text-white shadow-md shadow-emerald-200'
                 : 'bg-gray-50 text-gray-500 hover:bg-gray-100'
             ]"
           >
@@ -360,20 +360,20 @@ onMounted(() => {
         <!-- Active feature -->
         <div class="grid md:grid-cols-2 gap-12 items-center bg-gray-50 rounded-3xl p-8 md:p-12 border border-gray-100">
           <div>
-            <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-800 to-blue-700 items-center justify-center mb-6 shadow-lg shadow-blue-200">
+            <div class="inline-flex w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-700 to-emerald-600 items-center justify-center mb-6 shadow-lg shadow-emerald-200">
               <component :is="features[activeFeature].icon" class="w-7 h-7 text-white" />
             </div>
             <h3 class="text-3xl font-bold text-gray-900 mb-4">{{ features[activeFeature].title }}</h3>
             <p class="text-gray-500 text-lg leading-relaxed mb-8">{{ features[activeFeature].desc }}</p>
             <div class="flex items-center gap-4">
               <div>
-                <p class="text-4xl font-extrabold text-blue-700">{{ features[activeFeature].stat }}</p>
+                <p class="text-4xl font-extrabold text-emerald-600">{{ features[activeFeature].stat }}</p>
                 <p class="text-sm text-gray-400 mt-1">{{ features[activeFeature].statLabel }}</p>
               </div>
               <div class="w-px h-12 bg-gray-200" />
               <button
                 @click="emit('request-demo')"
-                class="group flex items-center gap-2 text-sm font-semibold text-blue-700 hover:text-blue-800 transition-colors"
+                class="group flex items-center gap-2 text-sm font-semibold text-emerald-600 hover:text-emerald-700 transition-colors"
               >
                 Ver demostración
                 <ChevronRight class="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -383,20 +383,20 @@ onMounted(() => {
 
           <!-- Feature mockup -->
           <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-            <div class="bg-gradient-to-r from-blue-800 to-blue-700 px-5 py-3 flex items-center justify-between">
+            <div class="bg-gradient-to-r from-emerald-700 to-emerald-600 px-5 py-3 flex items-center justify-between">
               <span class="text-white text-xs font-bold">{{ features[activeFeature].label }}</span>
-              <span class="text-blue-100 text-xs">Contex360 ERP</span>
+              <span class="text-emerald-100 text-xs">Contex360 ERP</span>
             </div>
             <div class="p-5 space-y-3">
               <div v-for="row in [85, 62, 91, 48, 77]" :key="row" class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded-lg bg-blue-50 flex-shrink-0" />
+                <div class="w-8 h-8 rounded-lg bg-emerald-50 flex-shrink-0" />
                 <div class="flex-1">
                   <div class="h-2.5 bg-gray-100 rounded-full mb-1.5" :style="`width: ${row}%`" />
                   <div class="h-2 bg-gray-50 rounded-full" :style="`width: ${row * 0.6}%`" />
                 </div>
                 <div class="text-right flex-shrink-0">
-                  <div class="h-2.5 w-12 bg-blue-100 rounded-full mb-1" />
-                  <div class="h-2 w-8 bg-blue-50 rounded-full ml-auto" />
+                  <div class="h-2.5 w-12 bg-emerald-100 rounded-full mb-1" />
+                  <div class="h-2 w-8 bg-emerald-50 rounded-full ml-auto" />
                 </div>
               </div>
             </div>
@@ -409,14 +409,14 @@ onMounted(() => {
     <section id="testimonials" class="py-24 bg-gradient-to-b from-orange-50/50 to-white">
       <div class="max-w-6xl mx-auto px-6">
         <div class="text-center mb-16">
-          <p class="text-xs font-bold text-blue-700 uppercase tracking-widest mb-3">Clientes reales</p>
+          <p class="text-xs font-bold text-emerald-600 uppercase tracking-widest mb-3">Clientes reales</p>
           <h2 class="text-4xl font-extrabold text-gray-900 tracking-tight">Lo que dicen las empresas</h2>
         </div>
 
         <div class="grid md:grid-cols-3 gap-6">
           <div
             v-for="t in testimonials" :key="t.name"
-            class="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all"
+            class="bg-white rounded-2xl p-7 border border-gray-100 shadow-sm hover:shadow-md hover:border-emerald-100 transition-all"
           >
             <!-- Stars -->
             <div class="flex gap-0.5 mb-5">
@@ -439,7 +439,7 @@ onMounted(() => {
 
     <!-- â”€â”€â”€â”€â”€ CTA FINAL â”€â”€â”€â”€â”€ -->
     <section class="py-24 md:py-32 relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-800 to-blue-700" />
+      <div class="absolute inset-0 bg-gradient-to-br from-emerald-700 to-emerald-600" />
       <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(255,255,255,0.15),transparent)]" />
 
       <div class="relative max-w-4xl mx-auto px-6 text-center">
@@ -451,14 +451,14 @@ onMounted(() => {
         <h2 class="text-5xl md:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">
           Empieza en menos<br/>de dos horas
         </h2>
-        <p class="text-xl text-blue-100 mb-12 max-w-xl mx-auto">
+        <p class="text-xl text-emerald-100 mb-12 max-w-xl mx-auto">
           Nuestro equipo configura tu empresa, migra tus datos y capacita tu equipo. Sin complicaciones técnicas.
         </p>
 
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
           <button
             @click="emit('request-demo')"
-            class="group flex items-center justify-center gap-2 bg-white text-blue-800 font-bold text-base px-8 py-4 rounded-xl shadow-xl shadow-orange-700/30 hover:bg-blue-50 transition-all hover:-translate-y-0.5"
+            class="group flex items-center justify-center gap-2 bg-white text-emerald-700 font-bold text-base px-8 py-4 rounded-xl shadow-xl shadow-emerald-700/30 hover:bg-emerald-50 transition-all hover:-translate-y-0.5"
           >
             Solicitar demo gratuita
             <ArrowRight class="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -472,7 +472,7 @@ onMounted(() => {
         </div>
 
         <!-- Checklist -->
-        <div class="mt-12 flex flex-wrap justify-center gap-6 text-sm text-blue-100">
+        <div class="mt-12 flex flex-wrap justify-center gap-6 text-sm text-emerald-100">
           <div v-for="item in ['Prueba 30 días gratis', 'Sin contrato mínimo', 'Soporte incluido', 'Datos seguros']" :key="item" class="flex items-center gap-2">
             <CheckCircle class="w-4 h-4 text-white" />
             {{ item }}
@@ -482,22 +482,22 @@ onMounted(() => {
     </section>
 
     <!-- â”€â”€â”€â”€â”€ FOOTER â”€â”€â”€â”€â”€ -->
-    <footer class="bg-[#0f172a] text-blue-200/60 py-14">
+    <footer class="bg-[#0f172a] text-emerald-200/60 py-14">
       <div class="max-w-7xl mx-auto px-6">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-8 mb-10">
           <div>
             <div class="flex items-center gap-2.5 mb-3">
-              <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-800 to-blue-700 flex items-center justify-center">
+              <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-700 to-emerald-600 flex items-center justify-center">
                 <Layers class="w-4 h-4 text-white" />
               </div>
-              <span class="text-blue-50 font-bold tracking-tight">Contex<span class="text-slate-500">360</span></span>
+              <span class="text-emerald-50 font-bold tracking-tight">Contex<span class="text-slate-400">360</span></span>
             </div>
-            <p class="text-sm leading-relaxed max-w-xs text-blue-200/50">ERP colombiano certificado DIAN para empresas que necesitan crecer con control.</p>
+            <p class="text-sm leading-relaxed max-w-xs text-emerald-200/50">ERP colombiano certificado DIAN para empresas que necesitan crecer con control.</p>
           </div>
 
           <div class="grid grid-cols-2 md:grid-cols-3 gap-8 text-sm">
             <div>
-              <p class="text-blue-100 font-semibold mb-3">Producto</p>
+              <p class="text-emerald-100 font-semibold mb-3">Producto</p>
               <ul class="space-y-2">
                 <li><a href="#features" class="hover:text-slate-500 transition-colors">Características</a></li>
                 <li><a href="#stats" class="hover:text-slate-500 transition-colors">Precios</a></li>
@@ -505,14 +505,14 @@ onMounted(() => {
               </ul>
             </div>
             <div>
-              <p class="text-blue-100 font-semibold mb-3">Empresa</p>
+              <p class="text-emerald-100 font-semibold mb-3">Empresa</p>
               <ul class="space-y-2">
                 <li><a href="#" class="hover:text-slate-500 transition-colors">Nosotros</a></li>
                 <li><button @click="emit('request-demo')" class="hover:text-slate-500 transition-colors">Contacto</button></li>
               </ul>
             </div>
             <div>
-              <p class="text-blue-100 font-semibold mb-3">Legal</p>
+              <p class="text-emerald-100 font-semibold mb-3">Legal</p>
               <ul class="space-y-2">
                 <li><a href="#" class="hover:text-slate-500 transition-colors">Privacidad</a></li>
                 <li><a href="#" class="hover:text-slate-500 transition-colors">Términos</a></li>
@@ -521,7 +521,7 @@ onMounted(() => {
           </div>
         </div>
 
-        <div class="border-t border-blue-900/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
+        <div class="border-t border-emerald-900/40 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
           <p>Â© 2026 Contex360. Todos los derechos reservados.</p>
           <p class="flex items-center gap-1.5">
             <ShieldCheck class="w-3.5 h-3.5 text-slate-500" />
