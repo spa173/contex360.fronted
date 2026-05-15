@@ -100,6 +100,12 @@ export const businessApi = {
   async updatePurchaseStatus(id: string, status: string, tenantId?: string | null) {
     return request<any>(`/purchases/${id}/status`, { method: 'PATCH', body: { status }, tenantId })
   },
+  async getOverdueInvoices(tenantId?: string | null) {
+    return request<any>('/invoices/overdue', { tenantId })
+  },
+  async getInvoiceAging(tenantId?: string | null) {
+    return request<any>('/invoices/aging', { tenantId })
+  },
 
   // Treasury
   async getTransactions(tenantId?: string | null) {

@@ -55,21 +55,24 @@ const loading = ref(false)
 const salesReport = ref(null)
 const topProducts = ref([])
 const monthlySales = ref([])
+const agingReport = ref(null)
 
 async function loadData() {
   if (!store.activeTenantId) return
   
   loading.value = true
   try {
-    const [report, products, monthly] = await Promise.all([
+    const [report, products, monthly, aging] = await Promise.all([
       businessApi.getSalesReport(dateRange.value.from, dateRange.value.to, store.activeTenantId),
       businessApi.getTopProducts(10, store.activeTenantId),
       businessApi.getSalesByMonth(store.activeTenantId),
+      businessApi.getInvoiceAging(store.activeTenantId),
     ])
     
     salesReport.value = report
     topProducts.value = products
     monthlySales.value = monthly
+    agingReport.value = aging
   } catch (error) {
     emit('notify', {
       message: 'Error al cargar reportes',
@@ -318,6 +321,28 @@ onMounted(() => {
             <div v-else class="p-12 text-center text-slate-500">
               No hay datos de productos
             </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aging Report —— Cartera por Antigüedad -->
+      <div v-if="agingReport?.buckets" class="mt-6 bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden">
+        <div class="p-5 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
+          <h2 class="text-sm font-semibold text-slate-300 uppercase tracking-widest flex items-center gap-2">
+            <TrendingDown class="w-4 h-4 text-rose-400" />
+            Antigüedad de Cartera
+          </h2>
+          <span class="text-xs text-slate-400">Total: {{ formatCurrency(agingReport.totalPortfolio) }}</span>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 divide-x divide-slate-800/50">
+          <div
+            v-for="bucket in agingReport.buckets"
+            :key="bucket.label"
+            class="p-5 text-center"
+          >
+            <p class="text-[11px] font-semibold text-slate-500 uppercase tracking-wider mb-2">{{ bucket.label }}</p>
+            <p :class="['text-xl font-black', bucket.label === 'Al día' ? 'text-emerald-400' : 'text-rose-400']">{{ formatCurrency(bucket.total) }}</p>
+            <p class="text-xs text-slate-600 mt-1">{{ bucket.count }} factura(s)</p>
           </div>
         </div>
       </div>
