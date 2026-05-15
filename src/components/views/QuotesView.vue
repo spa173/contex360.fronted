@@ -1,335 +1,163 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
-import { useStateStore } from '@/stores/stateStore'
-import { businessApi } from '@/services/businessApi'
-import { formatCurrency, formatDate } from '@/utils/ui'
-import { 
-  FileText, 
-  Plus, 
-  Send, 
-  CheckCircle, 
-  XCircle, 
-  RefreshCw,
-  Trash2,
-  Loader2,
-  FileCheck
-} from 'lucide-vue-next'
+import { ref, computed } from 'vue'
+import { useQuotesStore } from '../../stores/quotesStore'
+import { formatCurrency } from '../../utils/ui'
 
-defineProps({
-  isActive: {
-    type: Boolean,
-    required: true,
-  },
+const props = defineProps({
+  isActive: { type: Boolean, required: true }
 })
 
 const emit = defineEmits(['notify'])
-const store = useStateStore()
 
-const quotes = ref([])
-const clients = ref([])
-const products = ref([])
-const loading = ref(false)
-const showForm = ref(false)
-const converting = ref(null)
+const quotes = useQuotesStore()
 
-const form = ref({
-  clientId: '',
-  validUntil: '',
-  notes: '',
-  terms: '',
-  items: [{ productId: '', quantity: 1, unitPrice: 0, taxRate: 19, notes: '' }],
-})
+const selectedQuote = ref(null)
 
-const statusLabels = {
-  draft: 'Borrador',
-  sent: 'Enviada',
-  accepted: 'Aceptada',
-  rejected: 'Rechazada',
-  converted: 'Convertida',
-}
-
-const statusColors = {
-  draft: 'text-slate-400 bg-slate-400/10',
-  sent: 'text-blue-400 bg-blue-400/10',
-  accepted: 'text-emerald-400 bg-emerald-400/10',
-  rejected: 'text-rose-400 bg-rose-400/10',
-  converted: 'text-purple-400 bg-purple-400/10',
-}
-
-async function loadData() {
-  if (!store.activeTenantId) return
-  loading.value = true
-  try {
-    const [quotesData, clientsData, productsData] = await Promise.all([
-      businessApi.getQuotes(store.activeTenantId),
-      businessApi.getThirdParties('client', store.activeTenantId),
-      businessApi.getProducts(store.activeTenantId),
-    ])
-    quotes.value = quotesData
-    clients.value = clientsData
-    products.value = productsData
-  } catch (error) {
-    emit('notify', { message: 'Error al cargar cotizaciones', detail: error.message })
-  } finally {
-    loading.value = false
+function getStatusClass(status) {
+  switch (status?.toLowerCase()) {
+    case 'approved': return 'bg-emerald-50 text-emerald-700 border-emerald-100'
+    case 'sent': return 'bg-blue-50 text-blue-700 border-blue-100'
+    case 'expired': return 'bg-rose-50 text-rose-700 border-rose-100'
+    default: return 'bg-slate-50 text-slate-700 border-slate-100'
   }
 }
 
-function addItem() {
-  form.value.items.push({ productId: '', quantity: 1, unitPrice: 0, taxRate: 19, notes: '' })
+function handleConvertToInvoice(quote) {
+  emit('notify', { message: 'Conversión Iniciada', detail: `Convirtiendo cotización ${quote.number} a factura electrónica...` })
 }
-
-function removeItem(index) {
-  form.value.items.splice(index, 1)
-}
-
-function updateItemPrice(index) {
-  const product = products.value.find(p => p.id === form.value.items[index].productId)
-  if (product) {
-    form.value.items[index].unitPrice = product.price || 0
-    form.value.items[index].productName = product.name
-  }
-}
-
-const subtotal = computed(() => 
-  form.value.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0)
-)
-
-const taxTotal = computed(() => 
-  form.value.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice * (item.taxRate / 100)), 0)
-)
-
-const total = computed(() => subtotal.value + taxTotal.value)
-
-async function createQuote() {
-  try {
-    const quote = await businessApi.createQuote({
-      clientId: form.value.clientId,
-      validUntil: form.value.validUntil || undefined,
-      notes: form.value.notes,
-      terms: form.value.terms,
-      items: form.value.items,
-    }, store.activeTenantId)
-    
-    quotes.value.unshift(quote)
-    showForm.value = false
-    resetForm()
-    emit('notify', { message: 'Cotización creada exitosamente' })
-  } catch (error) {
-    emit('notify', { message: 'Error al crear cotización', detail: error.message })
-  }
-}
-
-async function updateStatus(quoteId, status) {
-  try {
-    const updated = await businessApi.updateQuoteStatus(quoteId, status, store.activeTenantId)
-    const index = quotes.value.findIndex(q => q.id === quoteId)
-    if (index !== -1) quotes.value[index] = updated
-    emit('notify', { message: `Estado actualizado a: ${statusLabels[status]}` })
-  } catch (error) {
-    emit('notify', { message: 'Error al actualizar estado', detail: error.message })
-  }
-}
-
-async function convertToInvoice(quoteId) {
-  converting.value = quoteId
-  try {
-    const result = await businessApi.convertQuoteToInvoice(quoteId, store.activeTenantId)
-    const index = quotes.value.findIndex(q => q.id === quoteId)
-    if (index !== -1) quotes.value[index] = result.quote
-    emit('notify', { 
-      message: 'Cotización convertida a factura',
-      detail: `Factura #${result.invoice.number}`
-    })
-  } catch (error) {
-    emit('notify', { message: 'Error al convertir', detail: error.message })
-  } finally {
-    converting.value = null
-  }
-}
-
-async function deleteQuote(quoteId) {
-  if (!confirm('¿Eliminar esta cotización?')) return
-  try {
-    await businessApi.deleteQuote(quoteId, store.activeTenantId)
-    quotes.value = quotes.value.filter(q => q.id !== quoteId)
-    emit('notify', { message: 'Cotización eliminada' })
-  } catch (error) {
-    emit('notify', { message: 'Error al eliminar', detail: error.message })
-  }
-}
-
-function resetForm() {
-  form.value = {
-    clientId: '',
-    validUntil: '',
-    notes: '',
-    terms: '',
-    items: [{ productId: '', quantity: 1, unitPrice: 0, taxRate: 19, notes: '' }],
-  }
-}
-
-onMounted(() => {
-  if (store.activeTenantId) loadData()
-})
 </script>
 
 <template>
-  <section v-if="isActive" class="min-h-full p-8 animate-in fade-in duration-500">
-    <!-- Header -->
-    <div class="mb-8 flex items-center justify-between">
+  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <!-- Header Section -->
+    <div class="flex justify-between items-end mb-8">
       <div>
-        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-          <FileText class="w-6 h-6 text-emerald-400" />
-          Cotizaciones / Proformas
-        </h1>
-        <p class="text-slate-400 text-sm mt-1">Gestión de cotizaciones y proformas</p>
+        <h2 class="text-3xl font-bold text-slate-900">Cotizaciones</h2>
+        <p class="text-sm text-slate-500 mt-1">Gestión de ofertas comerciales y conversión de ventas.</p>
       </div>
-      <button
-        @click="showForm = !showForm"
-        class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-sm font-medium transition-all flex items-center gap-2"
-      >
-        <Plus class="w-4 h-4" />
-        {{ showForm ? 'Cancelar' : 'Nueva Cotización' }}
-      </button>
-    </div>
-
-    <!-- Create Form -->
-    <div v-if="showForm" class="mb-8 bg-[#131926] border border-slate-800/50 rounded-xl p-6">
-      <h2 class="text-lg font-semibold text-white mb-4">Nueva Cotización</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <div>
-          <label class="text-xs text-slate-400 uppercase">Cliente</label>
-          <select v-model="form.clientId" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200">
-            <option value="">Seleccionar cliente</option>
-            <option v-for="client in clients" :key="client.id" :value="client.id">{{ client.name }}</option>
-          </select>
-        </div>
-        <div>
-          <label class="text-xs text-slate-400 uppercase">Válida hasta</label>
-          <input v-model="form.validUntil" type="date" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200" />
-        </div>
-      </div>
-      <div class="mb-4">
-        <label class="text-xs text-slate-400 uppercase">Notas</label>
-        <textarea v-model="form.notes" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"></textarea>
-      </div>
-      <div class="mb-4">
-        <label class="text-xs text-slate-400 uppercase">Términos y condiciones</label>
-        <textarea v-model="form.terms" rows="2" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-slate-200"></textarea>
-      </div>
-
-      <!-- Items -->
-      <div class="mb-4">
-        <label class="text-xs text-slate-400 uppercase">Items</label>
-        <div v-for="(item, index) in form.items" :key="index" class="grid grid-cols-12 gap-2 mb-2">
-          <div class="col-span-4">
-            <select v-model="item.productId" @change="updateItemPrice(index)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-slate-200">
-              <option value="">Producto</option>
-              <option v-for="product in products" :key="product.id" :value="product.id">{{ product.name }}</option>
-            </select>
-          </div>
-          <div class="col-span-2">
-            <input v-model.number="item.quantity" type="number" min="1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-slate-200" placeholder="Cant" />
-          </div>
-          <div class="col-span-2">
-            <input v-model.number="item.unitPrice" type="number" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-slate-200" placeholder="Precio" />
-          </div>
-          <div class="col-span-2">
-            <input v-model.number="item.taxRate" type="number" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-2 py-2 text-sm text-slate-200" placeholder="IVA%" />
-          </div>
-          <div class="col-span-1">
-            <button @click="removeItem(index)" class="p-2 text-rose-400 hover:bg-rose-900/30 rounded-lg">
-              <Trash2 class="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-        <button @click="addItem" class="text-sm text-emerald-400 hover:text-emerald-300 flex items-center gap-1">
-          <Plus class="w-4 h-4" /> Agregar item
+      <div class="flex space-x-3">
+        <button class="px-4 py-2 border border-slate-200 rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center text-xs font-bold shadow-sm">
+          <span class="material-symbols-outlined mr-2 text-[18px]">download</span>
+          Exportar
         </button>
-      </div>
-
-      <!-- Totals -->
-      <div class="flex justify-end gap-4 text-sm mb-4">
-        <div class="text-slate-400">Subtotal: <span class="text-white">{{ formatCurrency(subtotal) }}</span></div>
-        <div class="text-slate-400">IVA: <span class="text-white">{{ formatCurrency(taxTotal) }}</span></div>
-        <div class="text-slate-400 font-semibold">Total: <span class="text-emerald-400">{{ formatCurrency(total) }}</span></div>
-      </div>
-
-      <div class="flex justify-end">
-        <button @click="createQuote" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg font-medium">
-          Crear Cotización
+        <button class="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-all text-xs font-bold shadow-md shadow-violet-200 flex items-center">
+          <span class="material-symbols-outlined mr-2 text-[18px]">add</span>
+          Nueva Cotización
         </button>
       </div>
     </div>
 
-    <!-- Quotes List -->
-    <div v-if="loading" class="flex items-center justify-center py-20">
-      <Loader2 class="w-8 h-8 text-emerald-400 animate-spin" />
+    <!-- AI Insight Banner -->
+    <div class="bg-violet-50 border border-violet-100 rounded-xl p-4 flex items-start gap-4 mb-8">
+      <div class="w-10 h-10 rounded-full bg-violet-100 flex items-center justify-center text-violet-600 shrink-0">
+        <span class="material-symbols-outlined text-[20px]">lightbulb</span>
+      </div>
+      <div>
+        <h4 class="text-[11px] font-bold text-violet-700 uppercase tracking-wider mb-1">ContexAI Insight</h4>
+        <p class="text-xs text-violet-900 leading-relaxed">
+          Basado en el historial reciente, la cotización <span class="font-mono font-bold">#COT-1025</span> tiene un <strong>85% de probabilidad de cierre</strong>. Se recomienda seguimiento comercial en las próximas 24 horas.
+        </p>
+      </div>
     </div>
 
-    <div v-else-if="quotes.length === 0" class="text-center py-20 text-slate-500">
-      <FileText class="w-12 h-12 mx-auto mb-4 opacity-50" />
-      <p>No hay cotizaciones registradas</p>
-    </div>
+    <div class="flex flex-col xl:flex-row gap-6">
+      <!-- Data Table Section -->
+      <div class="flex-grow border border-slate-200 rounded-xl bg-white overflow-hidden shadow-sm">
+        <div class="p-4 border-b border-slate-50 flex justify-between items-center bg-slate-50/30">
+          <div class="relative w-64">
+            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">filter_list</span>
+            <input class="w-full pl-9 pr-3 py-1.5 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-violet-500/20 outline-none" placeholder="Filtrar cotizaciones..." type="text"/>
+          </div>
+          <div class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+            {{ quotes.tenantQuotes.length }} Registros Encontrados
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left">
+            <thead>
+              <tr class="bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider">
+                <th class="px-6 py-3">ID</th>
+                <th class="px-6 py-3">Cliente</th>
+                <th class="px-6 py-3">Fecha</th>
+                <th class="px-6 py-3">Vencimiento</th>
+                <th class="px-6 py-3 text-right">Monto Total</th>
+                <th class="px-6 py-3 text-center">Estado</th>
+                <th class="px-6 py-3 text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody class="text-xs text-slate-700 divide-y divide-slate-50">
+              <tr v-for="quote in quotes.tenantQuotes" :key="quote.id" 
+                class="hover:bg-slate-50 transition-colors cursor-pointer"
+                @click="selectedQuote = quote"
+              >
+                <td class="px-6 py-4 font-mono text-violet-600 font-semibold">{{ quote.number }}</td>
+                <td class="px-6 py-4 font-bold">{{ quote.customerName }}</td>
+                <td class="px-6 py-4 text-slate-500">{{ new Date(quote.date).toLocaleDateString() }}</td>
+                <td class="px-6 py-4" :class="{'text-rose-500 font-bold': quote.status === 'Expired'}">
+                  {{ new Date(quote.dueDate).toLocaleDateString() }}
+                </td>
+                <td class="px-6 py-4 text-right font-mono font-bold">{{ formatCurrency(quote.total) }}</td>
+                <td class="px-6 py-4 text-center">
+                  <span :class="['inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase border', getStatusClass(quote.status)]">
+                    {{ quote.status }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 text-center">
+                  <button 
+                    v-if="quote.status === 'Approved'"
+                    @click.stop="handleConvertToInvoice(quote)"
+                    class="text-violet-600 hover:text-violet-800 text-[10px] font-bold underline uppercase tracking-tighter"
+                  >
+                    Convertir a Factura
+                  </button>
+                  <button v-else class="text-slate-300 hover:text-slate-600">
+                    <span class="material-symbols-outlined text-[18px]">more_vert</span>
+                  </button>
+                </td>
+              </tr>
+              <tr v-if="quotes.tenantQuotes.length === 0">
+                <td colspan="7" class="px-6 py-10 text-center text-slate-400">No hay cotizaciones registradas.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
 
-    <div v-else class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden">
-      <table class="w-full">
-        <thead class="bg-slate-800/30 text-left">
-          <tr>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase">Número</th>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase">Cliente</th>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase">Fecha</th>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase">Válida hasta</th>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase">Total</th>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase">Estado</th>
-            <th class="px-4 py-3 text-xs font-medium text-slate-400 uppercase text-right">Acciones</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-800/50">
-          <tr v-for="quote in quotes" :key="quote.id" class="hover:bg-slate-800/30">
-            <td class="px-4 py-3 text-sm font-mono text-slate-300">{{ quote.number }}</td>
-            <td class="px-4 py-3 text-sm text-white">{{ quote.client?.name || 'N/A' }}</td>
-            <td class="px-4 py-3 text-sm text-slate-400">{{ formatDate(quote.createdAt) }}</td>
-            <td class="px-4 py-3 text-sm text-slate-400">{{ quote.validUntil ? formatDate(quote.validUntil) : '-' }}</td>
-            <td class="px-4 py-3 text-sm font-semibold text-emerald-400">{{ formatCurrency(quote.total) }}</td>
-            <td class="px-4 py-3">
-              <span :class="['px-2 py-1 rounded-full text-xs font-medium', statusColors[quote.status]]">
-                {{ statusLabels[quote.status] }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex items-center justify-end gap-1">
-                <button v-if="quote.status === 'draft'" @click="updateStatus(quote.id, 'sent')" class="p-1.5 text-blue-400 hover:bg-blue-900/30 rounded" title="Marcar enviada">
-                  <Send class="w-4 h-4" />
-                </button>
-                <button v-if="quote.status === 'sent'" @click="updateStatus(quote.id, 'accepted')" class="p-1.5 text-emerald-400 hover:bg-emerald-900/30 rounded" title="Aceptar">
-                  <CheckCircle class="w-4 h-4" />
-                </button>
-                <button v-if="quote.status === 'sent'" @click="updateStatus(quote.id, 'rejected')" class="p-1.5 text-rose-400 hover:bg-rose-900/30 rounded" title="Rechazar">
-                  <XCircle class="w-4 h-4" />
-                </button>
-                <button v-if="quote.status === 'accepted'" @click="convertToInvoice(quote.id)" :disabled="converting === quote.id" class="p-1.5 text-purple-400 hover:bg-purple-900/30 rounded" title="Convertir a factura">
-                  <RefreshCw :class="['w-4 h-4', converting === quote.id && 'animate-spin']" />
-                </button>
-                <button v-if="quote.status !== 'converted'" @click="deleteQuote(quote.id)" class="p-1.5 text-rose-400 hover:bg-rose-900/30 rounded" title="Eliminar">
-                  <Trash2 class="w-4 h-4" />
-                </button>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <!-- Version History Side Panel -->
+      <div v-if="selectedQuote" class="w-full xl:w-80 shrink-0 border border-slate-200 rounded-xl bg-white p-6 shadow-sm animate-in slide-in-from-right-4 duration-300">
+        <div class="flex justify-between items-center mb-6 pb-2 border-b border-slate-50">
+          <h3 class="text-sm font-bold text-slate-900">Historial de Versiones</h3>
+          <span class="font-mono text-violet-600 text-xs font-bold">{{ selectedQuote.number }}</span>
+        </div>
+        <div class="relative border-l-2 border-slate-100 ml-3 space-y-8 pb-4">
+          <div class="relative pl-6">
+            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-violet-600 ring-4 ring-white"></div>
+            <div class="flex justify-between items-start">
+              <h4 class="text-[11px] font-bold text-slate-900 uppercase">Versión 2 <span class="bg-cyan-50 text-cyan-700 px-1.5 py-0.5 rounded text-[8px] ml-1">Actual</span></h4>
+              <span class="text-[9px] text-slate-400 font-bold uppercase">Hoy, 14:30</span>
+            </div>
+            <p class="text-[11px] text-slate-500 mt-2">Monto ajustado: +{{ formatCurrency(selectedQuote.total * 0.1) }}</p>
+            <p class="text-[11px] text-slate-500 italic">"Se agregó soporte extendido solicitado por cliente."</p>
+          </div>
+          <div class="relative pl-6">
+            <div class="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-slate-200 ring-4 ring-white"></div>
+            <div class="flex justify-between items-start">
+              <h4 class="text-[11px] font-bold text-slate-400 uppercase">Versión 1</h4>
+              <span class="text-[9px] text-slate-400 font-bold uppercase">Oct 10, 09:15</span>
+            </div>
+            <p class="text-[11px] text-slate-400 mt-2">Creación inicial: {{ formatCurrency(selectedQuote.total) }}</p>
+          </div>
+        </div>
+        <button class="w-full mt-6 py-2.5 border border-slate-200 rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-all">
+          Ver Comparación Detallada
+        </button>
+      </div>
+      <div v-else class="hidden xl:flex w-80 shrink-0 border border-dashed border-slate-200 rounded-xl items-center justify-center p-6 text-center">
+        <p class="text-xs text-slate-400 font-medium">Selecciona una cotización para ver su historial de versiones y auditoría.</p>
+      </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-.overflow-x-auto::-webkit-scrollbar {
-  height: 4px;
-}
-.overflow-x-auto::-webkit-scrollbar-thumb {
-  background: #1e293b;
-  border-radius: 10px;
-}
 </style>

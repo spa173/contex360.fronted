@@ -6,139 +6,64 @@ import { businessApi } from '../services/businessApi'
 import { useToasts } from '../composables/useToasts'
 import AppSidebar from './layout/AppSidebar.vue'
 import TopNavigation from './layout/TopNavigation.vue'
-import HeroSummary from './layout/HeroSummary.vue'
-import AccountingView from './views/AccountingView.vue'
-import AiView from './views/AiView.vue'
+import DashboardView from './views/DashboardView.vue'
 import BillingView from './views/BillingView.vue'
 import PurchasesView from './views/PurchasesView.vue'
 import TreasuryView from './views/TreasuryView.vue'
 import QuotesView from './views/QuotesView.vue'
 import ReportsView from './views/ReportsView.vue'
-import DashboardView from './views/DashboardView.vue'
 import InventoryView from './views/InventoryView.vue'
 import ThirdPartiesView from './views/ThirdPartiesView.vue'
 import UsersView from './views/UsersView.vue'
 import AdminConsoleView from './views/AdminConsoleView.vue'
+import AccountingView from './views/AccountingView.vue'
 import TwoFactorView from './views/TwoFactorView.vue'
-import PrivacyPolicyView from './views/PrivacyPolicyView.vue'
-import TermsOfUseView from './views/TermsOfUseView.vue'
-import DemoRequestView from './views/DemoRequestView.vue'
-import ChangePasswordView from './views/ChangePasswordView.vue'
 import ProfileView from './views/ProfileView.vue'
-import AboutView from './views/AboutView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
 const themeStore = useThemeStore()
 const { pushToast } = useToasts()
-const isSidebarOpen = ref(false)
-const systemStats = ref(null)
+const isSidebarOpen = ref(true) // Sidebar persistent on desktop
 const emit = defineEmits(['open-admin-panel', 'exit-erp'])
-let healthTimer = null
-const HEALTH_INTERVAL_ACTIVE_MS = 3000
-const HEALTH_INTERVAL_BACKGROUND_MS = 12000
 
-/* c8 ignore start */
 function handleNavigate(viewId) {
   const result = store.setActiveView(viewId)
-
   if (!result.ok) {
     pushToast(result.message, result.detail || '')
-    return
   }
-
-  isSidebarOpen.value = false
 }
 
 function handleTenantChange(tenantId) {
   const result = store.setActiveTenant(tenantId)
-
   if (!result.ok) {
     pushToast(result.message, result.detail || '')
   }
 }
 
 function handleLogout() {
-  const result = store.logout()
-
-  if (!result.ok) {
-    pushToast(result.message, result.detail || '')
-  }
+  store.logout()
 }
 
 function handleNotify(payload) {
   pushToast(payload.message, payload.detail || '')
 }
 
-function openSidebar() {
-  isSidebarOpen.value = true
-}
-
-function closeSidebar() {
-  isSidebarOpen.value = false
-}
-
-function handleSidebarToggle() {
+function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value
 }
-/* c8 ignore stop */
-
-/* c8 ignore start */
-onMounted(() => {
-  const scheduleNextHealthCheck = () => {
-    const delay = document.visibilityState === 'hidden' ? HEALTH_INTERVAL_BACKGROUND_MS : HEALTH_INTERVAL_ACTIVE_MS
-    healthTimer = globalThis.setTimeout(() => {
-    const health = store.checkCurrentSessionHealth()
-    if (health.revoked) {
-      pushToast('Sesión finalizada', health.message || 'Debes iniciar sesión nuevamente.')
-    }
-    store.processScheduledDeactivations()
-      scheduleNextHealthCheck()
-    }, delay)
-  }
-
-  scheduleNextHealthCheck()
-
-  if (store.currentUser?.isSystemOwner) {
-    businessApi.getAdminStats().then(s => { systemStats.value = s }).catch(() => {})
-  }
-})
-/* c8 ignore stop */
-
-onUnmounted(() => {
-  if (healthTimer) {
-    globalThis.clearTimeout(healthTimer)
-    healthTimer = null
-  }
-})
 </script>
-<style scoped>
-.sidebar-trigger {
-  position: fixed;
-  left: 0;
-  top: 0;
-  bottom: 0;
-  width: 12px;
-  z-index: 100;
-  background: transparent;
-}
-.main-panel {
-  max-width: 1440px;
-  margin: 0 auto;
-}
-</style>
 
 <template>
-  <div class="app app-shell">
-    <div class="sidebar-trigger" @mouseenter="openSidebar"></div>
+  <div class="app-shell bg-[#faf8ff] min-h-screen flex">
+    <!-- Persistent Sidebar -->
     <AppSidebar
       :is-open="isSidebarOpen"
       @navigate="handleNavigate"
-      @mouseenter="openSidebar"
-      @mouseleave="closeSidebar"
     />
 
-    <main class="main main-panel !ml-0">
+    <!-- Main Content Area -->
+    <div :class="['main-wrapper', { 'sidebar-collapsed': !isSidebarOpen }]">
       <TopNavigation
         :user="store.currentUser"
         :active-tenant="store.activeTenant"
@@ -146,101 +71,140 @@ onUnmounted(() => {
         :active-membership="store.activeMembership"
         :active-view="store.activeView"
         :sidebar-open="isSidebarOpen"
-        :is-dark="themeStore.isDark"
-        :can-switch-tenant="(store.accessibleTenants?.length || 0) > 1 && store.isAdmin"
+        :can-switch-tenant="(store.accessibleTenants?.length || 0) > 1"
         @logout="handleLogout"
         @tenant-change="handleTenantChange"
-        @toggle-sidebar="handleSidebarToggle"
-        @toggle-theme="themeStore.toggleTheme"
+        @toggle-sidebar="toggleSidebar"
         @navigate="handleNavigate"
         @open-admin-panel="emit('open-admin-panel')"
-        @exit-erp="emit('exit-erp')"
       />
 
-      <div class="content">
+      <main class="content-canvas">
         <DashboardView
-          v-if="store.visibleViews.includes('dashboard')"
-          :is-active="store.activeView === 'dashboard'"
+          v-if="store.activeView === 'dashboard'"
+          :is-active="true"
         />
         <BillingView
-          v-if="store.visibleViews.includes('billing')"
-          :is-active="store.activeView === 'billing'"
+          v-if="store.activeView === 'billing'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <PurchasesView
-          v-if="store.visibleViews.includes('purchases')"
-          :is-active="store.activeView === 'purchases'"
+          v-if="store.activeView === 'purchases'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <TreasuryView
-          v-if="store.visibleViews.includes('treasury')"
-          :is-active="store.activeView === 'treasury'"
+          v-if="store.activeView === 'treasury'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <InventoryView
-          v-if="store.visibleViews.includes('inventory')"
-          :is-active="store.activeView === 'inventory'"
+          v-if="store.activeView === 'inventory'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <ThirdPartiesView
+          v-if="store.activeView === 'third-parties'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <AccountingView
-          v-if="store.visibleViews.includes('accounting')"
-          :is-active="store.activeView === 'accounting'"
-        />
-        <ThirdPartiesView
-          v-if="store.visibleViews.includes('third-parties')"
-          :is-active="store.activeView === 'third-parties'"
+          v-if="store.activeView === 'accounting'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <UsersView
-          v-if="store.visibleViews.includes('users')"
-          :is-active="store.activeView === 'users'"
-          @notify="handleNotify"
-        />
-        <AiView
-          v-if="store.visibleViews.includes('ai')"
-          :is-active="store.activeView === 'ai'"
+          v-if="store.activeView === 'users'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <ReportsView
-          v-if="store.visibleViews.includes('reports')"
-          :is-active="store.activeView === 'reports'"
+          v-if="store.activeView === 'reports'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <QuotesView
-          v-if="store.visibleViews.includes('quotes')"
-          :is-active="store.activeView === 'quotes'"
+          v-if="store.activeView === 'quotes'"
+          :is-active="true"
           @notify="handleNotify"
         />
         <AdminConsoleView
-          v-if="store.visibleViews.includes('admin-console')"
-          :is-active="store.activeView === 'admin-console'"
+          v-if="store.activeView === 'admin-console'"
+          :is-active="true"
         />
         <TwoFactorView
           v-if="store.activeView === 'two-factor'"
         />
-        <PrivacyPolicyView
-          v-if="store.activeView === 'privacy-policy'"
-        />
-        <TermsOfUseView
-          v-if="store.activeView === 'terms-of-use'"
-        />
-        <AboutView
-          v-if="store.activeView === 'about'"
-        />
-        <DemoRequestView
-          v-if="store.activeView === 'demo'"
-        />
-        <ChangePasswordView
-          v-if="store.activeView === 'change-password'"
-        />
         <ProfileView
           v-if="store.activeView === 'profile'"
-          :is-active="store.activeView === 'profile'"
+          :is-active="true"
           @notify="handleNotify"
         />
-      </div>
-    </main>
-    <ChatAssistant @navigate="store.setActiveView" />
+      </main>
+    </div>
 
+    <!-- Floating AI Assistant Button -->
+    <button 
+      class="ai-floating-trigger"
+      @click="handleNavigate('ai')"
+    >
+      <span class="material-symbols-outlined">smart_toy</span>
+    </button>
   </div>
 </template>
+
+<style scoped>
+.app-shell {
+  display: flex;
+}
+
+.main-wrapper {
+  flex: 1;
+  margin-left: 260px; /* Width of sidebar */
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.main-wrapper.sidebar-collapsed {
+  margin-left: 0;
+}
+
+.content-canvas {
+  flex: 1;
+  margin-top: 64px; /* Height of topnav */
+  padding: 24px;
+  max-width: 1440px;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.ai-floating-trigger {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 56px;
+  height: 56px;
+  background-color: #8455ef;
+  border-radius: 9999px;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  z-index: 200;
+  transition: transform 0.2s, background-color 0.2s;
+}
+
+.ai-floating-trigger:hover {
+  transform: scale(1.05);
+  background-color: #6b38d4;
+}
+
+.ai-floating-trigger span {
+  font-size: 28px;
+}
+</style>

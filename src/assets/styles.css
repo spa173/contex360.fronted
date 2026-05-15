@@ -1,73 +1,52 @@
 :root {
-  /* === CONTEX360 PALETTE - Dark Tech / Cobalto === */
-  --cobalt:        #2563EB;   /* acento primario */
-  --cobalt-muted:  #1D4ED8;   /* acento hover */
-  --cobalt-faint:  rgba(37, 99, 235, 0.12);  /* fondos tenues */
-  --cobalt-border: rgba(37, 99, 235, 0.22);  /* bordes accent */
-
-  --primary:       #2563EB;
-  --primary-hover: #1D4ED8;
-
-  --radius-lg: 14px;
-  --radius-md: 10px;
-  --radius-sm: 6px;
-  --radius-xl: 18px;
-  --radius: var(--radius-md);
-  --transition: all 0.2s ease;
-
-  /* === FONDOS - Dark Tech === */
-  --bg:            #0F172A;   /* canvas principal */
-  --bg-strong:     #0A0F1E;   /* fondo más profundo */
-  --bg-secondary:  #0F172A;   /* bg secundario */
-  --surface:       #1E293B;   /* superficie de card */
-  --surface-hover: #263244;   /* card hover */
-  --sidebar-bg:    #0A0F1E;   /* sidebar */
-
-  /* === BORDES === */
-  --border:        rgba(37, 99, 235, 0.15);
-  --border-subtle: rgba(37, 99, 235, 0.08);
-
-  /* === TEXTO === */
-  --text:          #F1F5F9;   /* blanco técnico */
-  --text-secondary:#94A3B8;   /* texto secundario */
-  --text-muted:    #64748B;   /* texto muted/labels */
-
-  --background:   var(--bg);
-  --foreground:   var(--text);
-  --card:         var(--surface);
-  --card-foreground: var(--text);
-  --muted:        var(--text-muted);
-  --accent:       var(--cobalt);
-  --sidebar:      var(--sidebar-bg);
-
-  --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-  --shadow:    0 8px 30px rgba(0, 0, 0, 0.55);
-  --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.65);
-  --page-background: #0F172A;
+  /* === CONTEX360 AI PALETTE - Premium AI ERP === */
+  --primary: #6b38d4;
+  --primary-container: #8455ef;
+  --on-primary-container: #fffbff;
+  
+  --secondary: #00687a;
+  --secondary-container: #57dffe;
+  
+  --tertiary: #855000;
+  --tertiary-container: #a76500;
+  
+  --error: #ba1a1a;
+  
+  /* === SURFACES === */
+  --background: #faf8ff;
+  --surface: #faf8ff;
+  --surface-muted: #F8F9FF;
+  --surface-container: #eaedff;
+  --surface-container-low: #f2f3ff;
+  --surface-container-lowest: #ffffff;
+  --surface-dim: #d2d9f4;
+  
+  /* === SIDEBAR === */
+  --sidebar-bg: #0F172A;
+  --sidebar-width: 260px;
+  
+  /* === TEXT === */
+  --text-main: #1E293B;
+  --text-muted: #64748B;
+  --on-surface: #131b2e;
+  --on-surface-variant: #494454;
+  
+  /* === BORDERS === */
+  --border-subtle: #E2E8F0;
+  --outline: #7b7486;
+  
+  /* === SPACING & RADIUS === */
+  --margin-desktop: 32px;
+  --gutter: 24px;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+  --container-max: 1440px;
+  
+  --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 html.light {
-  --bg:            #F8FAFC;
-  --bg-strong:     #F1F5F9;
-  --bg-secondary:  #E2E8F0;
-  --surface:       #FFFFFF;
-  --surface-hover: #F8FAFC;
-  --border:        rgba(37, 99, 235, 0.15);
-  --text:          #0F172A;
-  --text-secondary:#475569;
-  --text-muted:    #94A3B8;
-  --primary:       #2563EB;
-  --primary-hover: #1D4ED8;
-
-  --background:   var(--bg);
-  --foreground:   var(--text);
-  --card:         var(--surface);
-  --card-foreground: var(--text);
-  --muted:        var(--text-muted);
-  --accent:       var(--primary);
-  --sidebar:      var(--bg-strong);
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
-  --page-background: #F8FAFC;
+  /* Same as root for now as the user requested this specific premium theme */
 }
 
 html.light body {
