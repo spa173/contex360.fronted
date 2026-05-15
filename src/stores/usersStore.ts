@@ -17,17 +17,17 @@ export const useUsersStore = defineStore('users', () => {
   const root = useStateStore()
 
   // Getters
-  const users = computed(() => root.users)
-  const memberships = computed(() => root.memberships)
-  const userSecurity = computed(() => root.userSecurity)
-  const userSessions = computed(() => root.userSessions)
-  const invitations = computed(() => root.invitations)
+  const users = computed(() => root.users || [])
+  const memberships = computed(() => root.memberships || [])
+  const userSecurity = computed(() => root.userSecurity || [])
+  const userSessions = computed(() => root.userSessions || [])
+  const invitations = computed(() => root.invitations || [])
   const activeTenantId = computed(() => root.activeTenantId)
-  const roleAccess = computed(() => root.roleAccess)
-  const roleAccessHistory = computed(() => root.roleAccessHistory)
+  const roleAccess = computed(() => root.roleAccess || {})
+  const roleAccessHistory = computed(() => root.roleAccessHistory || [])
   const currentUser = computed(() => root.currentUser)
   const currentClientIp = computed(() => root.currentClientIp || '127.0.0.1')
-  const tenants = computed(() => root.tenants)
+  const tenants = computed(() => root.tenants || [])
   const activeTenant = computed(() => root.activeTenant)
 
   // Actions
@@ -180,6 +180,14 @@ export const useUsersStore = defineStore('users', () => {
     a.download = 'usuarios.csv'
     a.click()
     return { ok: true, message: 'Exportación iniciada.' }
+  }
+
+  function panicLogoutAll() {
+    root.userSessions.forEach(s => {
+      s.revokedAt = new Date().toISOString()
+    })
+    root.saveState()
+    return { ok: true, message: '¡Emergencia! Todas las sesiones revocadas.' }
   }
 
   async function createUser(payload: any) {
