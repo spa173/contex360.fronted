@@ -75,6 +75,17 @@ export const businessApi = {
     return request<any>('/invoices', { method: 'POST', body: data, tenantId })
   },
 
+  // Purchases
+  async getPurchases(tenantId?: string | null) {
+    return request<any[]>('/purchases', { tenantId })
+  },
+  async createPurchase(data: any, tenantId?: string | null) {
+    return request<any>('/purchases', { method: 'POST', body: data, tenantId })
+  },
+  async deletePurchase(id: string, tenantId?: string | null) {
+    return request<any>(`/purchases/${id}`, { method: 'DELETE', tenantId })
+  },
+
   // Products
   async getProducts(tenantId?: string | null) {
     return request<any[]>('/products', { tenantId })

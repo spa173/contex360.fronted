@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useAiStore } from '../../stores/aiStore'
 import { useBillingStore } from '../../stores/billingStore'
+import { usePurchasesStore } from '../../stores/purchasesStore'
 import { useInventoryStore } from '../../stores/inventoryStore'
 import { useUsersStore } from '../../stores/usersStore'
 import { useDashboardStats } from '../../composables/useDashboardStats'
@@ -22,7 +23,12 @@ import {
   CheckCircle2,
   Activity,
   Plus,
-  ShieldCheck
+  ShieldCheck,
+  TrendingDown,
+  Zap,
+  ShoppingCart,
+  UserPlus,
+  BookOpen
 } from 'lucide-vue-next'
 
 defineProps({
@@ -34,6 +40,7 @@ defineProps({
 
 const auth = useAuthStore()
 const billing = useBillingStore()
+const purchases = usePurchasesStore()
 const inventory = useInventoryStore()
 const ai = useAiStore()
 const users = useUsersStore()
@@ -45,6 +52,24 @@ const totalRevenue = computed(() => {
   return invoices.reduce((sum, inv) => sum + (inv?.total || 0), 0)
 })
 
+const totalExpenses = computed(() => {
+  const ps = purchases.tenantPurchases || []
+  return ps.reduce((sum, p) => sum + (p?.total || 0), 0)
+})
+
+const netProfit = computed(() => totalRevenue.value - totalExpenses.value)
+
+const thisMonthExpenses = computed(() => {
+  const ps = purchases.tenantPurchases || []
+  const now = new Date()
+  return ps
+    .filter((p) => {
+      const d = new Date(p?.issuedAt || p?.createdAt)
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()
+    })
+    .reduce((sum, p) => sum + (p?.total || 0), 0)
+})
+
 const lowStockCount = computed(() => {
   const products = inventory.tenantProducts || []
   return products.filter(p => (p?.stock || 0) <= (p?.minStock || 0)).length
@@ -53,6 +78,64 @@ const lowStockCount = computed(() => {
 const activeUsersCount = computed(() => {
   const allUsers = users.users || []
   return allUsers.filter(u => u?.status === 'active').length
+})
+
+const cashFlowData = computed(() => {
+  const now = new Date()
+  const months = []
+  const inflows = []
+  const outflows = []
+  const invoices = billing.tenantInvoices || []
+  const ps = purchases.tenantPurchases || []
+
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    months.push(d.toLocaleString('es-CO', { month: 'short' }))
+    inflows.push(
+      invoices.reduce((sum, inv) => {
+        const dt = new Date(inv?.issuedAt || inv?.createdAt)
+        return dt.getMonth() === d.getMonth() && dt.getFullYear() === d.getFullYear()
+          ? sum + (inv?.total || 0) : sum
+      }, 0)
+    )
+    outflows.push(
+      ps.reduce((sum, p) => {
+        const dt = new Date(p?.issuedAt || p?.createdAt)
+        return dt.getMonth() === d.getMonth() && dt.getFullYear() === d.getFullYear()
+          ? sum + (p?.total || 0) : sum
+      }, 0)
+    )
+  }
+
+  if (inflows.every(v => v === 0) && outflows.every(v => v === 0)) return null
+
+  return {
+    labels: months,
+    datasets: [
+      {
+        label: 'Ingresos',
+        data: inflows,
+        borderColor: '#2563EB',
+        backgroundColor: 'rgba(37,99,235,0.10)',
+        fill: true,
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+      },
+      {
+        label: 'Gastos',
+        data: outflows,
+        borderColor: '#F87171',
+        backgroundColor: 'rgba(248,113,113,0.08)',
+        fill: true,
+        borderWidth: 2,
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 4,
+      },
+    ],
+  }
 })
 
 const revenueTrendData = computed(() => {
@@ -104,36 +187,32 @@ const revenueTrendData = computed(() => {
 
 const kpis = computed(() => [
   {
-    title: 'Revenue Total',
+    title: 'Ingresos Totales',
     value: formatCOP(totalRevenue.value),
-    icon: DollarSign,
-    color: 'blue',
-    trend: '+12.5%',
+    icon: TrendingUp,
+    trend: 'Ventas acumuladas',
     trendOk: true
+  },
+  {
+    title: 'Gastos del Mes',
+    value: formatCOP(thisMonthExpenses.value),
+    icon: TrendingDown,
+    trend: thisMonthExpenses.value > 0 ? 'Compras registradas' : 'Sin gastos',
+    trendOk: thisMonthExpenses.value === 0
+  },
+  {
+    title: 'Utilidad Neta',
+    value: formatCOP(netProfit.value),
+    icon: DollarSign,
+    trend: netProfit.value >= 0 ? 'Positiva' : 'Negativa',
+    trendOk: netProfit.value >= 0
   },
   {
     title: 'Inventario Crítico',
     value: lowStockCount.value === 0 ? 'Normal' : lowStockCount.value,
     icon: Package,
-    color: lowStockCount.value > 0 ? 'warn' : 'blue',
     trend: lowStockCount.value > 0 ? 'Requiere acción' : 'Optimizado',
     trendOk: lowStockCount.value === 0
-  },
-  {
-    title: 'Usuarios Activos',
-    value: activeUsersCount.value,
-    icon: UsersIcon,
-    color: 'blue',
-    trend: 'En línea',
-    trendOk: true
-  },
-  {
-    title: 'Salud del Sistema',
-    value: '99.9%',
-    icon: Activity,
-    color: 'blue',
-    trend: 'Estable',
-    trendOk: true
   }
 ])
 
@@ -159,11 +238,11 @@ const healthModules = [
       <Card v-for="kpi in kpis" :key="kpi.title" class="bg-[#1E293B] border border-blue-500/15 shadow-none overflow-hidden group hover:border-blue-500/35 transition-all duration-200">
         <div class="p-5">
           <div class="flex justify-between items-start mb-5">
-            <div class="w-9 h-9 rounded-xl bg-blue-500/10 text-blue-400 flex items-center justify-center transition-all duration-300">
-              <DollarSign v-if="kpi.icon === DollarSign" class="w-4 h-4" />
-              <Package v-else-if="kpi.icon === Package" class="w-4 h-4" />
-              <UsersIcon v-else-if="kpi.icon === UsersIcon" class="w-4 h-4" />
-              <Activity v-else class="w-4 h-4" />
+            <div :class="['w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300', kpi.trendOk ? 'bg-blue-500/10 text-blue-400' : 'bg-rose-500/10 text-rose-400']">
+              <TrendingUp v-if="kpi.icon === TrendingUp" class="w-4 h-4" />
+              <TrendingDown v-else-if="kpi.icon === TrendingDown" class="w-4 h-4" />
+              <DollarSign v-else-if="kpi.icon === DollarSign" class="w-4 h-4" />
+              <Package v-else class="w-4 h-4" />
             </div>
             <span :class="[
               'inline-flex items-center px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-widest',
@@ -180,11 +259,82 @@ const healthModules = [
       </Card>
     </div>
 
+    <!-- Accesos Rápidos -->
+    <div class="mb-6">
+      <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-slate-500 mb-3">Accesos rápidos</p>
+      <div class="flex flex-wrap gap-3">
+        <button
+          @click="auth.setActiveView('billing')"
+          class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg transition-all shadow-lg shadow-blue-900/30"
+        >
+          <Plus class="w-3.5 h-3.5" /> Nueva Factura
+        </button>
+        <button
+          @click="auth.setActiveView('purchases')"
+          class="flex items-center gap-2 px-4 py-2.5 bg-[#1E293B] hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition-all"
+        >
+          <ShoppingCart class="w-3.5 h-3.5 text-blue-400" /> Nueva Compra
+        </button>
+        <button
+          @click="auth.setActiveView('third-parties')"
+          class="flex items-center gap-2 px-4 py-2.5 bg-[#1E293B] hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition-all"
+        >
+          <UserPlus class="w-3.5 h-3.5 text-blue-400" /> Nuevo Tercero
+        </button>
+        <button
+          @click="auth.setActiveView('accounting')"
+          class="flex items-center gap-2 px-4 py-2.5 bg-[#1E293B] hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg border border-blue-500/20 hover:border-blue-500/40 transition-all"
+        >
+          <BookOpen class="w-3.5 h-3.5 text-blue-400" /> Ver Contabilidad
+        </button>
+      </div>
+    </div>
+
     <!-- Main Content Area -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Chart Column -->
-      <div class="lg:col-span-2">
-        <Card class="bg-[#1E293B] border border-blue-500/15 shadow-none h-full flex flex-col">
+      <div class="lg:col-span-2 flex flex-col gap-6">
+        <!-- Flujo de Caja -->
+        <Card class="bg-[#1E293B] border border-blue-500/15 shadow-none flex flex-col">
+          <CardHeader class="px-6 pt-6 pb-4">
+            <div class="flex justify-between items-center">
+              <div>
+                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-blue-500 mb-1">Proyección de Caja</p>
+                <CardTitle class="text-base font-bold text-slate-100 tracking-tight">Flujo de Caja — Entradas vs Salidas</CardTitle>
+              </div>
+              <div class="flex items-center gap-3">
+                <span class="flex items-center gap-1.5 text-[10px] text-slate-500"><span class="w-2.5 h-0.5 rounded bg-blue-500 inline-block"></span>Ingresos</span>
+                <span class="flex items-center gap-1.5 text-[10px] text-slate-500"><span class="w-2.5 h-0.5 rounded bg-red-400 inline-block"></span>Gastos</span>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent class="px-6 pb-6 flex-grow flex flex-col justify-center">
+            <div v-if="cashFlowData" class="h-[220px]">
+              <BusinessChart
+                type="line"
+                :data="cashFlowData"
+                :options="{
+                  scales: {
+                    y: {
+                      grid: { color: 'rgba(148, 163, 184, 0.04)' },
+                      ticks: { color: '#64748B', font: { family: 'Inter, Geist, system-ui, sans-serif', size: 10 }, callback: (v) => formatCompact(v) }
+                    },
+                    x: { grid: { display: false }, ticks: { color: '#64748B', font: { family: 'Inter, Geist, system-ui, sans-serif', size: 10 } } }
+                  },
+                  plugins: { legend: { display: false } },
+                  maintainAspectRatio: false
+                }"
+              />
+            </div>
+            <div v-else class="flex flex-col items-center justify-center py-10 text-center space-y-3">
+              <Zap class="w-8 h-8 text-slate-700" />
+              <p class="text-slate-500 text-xs">Sin movimientos para mostrar el flujo de caja.</p>
+            </div>
+          </CardContent>
+        </Card>
+
+        <!-- Tendencia Ingresos -->
+        <Card class="bg-[#1E293B] border border-blue-500/15 shadow-none flex flex-col">
           <CardHeader class="px-6 pt-6 pb-4">
             <div class="flex justify-between items-center">
               <div>
@@ -197,7 +347,7 @@ const healthModules = [
             </div>
           </CardHeader>
           <CardContent class="px-6 pb-6 flex-grow flex flex-col justify-center">
-            <div v-if="revenueTrendData" class="h-[280px]">
+            <div v-if="revenueTrendData" class="h-[200px]">
               <BusinessChart 
                 type="line" 
                 :data="revenueTrendData" 
@@ -214,7 +364,7 @@ const healthModules = [
                 }" 
               />
             </div>
-            <div v-else class="flex flex-col items-center justify-center py-16 text-center space-y-5">
+            <div v-else class="flex flex-col items-center justify-center py-12 text-center space-y-4">
               <div class="w-14 h-14 bg-[#0F172A]/80 rounded-2xl flex items-center justify-center">
                 <BarChart3 class="w-7 h-7 text-slate-600" />
               </div>

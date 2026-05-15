@@ -2,6 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
+import { businessApi } from '../services/businessApi'
 import { LedgerEntry, AccountNode, BalanceSheet, ProfitAndLoss } from '../types/accounting'
 
 export const useAccountingStore = defineStore('accounting', () => {
@@ -36,6 +37,16 @@ export const useAccountingStore = defineStore('accounting', () => {
 
   function selectEntry(id: string) {
     selections.value.entryId = id
+  }
+
+  async function fetchLedgerEntries() {
+    if (!activeTenantId.value) return
+    try {
+      const data = await businessApi.getLedgerEntries(activeTenantId.value)
+      ledgerEntries.value = Array.isArray(data) ? data : []
+    } catch (error) {
+      console.error('Error fetching ledger entries:', error)
+    }
   }
 
   // Report Generators
@@ -73,5 +84,9 @@ export const useAccountingStore = defineStore('accounting', () => {
   // Sync back to root
   watch(ledgerEntries, (newVal) => { (root.$state as any).ledgerEntries = newVal; }, { deep: true, immediate: true })
 
-  return { ledgerEntries, selections, tenantLedgerEntries, selectedEntry, addEntry, selectEntry, balanceSheet, profitAndLoss }
+  watch([activeTenantId, () => (root as any).session?.currentUserId], ([newId, userId]) => {
+    if (newId && userId) fetchLedgerEntries()
+  }, { immediate: true })
+
+  return { ledgerEntries, selections, tenantLedgerEntries, selectedEntry, addEntry, selectEntry, fetchLedgerEntries, balanceSheet, profitAndLoss }
 })

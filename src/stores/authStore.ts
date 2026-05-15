@@ -30,14 +30,14 @@ export const useAuthStore = defineStore('auth', () => {
 
   const visibleViews = computed(() => {
     if (isSystemOwner.value) {
-      return ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile']
+      return ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile']
     }
     const role = activeMembership.value?.role
     if (!role) return ['dashboard', 'profile']
     const definitions: any = {
-      'Administrador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile'],
-      'Contador': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile'],
-      'Visor': ['dashboard', 'billing', 'inventory', 'accounting', 'third-parties', 'profile']
+      'Administrador': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile'],
+      'Contador': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'profile'],
+      'Visor': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'profile']
     }
     return definitions[role] || ['dashboard', 'profile']
   })

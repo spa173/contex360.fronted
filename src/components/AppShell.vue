@@ -10,6 +10,7 @@ import HeroSummary from './layout/HeroSummary.vue'
 import AccountingView from './views/AccountingView.vue'
 import AiView from './views/AiView.vue'
 import BillingView from './views/BillingView.vue'
+import PurchasesView from './views/PurchasesView.vue'
 import DashboardView from './views/DashboardView.vue'
 import InventoryView from './views/InventoryView.vue'
 import ThirdPartiesView from './views/ThirdPartiesView.vue'
@@ -147,6 +148,11 @@ onUnmounted(() => {
         <BillingView
           v-if="store.visibleViews.includes('billing')"
           :is-active="store.activeView === 'billing'"
+          @notify="handleNotify"
+        />
+        <PurchasesView
+          v-if="store.visibleViews.includes('purchases')"
+          :is-active="store.activeView === 'purchases'"
           @notify="handleNotify"
         />
         <InventoryView
