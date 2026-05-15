@@ -38,17 +38,21 @@ async function initApp() {
   isLoading.value = true
   loadError.value = null
 
+  const TIMEOUT_SYMBOL = Symbol('timeout')
   const timeout = new Promise((resolve) =>
-    setTimeout(() => resolve(false), 8000)
+    setTimeout(() => resolve(TIMEOUT_SYMBOL), 10000)
   )
 
   try {
     const result = await Promise.race([store.refreshSessionWithBackend(), timeout])
-    if (result === false) {
+    
+    if (result === TIMEOUT_SYMBOL) {
       loadError.value = 'El servidor tardó demasiado en responder. Verifica tu conexión.'
       return
     }
-    if (result) {
+    
+    // If result is true, we have a session. If false, we don't (but it's not an error).
+    if (result === true) {
       await store.fetchBusinessData()
     }
   } catch (e) {
