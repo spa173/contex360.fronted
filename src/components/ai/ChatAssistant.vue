@@ -26,9 +26,19 @@ const sendMessage = async () => {
 
   try {
     const response = await businessApi.chatWithAi(userMsg)
-    chatHistory.value.push(response)
-  } catch {
-    chatHistory.value.push({ role: 'assistant', content: 'Lo siento, tuve un problema conectando con el cerebro del sistema. ¿Podemos intentar de nuevo?' })
+    if (response && response.role && response.content) {
+      chatHistory.value.push(response)
+    } else if (response && response.content) {
+      chatHistory.value.push({ role: 'assistant', content: response.content })
+    } else {
+      throw new Error('Respuesta inválida del servidor')
+    }
+  } catch (error) {
+    console.error('Chat error:', error)
+    chatHistory.value.push({ 
+      role: 'assistant', 
+      content: 'Lo siento, tuve un problema procesando tu solicitud. Por favor intenta de nuevo en unos momentos.' 
+    })
   } finally {
     isLoading.value = false
     await scrollToBottom()
@@ -62,12 +72,12 @@ const scrollToBottom = async () => {
       </div>
 
       <div class="chat-body" ref="scrollContainer">
-        <div v-for="(msg, index) in chatHistory" :key="index" :class="['message', msg.role]">
+        <div v-for="(msg, index) in chatHistory" :key="index" :class="['message', msg?.role || 'assistant']">
           <div class="bubble">
-            {{ msg.content }}
+            {{ msg?.content || '...' }}
             
             <!-- Suggested Action Button -->
-            <div v-if="msg.suggestedAction" class="action-wrapper">
+            <div v-if="msg?.suggestedAction" class="action-wrapper">
               <button @click="$emit('navigate', msg.suggestedAction === 'view_billing' ? 'billing' : msg.suggestedAction === 'manage_inventory' ? 'inventory' : 'dashboard')" class="action-btn">
                 {{ msg.suggestedAction === 'view_billing' ? 'Ir a Facturación' : msg.suggestedAction === 'manage_inventory' ? 'Ver Inventario' : 'Ir al Dashboard' }}
               </button>
