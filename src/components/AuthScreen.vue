@@ -488,18 +488,18 @@ const toggleRecoveryHelp = () => {
 
 .auth-story {
   background:
-    radial-gradient(circle at 70% 22%, rgba(255, 255, 255, 0.05), transparent 18%),
-    radial-gradient(circle at 84% 84%, rgba(255, 255, 255, 0.05), transparent 22%),
-    linear-gradient(160deg, #042f1e 0%, #064e3b 50%, #022c22 100%);
-  color: #f0fdf4;
+    radial-gradient(circle at 70% 22%, rgba(122, 161, 204, 0.08), transparent 18%),
+    radial-gradient(circle at 84% 84%, rgba(61, 104, 153, 0.1), transparent 22%),
+    linear-gradient(160deg, #001833 0%, #0D2540 50%, #001020 100%);
+  color: #FFFFFF;
   overflow: hidden;
   position: relative;
 }
 
 .auth-story::before {
   background-image:
-    linear-gradient(rgba(16, 185, 129, 0.07) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(16, 185, 129, 0.07) 1px, transparent 1px);
+    linear-gradient(rgba(122, 161, 204, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 161, 204, 0.06) 1px, transparent 1px);
   background-size: 72px 72px;
   content: '';
   inset: 0;
@@ -508,7 +508,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-story__orb {
-  border: 1px solid rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(122, 161, 204, 0.15);
   border-radius: 50%;
   position: absolute;
 }
@@ -546,8 +546,8 @@ const toggleRecoveryHelp = () => {
 .auth-brand__mark,
 .auth-mobile-brand__mark {
   align-items: center;
-  background: linear-gradient(135deg, #059669, #10b981);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: linear-gradient(135deg, #3D6899, #143B66);
+  border: 1px solid rgba(122, 161, 204, 0.3);
   border-radius: 12px;
   display: inline-flex;
   flex-shrink: 0;
@@ -567,7 +567,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-brand__subtitle {
-  color: rgba(110, 231, 183, 0.70);
+  color: rgba(122, 161, 204, 0.75);
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   margin-top: 5px;
@@ -580,7 +580,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-eyebrow {
-  color: #6ee7b7;
+  color: #7AA1CC;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.16em;
@@ -603,7 +603,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-story__lead {
-  color: rgba(209, 250, 229, 0.78);
+  color: rgba(122, 161, 204, 0.82);
   font-size: 0.95rem;
   line-height: 1.64;
   margin: 0;
@@ -619,14 +619,14 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-metric dt {
-  color: #d1fae5;
+  color: #FFFFFF;
   font-size: clamp(1.9rem, 2.45vw, 2.6rem);
   font-weight: 400;
   line-height: 1;
 }
 
 .auth-metric dd {
-  color: rgba(110, 231, 183, 0.65);
+  color: rgba(122, 161, 204, 0.70);
   font-size: 0.82rem;
   margin: 8px 0 0;
 }
@@ -649,7 +649,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-features svg {
-  color: #6ee7b7;
+  color: #7AA1CC;
   flex-shrink: 0;
   height: 18px;
   width: 18px;
@@ -657,7 +657,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-story__footer {
   align-items: center;
-  color: rgba(110, 231, 183, 0.55);
+  color: rgba(122, 161, 204, 0.55);
   display: flex;
   flex-wrap: wrap;
   gap: 24px;
@@ -671,12 +671,12 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-story__footer a:hover {
-  color: #a7f3d0;
+  color: #7AA1CC;
 }
 
 .auth-form-panel {
-  background: #ffffff;
-  color: #020617;
+  background: #0D2540;
+  color: #FFFFFF;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -684,8 +684,8 @@ const toggleRecoveryHelp = () => {
 }
 
 :global(html.dark) .auth-form-panel {
-  background: #0b1220;
-  color: #e5e7eb;
+  background: #0D2540;
+  color: #FFFFFF;
 }
 
 .auth-form-panel__topbar {
@@ -749,7 +749,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__mark {
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #3D6899, #143B66);
   border-color: transparent;
   height: 36px;
   width: 36px;
@@ -762,7 +762,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-mobile-brand__name {
-  color: #020617;
+  color: #FFFFFF;
   font-size: 0.98rem;
   font-weight: 700;
   letter-spacing: -0.03em;
@@ -770,7 +770,7 @@ const toggleRecoveryHelp = () => {
 }
 
 :global(html.dark) .auth-mobile-brand__name {
-  color: #e5e7eb;
+  color: #FFFFFF;
 }
 
 .auth-mobile-brand__subtitle {
@@ -801,7 +801,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-form-head h2 {
-  color: #020617;
+  color: #FFFFFF;
   font-size: 2.25rem;
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -810,7 +810,7 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-form-head p {
-  color: #475569;
+  color: #7AA1CC;
   font-size: 0.95rem;
   margin: 0;
 }
@@ -872,10 +872,10 @@ const toggleRecoveryHelp = () => {
 
 .auth-input-shell {
   align-items: center;
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
+  background: rgba(0, 24, 51, 0.6);
+  border: 1px solid rgba(122, 161, 204, 0.22);
   border-radius: 11px;
-  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
   display: grid;
   gap: 8px;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -888,23 +888,23 @@ const toggleRecoveryHelp = () => {
 }
 
 :global(html.dark) .auth-input-shell {
-  background: rgba(15, 23, 42, 0.9);
-  border-color: rgba(148, 163, 184, 0.22);
+  background: rgba(0, 24, 51, 0.6);
+  border-color: rgba(122, 161, 204, 0.22);
 }
 
 .auth-input-shell:focus-within {
-  border-color: #059669;
-  box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.15);
+  border-color: #3D6899;
+  box-shadow: 0 0 0 3px rgba(61, 104, 153, 0.25);
 }
 
 :global(html.dark) .auth-input-shell:focus-within {
-  border-color: #e5e7eb;
+  border-color: #7AA1CC;
 }
 
 .auth-input-shell input {
   background: transparent;
   border: 0;
-  color: #0f172a;
+  color: #FFFFFF;
   font-size: 1.125rem;
   height: 48px;
   padding: 0;
@@ -912,7 +912,7 @@ const toggleRecoveryHelp = () => {
 }
 
 :global(html.dark) .auth-input-shell input {
-  color: #e5e7eb;
+  color: #FFFFFF;
 }
 
 .auth-input-shell input:focus {
@@ -958,7 +958,7 @@ const toggleRecoveryHelp = () => {
 
 .auth-remember {
   align-items: center;
-  color: #475569;
+  color: #7AA1CC;
   cursor: pointer;
   display: inline-flex;
   gap: 10px;
@@ -966,11 +966,11 @@ const toggleRecoveryHelp = () => {
 }
 
 :global(html.dark) .auth-remember {
-  color: #94a3b8;
+  color: #7AA1CC;
 }
 
 .auth-remember input {
-  accent-color: #059669;
+  accent-color: #3D6899;
   height: 16px;
   width: 16px;
 }
@@ -992,10 +992,10 @@ const toggleRecoveryHelp = () => {
 }
 
 .auth-primary {
-  background: linear-gradient(135deg, #059669, #10b981);
+  background: linear-gradient(135deg, #3D6899, #143B66);
   border: 0;
   border-radius: 11px;
-  color: #ffffff;
+  color: #FFFFFF;
   cursor: pointer;
   font-size: 1.125rem;
   font-weight: 600;
@@ -1009,17 +1009,17 @@ const toggleRecoveryHelp = () => {
 }
 
 :global(html.dark) .auth-primary {
-  background: #2563eb;
+  background: linear-gradient(135deg, #3D6899, #143B66);
 }
 
 .auth-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #047857, #059669);
-  box-shadow: 0 10px 22px rgba(5, 150, 105, 0.30);
+  background: linear-gradient(135deg, #4a7ab0, #1e4d7a);
+  box-shadow: 0 10px 22px rgba(61, 104, 153, 0.35);
   transform: translateY(-1px);
 }
 
 :global(html.dark) .auth-primary:hover:not(:disabled) {
-  background: #1d4ed8;
+  background: linear-gradient(135deg, #4a7ab0, #1e4d7a);
 }
 
 .auth-primary:disabled {
