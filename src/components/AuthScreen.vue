@@ -1,15 +1,14 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
 import { toast } from 'vue-sonner'
-import { onMounted } from 'vue'
 
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 
-const emit = defineEmits(['request-demo'])
+const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy'])
 
 const email = ref('')
 const password = ref('')
@@ -25,8 +24,6 @@ const requiresPasswordChange = ref(false)
 const newPassword = ref('')
 const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
-const showTermsModal = ref(false)
-const showPrivacyModal = ref(false)
 const hasAcceptedPrivacy = ref(false)
 
 const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
@@ -81,13 +78,13 @@ const handleSubmit = async () => {
     }
 
     if (!result.ok) {
-      errorMessage.value = result.message || 'Credenciales invalidas. Por favor, verifica tus datos.'
+      errorMessage.value = result.message || 'Credenciales inválidas. Por favor, verifica tus datos.'
       return
     }
 
-    statusMessage.value = result.message || 'Sesion iniciada.'
+    statusMessage.value = result.message || 'Sesión iniciada.'
   } catch (error) {
-    errorMessage.value = error?.message || 'Error de conexion. Intenta de nuevo.'
+    errorMessage.value = error?.message || 'Error de conexión. Intenta de nuevo.'
   } finally {
     isLoading.value = false
   }
@@ -95,11 +92,11 @@ const handleSubmit = async () => {
 
 const handleChangePassword = async () => {
   if (newPassword.value.length < 8) {
-    errorMessage.value = 'La nueva contrasena debe tener al menos 8 caracteres.'
+    errorMessage.value = 'La nueva contraseña debe tener al menos 8 caracteres.'
     return
   }
   if (newPassword.value !== newPasswordConfirm.value) {
-    errorMessage.value = 'Las contrasenas no coinciden.'
+    errorMessage.value = 'Las contraseñas no coinciden.'
     return
   }
   changePasswordLoading.value = true
@@ -109,11 +106,11 @@ const handleChangePassword = async () => {
     if (res.ok) {
       requiresPasswordChange.value = false
       password.value = newPassword.value
-      statusMessage.value = 'Contrasena actualizada. Iniciando sesion...'
+      statusMessage.value = 'Contraseña actualizada. Iniciando sesión...'
       await handleSubmit()
     }
   } catch (err) {
-    errorMessage.value = err?.message || 'Error al cambiar la contrasena.'
+    errorMessage.value = err?.message || 'Error al cambiar la contraseña.'
   } finally {
     changePasswordLoading.value = false
   }
@@ -122,684 +119,206 @@ const handleChangePassword = async () => {
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
-
-const toggleRecoveryHelp = () => {
-  forgotAccessOpen.value = !forgotAccessOpen.value
-}
 </script>
 
 <template>
-  <div class="auth-page">
-    <div class="auth-layout">
-      <aside class="auth-story" aria-label="Presentacion de Contex360">
-        <div class="auth-story__orb auth-story__orb--top"></div>
-        <div class="auth-story__orb auth-story__orb--bottom"></div>
-
-        <div class="auth-story__content">
-          <header class="auth-brand">
-            <div class="auth-brand__mark" aria-hidden="true">C</div>
-            <div>
-              <div class="auth-brand__name">Contex360</div>
-              <div class="auth-brand__subtitle">Sistema de Gestion Financiera</div>
-            </div>
-          </header>
-
-          <section class="auth-story__copy">
-            <p class="auth-eyebrow">Plataforma ERP Empresarial</p>
-            <h1>
-              Plataforma Integral de
-              <strong>Gestion Empresarial</strong>
-            </h1>
-            <p class="auth-story__lead">
-              Soluciones financieras y contables de clase mundial para empresas que buscan optimizar sus
-              operaciones y tomar decisiones estrategicas.
-            </p>
-          </section>
-
-          <dl class="auth-metrics">
-            <div class="auth-metric">
-              <dt>+500</dt>
-              <dd>Empresas activas</dd>
-            </div>
-            <div class="auth-metric">
-              <dt>99.9%</dt>
-              <dd>Disponibilidad</dd>
-            </div>
-            <div class="auth-metric">
-              <dt>24/7</dt>
-              <dd>Soporte tecnico</dd>
-            </div>
-          </dl>
-
-          <ul class="auth-features">
-            <li>
-              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.5" />
-                <path d="M6.5 10.25 8.65 12.4 13.5 7.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
-              </svg>
-              <span>Multi-tenant con aislamiento completo de datos</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.5" />
-                <path d="M6.5 10.25 8.65 12.4 13.5 7.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
-              </svg>
-              <span>Reportes financieros en tiempo real</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.5" />
-                <path d="M6.5 10.25 8.65 12.4 13.5 7.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
-              </svg>
-              <span>Integracion con sistemas bancarios</span>
-            </li>
-            <li>
-              <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
-                <circle cx="10" cy="10" r="8.25" stroke="currentColor" stroke-width="1.5" />
-                <path d="M6.5 10.25 8.65 12.4 13.5 7.6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.7" />
-              </svg>
-              <span>Cumplimiento normativo automatizado</span>
-            </li>
-          </ul>
-
-          <footer class="auth-story__footer">
-            <span class="auth-footer-copy">&copy; 2026 Contex360</span>
-            <div class="auth-footer-links">
-              <button class="auth-footer-link" @click="showTermsModal = true">Términos</button>
-              <span class="auth-footer-dot" aria-hidden="true"></span>
-              <button class="auth-footer-link" @click="showPrivacyModal = true">Privacidad</button>
-            </div>
-          </footer>
+  <div class="pattern-bg min-h-screen flex items-center justify-center p-4 md:p-8 font-inter">
+    <main class="w-full max-w-[480px]">
+      <!-- Brand Header -->
+      <div class="flex flex-col items-center mb-8">
+        <div class="flex items-center gap-3 mb-2">
+          <span class="material-symbols-outlined text-[40px] text-[#0051d5]">business_center</span>
+          <h1 class="text-3xl font-bold text-[#0b1c30] tracking-tight">Contex360</h1>
         </div>
-      </aside>
+        <p class="text-sm text-[#45464d]">ERP Administrativo y Contable</p>
+      </div>
 
-      <section class="auth-form-panel">
-        <header class="auth-form-panel__topbar">
-          <div class="auth-mobile-brand">
-            <div class="auth-mobile-brand__mark" aria-hidden="true">C</div>
-            <div class="auth-mobile-brand__copy">
-              <span class="auth-mobile-brand__name">Contex360</span>
-              <span class="auth-mobile-brand__subtitle">Acceso seguro para equipos financieros</span>
-            </div>
+      <!-- Login Card -->
+      <div class="bg-white border border-[#E2E8F0] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 md:p-10">
+        
+        <!-- Password Change Flow -->
+        <template v-if="requiresPasswordChange">
+          <div class="mb-8 text-center">
+            <h2 class="text-xl font-semibold text-[#0b1c30] mb-2">Contraseña expirada</h2>
+            <p class="text-sm text-[#45464d]">Tu contraseña ha vencido. Por seguridad debes establecer una nueva.</p>
+          </div>
+          
+          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 text-xs rounded-lg text-center">
+            {{ errorMessage }}
           </div>
 
-          <div class="auth-topbar-actions">
-            
-
-<div class="auth-support">
-              <span>¿Necesitas ayuda?</span>
-              <a href="mailto:soporte@contex360.local">Contactar soporte</a>
+          <div class="space-y-4">
+            <div>
+              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1">Nueva contraseña</label>
+              <input 
+                v-model="newPassword" 
+                type="password" 
+                class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all"
+                placeholder="Mínimo 8 caracteres"
+              />
             </div>
+            <div>
+              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1">Confirmar contraseña</label>
+              <input 
+                v-model="newPasswordConfirm" 
+                type="password" 
+                class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all"
+                placeholder="Repite la nueva contraseña"
+              />
+            </div>
+            <button 
+              @click="handleChangePassword"
+              class="w-full py-4 bg-[#131b2e] text-white font-semibold text-sm rounded-lg shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              :disabled="changePasswordLoading || newPassword.length < 8"
+            >
+              {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y continuar' }}
+            </button>
           </div>
-        </header>
+        </template>
 
-        <main class="auth-form-panel__main">
-          <div class="auth-form-card">
-            <!-- Password change screen -->
-            <template v-if="requiresPasswordChange">
-              <div class="auth-form-head">
-                <h2>Contraseña expirada</h2>
-                <p>Tu contraseña ha vencido. Por seguridad debes establecer una nueva para continuar.</p>
+        <!-- Normal Login Flow -->
+        <template v-else>
+          <div class="mb-8 text-center">
+            <h2 class="text-xl font-semibold text-[#0b1c30] mb-2">Bienvenido de nuevo</h2>
+            <p class="text-sm text-[#45464d]">Ingresa tus credenciales para acceder</p>
+          </div>
+
+          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 text-xs rounded-lg text-center">
+            {{ errorMessage }}
+          </div>
+          
+          <div v-if="statusMessage" class="mb-4 p-3 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs rounded-lg text-center">
+            {{ statusMessage }}
+          </div>
+
+          <form @submit.prevent="handleSubmit" class="space-y-4">
+            <!-- Email -->
+            <div>
+              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1" for="email">Correo electrónico</label>
+              <div class="relative flex items-center">
+                <span class="material-symbols-outlined absolute left-4 text-[#76777d] text-[20px]">mail</span>
+                <input 
+                  id="email" 
+                  v-model="email"
+                  type="email" 
+                  required
+                  placeholder="nombre@empresa.com"
+                  class="w-full pl-12 pr-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all placeholder:text-[#76777d]/60"
+                />
               </div>
-              <p v-if="errorMessage" class="auth-feedback auth-feedback--error" role="alert">{{ errorMessage }}</p>
-              <div class="auth-form" style="margin-top:12px;">
-                <label class="auth-field">
-                  <span>Nueva contraseña</span>
-                  <input v-model="newPassword" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" />
-                </label>
-                <label class="auth-field">
-                  <span>Confirmar contraseña</span>
-                  <input v-model="newPasswordConfirm" type="password" autocomplete="new-password" placeholder="Repite la nueva contraseña" />
-                </label>
-                <button
-                  class="auth-primary"
+            </div>
+
+            <!-- Password -->
+            <div>
+              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1" for="password">Contraseña</label>
+              <div class="relative flex items-center">
+                <span class="material-symbols-outlined absolute left-4 text-[#76777d] text-[20px]">lock</span>
+                <input 
+                  id="password" 
+                  v-model="password"
+                  :type="showPassword ? 'text' : 'password'" 
+                  required
+                  placeholder="••••••••"
+                  class="w-full pl-12 pr-12 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all placeholder:text-[#76777d]/60"
+                />
+                <button 
                   type="button"
-                  :disabled="changePasswordLoading || newPassword.length < 8 || newPassword !== newPasswordConfirm"
-                  @click="handleChangePassword"
+                  @click="togglePassword"
+                  class="absolute right-4 text-[#76777d] hover:text-[#0b1c30] transition-colors"
                 >
-                  {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y continuar' }}
+                  <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                 </button>
               </div>
-            </template>
-
-            <!-- Normal login form -->
-            <template v-else>
-            <div class="auth-form-head">
-              <h2>Bienvenido de nuevo</h2>
-              <p>Ingresa tus credenciales para acceder al sistema</p>
             </div>
 
-            <p v-if="statusMessage" class="auth-feedback auth-feedback--success" role="status">
-              {{ statusMessage }}
-              <span class="sr-only">Sesión iniciada.</span>
-            </p>
+            <!-- 2FA Block -->
+            <div v-if="requiresTotp" class="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
+              <label class="block text-xs font-bold text-[#0b1c30]">🔐 Código de verificación (2FA)</label>
+              <input 
+                v-model="totpCode"
+                type="text"
+                maxlength="6"
+                placeholder="000000"
+                class="w-full px-4 py-2 text-center text-lg font-mono tracking-[0.5em] border border-[#E2E8F0] rounded-md focus:ring-2 focus:ring-[#0051d5]/20 outline-none"
+              />
+              <p class="text-[10px] text-[#45464d] text-center italic">Ingresa el código de 6 dígitos de tu aplicación.</p>
+            </div>
 
-            <p v-if="errorMessage" class="auth-feedback auth-feedback--error" role="alert">
-              {{ errorMessage }}
-            </p>
-
-            <form class="auth-form" @submit.prevent="handleSubmit">
-              <label class="auth-field">
-                <span>Correo electronico</span>
-                <input
-                  id="email"
-                  v-model="email"
-                  autocomplete="email"
-                  placeholder="nombre@empresa.com"
-                  type="email"
-                />
+            <!-- Helpers -->
+            <div class="space-y-3 py-2">
+              <label class="flex items-start gap-2 cursor-pointer group">
+                <input v-model="hasAcceptedPrivacy" type="checkbox" class="mt-0.5 w-4 h-4 rounded border-[#E2E8F0] text-[#0051d5] focus:ring-[#0051d5]/20" />
+                <span class="text-xs text-[#45464d] group-hover:text-[#0b1c30] transition-colors">
+                  Acepto la Política de Tratamiento de Datos (Ley 1581)
+                </span>
               </label>
 
-              <div class="auth-field">
-                <div class="auth-field__header">
-                  <span>Contrasena</span>
-                  <button class="auth-inline-action" type="button" @click="toggleRecoveryHelp">
-                    <span aria-hidden="true">¿Olvidaste tu contraseña?</span>
-                    <span class="sr-only">¿Olvidaste tu contrasena?</span>
-                  </button>
-                </div>
-
-                <div class="auth-input-shell">
-                  <input
-                    id="password"
-                    v-model="password"
-                    :type="showPassword ? 'text' : 'password'"
-                    autocomplete="on"
-                    placeholder="Ingresa tu contraseña"
-                  />
-
-                  <button
-                    class="auth-toggle"
-                    type="button"
-                    aria-label="Mostrar contrasena"
-                    @click="togglePassword"
-                  >
-                    <svg v-if="!showPassword" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M2.25 12c1.88-4.95 5.42-7.5 9.75-7.5S19.87 7.05 21.75 12c-1.88 4.95-5.42 7.5-9.75 7.5S4.13 16.95 2.25 12Z" stroke="currentColor" stroke-width="1.7" />
-                      <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.7" />
-                    </svg>
-                    <svg v-else viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                      <path d="M3.5 4.5 20.5 19.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-                      <path d="M10.6 10.6A3 3 0 0 0 13.4 13.4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
-                      <path
-                        d="M6.1 7.1C4.1 8.6 2.9 10.2 2.25 12c1.88 4.95 5.42 7.5 9.75 7.5 1.3 0 2.51-.2 3.6-.6"
-                        stroke="currentColor"
-                        stroke-width="1.7"
-                        stroke-linecap="round"
-                      />
-                      <path
-                        d="M9.2 6.1A9.3 9.3 0 0 1 12 4.5c4.33 0 7.87 2.55 9.75 7.5a17.2 17.2 0 0 1-3.1 4.67"
-                        stroke="currentColor"
-                        stroke-width="1.7"
-                        stroke-linecap="round"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
-
-              <div v-if="requiresTotp" class="auth-totp-block">
-                <div class="auth-totp-label">
-                  🔐 Código de autenticación (2FA)
-                </div>
-                <input
-                  v-model="totpCode"
-                  type="text"
-                  inputmode="numeric"
-                  maxlength="6"
-                  placeholder="000000"
-                  class="auth-totp-input"
-                  autocomplete="one-time-code"
-                />
-                <p class="auth-totp-hint">Ingresa el código de 6 dígitos de tu app autenticadora.</p>
-              </div>
-
-              <div class="auth-row" style="margin-top: 8px;">
-                <label class="auth-remember">
-                  <input v-model="hasAcceptedPrivacy" type="checkbox" />
-                  <span>Acepto la Política de Tratamiento de Datos (Ley 1581)</span>
+              <div class="flex items-center justify-between">
+                <label class="flex items-center gap-2 cursor-pointer group">
+                  <input v-model="rememberMe" type="checkbox" class="w-4 h-4 rounded border-[#E2E8F0] text-[#0051d5] focus:ring-[#0051d5]/20" />
+                  <span class="text-xs text-[#45464d] group-hover:text-[#0b1c30] transition-colors">Recordarme</span>
                 </label>
+                <a @click.prevent="forgotAccessOpen = true" class="text-xs text-[#0051d5] hover:underline font-semibold cursor-pointer">
+                  ¿Olvidaste tu contraseña?
+                </a>
               </div>
-
-              <div class="auth-row">
-                <label class="auth-remember">
-                  <input v-model="rememberMe" type="checkbox" />
-                  <span>Recordar dispositivo</span>
-                </label>
-              </div>
-
-              <p v-if="forgotAccessOpen" class="auth-recovery-note">
-                Contacta a tu administrador para restablecer el acceso.
+              
+              <p v-if="forgotAccessOpen" class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded border border-amber-100 text-center animate-in fade-in slide-in-from-top-1">
+                Por favor, contacta al administrador de tu sistema para restablecer tu acceso.
               </p>
+            </div>
 
-              <button class="auth-primary" :disabled="isLoading || (requiresTotp && totpCode.length < 6)" type="submit">
-                <span aria-hidden="true">{{ isLoading ? 'Verificando...' : 'Iniciar sesión' }}</span>
-                <span class="sr-only">{{ isLoading ? 'Verificando...' : 'Iniciar sesion' }}</span>
-              </button>
-            </form>
+            <!-- Submit Button -->
+            <button 
+              type="submit" 
+              class="w-full py-4 bg-[#131b2e] text-white font-semibold text-sm rounded-lg shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              :disabled="isLoading || (requiresTotp && totpCode.length < 6)"
+            >
+              <span>{{ isLoading ? 'Verificando...' : 'Entrar' }}</span>
+              <span class="material-symbols-outlined text-[20px]">login</span>
+            </button>
+          </form>
+        </template>
 
-            <p class="auth-demo">
-              ¿No tienes una cuenta? <a href="#" @click.prevent="$emit('request-demo')">Solicita una demo</a>
-            </p>
-
-            <footer class="auth-proof">
-              <span>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 3 4.5 5.25v5.92c0 4.56 3.06 8.81 7.5 9.83 4.44-1.02 7.5-5.27 7.5-9.83V5.25L12 3Z" stroke="currentColor" stroke-width="1.6" />
-                  <path d="m9.3 11.8 1.9 1.9 3.6-4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
-                </svg>
-                <span>SSL</span>
-              </span>
-              <span>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M7 11V8a5 5 0 0 1 10 0v3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
-                  <rect x="4.5" y="11" width="15" height="8.5" rx="2.2" stroke="currentColor" stroke-width="1.6" />
-                </svg>
-                <span>AES-256</span>
-              </span>
-              <span>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 3 4.5 6v4.2c0 5.1 3.2 8.9 7.5 10.8 4.3-1.9 7.5-5.7 7.5-10.8V6L12 3Z" stroke="currentColor" stroke-width="1.6" />
-                  <path d="m8.3 12.3 2.1 2.1 5.4-5.4" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" />
-                </svg>
-                <span>ISO 27001</span>
-              </span>
-              <span>
-                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                  <path d="M12 3v4.5M12 16.5V21M4.5 12H9M15 12h4.5M6.4 6.4 9.5 9.5M14.5 14.5l3.1 3.1M6.4 17.6 9.5 14.5M14.5 9.5l3.1-3.1" stroke="currentColor" stroke-linecap="round" stroke-width="1.6" />
-                  <circle cx="12" cy="12" r="3.2" stroke="currentColor" stroke-width="1.6" />
-                </svg>
-                <span>SOC 2</span>
-              </span>
-            </footer>
-            </template>
-          </div>
-        </main>
-
-        <footer class="auth-mobile-footer">
-          &copy; 2026 Contex360. Todos los derechos reservados.
-        </footer>
-      </section>
-    </div>
-  </div>
-  <!-- Legal modals -->
-  <div v-if="showTermsModal" class="lm-overlay" role="dialog" aria-modal="true" @click.self="showTermsModal = false">
-    <div class="lm-modal">
-      <div class="lm-header">
-        <div><h2 class="lm-title">Términos de Uso</h2><p class="lm-subtitle">Última actualización: 12 de mayo de 2026</p></div>
-        <button class="lm-close" @click="showTermsModal = false" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+        <!-- Footer -->
+        <div class="mt-8 pt-8 border-t border-[#E2E8F0] text-center">
+          <p class="text-sm text-[#45464d]">
+            ¿No tienes una cuenta? 
+            <a @click.prevent="$emit('request-demo')" class="text-[#0051d5] font-semibold hover:underline cursor-pointer">Solicita una demo</a>
+          </p>
+        </div>
       </div>
-      <div class="lm-body"><div class="lm-inner">
-        <p class="lm-intro">Al acceder y utilizar <strong>Contex360</strong> usted acepta los presentes términos. Si no está de acuerdo, no debe utilizar el servicio.</p>
-        <div class="lm-section"><h3>1. Descripción del servicio</h3><p>Contex360 es una plataforma ERP SaaS con gestión contable, facturación electrónica DIAN, inventario, analítica y control de acceso.</p></div>
-        <div class="lm-section"><h3>2. Condiciones de acceso</h3><ul><li>Acceso mediante credenciales asignadas por el administrador de su organización.</li><li>Cada usuario es responsable de la confidencialidad de su contraseña.</li><li>El uso compartido de credenciales está estrictamente prohibido.</li><li>Se recomienda activar autenticación de dos factores (2FA).</li></ul></div>
-        <div class="lm-section"><h3>3. Uso aceptable</h3><ul><li>Uso exclusivo para fines legítimos de gestión empresarial.</li><li>Prohibido acceder a datos de otras organizaciones sin autorización expresa.</li><li>Prohibido realizar ingeniería inversa, descompilar o modificar el software.</li><li>Prohibido introducir código malicioso, virus o ataques de cualquier tipo.</li></ul></div>
-        <div class="lm-section"><h3>4. Seguridad de la cuenta</h3><p>Contex360 implementa cifrado TLS 1.2+, hashing bcrypt, JWT firmados y 2FA opcional. La seguridad de sus credenciales es responsabilidad del usuario.</p></div>
-        <div class="lm-section"><h3>5. Datos y privacidad</h3><p>El tratamiento de datos se rige por la <strong>Política de Privacidad</strong> (Ley 1581 de 2012). Los datos empresariales son propiedad de la organización usuaria.</p></div>
-        <div class="lm-section"><h3>6. Propiedad intelectual</h3><p>El software, diseño y marcas de Contex360 están protegidos por la legislación colombiana e internacional.</p></div>
-        <div class="lm-section"><h3>7. Limitación de responsabilidad</h3><p>La responsabilidad máxima de Contex360 ante cualquier reclamación se limita al valor pagado en los últimos 30 días.</p></div>
-        <div class="lm-section" style="margin-bottom:0"><h3>8. Legislación aplicable</h3><p>Estos términos se rigen por las leyes de Colombia. Controversias: tribunales de Bogotá D.C.</p></div>
-      </div></div>
-      <div class="lm-foot"><button class="lm-accept" @click="showTermsModal = false">Entendido</button></div>
-    </div>
-  </div>
-  <div v-if="showPrivacyModal" class="lm-overlay" role="dialog" aria-modal="true" @click.self="showPrivacyModal = false">
-    <div class="lm-modal">
-      <div class="lm-header">
-        <div><h2 class="lm-title">Política de Privacidad</h2><p class="lm-subtitle">Última actualización: 12 de mayo de 2026 · Ley 1581 de 2012</p></div>
-        <button class="lm-close" @click="showPrivacyModal = false" aria-label="Cerrar"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+
+      <!-- Footer Info -->
+      <div class="flex justify-center items-center gap-6 mt-8">
+        <div class="flex items-center gap-1 text-[#45464d] opacity-60">
+          <span class="material-symbols-outlined text-[16px]">language</span>
+          <span class="text-[12px]">Español (Colombia)</span>
+        </div>
+        <div class="flex items-center gap-1 text-[#45464d] opacity-60">
+          <span class="material-symbols-outlined text-[16px]">verified_user</span>
+          <span class="text-[12px]">Conexión Segura</span>
+        </div>
       </div>
-      <div class="lm-body"><div class="lm-inner">
-        <p class="lm-intro">De conformidad con la <strong>Ley 1581 de 2012</strong> y el <strong>Decreto 1377 de 2013</strong>, Contex360 informa su política de tratamiento de datos personales.</p>
-        <div class="lm-section"><h3>1. Responsable del tratamiento</h3><p>Contex360 es el responsable del tratamiento de los datos recopilados a través de esta plataforma.</p></div>
-        <div class="lm-section"><h3>2. Datos que recopilamos</h3><ul><li>Nombre completo y correo electrónico (identificación)</li><li>Dirección IP y agente de usuario (seguridad y trazabilidad)</li><li>Datos de la empresa: NIT, razón social, ciudad, sector</li><li>Información contable: facturas, movimientos, productos, terceros</li></ul></div>
-        <div class="lm-section"><h3>3. Seguridad</h3><p>TLS 1.2+ en tránsito, AES-256 en reposo (Neon/AWS), bcrypt para contraseñas, JWT firmados. Proveedores certificados <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>.</p></div>
-        <div class="lm-section"><h3>4. Derechos del titular (Art. 8 Ley 1581)</h3><ul><li><strong>Conocer, actualizar y rectificar</strong> sus datos personales</li><li><strong>Suprimir</strong> datos cuando no sean necesarios (derecho al olvido)</li><li><strong>Revocar</strong> la autorización para el tratamiento</li><li><strong>Presentar quejas</strong> ante la SIC</li></ul></div>
-        <div class="lm-section" style="margin-bottom:0"><h3>5. Notificación de brechas</h3><p>En caso de vulneración, notificaremos a titulares y a la SIC dentro de las <strong>72 horas</strong> siguientes al conocimiento del incidente.</p></div>
-      </div></div>
-      <div class="lm-foot"><button class="lm-accept" @click="showPrivacyModal = false">Entendido</button></div>
+    </main>
+
+    <!-- Decoration -->
+    <div class="hidden lg:block fixed bottom-12 right-12 opacity-[0.03] pointer-events-none">
+      <span class="material-symbols-outlined text-[240px]">account_balance</span>
     </div>
   </div>
 </template>
 
 <style scoped>
-.auth-page {
-  background: #ffffff;
-  color: #020617;
-  color-scheme: light;
-  min-height: 100dvh;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  font-family: "Inter", "Segoe UI", sans-serif;
+.pattern-bg {
+  background-color: #f8f9ff;
+  background-image: radial-gradient(#d3e4fe 1px, transparent 1px);
+  background-size: 24px 24px;
 }
-
-:global(html.dark) .auth-page {
-  background: #0b1220;
-  color: #e5e7eb;
-  color-scheme: dark;
+.font-inter {
+  font-family: 'Inter', sans-serif;
 }
-
-.auth-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  min-height: 100dvh;
-}
-
-.auth-story {
-  background:
-    radial-gradient(circle at 70% 22%, rgba(37, 99, 235, 0.08), transparent 22%),
-    radial-gradient(circle at 20% 80%, rgba(37, 99, 235, 0.06), transparent 28%),
-    linear-gradient(160deg, #0F172A 0%, #1E293B 55%, #0A0F1E 100%);
-  color: #F1F5F9;
-  overflow: hidden;
-  position: relative;
-}
-
-.auth-story::before {
-  background-image:
-    linear-gradient(rgba(37, 99, 235, 0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(37, 99, 235, 0.06) 1px, transparent 1px);
-  background-size: 72px 72px;
-  content: '';
-  inset: 0;
-  opacity: 0.5;
-  position: absolute;
-}
-
-.auth-story__orb {
-  border: 1px solid rgba(16, 185, 129, 0.15);
-  border-radius: 50%;
-  position: absolute;
-}
-
-.auth-story__orb--top {
-  height: 260px;
-  right: 12%;
-  top: 10%;
-  width: 260px;
-}
-
-.auth-story__orb--bottom {
-  bottom: -64px;
-  height: 340px;
-  right: -36px;
-  width: 340px;
-}
-
-.auth-story__content {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  height: 100%;
-  padding: 42px 40px 32px 42px;
-  position: relative;
-  z-index: 1;
-}
-
-.auth-brand {
-  align-items: center;
-  display: flex;
-  gap: 14px;
-}
-
-.auth-brand__mark,
-.auth-mobile-brand__mark {
-  align-items: center;
-  background: linear-gradient(135deg, #1D4ED8, #2563EB);
-  border: 1px solid rgba(37, 99, 235, 0.3);
-  border-radius: 12px;
-  display: inline-flex;
-  flex-shrink: 0;
-  color: #ffffff;
-  font-size: 1.1rem;
-  font-weight: 700;
-  height: 44px;
-  justify-content: center;
-  width: 44px;
-}
-
-.auth-brand__name {
-  font-size: 1.34rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-.auth-brand__subtitle {
-  color: rgba(110, 231, 183, 0.70);
-  font-size: 0.68rem;
-  letter-spacing: 0.08em;
-  margin-top: 5px;
-  text-transform: uppercase;
-}
-
-.auth-story__copy {
-  margin-top: clamp(38px, 4.5vw, 56px);
-  max-width: 520px;
-}
-
-.auth-eyebrow {
-  color: #6ee7b7;
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.16em;
-  margin: 0 0 14px;
-  text-transform: uppercase;
-}
-
-.auth-story__copy h1 {
-  font-size: clamp(2.35rem, 3.8vw, 3.6rem);
-  font-weight: 400;
-  letter-spacing: -0.06em;
-  line-height: 1.1;
-  margin: 0 0 20px;
-  max-width: 520px;
-}
-
-.auth-story__copy h1 strong {
-  display: block;
-  font-weight: 700;
-}
-
-.auth-story__lead {
-  color: rgba(209, 250, 229, 0.78);
-  font-size: 0.95rem;
-  line-height: 1.64;
-  margin: 0;
-  max-width: 480px;
-}
-
-.auth-metrics {
-  display: grid;
-  gap: 22px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 2px 0 0;
-  max-width: 500px;
-}
-
-.auth-metric dt {
-  color: #d1fae5;
-  font-size: clamp(1.9rem, 2.45vw, 2.6rem);
-  font-weight: 400;
-  line-height: 1;
-}
-
-.auth-metric dd {
-  color: rgba(110, 231, 183, 0.65);
-  font-size: 0.82rem;
-  margin: 8px 0 0;
-}
-
-.auth-features {
-  display: grid;
-  gap: 11px;
-  list-style: none;
-  margin: 0;
-  max-width: 500px;
-  padding: 0;
-}
-
-.auth-features li {
-  align-items: center;
-  display: flex;
-  gap: 14px;
-  font-size: 0.9rem;
-  line-height: 1.35;
-}
-
-.auth-features svg {
-  color: #6ee7b7;
-  flex-shrink: 0;
-  height: 18px;
-  width: 18px;
-}
-
-.auth-story__footer {
-  align-items: center;
-  color: rgba(110, 231, 183, 0.55);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 24px;
-  margin-top: auto;
-  padding-top: 18px;
-}
-
-.auth-story__footer a {
-  color: inherit;
-  text-decoration: none;
-}
-
-.auth-story__footer a:hover {
-  color: #a7f3d0;
-}
-
-.auth-form-panel {
-  background: #ffffff;
-  color: #020617;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  overflow: auto;
-}
-
-:global(html.dark) .auth-form-panel {
-  background: #0b1220;
-  color: #e5e7eb;
-}
-
-.auth-form-panel__topbar {
-  align-items: center;
-  display: flex;
-  justify-content: flex-end;
-  padding: calc(22px + env(safe-area-inset-top)) 30px 0;
-}
-
-.auth-topbar-actions {
-  align-items: center;
-  display: flex;
-  gap: 12px;
-  margin-left: auto;
-  flex-wrap: wrap;
-}
-
-
-.auth-support {
-  align-items: center;
-  color: #3d495d;
-  display: flex;
-  gap: 14px;
-  font-size: 0.9rem;
-}
-
-:global(html.dark) .auth-support {
-  color: #cbd5e1;
-}
-
-.auth-support a {
-  color: #0f1727;
-  font-weight: 600;
-  text-decoration: none;
-}
-
-:global(html.dark) .auth-support a {
-  color: #f8fafc;
-}
-
-.auth-support a:hover {
-  text-decoration: underline;
-}
-
-.auth-mobile-brand {
-  align-items: center;
-  background: linear-gradient(180deg, #ffffff, rgba(247, 250, 255, 0.86));
-  border: 1px solid rgba(208, 217, 231, 0.92);
-  border-radius: 18px;
-  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.06);
-  display: none;
-  gap: 10px;
-  padding: 10px 12px;
-  font-weight: 700;
-}
-
-:global(html.dark) .auth-mobile-brand {
-  background: linear-gradient(180deg, rgba(15, 23, 42, 0.92), rgba(17, 24, 39, 0.96));
-  border-color: rgba(148, 163, 184, 0.2);
-  box-shadow: 0 18px 44px rgba(0, 0, 0, 0.34);
-}
-
-.auth-mobile-brand__mark {
-  background: linear-gradient(135deg, #1D4ED8, #2563EB);
-  border-color: transparent;
-  height: 36px;
-  width: 36px;
-}
-
-.auth-mobile-brand__copy {
-  display: grid;
-  gap: 2px;
-  min-width: 0;
-}
-
-.auth-mobile-brand__name {
-  color: #020617;
-  font-size: 0.98rem;
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1;
-}
-
-:global(html.dark) .auth-mobile-brand__name {
-  color: #e5e7eb;
-}
-
-.auth-mobile-brand__subtitle {
-  color: #475569;
-  font-size: 0.72rem;
-  font-weight: 500;
-  line-height: 1.2;
-}
-
-:global(html.dark) .auth-mobile-brand__subtitle {
-  color: #94a3b8;
-}
-
-.auth-form-panel__main {
-  align-items: center;
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  padding: 16px 32px 38px;
-}
-
-.auth-form-card {
-  width: min(100%, 456px);
-}
-
-.auth-form-head {
-  margin-bottom: 22px;
-}
-
+</style>
 .auth-form-head h2 {
   color: #020617;
   font-size: 2.25rem;
