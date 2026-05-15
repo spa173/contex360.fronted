@@ -59,6 +59,14 @@ export const businessApi = {
     return request<any>('/third-parties', { method: 'POST', body: data, tenantId })
   },
 
+  // Ledger
+  async createLedgerEntry(data: any, tenantId?: string | null) {
+    return request<any>('/ledger', { method: 'POST', body: data, tenantId })
+  },
+  async getLedgerEntries(tenantId?: string | null) {
+    return request<any[]>('/ledger', { tenantId })
+  },
+
   // Invoices
   async getInvoices(tenantId?: string | null) {
     return request<any[]>('/invoices', { tenantId })
