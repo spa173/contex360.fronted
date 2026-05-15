@@ -7,6 +7,9 @@ import RootShell from './components/RootShell.vue'
 import AuthScreen from './components/AuthScreen.vue'
 import DemoRequestView from './components/views/DemoRequestView.vue'
 import LandingPage from './components/LandingPage.vue'
+import AboutView from './components/views/AboutView.vue'
+import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
+import TermsOfUseView from './components/views/TermsOfUseView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import { Toaster } from 'vue-sonner'
@@ -17,6 +20,9 @@ const themeStore = useThemeStore()
 const { toasts } = useToasts()
 const showDemo = ref(false)
 const showAuth = ref(false)
+const showPrivacy = ref(false)
+const showTerms = ref(false)
+const showAbout = ref(false)
 const viewingAdminPanel = ref(false)
 
 const showRootPanel = computed(
@@ -45,10 +51,21 @@ onMounted(async () => {
     <template v-else>
       <DemoRequestView v-if="showDemo" @back="showDemo = false" />
       <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @back="showAuth = false" />
+      <AboutView
+        v-else-if="showAbout"
+        @back="showAbout = false"
+        @request-demo="showDemo = true"
+        @login="showAuth = true"
+      />
+      <PrivacyPolicyView v-else-if="showPrivacy" @back="showPrivacy = false" />
+      <TermsOfUseView v-else-if="showTerms" @back="showTerms = false" />
       <LandingPage
         v-else
         @login="showAuth = true"
         @request-demo="showDemo = true"
+        @show-privacy="showPrivacy = true"
+        @show-terms="showTerms = true"
+        @show-about="showAbout = true"
       />
     </template>
 

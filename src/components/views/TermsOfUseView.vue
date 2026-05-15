@@ -1,9 +1,16 @@
 <script setup lang="ts">
 const lastUpdated = '12 de mayo de 2026'
+const emit = defineEmits<{ (e: 'back'): void }>()
 </script>
 
 <template>
   <div class="tu-wrap">
+    <button
+      @click="emit('back')"
+      class="fixed top-4 left-4 z-50 flex items-center gap-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
+    >
+      ← Volver
+    </button>
     <div class="tu-page">
       <div class="tu-header">
         <h1 class="tu-title">Términos de Uso</h1>

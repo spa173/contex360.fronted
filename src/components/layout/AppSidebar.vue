@@ -71,11 +71,11 @@ const userInitials = computed(() => {
   <aside :class="['sidebar', { 'mobile-open': isOpen }]">
     <div class="logo">
       <div class="flex items-center gap-2.5 px-4 pb-5">
-        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-[#3D6899] to-[#143B66] flex items-center justify-center flex-shrink-0">
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-[#AC8C49] to-[#78694A] flex items-center justify-center flex-shrink-0">
           <svg class="w-3.5 h-3.5 text-white" viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="5" height="5" rx="1" fill="currentColor"/><rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor" opacity=".6"/><rect x="2" y="9" width="5" height="5" rx="1" fill="currentColor" opacity=".6"/><rect x="9" y="9" width="5" height="5" rx="1" fill="currentColor"/></svg>
         </div>
         <div>
-          <div class="logo-mark">Contex<span class="text-[#7AA1CC]">360</span></div>
+          <div class="logo-mark">Contex<span class="text-[#AC8C49]">360</span></div>
           <div class="logo-sub">Sistema contable</div>
         </div>
       </div>
@@ -172,9 +172,9 @@ const userInitials = computed(() => {
   margin-top: 4px;
   padding: 2px 8px;
   border-radius: 999px;
-  background: rgba(61, 104, 153, 0.15);
-  border: 1px solid rgba(122, 161, 204, 0.3);
-  color: #7AA1CC;
+  background: rgba(172, 140, 73, 0.12);
+  border: 1px solid rgba(172, 140, 73, 0.3);
+  color: #E8C97A;
   font-size: 0.7rem;
   font-weight: 600;
   letter-spacing: 0.04em;

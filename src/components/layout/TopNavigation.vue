@@ -41,12 +41,12 @@ function handleTenantChange(event) {
 </script>
 
 <template>
-  <header class="h-14 bg-[#001833]/92 backdrop-blur-md border-b border-[#7AA1CC]/14 flex items-center justify-between px-6 sticky top-0 z-50">
+  <header class="h-14 bg-[#332C1E]/90 backdrop-blur-md border-b border-[#AC8C49]/15 flex items-center justify-between px-6 sticky top-0 z-50">
     <!-- Left: Navigation & Context -->
     <div class="flex items-center gap-6">
       <button
         @click="emit('toggle-sidebar')"
-        class="text-[#3D6899] hover:text-[#7AA1CC] transition-colors"
+        class="text-[#78694A] hover:text-[#AC8C49] transition-colors"
       >
         <svg v-if="!sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -58,15 +58,15 @@ function handleTenantChange(event) {
 
       <div class="flex items-center gap-3">
         <div class="flex flex-col">
-          <span class="text-[10px] font-bold text-[#7AA1CC] uppercase tracking-[0.2em] leading-none mb-1">Empresa</span>
+          <span class="text-[10px] font-bold text-[#AC8C49] uppercase tracking-[0.2em] leading-none mb-1">Empresa</span>
           <div class="flex items-center gap-2">
             <select
               :disabled="!canSwitchTenant"
               :value="activeTenant?.id"
               @change="handleTenantChange"
-              class="bg-transparent border-none text-white font-bold text-sm p-0 focus:ring-0 cursor-pointer hover:text-[#7AA1CC] transition-colors appearance-none pr-6"
+              class="bg-transparent border-none text-[#F5EDDC] font-bold text-sm p-0 focus:ring-0 cursor-pointer hover:text-[#AC8C49] transition-colors appearance-none pr-6"
             >
-              <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id" class="bg-[#001833] text-white">
+              <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id" class="bg-[#332C1E] text-[#F5EDDC]">
                 {{ tenant.name }}
               </option>
             </select>
@@ -74,31 +74,31 @@ function handleTenantChange(event) {
         </div>
       </div>
 
-      <div class="h-6 w-px bg-[#7AA1CC]/18 mx-2"></div>
+      <div class="h-6 w-px bg-[#AC8C49]/20 mx-2"></div>
 
       <div class="flex flex-col">
-        <span class="text-[10px] font-semibold text-[#3D6899] uppercase tracking-[0.15em] leading-none mb-1">Módulo</span>
-        <h1 class="text-sm font-bold text-white tracking-tight">{{ pageTitle }}</h1>
+        <span class="text-[10px] font-semibold text-[#78694A] uppercase tracking-[0.15em] leading-none mb-1">Módulo</span>
+        <h1 class="text-sm font-bold text-[#F5EDDC] tracking-tight">{{ pageTitle }}</h1>
       </div>
     </div>
 
     <!-- Right: Identity & Actions -->
     <div class="flex items-center gap-4">
-      <div class="flex items-center gap-3 bg-[#143B66]/60 rounded-full pl-4 pr-1 py-1 border border-[#7AA1CC]/15">
+      <div class="flex items-center gap-3 bg-[#454138]/60 rounded-full pl-4 pr-1 py-1 border border-[#AC8C49]/15">
         <div class="flex flex-col items-end">
-          <span class="text-[11px] font-bold text-white leading-none">{{ user?.name || 'Invitado' }}</span>
-          <span class="text-[9px] font-medium text-[#3D6899] uppercase tracking-wider">{{ activeMembership?.role || 'Sin Rol' }}</span>
+          <span class="text-[11px] font-bold text-[#F5EDDC] leading-none">{{ user?.name || 'Invitado' }}</span>
+          <span class="text-[9px] font-medium text-[#78694A] uppercase tracking-wider">{{ activeMembership?.role || 'Sin Rol' }}</span>
         </div>
 
-        <div v-if="isOwner" class="h-6 px-2 bg-[#3D6899]/20 border border-[#7AA1CC]/30 rounded-full flex items-center">
-          <span class="text-[8px] font-black text-[#7AA1CC] uppercase tracking-tighter">Owner</span>
+        <div v-if="isOwner" class="h-6 px-2 bg-[#AC8C49]/15 border border-[#AC8C49]/30 rounded-full flex items-center">
+          <span class="text-[8px] font-black text-[#E8C97A] uppercase tracking-tighter">Owner</span>
         </div>
-        <div v-if="isSystemActive" class="h-6 px-2 bg-[#3D6899]/15 border border-[#7AA1CC]/20 rounded-full flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#7AA1CC] animate-pulse"></span>
-          <span class="text-[8px] font-bold text-white uppercase tracking-tighter">Sistema activo</span>
+        <div v-if="isSystemActive" class="h-6 px-2 bg-[#AC8C49]/10 border border-[#AC8C49]/20 rounded-full flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-[#AC8C49] animate-pulse"></span>
+          <span class="text-[8px] font-bold text-[#E8C97A] uppercase tracking-tighter">Sistema activo</span>
         </div>
 
-        <button @click="emit('logout')" class="p-2 hover:bg-[#3D6899]/20 rounded-full text-[#3D6899] hover:text-rose-400 transition-all">
+        <button @click="emit('logout')" class="p-2 hover:bg-[#AC8C49]/10 rounded-full text-[#78694A] hover:text-rose-400 transition-all">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
@@ -109,7 +109,7 @@ function handleTenantChange(event) {
         <button
           v-if="user?.isSystemOwner"
           @click="emit('open-admin-panel')"
-          class="p-2.5 bg-[#3D6899]/15 hover:bg-[#3D6899]/30 text-[#7AA1CC] rounded-lg transition-colors border border-[#7AA1CC]/20"
+          class="p-2.5 bg-[#AC8C49]/10 hover:bg-[#AC8C49]/20 text-[#AC8C49] rounded-lg transition-colors border border-[#AC8C49]/25"
           title="Administración Global"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,7 +120,7 @@ function handleTenantChange(event) {
 
         <button
           @click="emit('navigate', 'two-factor')"
-          class="p-2.5 bg-[#143B66]/40 hover:bg-[#143B66]/70 text-[#3D6899] hover:text-[#7AA1CC] rounded-lg transition-colors border border-[#7AA1CC]/12"
+          class="p-2.5 bg-[#454138]/50 hover:bg-[#454138]/80 text-[#78694A] hover:text-[#AC8C49] rounded-lg transition-colors border border-[#AC8C49]/12"
           title="Seguridad"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@ function handleTenantChange(event) {
 
 <style scoped>
 select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%237AA1CC' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23AC8C49' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;

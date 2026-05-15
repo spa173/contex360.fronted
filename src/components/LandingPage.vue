@@ -10,6 +10,9 @@ import {
 const emit = defineEmits<{
   (e: 'login'): void
   (e: 'request-demo'): void
+  (e: 'show-privacy'): void
+  (e: 'show-terms'): void
+  (e: 'show-about'): void
 }>()
 
 const mobileMenuOpen = ref(false)
@@ -118,6 +121,7 @@ onMounted(() => {
           <a href="#features" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Características</a>
           <a href="#stats" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Resultados</a>
           <a href="#testimonials" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Clientes</a>
+          <button @click="emit('show-about')" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">Nosotros</button>
         </div>
 
         <!-- CTAs desktop -->
@@ -148,6 +152,7 @@ onMounted(() => {
         <a href="#features" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Características</a>
         <a href="#stats" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Resultados</a>
         <a href="#testimonials" @click="mobileMenuOpen = false" class="block text-sm text-gray-600">Clientes</a>
+        <button @click="emit('show-about'); mobileMenuOpen = false" class="block text-sm text-gray-600 text-left">Nosotros</button>
         <div class="pt-3 border-t border-gray-100 flex flex-col gap-2">
           <button @click="emit('login'); mobileMenuOpen = false" class="w-full text-center text-sm font-medium border border-gray-200 rounded-lg py-2.5 text-gray-700">Iniciar sesión</button>
           <button @click="emit('request-demo'); mobileMenuOpen = false" class="w-full text-center text-sm font-semibold bg-emerald-700 text-white rounded-lg py-2.5">Solicitar demo</button>
@@ -507,15 +512,15 @@ onMounted(() => {
             <div>
               <p class="text-emerald-100 font-semibold mb-3">Empresa</p>
               <ul class="space-y-2">
-                <li><a href="#" class="hover:text-slate-500 transition-colors">Nosotros</a></li>
+                <li><button @click="emit('show-about')" class="hover:text-slate-500 transition-colors">Nosotros</button></li>
                 <li><button @click="emit('request-demo')" class="hover:text-slate-500 transition-colors">Contacto</button></li>
               </ul>
             </div>
             <div>
               <p class="text-emerald-100 font-semibold mb-3">Legal</p>
               <ul class="space-y-2">
-                <li><a href="#" class="hover:text-slate-500 transition-colors">Privacidad</a></li>
-                <li><a href="#" class="hover:text-slate-500 transition-colors">Términos</a></li>
+                <li><button @click="emit('show-privacy')" class="hover:text-slate-500 transition-colors">Privacidad</button></li>
+                <li><button @click="emit('show-terms')" class="hover:text-slate-500 transition-colors">Términos</button></li>
               </ul>
             </div>
           </div>
