@@ -236,12 +236,15 @@ const recentEvents = computed(() => {
   padding: 2rem;
   background-color: #f8f9ff;
   min-height: 100vh;
+  width: 100%;
 }
 
 .dashboard-canvas.active {
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  max-width: 1440px;
+  margin: 0 auto;
 }
 
 .welcome-header {

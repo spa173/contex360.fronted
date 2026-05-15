@@ -122,6 +122,10 @@ onUnmounted(() => {
   z-index: 100;
   background: transparent;
 }
+.main-panel {
+  max-width: 1440px;
+  margin: 0 auto;
+}
 </style>
 
 <template>
@@ -134,7 +138,7 @@ onUnmounted(() => {
       @mouseleave="closeSidebar"
     />
 
-    <main class="main main-panel">
+    <main class="main main-panel !ml-0">
       <TopNavigation
         :user="store.currentUser"
         :active-tenant="store.activeTenant"

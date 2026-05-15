@@ -149,16 +149,22 @@ const userInitials = computed(() => {
   color: #94a3b8;
   display: flex;
   flex-direction: column;
-  z-index: 50;
+  z-index: 150;
   border-right: 1px solid rgba(255, 255, 255, 0.05);
   overflow-y: auto;
-  transition: transform 0.3s ease;
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
+}
+
+.mobile-open {
+  transform: translateX(0);
 }
 
 .logo-area {
   padding: 2rem 1.5rem;
   display: flex;
-  items-center: center;
+  align-items: center;
   gap: 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   margin-bottom: 1.5rem;

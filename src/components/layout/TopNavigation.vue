@@ -24,70 +24,72 @@ function handleTenantChange(event) {
 
 <template>
   <header class="top-nav">
-    <!-- Left: Sidebar Toggle & Context -->
-    <div class="nav-left">
-      <button
-        @click="emit('toggle-sidebar')"
-        class="sidebar-toggle"
-      >
-        <span class="material-symbols-outlined">{{ sidebarOpen ? 'menu_open' : 'menu' }}</span>
-      </button>
-
-      <!-- Multi-tenant Selector -->
-      <div class="tenant-selector-wrapper">
-        <div class="tenant-selector">
-          <span class="material-symbols-outlined tenant-icon">domain</span>
-          <select
-            :disabled="!canSwitchTenant"
-            :value="activeTenant?.id"
-            @change="handleTenantChange"
-            class="tenant-select"
-          >
-            <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id">
-              {{ tenant.name }}
-            </option>
-          </select>
-          <span class="material-symbols-outlined expand-icon">expand_more</span>
-        </div>
-      </div>
-
-      <div class="nav-divider"></div>
-
-      <div class="module-info">
-        <span class="module-tag">@{{ activeView }}</span>
-      </div>
-    </div>
-
-    <!-- Right: Actions -->
-    <div class="nav-right">
-      <div class="action-buttons">
-        <button class="action-btn" title="Notificaciones">
-          <span class="material-symbols-outlined">notifications</span>
-        </button>
-        <button class="action-btn" title="Ayuda">
-          <span class="material-symbols-outlined">help</span>
-        </button>
-        <button 
-          v-if="user?.isSystemOwner"
-          @click="emit('open-admin-panel')"
-          class="action-btn" 
-          title="Configuración"
+    <div class="nav-container">
+      <!-- Left: Sidebar Toggle & Context -->
+      <div class="nav-left">
+        <button
+          @click="emit('toggle-sidebar')"
+          class="sidebar-toggle"
         >
-          <span class="material-symbols-outlined">settings</span>
+          <span class="material-symbols-outlined">{{ sidebarOpen ? 'menu_open' : 'menu' }}</span>
         </button>
-        
-        <div class="user-pill" @click="emit('navigate', 'profile')">
-          <div class="user-avatar">
-            {{ user?.name?.[0]?.toUpperCase() || 'U' }}
-          </div>
-          <div class="user-details">
-            <span class="u-name">{{ user?.name || 'Usuario' }}</span>
+
+        <!-- Multi-tenant Selector -->
+        <div class="tenant-selector-wrapper">
+          <div class="tenant-selector">
+            <span class="material-symbols-outlined tenant-icon">domain</span>
+            <select
+              :disabled="!canSwitchTenant"
+              :value="activeTenant?.id"
+              @change="handleTenantChange"
+              class="tenant-select"
+            >
+              <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id">
+                {{ tenant.name }}
+              </option>
+            </select>
+            <span class="material-symbols-outlined expand-icon">expand_more</span>
           </div>
         </div>
 
-        <button @click="emit('logout')" class="logout-btn" title="Cerrar Sesión">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
+        <div class="nav-divider"></div>
+
+        <div class="module-info">
+          <span class="module-tag">@{{ activeView }}</span>
+        </div>
+      </div>
+
+      <!-- Right: Actions -->
+      <div class="nav-right">
+        <div class="action-buttons">
+          <button class="action-btn" title="Notificaciones">
+            <span class="material-symbols-outlined">notifications</span>
+          </button>
+          <button class="action-btn" title="Ayuda">
+            <span class="material-symbols-outlined">help</span>
+          </button>
+          <button 
+            v-if="user?.isSystemOwner"
+            @click="emit('open-admin-panel')"
+            class="action-btn" 
+            title="Configuración"
+          >
+            <span class="material-symbols-outlined">settings</span>
+          </button>
+          
+          <div class="user-pill" @click="emit('navigate', 'profile')">
+            <div class="user-avatar">
+              {{ user?.name?.[0]?.toUpperCase() || 'U' }}
+            </div>
+            <div class="user-details">
+              <span class="u-name">{{ user?.name || 'Usuario' }}</span>
+            </div>
+          </div>
+
+          <button @click="emit('logout')" class="logout-btn" title="Cerrar Sesión">
+            <span class="material-symbols-outlined">logout</span>
+          </button>
+        </div>
       </div>
     </div>
   </header>
@@ -100,11 +102,19 @@ function handleTenantChange(event) {
   border-bottom: 1px solid #e2e8f0;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: 0 2rem;
   position: sticky;
   top: 0;
-  z-index: 40;
+  z-index: 140; /* Just below sidebar */
+}
+
+.nav-container {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .nav-left {
