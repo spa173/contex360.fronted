@@ -44,9 +44,9 @@ function handleTenantChange(event) {
   <header class="h-16 bg-[#131926] border-b border-white/10 flex items-center justify-between px-6 sticky top-0 z-50">
     <!-- Left: Navigation & Context -->
     <div class="flex items-center gap-6">
-      <button 
+      <button
         @click="emit('toggle-sidebar')"
-        class="text-slate-400 hover:text-white transition-colors"
+        class="text-slate-400 hover:text-emerald-400 transition-colors"
       >
         <svg v-if="!sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -58,13 +58,13 @@ function handleTenantChange(event) {
 
       <div class="flex items-center gap-3">
         <div class="flex flex-col">
-          <span class="text-[10px] font-bold text-[#F97316] uppercase tracking-[0.2em] leading-none mb-1">Empresa</span>
+          <span class="text-[10px] font-bold text-emerald-500 uppercase tracking-[0.2em] leading-none mb-1">Empresa</span>
           <div class="flex items-center gap-2">
             <select
               :disabled="!canSwitchTenant"
               :value="activeTenant?.id"
               @change="handleTenantChange"
-              class="bg-transparent border-none text-white font-bold text-sm p-0 focus:ring-0 cursor-pointer hover:text-[#F97316] transition-colors appearance-none pr-6"
+              class="bg-transparent border-none text-white font-bold text-sm p-0 focus:ring-0 cursor-pointer hover:text-emerald-400 transition-colors appearance-none pr-6"
             >
               <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id" class="bg-[#131926] text-white">
                 {{ tenant.name }}
@@ -89,16 +89,16 @@ function handleTenantChange(event) {
           <span class="text-[11px] font-bold text-white leading-none">{{ user?.name || 'Invitado' }}</span>
           <span class="text-[9px] font-medium text-slate-400 uppercase tracking-wider">{{ activeMembership?.role || 'Sin Rol' }}</span>
         </div>
-        
-        <div v-if="isOwner" class="h-6 px-2 bg-[#F97316]/20 border border-[#F97316]/30 rounded-full flex items-center">
-          <span class="text-[8px] font-black text-[#F97316] uppercase tracking-tighter">Owner</span>
+
+        <div v-if="isOwner" class="h-6 px-2 bg-emerald-500/15 border border-emerald-500/25 rounded-full flex items-center">
+          <span class="text-[8px] font-black text-emerald-400 uppercase tracking-tighter">Owner</span>
         </div>
-        <div v-if="isSystemActive" class="h-6 px-2 bg-emerald-500/15 border border-emerald-500/25 rounded-full flex items-center gap-1">
+        <div v-if="isSystemActive" class="h-6 px-2 bg-emerald-500/10 border border-emerald-500/20 rounded-full flex items-center gap-1">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
           <span class="text-[8px] font-bold text-emerald-400 uppercase tracking-tighter">Sistema activo</span>
         </div>
 
-        <button @click="emit('logout')" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-rose-500 transition-all group">
+        <button @click="emit('logout')" class="p-2 hover:bg-white/10 rounded-full text-slate-400 hover:text-rose-400 transition-all">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
@@ -106,10 +106,10 @@ function handleTenantChange(event) {
       </div>
 
       <div class="flex items-center gap-2">
-        <button 
+        <button
           v-if="user?.isSystemOwner"
           @click="emit('open-admin-panel')"
-          class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors border border-slate-700/50"
+          class="p-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 rounded-lg transition-colors border border-emerald-500/20"
           title="Administración Global"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -118,9 +118,9 @@ function handleTenantChange(event) {
           </svg>
         </button>
 
-        <button 
+        <button
           @click="emit('navigate', 'two-factor')"
-          class="p-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors border border-slate-700/50"
+          class="p-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-emerald-400 rounded-lg transition-colors border border-white/10"
           title="Seguridad"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -134,7 +134,7 @@ function handleTenantChange(event) {
 
 <style scoped>
 select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23F97316' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2310b981' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
   background-position: right 0.5rem center;
   background-repeat: no-repeat;
   background-size: 1.5em 1.5em;
