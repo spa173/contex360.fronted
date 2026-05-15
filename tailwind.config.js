@@ -10,6 +10,13 @@ export default {
       colors: {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
+        surface: 'var(--surface)',
+        'surface-muted': 'var(--surface-muted)',
+        'on-surface': 'var(--on-surface)',
+        'on-surface-variant': 'var(--on-surface-variant)',
+        'border-subtle': 'var(--border-subtle)',
+        'text-main': 'var(--text-main)',
+        'text-muted': 'var(--text-muted)',
         card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
         popover: { DEFAULT: 'var(--popover)', foreground: 'var(--popover-foreground)' },
         primary: { DEFAULT: 'var(--primary)', foreground: 'var(--primary-foreground)' },
