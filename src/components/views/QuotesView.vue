@@ -88,8 +88,7 @@ function handleConvertToInvoice(quote) {
             <tbody class="text-xs text-slate-700 divide-y divide-slate-50">
               <tr v-for="quote in quotes.tenantQuotes" :key="quote.id" 
                 class="hover:bg-slate-50 transition-colors cursor-pointer"
-                @click="selectedQuote = quote"
-              >
+                @click="selectedQuote = quote">
                 <td class="px-6 py-4 font-mono text-violet-600 font-semibold">{{ quote.number }}</td>
                 <td class="px-6 py-4 font-bold">{{ quote.customerName }}</td>
                 <td class="px-6 py-4 text-slate-500">{{ new Date(quote.date).toLocaleDateString() }}</td>
@@ -103,11 +102,7 @@ function handleConvertToInvoice(quote) {
                   </span>
                 </td>
                 <td class="px-6 py-4 text-center">
-                  <button 
-                    v-if="quote.status === 'Approved'"
-                    @click.stop="handleConvertToInvoice(quote)"
-                    class="text-violet-600 hover:text-violet-800 text-[10px] font-bold underline uppercase tracking-tighter"
-                  >
+                  <button v-if="quote.status === 'Approved'" @click.stop="handleConvertToInvoice(quote)" class="text-violet-600 hover:text-violet-800 text-[10px] font-bold underline uppercase tracking-tighter">
                     Convertir a Factura
                   </button>
                   <button v-else class="text-slate-300 hover:text-slate-600">
