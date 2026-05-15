@@ -15,24 +15,6 @@ const props = defineProps({
 
 const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'toggle-theme', 'navigate'])
 
-const isOwner = computed(() =>
-  props.activeMembership?.role === 'owner' ||
-  props.activeMembership?.role === 'Administrador' ||
-  props.user?.isSystemOwner
-)
-
-const isSystemActive = computed(() => !!props.activeTenant?.id)
-
-const viewSubtitles = {
-  dashboard: 'Control central y métricas clave',
-  billing: 'Facturación electrónica y gestión DIAN',
-  inventory: 'Control de existencias y logística',
-  accounting: 'Asientos contables y libro diario',
-  'third-parties': 'Gestión de clientes y proveedores',
-  users: 'Administración de accesos y roles',
-  ai: 'Automatización OCR e inteligencia de datos',
-}
-
 const pageTitle = computed(() => viewLabels[props.activeView] || 'Dashboard')
 
 function handleTenantChange(event) {
@@ -41,91 +23,70 @@ function handleTenantChange(event) {
 </script>
 
 <template>
-  <header class="h-14 bg-[#0A0F1E]/90 backdrop-blur-md border-b border-[#2563EB]/15 flex items-center justify-between px-6 sticky top-0 z-50">
-    <!-- Left: Navigation & Context -->
-    <div class="flex items-center gap-6">
+  <header class="top-nav">
+    <!-- Left: Sidebar Toggle & Context -->
+    <div class="nav-left">
       <button
         @click="emit('toggle-sidebar')"
-        class="text-slate-500 hover:text-blue-400 transition-colors"
+        class="sidebar-toggle"
       >
-        <svg v-if="!sidebarOpen" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-        <svg v-else class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-        </svg>
+        <span class="material-symbols-outlined">{{ sidebarOpen ? 'menu_open' : 'menu' }}</span>
       </button>
 
-      <div class="flex items-center gap-3">
-        <div class="flex flex-col">
-          <span class="text-[10px] font-bold text-blue-500 uppercase tracking-[0.2em] leading-none mb-1">Empresa</span>
-          <div class="flex items-center gap-2">
-            <select
-              :disabled="!canSwitchTenant"
-              :value="activeTenant?.id"
-              @change="handleTenantChange"
-              class="bg-transparent border-none text-slate-100 font-bold text-sm p-0 focus:ring-0 cursor-pointer hover:text-blue-400 transition-colors appearance-none pr-6"
-            >
-              <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id" class="bg-[#0A0F1E] text-slate-100">
-                {{ tenant.name }}
-              </option>
-            </select>
-          </div>
+      <!-- Multi-tenant Selector -->
+      <div class="tenant-selector-wrapper">
+        <div class="tenant-selector">
+          <span class="material-symbols-outlined tenant-icon">domain</span>
+          <select
+            :disabled="!canSwitchTenant"
+            :value="activeTenant?.id"
+            @change="handleTenantChange"
+            class="tenant-select"
+          >
+            <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id">
+              {{ tenant.name }}
+            </option>
+          </select>
+          <span class="material-symbols-outlined expand-icon">expand_more</span>
         </div>
       </div>
 
-      <div class="h-6 w-px bg-blue-500/20 mx-2"></div>
+      <div class="nav-divider"></div>
 
-      <div class="flex flex-col">
-        <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-[0.15em] leading-none mb-1">Módulo</span>
-        <h1 class="text-sm font-bold text-slate-100 tracking-tight">{{ pageTitle }}</h1>
+      <div class="module-info">
+        <span class="module-tag">@{{ activeView }}</span>
       </div>
     </div>
 
-    <!-- Right: Identity & Actions -->
-    <div class="flex items-center gap-4">
-      <div class="flex items-center gap-3 bg-[#1E293B]/80 rounded-full pl-4 pr-1 py-1 border border-blue-500/15">
-        <div class="flex flex-col items-end">
-          <span class="text-[11px] font-bold text-slate-100 leading-none">{{ user?.name || 'Invitado' }}</span>
-          <span class="text-[9px] font-medium text-slate-500 uppercase tracking-wider">{{ activeMembership?.role || 'Sin Rol' }}</span>
-        </div>
-
-        <div v-if="isOwner" class="h-6 px-2 bg-blue-500/15 border border-blue-500/30 rounded-full flex items-center">
-          <span class="text-[8px] font-black text-blue-300 uppercase tracking-tighter">Owner</span>
-        </div>
-        <div v-if="isSystemActive" class="h-6 px-2 bg-blue-500/10 border border-blue-500/20 rounded-full flex items-center gap-1">
-          <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-          <span class="text-[8px] font-bold text-blue-300 uppercase tracking-tighter">Sistema activo</span>
-        </div>
-
-        <button @click="emit('logout')" class="p-2 hover:bg-blue-500/10 rounded-full text-slate-500 hover:text-rose-400 transition-all">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-          </svg>
+    <!-- Right: Actions -->
+    <div class="nav-right">
+      <div class="action-buttons">
+        <button class="action-btn" title="Notificaciones">
+          <span class="material-symbols-outlined">notifications</span>
         </button>
-      </div>
-
-      <div class="flex items-center gap-2">
-        <button
+        <button class="action-btn" title="Ayuda">
+          <span class="material-symbols-outlined">help</span>
+        </button>
+        <button 
           v-if="user?.isSystemOwner"
           @click="emit('open-admin-panel')"
-          class="p-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 rounded-lg transition-colors border border-blue-500/25"
-          title="Administración Global"
+          class="action-btn" 
+          title="Configuración"
         >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
+          <span class="material-symbols-outlined">settings</span>
         </button>
+        
+        <div class="user-pill" @click="emit('navigate', 'profile')">
+          <div class="user-avatar">
+            {{ user?.name?.[0]?.toUpperCase() || 'U' }}
+          </div>
+          <div class="user-details">
+            <span class="u-name">{{ user?.name || 'Usuario' }}</span>
+          </div>
+        </div>
 
-        <button
-          @click="emit('navigate', 'two-factor')"
-          class="p-2.5 bg-slate-800/50 hover:bg-slate-800/80 text-slate-500 hover:text-blue-400 rounded-lg transition-colors border border-blue-500/12"
-          title="Seguridad"
-        >
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-          </svg>
+        <button @click="emit('logout')" class="logout-btn" title="Cerrar Sesión">
+          <span class="material-symbols-outlined">logout</span>
         </button>
       </div>
     </div>
@@ -133,11 +94,165 @@ function handleTenantChange(event) {
 </template>
 
 <style scoped>
-select {
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%232563EB' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
-  background-position: right 0.5rem center;
-  background-repeat: no-repeat;
-  background-size: 1.5em 1.5em;
-  padding-right: 2.5rem;
+.top-nav {
+  height: 64px;
+  background-color: white;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  flex-grow: 1;
+}
+
+.sidebar-toggle {
+  display: none;
+  color: #64748b;
+  transition: color 0.2s;
+}
+
+@media (max-width: 768px) {
+  .sidebar-toggle { display: block; }
+}
+
+.tenant-selector {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  position: relative;
+  transition: border-color 0.2s;
+}
+
+.tenant-selector:hover {
+  border-color: #0051d5;
+}
+
+.tenant-icon {
+  color: #0051d5;
+  font-size: 20px;
+}
+
+.tenant-select {
+  background: transparent;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  color: #0b1c30;
+  padding: 0;
+  padding-right: 1.5rem;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  max-width: 240px;
+}
+
+.expand-icon {
+  position: absolute;
+  right: 0.5rem;
+  pointer-events: none;
+  font-size: 18px;
+  color: #64748b;
+}
+
+.nav-divider {
+  height: 1.5rem;
+  width: 1px;
+  background-color: #e2e8f0;
+}
+
+.module-tag {
+  font-size: 12px;
+  font-weight: 500;
+  color: #0051d5;
+  background-color: #e5eeff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.action-btn {
+  padding: 0.5rem;
+  color: #45464d;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.action-btn:hover {
+  background-color: #eff4ff;
+  color: #0051d5;
+}
+
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.25rem;
+  padding-right: 1rem;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 9999px;
+  margin-left: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.user-pill:hover {
+  border-color: #0051d5;
+  background-color: white;
+}
+
+.user-avatar {
+  width: 2rem;
+  height: 2.5rem;
+  background-color: #0051d5;
+  color: white;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.u-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0b1c30;
+}
+
+.logout-btn {
+  padding: 0.5rem;
+  color: #94a3b8;
+  border-radius: 9999px;
+  transition: all 0.2s;
+}
+
+.logout-btn:hover {
+  background-color: #fee2e2;
+  color: #dc2626;
 }
 </style>

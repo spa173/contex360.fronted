@@ -154,8 +154,6 @@ onUnmounted(() => {
       />
 
       <div class="content">
-        <HeroSummary @navigate="handleNavigate" />
-
         <DashboardView
           v-if="store.visibleViews.includes('dashboard')"
           :is-active="store.activeView === 'dashboard'"
