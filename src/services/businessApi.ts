@@ -112,6 +112,23 @@ export const businessApi = {
     return request<any>('/treasury/transactions', { method: 'POST', body: data, tenantId })
   },
 
+  // Quotes
+  async getQuotes(tenantId?: string | null) {
+    return request<any[]>('/quotes', { tenantId })
+  },
+  async createQuote(data: any, tenantId?: string | null) {
+    return request<any>('/quotes', { method: 'POST', body: data, tenantId })
+  },
+  async updateQuoteStatus(quoteId: string, status: string, tenantId?: string | null) {
+    return request<any>(`/quotes/${quoteId}/status`, { method: 'PATCH', body: { status }, tenantId })
+  },
+  async convertQuoteToInvoice(quoteId: string, tenantId?: string | null) {
+    return request<{ quote: any; invoice: any }>(`/quotes/${quoteId}/convert`, { method: 'POST', tenantId })
+  },
+  async deleteQuote(quoteId: string, tenantId?: string | null) {
+    return request<any>(`/quotes/${quoteId}`, { method: 'DELETE', tenantId })
+  },
+
   // Products
   async getProducts(tenantId?: string | null) {
     return request<any[]>('/products', { tenantId })

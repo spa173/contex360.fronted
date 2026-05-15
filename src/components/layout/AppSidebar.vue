@@ -28,6 +28,7 @@ const navBlueprint = [
     items: [
       { id: 'billing', icon: 'invoice' },
       { id: 'purchases', icon: 'cart' },
+      { id: 'quotes', icon: 'file-text' },
       { id: 'inventory', icon: 'inventory' },
       { id: 'accounting', icon: 'ledger' },
       { id: 'treasury', icon: 'treasury' },
@@ -114,6 +115,10 @@ const userInitials = computed(() => {
             <path d="M1.5 1.5h1.8l1.5 7h7.4l1.3-5H4.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" />
             <circle cx="6.5" cy="13" r="1" fill="currentColor" />
             <circle cx="11.5" cy="13" r="1" fill="currentColor" />
+          </svg>
+          <svg v-else-if="item.icon === 'file-text'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M9 1.5H4.5A1.5 1.5 0 0 0 3 3v10a1.5 1.5 0 0 0 1.5 1.5h7A1.5 1.5 0 0 0 13 13V5L9 1.5z" stroke="currentColor" stroke-width="1.4" />
+            <path d="M9 1.5v3.5a1 1 0 0 0 1 1h3M5 8h6M5 11h6" stroke="currentColor" stroke-linecap="round" stroke-width="1.4" />
           </svg>
           <svg v-else-if="item.icon === 'treasury'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <rect x="1.5" y="5.5" width="13" height="9" rx="1.4" stroke="currentColor" stroke-width="1.4" />

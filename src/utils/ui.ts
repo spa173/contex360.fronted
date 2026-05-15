@@ -2,6 +2,7 @@ export const viewLabels: Record<string, string> = {
   dashboard: 'Dashboard',
   billing: 'Facturación',
   purchases: 'Compras',
+  quotes: 'Cotizaciones',
   treasury: 'Tesorería',
   inventory: 'Inventario',
   accounting: 'Contabilidad',

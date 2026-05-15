@@ -12,6 +12,7 @@ import AiView from './views/AiView.vue'
 import BillingView from './views/BillingView.vue'
 import PurchasesView from './views/PurchasesView.vue'
 import TreasuryView from './views/TreasuryView.vue'
+import QuotesView from './views/QuotesView.vue'
 import ReportsView from './views/ReportsView.vue'
 import DashboardView from './views/DashboardView.vue'
 import InventoryView from './views/InventoryView.vue'
@@ -190,6 +191,11 @@ onUnmounted(() => {
         <ReportsView
           v-if="store.visibleViews.includes('reports')"
           :is-active="store.activeView === 'reports'"
+          @notify="handleNotify"
+        />
+        <QuotesView
+          v-if="store.visibleViews.includes('quotes')"
+          :is-active="store.activeView === 'quotes'"
           @notify="handleNotify"
         />
         <AdminConsoleView
