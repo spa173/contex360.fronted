@@ -271,6 +271,4 @@ const handleSubmit = async () => {
 .font-inter {
   font-family: 'Inter', sans-serif;
 }
-</style>iv>
-  </div>
-</template>
+</style>
