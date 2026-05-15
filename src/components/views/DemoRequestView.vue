@@ -43,224 +43,169 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="bg-[#f8f9ff] min-h-screen flex flex-col font-inter antialiased">
-    <!-- Top Navigation Bar -->
-    <header class="flex justify-between items-center px-4 md:px-8 py-4 w-full bg-white border-b border-[#E2E8F0] sticky top-0 z-50">
-      <div class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-[#047857] rounded-lg flex items-center justify-center">
-          <span class="text-white font-bold text-xl">C</span>
+  <div class="bg-[#faf8ff] min-h-screen flex flex-col font-inter antialiased text-gray-900">
+    <!-- Header -->
+    <header class="bg-white border-b border-gray-200 sticky top-0 z-10 w-full">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="w-8 h-8 bg-[#7c3aed] rounded-lg flex items-center justify-center text-white font-bold text-lg">C</div>
+          <span class="text-xl font-bold tracking-tight text-gray-900">Contex360</span>
         </div>
-        <span class="text-xl font-bold text-[#0b1c30]">Contex360</span>
+        <nav>
+          <button
+            @click="emit('back')"
+            class="text-sm font-medium text-gray-600 hover:text-[#7c3aed] flex items-center gap-2 transition-colors"
+          >
+            <span class="material-symbols-outlined text-lg">arrow_back</span>
+            Volver al inicio
+          </button>
+        </nav>
       </div>
-      <button 
-        @click="emit('back')"
-        class="flex items-center gap-1 text-[#45464d] hover:text-[#0051d5] transition-colors text-sm font-medium"
-      >
-        <span class="material-symbols-outlined text-lg">arrow_back</span>
-        Volver al inicio
-      </button>
     </header>
 
-    <main class="flex-grow flex items-center justify-center py-12 px-4">
-      <div class="max-w-[1440px] w-full grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-        
-        <!-- Left Side: Value Proposition -->
-        <div class="hidden lg:flex flex-col space-y-8 px-8">
-          <div class="inline-flex items-center px-4 py-2 bg-[#047857]/10 text-[#047857] rounded-full w-fit">
-            <span class="text-xs font-bold tracking-wider uppercase">SIN COMPROMISO · 30 DÍAS GRATIS</span>
-          </div>
-          <h1 class="text-5xl font-bold text-[#0b1c30] leading-tight">Transforma tu gestión financiera hoy.</h1>
-          <p class="text-lg text-[#45464d] max-w-md leading-relaxed">
-            Descubre cómo Contex360 ayuda a las empresas colombianas a automatizar su contabilidad, inventarios y reportes DIAN con precisión absoluta.
-          </p>
-
-          <!-- Trust Elements -->
-          <div class="grid grid-cols-2 gap-6 pt-4">
-            <div class="flex items-center gap-3">
-              <div class="p-2 bg-[#eff4ff] rounded-lg">
-                <span class="material-symbols-outlined text-[#047857]">verified</span>
-              </div>
-              <div>
-                <p class="text-sm font-bold text-[#0b1c30]">Certificado DIAN</p>
-                <p class="text-xs text-[#45464d]">Facturación legal</p>
-              </div>
-            </div>
-            <div class="flex items-center gap-3">
-              <div class="p-2 bg-[#eff4ff] rounded-lg">
-                <span class="material-symbols-outlined text-[#0051d5]">security</span>
-              </div>
-              <div>
-                <p class="text-sm font-bold text-[#0b1c30]">SSL Secure</p>
-                <p class="text-xs text-[#45464d]">Datos cifrados</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Feature Image -->
-          <div class="rounded-xl overflow-hidden shadow-xl border border-[#E2E8F0] bg-white mt-8 aspect-video relative group">
-            <img 
-              alt="Financial Dashboard" 
-              class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCqfZr0JHjO-f7LwnQxT6OdSKk5JoIMgm1Zc2JtdCwqHZLm51bxSoI96hP6bxw3Bqqs22FyKsjltV9Mq82Gxu_x1Of4PQbSuh_qORDyGYA807PCg-u3FT9gq-6ROtbkoRVxt_F9jYVZ6RScARb-fTkTGWQ8aS8NpRIkjCwIx2PlvxDBQOBV-1sMtKG-Zkc3oQ9oAzJ-iNo4A20RqWiZivC01Q_QtHqn9VzKagu7e7WXmCeAdlN_e28D74snTLvaxxpSuciloDooucEf"
-            />
-            <div class="absolute inset-0 bg-gradient-to-t from-[#0b1c30]/40 to-transparent"></div>
-          </div>
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8 bg-gray-50">
+      <div class="max-w-3xl w-full bg-white rounded-2xl shadow-sm border border-gray-100 p-8 sm:p-12">
+        <!-- Card Header -->
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-bold text-gray-900 mb-3">Solicita una Demo</h1>
+          <p class="text-gray-500 text-sm sm:text-base">Empieza tu prueba gratuita de 30 días hoy mismo.</p>
         </div>
 
-        <!-- Right Side: Form Card -->
-        <div class="w-full max-w-2xl mx-auto">
-          <div class="bg-white rounded-xl border border-[#E2E8F0] p-8 lg:p-12 shadow-sm">
-            
-            <div class="text-center mb-8">
-              <h2 class="text-2xl font-bold text-[#0b1c30] mb-2">Solicita una Demo</h2>
-              <p class="text-sm text-[#45464d]">Empieza tu prueba gratuita de 30 días hoy mismo.</p>
+        <!-- Success State -->
+        <div v-if="successMessage" class="bg-emerald-50 border border-emerald-100 rounded-xl p-8 text-center">
+          <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <span class="material-symbols-outlined text-emerald-600 text-4xl">check_circle</span>
+          </div>
+          <h3 class="text-lg font-bold text-gray-900 mb-2">¡Solicitud Recibida!</h3>
+          <p class="text-sm text-gray-500 mb-6">{{ successMessage }}</p>
+          <button @click="successMessage = ''" class="text-[#7c3aed] font-semibold hover:underline">Enviar otra solicitud</button>
+        </div>
+
+        <!-- Error State -->
+        <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg text-center">
+          {{ errorMessage }}
+        </div>
+
+        <!-- Demo Form -->
+        <form v-if="!successMessage" @submit.prevent="handleSubmit" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1" for="fullName">Nombre completo *</label>
+              <input
+                v-model="form.nombre"
+                required
+                class="demo-input"
+                id="fullName"
+                placeholder="Ej. Juan Pérez"
+                type="text"
+              />
             </div>
-
-            <!-- Success State -->
-            <div v-if="successMessage" class="bg-emerald-50 border border-emerald-100 rounded-xl p-8 text-center animate-in zoom-in-95 duration-300">
-              <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span class="material-symbols-outlined text-emerald-600 text-4xl">check_circle</span>
-              </div>
-              <h3 class="text-lg font-bold text-[#0b1c30] mb-2">¡Solicitud Recibida!</h3>
-              <p class="text-sm text-[#45464d] mb-6">{{ successMessage }}</p>
-              <button @click="successMessage = ''" class="text-[#0051d5] font-semibold hover:underline">Enviar otra solicitud</button>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1" for="company">Empresa *</label>
+              <input
+                v-model="form.empresa"
+                required
+                class="demo-input"
+                id="company"
+                placeholder="Nombre de tu empresa"
+                type="text"
+              />
             </div>
+          </div>
 
-            <!-- Error State -->
-            <div v-if="errorMessage" class="mb-6 p-4 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg text-center">
-              {{ errorMessage }}
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1" for="email">Correo electrónico *</label>
+              <input
+                v-model="form.correo"
+                required
+                class="demo-input"
+                id="email"
+                placeholder="tu@empresa.com"
+                type="email"
+              />
             </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1" for="phone">Teléfono</label>
+              <input
+                v-model="form.telefono"
+                class="demo-input"
+                id="phone"
+                placeholder="+57 300 123 4567"
+                type="tel"
+              />
+            </div>
+          </div>
 
-            <!-- Form -->
-            <form v-if="!successMessage" @submit.prevent="handleSubmit" class="space-y-6">
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex flex-col gap-2">
-                  <label class="text-xs font-semibold text-[#0b1c30]" for="name">Nombre completo *</label>
-                  <input 
-                    v-model="form.nombre"
-                    required
-                    class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all" 
-                    id="name" 
-                    placeholder="Tu nombre" 
-                    type="text"
-                  />
-                </div>
-                <div class="flex flex-col gap-2">
-                  <label class="text-xs font-semibold text-[#0b1c30]" for="company">Empresa *</label>
-                  <input 
-                    v-model="form.empresa"
-                    required
-                    class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all" 
-                    id="company" 
-                    placeholder="Nombre de tu empresa" 
-                    type="text"
-                  />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex flex-col gap-2">
-                  <label class="text-xs font-semibold text-[#0b1c30]" for="email">Correo electrónico *</label>
-                  <input 
-                    v-model="form.correo"
-                    required
-                    class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all" 
-                    id="email" 
-                    placeholder="tu@empresa.com" 
-                    type="email"
-                  />
-                </div>
-                <div class="flex flex-col gap-2">
-                  <label class="text-xs font-semibold text-[#0b1c30]" for="phone">Teléfono</label>
-                  <input 
-                    v-model="form.telefono"
-                    class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all" 
-                    id="phone" 
-                    placeholder="+57 300 123 4567" 
-                    type="tel"
-                  />
-                </div>
-              </div>
-
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="flex flex-col gap-2">
-                  <label class="text-xs font-semibold text-[#0b1c30]" for="city">Ciudad</label>
-                  <input 
-                    v-model="form.ciudad"
-                    class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all" 
-                    id="city" 
-                    placeholder="Ej. Bogotá" 
-                    type="text"
-                  />
-                </div>
-                <div class="flex flex-col gap-2">
-                  <label class="text-xs font-semibold text-[#0b1c30]" for="sector">Sector</label>
-                  <select 
-                    v-model="form.sector"
-                    class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all appearance-none" 
-                    id="sector"
-                  >
-                    <option value="">Selecciona un sector</option>
-                    <option value="retail">Comercio / Retail</option>
-                    <option value="services">Servicios</option>
-                    <option value="manufacturing">Manufactura</option>
-                    <option value="finance">Financiero</option>
-                    <option value="other">Otro</option>
-                  </select>
-                </div>
-              </div>
-
-              <div class="flex flex-col gap-2">
-                <label class="text-xs font-semibold text-[#0b1c30]" for="message">Mensaje / Necesidades</label>
-                <textarea 
-                  v-model="form.mensaje"
-                  class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm focus:border-[#0051d5] focus:ring-2 focus:ring-[#0051d5]/20 outline-none transition-all resize-none" 
-                  id="message" 
-                  placeholder="Cuéntanos sobre los retos financieros de tu empresa..." 
-                  rows="4"
-                ></textarea>
-              </div>
-
-              <button 
-                type="submit"
-                :disabled="isLoading"
-                class="w-full bg-[#047857] text-white py-4 rounded-lg font-bold text-lg hover:bg-[#00513a] transition-all shadow-md active:scale-[0.98] disabled:opacity-50"
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1" for="city">Ciudad</label>
+              <input
+                v-model="form.ciudad"
+                class="demo-input"
+                id="city"
+                placeholder="Ej. Bogotá"
+                type="text"
+              />
+            </div>
+            <div>
+              <label class="block text-sm font-semibold text-gray-700 mb-1" for="sector">Sector</label>
+              <select
+                v-model="form.sector"
+                class="demo-input text-gray-500"
+                id="sector"
               >
-                {{ isLoading ? 'Enviando...' : 'Solicitar Demo Gratis' }}
-              </button>
-
-              <div class="text-center">
-                <p class="text-[10px] text-[#45464d]">
-                  Al enviar aceptas nuestra <a class="text-[#0051d5] hover:underline" href="#">política de privacidad</a>
-                </p>
-              </div>
-            </form>
-          </div>
-
-          <!-- Secondary Desktop Trust Footer -->
-          <div class="mt-6 flex justify-center gap-8 opacity-40 grayscale hover:grayscale-0 transition-all duration-300">
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-lg">verified_user</span>
-              <span class="text-xs font-bold">100% Seguro</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <span class="material-symbols-outlined text-lg">cloud_done</span>
-              <span class="text-xs font-bold">Cloud Based</span>
+                <option disabled value="">Selecciona un sector</option>
+                <option value="tecnologia">Tecnología</option>
+                <option value="salud">Salud</option>
+                <option value="finanzas">Finanzas</option>
+                <option value="retail">Retail</option>
+                <option value="otro">Otro</option>
+              </select>
             </div>
           </div>
-        </div>
+
+          <div class="mt-6">
+            <label class="block text-sm font-semibold text-gray-700 mb-1" for="message">Mensaje / Necesidades</label>
+            <textarea
+              v-model="form.mensaje"
+              class="demo-input resize-none"
+              id="message"
+              placeholder="Cuéntanos sobre los retos financieros de tu empresa..."
+              rows="4"
+            ></textarea>
+          </div>
+
+          <div class="mt-8">
+            <button
+              type="submit"
+              :disabled="isLoading"
+              class="w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-[#7c3aed] hover:bg-[#6d28d9] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8b5cf6] transition-colors disabled:opacity-50"
+            >
+              {{ isLoading ? 'Enviando...' : 'Solicitar Demo Gratis' }}
+            </button>
+          </div>
+
+          <div class="text-center mt-4">
+            <p class="text-xs text-gray-500">
+              Al enviar aceptas nuestra <a class="text-[#7c3aed] hover:underline" href="#">política de privacidad</a>.
+            </p>
+          </div>
+        </form>
       </div>
     </main>
 
-    <footer class="w-full bg-white py-6 px-4 md:px-8 border-t border-[#E2E8F0]">
-      <div class="max-w-[1440px] mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-        <p class="text-[10px] text-[#45464d]">
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="text-xs text-gray-500">
           © 2026 Contex360. Todos los derechos reservados.
-        </p>
-        <div class="flex gap-8">
-          <a class="text-[10px] text-[#45464d] hover:text-[#0051d5]" href="#">Términos y Condiciones</a>
-          <a class="text-[10px] text-[#45464d] hover:text-[#0051d5]" href="#">Soporte</a>
-          <a class="text-[10px] text-[#45464d] hover:text-[#0051d5]" href="#">Contacto</a>
+        </div>
+        <div class="flex space-x-6 text-xs text-gray-500">
+          <a class="hover:text-[#7c3aed] transition-colors" href="#">Términos y Condiciones</a>
+          <a class="hover:text-[#7c3aed] transition-colors" href="#">Soporte</a>
+          <a class="hover:text-[#7c3aed] transition-colors" href="#">Contacto</a>
         </div>
       </div>
     </footer>
@@ -270,5 +215,22 @@ const handleSubmit = async () => {
 <style scoped>
 .font-inter {
   font-family: 'Inter', sans-serif;
+}
+.demo-input {
+  display: block;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  transition: border-color 0.15s, box-shadow 0.15s;
+  outline: none;
+}
+.demo-input:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
 }
 </style>
