@@ -2,6 +2,7 @@
 import { computed, reactive, watch } from 'vue'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { mapKindLabel } from '../../utils/ui'
+import { businessApi } from '../../services/businessApi'
 
 defineProps({
   isActive: {
@@ -18,7 +19,12 @@ const thirdPartyForm = reactive({
   name: '',
   nit: '',
   email: '',
+  phone: '',
+  address: '',
+  city: '',
   taxProfile: '',
+  taxRegime: 'comun',
+  fiscalResponsibilities: [],
 })
 
 function resetForm() {
@@ -26,7 +32,12 @@ function resetForm() {
   thirdPartyForm.name = ''
   thirdPartyForm.nit = ''
   thirdPartyForm.email = ''
+  thirdPartyForm.phone = ''
+  thirdPartyForm.address = ''
+  thirdPartyForm.city = ''
   thirdPartyForm.taxProfile = ''
+  thirdPartyForm.taxRegime = 'comun'
+  thirdPartyForm.fiscalResponsibilities = []
 }
 
 watch(
@@ -49,16 +60,31 @@ const sortedThirdParties = computed(() =>
   [...(store.tenantThirdParties || [])].sort((left, right) => (left.name || '').localeCompare(right.name || '', 'es')),
 )
 
-function handleSubmit() {
-  const result = store.createThirdParty(thirdPartyForm)
-
-  emit('notify', {
-    message: result.message,
-    detail: result.detail || '',
-  })
-
-  if (result.ok) {
+async function handleSubmit() {
+  try {
+    // Convertir fiscalResponsibilities de string a array
+    const formData = {
+      ...thirdPartyForm,
+      fiscalResponsibilities: thirdPartyForm.fiscalResponsibilities
+        ? thirdPartyForm.fiscalResponsibilities.split(',').map(s => s.trim()).filter(Boolean)
+        : []
+    }
+    
+    const result = await businessApi.createThirdParty(formData, store.activeTenantId)
+    
+    emit('notify', {
+      message: 'Tercero creado exitosamente',
+      detail: result.name || '',
+    })
+    
+    await store.fetchThirdParties()
     resetForm()
+  } catch (error) {
+    const msg = error?.message || 'Intente nuevamente'
+    emit('notify', {
+      message: 'Error al crear tercero',
+      detail: msg,
+    })
   }
 }
 </script>
@@ -106,14 +132,47 @@ function handleSubmit() {
               </label>
             </div>
 
+            <div class="field-grid two">
+              <label class="field">
+                <span>Telefono</span>
+                <input v-model="thirdPartyForm.phone" placeholder="+57 300 123 4567" type="tel" />
+              </label>
+
+              <label class="field">
+                <span>Ciudad / Municipio</span>
+                <input v-model="thirdPartyForm.city" placeholder="Bogota D.C." type="text" />
+              </label>
+            </div>
+
             <label class="field">
-              <span>Perfil tributario</span>
-              <input
-                v-model="thirdPartyForm.taxProfile"
-                placeholder="Responsable de IVA"
-                required
-                type="text"
-              />
+              <span>Direccion</span>
+              <input v-model="thirdPartyForm.address" placeholder="Calle 123 # 45-67, Barrio Centro" type="text" />
+            </label>
+
+            <div class="field-grid two">
+              <label class="field">
+                <span>Regimen tributario</span>
+                <select v-model="thirdPartyForm.taxRegime">
+                  <option value="simplificado">Simplificado</option>
+                  <option value="comun">Comun</option>
+                  <option value="especial">Especial</option>
+                </select>
+              </label>
+
+              <label class="field">
+                <span>Perfil tributario</span>
+                <input
+                  v-model="thirdPartyForm.taxProfile"
+                  placeholder="Responsable de IVA"
+                  required
+                  type="text"
+                />
+              </label>
+            </div>
+
+            <label class="field">
+              <span>Responsabilidades fiscales DIAN (separadas por coma)</span>
+              <input v-model="thirdPartyForm.fiscalResponsibilities" placeholder="R-99-PN, 48, 49" type="text" />
             </label>
 
             <div class="form-actions">
@@ -136,16 +195,24 @@ function handleSubmit() {
             <span>Tercero</span>
             <span>Tipo</span>
             <span>NIT</span>
-            <span>Email</span>
+            <span>Contacto</span>
+            <span>Ubicacion</span>
           </div>
           <div v-for="party in sortedThirdParties" :key="party.id" class="table-row">
             <div>
               <p>{{ party.name }}</p>
-              <p class="label-soft">{{ party.taxProfile }}</p>
+              <p class="label-soft">{{ party.taxProfile }} | {{ party.taxRegime }}</p>
             </div>
             <span class="small-pill">{{ mapKindLabel(party.kind) }}</span>
             <span>{{ party.nit }}</span>
-            <span>{{ party.email }}</span>
+            <div>
+              <p>{{ party.email }}</p>
+              <p v-if="party.phone" class="label-soft">{{ party.phone }}</p>
+            </div>
+            <div>
+              <p v-if="party.city">{{ party.city }}</p>
+              <p v-if="party.address" class="label-soft text-truncate">{{ party.address }}</p>
+            </div>
           </div>
         </div>
         <p v-else class="empty-state">No hay terceros configurados para esta empresa.</p>

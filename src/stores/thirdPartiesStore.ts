@@ -28,6 +28,10 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     tenantThirdParties.value.filter(tp => tp.kind === 'provider')
   )
 
+  const tenantEmployees = computed(() =>
+    tenantThirdParties.value.filter(tp => tp.kind === 'employee')
+  )
+
   const canManageThirdParties = computed(() => root.can('manage_third_parties'))
 
   // Actions
@@ -52,6 +56,7 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     tenantThirdParties,
     tenantClients,
     tenantProviders,
+    tenantEmployees,
     canManageThirdParties,
     fetchThirdParties,
   }
