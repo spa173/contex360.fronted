@@ -1,5 +1,5 @@
 const LOCAL_API_BASE_URL = 'http://localhost:3001'
-const PRODUCTION_API_BASE_URL = 'https://contex360-backend.onrender.com'
+const PRODUCTION_API_BASE_URL = 'https://contex360-backend-production-2b1d.up.railway.app'
 
 function normalizeApiBaseUrl(value: string) {
   return value.endsWith('/') ? value.slice(0, -1) : value

@@ -38,7 +38,7 @@ async function initApp() {
   isLoading.value = true
   loadError.value = null
 
-  const timeout = new Promise<false>((resolve) =>
+  const timeout = new Promise((resolve) =>
     setTimeout(() => resolve(false), 8000)
   )
 
