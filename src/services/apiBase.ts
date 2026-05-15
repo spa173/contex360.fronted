@@ -21,8 +21,8 @@ function resolveDefaultApiBaseUrl() {
 export function getApiBaseUrl() {
   let raw = String(import.meta.env.VITE_API_BASE_URL || resolveDefaultApiBaseUrl())
   
-  // Auto-fix: if the URL still points to Render, force the Railway URL
-  if (raw.includes('onrender.com')) {
+  // Auto-fix: if the URL still points to Render or a stale Railway domain, force the correct one
+  if (raw.includes('onrender.com') || (raw.includes('railway.app') && !raw.includes('-2b1d'))) {
     raw = PRODUCTION_API_BASE_URL
   }
   
