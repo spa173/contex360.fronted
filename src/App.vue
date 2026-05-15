@@ -12,6 +12,7 @@ import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
 import TermsOfUseView from './components/views/TermsOfUseView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
+import AppLoading from './components/layout/AppLoading.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
 
@@ -24,6 +25,8 @@ const showPrivacy = ref(false)
 const showTerms = ref(false)
 const showAbout = ref(false)
 const viewingAdminPanel = ref(false)
+const isLoading = ref(true)
+const loadError = ref(null)
 
 const showRootPanel = computed(
   () => store.currentUser?.isSystemOwner && viewingAdminPanel.value
@@ -31,42 +34,71 @@ const showRootPanel = computed(
 
 themeStore.initializeTheme()
 
-onMounted(async () => {
-  const ok = await store.refreshSessionWithBackend()
-  if (ok) {
-    await store.fetchBusinessData()
+async function initApp() {
+  isLoading.value = true
+  loadError.value = null
+
+  const timeout = new Promise<false>((resolve) =>
+    setTimeout(() => resolve(false), 8000)
+  )
+
+  try {
+    const result = await Promise.race([store.refreshSessionWithBackend(), timeout])
+    if (result === false) {
+      loadError.value = 'El servidor tardó demasiado en responder. Verifica tu conexión.'
+      return
+    }
+    if (result) {
+      await store.fetchBusinessData()
+    }
+  } catch (e) {
+    loadError.value = e?.message || 'Error al conectar con el servidor.'
+  } finally {
+    isLoading.value = false
   }
-})
+}
+
+onMounted(() => initApp())
 </script>
 
 <template>
   <div class="app-root">
-    <!-- Authenticated states -->
-    <template v-if="store.currentUser">
-      <RootShell v-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
-      <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
-    </template>
+    <!-- Initial load skeleton -->
+    <AppLoading
+      v-if="isLoading || loadError"
+      :error="loadError"
+      @retry="initApp"
+    />
 
-    <!-- Public states (unauthenticated) -->
+    <!-- App ready -->
     <template v-else>
-      <DemoRequestView v-if="showDemo" @back="showDemo = false" />
-      <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @back="showAuth = false" />
-      <AboutView
-        v-else-if="showAbout"
-        @back="showAbout = false"
-        @request-demo="showDemo = true"
-        @login="showAuth = true"
-      />
-      <PrivacyPolicyView v-else-if="showPrivacy" @back="showPrivacy = false" />
-      <TermsOfUseView v-else-if="showTerms" @back="showTerms = false" />
-      <LandingPage
-        v-else
-        @login="showAuth = true"
-        @request-demo="showDemo = true"
-        @show-privacy="showPrivacy = true"
-        @show-terms="showTerms = true"
-        @show-about="showAbout = true"
-      />
+      <!-- Authenticated states -->
+      <template v-if="store.currentUser">
+        <RootShell v-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
+        <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
+      </template>
+
+      <!-- Public states (unauthenticated) -->
+      <template v-else>
+        <DemoRequestView v-if="showDemo" @back="showDemo = false" />
+        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @back="showAuth = false" />
+        <AboutView
+          v-else-if="showAbout"
+          @back="showAbout = false"
+          @request-demo="showDemo = true"
+          @login="showAuth = true"
+        />
+        <PrivacyPolicyView v-else-if="showPrivacy" @back="showPrivacy = false" />
+        <TermsOfUseView v-else-if="showTerms" @back="showTerms = false" />
+        <LandingPage
+          v-else
+          @login="showAuth = true"
+          @request-demo="showDemo = true"
+          @show-privacy="showPrivacy = true"
+          @show-terms="showTerms = true"
+          @show-about="showAbout = true"
+        />
+      </template>
     </template>
 
     <SessionRecoveryModal />
