@@ -191,6 +191,9 @@ const userInitials = computed(() => {
 </template>
 
 <style scoped>
+.sidebar {
+  z-index: 101 !important;
+}
 .nav-item-label {
   font-size: 13px;
   font-weight: 500;

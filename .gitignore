@@ -33,5 +33,7 @@ dist-ssr
 # Pruebas locales privadas
 tests-local/
 
-# Windsurf skills (privadas, no subir a GitHub)
+# Windsurf & AI Agents skills (privadas, no subir a GitHub)
 .windsurf/skills/
+.agents/
+.gemini/

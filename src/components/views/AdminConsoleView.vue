@@ -172,7 +172,11 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
     <div class="flex h-screen bg-[#0B0F1A] text-slate-300 font-sans selection:bg-emerald-500/30">
       
       <!-- Sidebar SaaS -->
-      <Sidebar :active-view="activeSubView" @view-change="(v) => activeSubView = v" />
+      <Sidebar 
+        :active-view="activeSubView" 
+        @view-change="(v) => activeSubView = v"
+        @exit="authStore.setActiveView('dashboard')"
+      />
 
       <!-- Contenido Principal -->
       <main class="flex-1 overflow-auto bg-[#0B0F1A]">
@@ -331,7 +335,7 @@ const accessReview = computed(() => compliance.value?.accessReview ?? null)
   position: fixed;
   top: 0;
   left: 0;
-  z-index: 50;
+  z-index: 45;
 }
 
 .view-container.active {

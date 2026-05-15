@@ -112,6 +112,17 @@ onUnmounted(() => {
   }
 })
 </script>
+<style scoped>
+.sidebar-trigger {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  z-index: 100;
+  background: transparent;
+}
+</style>
 
 <template>
   <div class="app app-shell">

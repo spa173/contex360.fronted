@@ -37,7 +37,8 @@ export const useAuthStore = defineStore('auth', () => {
     const definitions: any = {
       'Administrador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'profile', 'about'],
       'Contador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about'],
-      'Visor': ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about']
+      'Visor': ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about'],
+      'Operador': ['dashboard', 'billing', 'inventory', 'third-parties', 'profile', 'about']
     }
     return definitions[role] || ['dashboard', 'profile', 'about']
   })

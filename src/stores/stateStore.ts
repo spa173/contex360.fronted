@@ -55,9 +55,17 @@ export const useStateStore = defineStore('state', {
     activeTenant(state): Tenant | null { return state.tenants.find(t => t.id === state.activeTenantId) || null },
     activeMembership(state): Membership | null {
       if (!state.session.currentUserId || !state.activeTenantId) return null
-      return getMembershipForTenant(state.session.currentUserId, state.activeTenantId, state.memberships)
+      const membership = getMembershipForTenant(state.session.currentUserId, state.activeTenantId, state.memberships)
+      if (!membership && this.currentUser?.isSystemOwner) {
+        return { userId: state.session.currentUserId, tenantId: state.activeTenantId, role: 'Administrador' }
+      }
+      return membership
     },
     rolePermissions(state): string[] {
+      if (this.currentUser?.isSystemOwner) {
+        // Full access for root
+        return ['all']
+      }
       const role = this.activeMembership?.role
       if (!role) return []
       const modules = state.roleAccess[role] || {}
