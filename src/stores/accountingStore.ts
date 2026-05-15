@@ -17,13 +17,15 @@ export const useAccountingStore = defineStore('accounting', () => {
     entryId: null as string | null,
   })
 
+  const isLoading = ref(false)
+
   // Getters
   const activeTenantId = computed(() => root.activeTenantId)
 
   const tenantLedgerEntries = computed(() => 
     [...ledgerEntries.value]
-      .filter(entry => entry.tenantId === activeTenantId.value)
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      .filter(entry => !activeTenantId.value || entry.tenantId === activeTenantId.value)
+      .sort((a, b) => new Date((b as any).entryAt || b.createdAt).getTime() - new Date((a as any).entryAt || a.createdAt).getTime())
   )
 
   const selectedEntry = computed(() => 
@@ -41,11 +43,14 @@ export const useAccountingStore = defineStore('accounting', () => {
 
   async function fetchLedgerEntries() {
     if (!activeTenantId.value) return
+    isLoading.value = true
     try {
       const data = await businessApi.getLedgerEntries(activeTenantId.value)
       ledgerEntries.value = Array.isArray(data) ? data : []
     } catch (error) {
       console.error('Error fetching ledger entries:', error)
+    } finally {
+      isLoading.value = false
     }
   }
 
@@ -84,9 +89,9 @@ export const useAccountingStore = defineStore('accounting', () => {
   // Sync back to root
   watch(ledgerEntries, (newVal) => { (root.$state as any).ledgerEntries = newVal; }, { deep: true, immediate: true })
 
-  watch([activeTenantId, () => (root as any).session?.currentUserId], ([newId, userId]) => {
-    if (newId && userId) fetchLedgerEntries()
+  watch(activeTenantId, (newId) => {
+    if (newId) fetchLedgerEntries()
   }, { immediate: true })
 
-  return { ledgerEntries, selections, tenantLedgerEntries, selectedEntry, addEntry, selectEntry, fetchLedgerEntries, balanceSheet, profitAndLoss }
+  return { ledgerEntries, selections, isLoading, tenantLedgerEntries, selectedEntry, addEntry, selectEntry, fetchLedgerEntries, balanceSheet, profitAndLoss }
 })

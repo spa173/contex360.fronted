@@ -16,7 +16,10 @@ import {
   AlertCircle,
   FileDown,
   LayoutDashboard,
-  Receipt
+  Receipt,
+  X,
+  Send,
+  RefreshCw
 } from 'lucide-vue-next'
 
 defineProps({
@@ -37,6 +40,7 @@ onMounted(() => {
   if (typeof billingStore.initializeBridge === 'function') {
     billingStore.initializeBridge()
   }
+  billingStore.fetchNextNumber()
 })
 
 const invoiceForm = reactive({
@@ -67,6 +71,7 @@ watch(
   () => rootStore.activeTenantId,
   () => {
     resetForm()
+    billingStore.fetchNextNumber()
   },
   { immediate: true },
 )
@@ -177,6 +182,7 @@ async function handleSubmit() {
 
   if (result.ok) {
     resetForm()
+    billingStore.fetchNextNumber() // Refresh next invoice number
   }
 }
 
@@ -196,9 +202,62 @@ function getStatusColor(status) {
     emitida: 'text-blue-400 bg-blue-400/10 border-blue-400/20',
     enviada: 'text-amber-400 bg-amber-400/10 border-amber-400/20',
     borrador: 'text-slate-400 bg-slate-400/10 border-slate-400/20',
-    rechazada: 'text-rose-400 bg-rose-400/10 border-rose-400/20'
+    rechazada: 'text-rose-400 bg-rose-400/10 border-rose-400/20',
+    cancelled: 'text-rose-500 bg-rose-500/10 border-rose-500/20'
   }
   return colors[status] || 'text-slate-400 bg-slate-400/10 border-slate-400/20'
+}
+
+const showCancelDialog = reactive({
+  open: false,
+  reason: '',
+})
+
+async function handleCancelInvoice() {
+  if (!billingStore.selectedInvoice) return
+  
+  const result = await billingStore.cancelInvoice(
+    billingStore.selectedInvoice.id,
+    showCancelDialog.reason || undefined
+  )
+  
+  emit('notify', {
+    message: result.message,
+    detail: result.ok ? 'El inventario ha sido restaurado.' : ''
+  })
+  
+  if (result.ok) {
+    showCancelDialog.open = false
+    showCancelDialog.reason = ''
+  }
+}
+
+async function handleSendToDian() {
+  if (!billingStore.selectedInvoice) return
+  
+  const result = await billingStore.sendToDian(billingStore.selectedInvoice.id)
+  
+  emit('notify', {
+    message: result.message,
+    detail: result.ok && result.data?.cufe ? `CUFE: ${result.data.cufe.substring(0, 20)}...` : ''
+  })
+}
+
+async function handleCheckDianStatus() {
+  if (!billingStore.selectedInvoice) return
+  
+  const result = await billingStore.checkDianStatus(billingStore.selectedInvoice.id)
+  
+  emit('notify', {
+    message: result.message,
+    detail: result.cufe ? `CUFE: ${result.cufe.substring(0, 20)}...` : ''
+  })
+}
+
+// Check if invoice has been sent to DIAN
+function hasDianCufe(invoice) {
+  if (!invoice?.timeline) return false
+  return invoice.timeline.some((event) => event.cufe)
 }
 </script>
 
@@ -234,6 +293,14 @@ function getStatusColor(status) {
           </div>
 
           <form @submit.prevent="handleSubmit" class="p-6 space-y-6">
+            <!-- Invoice Number Preview -->
+            <div v-if="billingStore.nextInvoiceNumber" class="p-3 bg-slate-900/50 border border-slate-700 rounded-lg">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400 uppercase tracking-wider">Próxima Factura</span>
+                <span class="text-sm font-mono font-bold text-emerald-400">{{ billingStore.nextInvoiceNumber.preview }}</span>
+              </div>
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div class="space-y-2">
                 <label class="text-xs font-medium text-slate-400 uppercase tracking-wider">Cliente</label>
@@ -424,12 +491,47 @@ function getStatusColor(status) {
         <div v-if="billingStore.selectedInvoice" class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-xl shadow-black/20 animate-in slide-in-from-bottom-4">
           <div class="p-5 border-b border-slate-800/50 bg-slate-800/20 flex items-center justify-between">
             <h2 class="text-sm font-semibold text-emerald-400 uppercase tracking-widest">Trazabilidad DIAN</h2>
-            <button 
-              @click="handleDownloadPdf"
-              class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2 text-xs"
-            >
-              <FileDown class="w-4 h-4" /> PDF
-            </button>
+            <div class="flex items-center gap-2">
+              <!-- Send to DIAN button -->
+              <button
+                v-if="billingStore.selectedInvoice.status !== 'cancelled' && billingStore.selectedInvoice.status !== 'draft' && canBilling && !hasDianCufe(billingStore.selectedInvoice)"
+                @click="handleSendToDian"
+                class="p-2 hover:bg-emerald-900/30 rounded-lg text-emerald-400 hover:text-emerald-300 transition-all flex items-center gap-2 text-xs"
+              >
+                <Send class="w-4 h-4" /> Enviar DIAN
+              </button>
+              <!-- Check DIAN status button -->
+              <button
+                v-if="hasDianCufe(billingStore.selectedInvoice)"
+                @click="handleCheckDianStatus"
+                class="p-2 hover:bg-blue-900/30 rounded-lg text-blue-400 hover:text-blue-300 transition-all flex items-center gap-2 text-xs"
+              >
+                <RefreshCw class="w-4 h-4" /> Verificar
+              </button>
+              <button
+                v-if="billingStore.selectedInvoice.status !== 'cancelled' && canBilling"
+                @click="showCancelDialog.open = true"
+                class="p-2 hover:bg-rose-900/30 rounded-lg text-rose-400 hover:text-rose-300 transition-all flex items-center gap-2 text-xs"
+              >
+                <X class="w-4 h-4" /> Cancelar
+              </button>
+              <button
+                @click="handleDownloadPdf"
+                class="p-2 hover:bg-slate-800 rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-2 text-xs"
+              >
+                <FileDown class="w-4 h-4" /> PDF
+              </button>
+            </div>
+          </div>
+
+          <!-- CUFE Display -->
+          <div v-if="hasDianCufe(billingStore.selectedInvoice)" class="px-5 py-3 bg-slate-800/10 border-b border-slate-800/50">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] text-slate-500 uppercase">CUFE:</span>
+              <code class="text-[10px] font-mono text-emerald-400 bg-emerald-400/10 px-2 py-1 rounded">
+                {{ billingStore.selectedInvoice.timeline.find(e => e.cufe)?.cufe?.substring(0, 32) }}...
+              </code>
+            </div>
           </div>
 
           <div class="p-6">
@@ -449,9 +551,55 @@ function getStatusColor(status) {
                   <span class="text-[10px] text-slate-500 font-mono">{{ formatDate(event.at) }}</span>
                 </div>
                 <p class="text-xs text-slate-300 leading-relaxed">{{ event.note }}</p>
+                <!-- QR Code link if available -->
+                <a v-if="event.qrCode" :href="event.qrCode" target="_blank" class="text-[10px] text-blue-400 hover:text-blue-300 mt-1 inline-block">
+                  Ver en DIAN →
+                </a>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cancel Confirmation Dialog -->
+    <div v-if="showCancelDialog.open" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50">
+      <div class="bg-[#131926] border border-slate-700 rounded-xl shadow-2xl max-w-md w-full mx-4 overflow-hidden">
+        <div class="p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-rose-500/10 flex items-center justify-center">
+              <AlertCircle class="w-5 h-5 text-rose-500" />
+            </div>
+            <h3 class="text-lg font-semibold text-white">Cancelar Factura</h3>
+          </div>
+          <p class="text-slate-400 text-sm mb-4">
+            Estás a punto de cancelar la factura <span class="text-white font-mono">{{ billingStore.selectedInvoice?.number }}</span>.
+            Esta acción reversará el inventario y no se puede deshacer.
+          </p>
+          <div class="space-y-2">
+            <label class="text-xs font-medium text-slate-400 uppercase">Motivo de cancelación (opcional)</label>
+            <textarea
+              v-model="showCancelDialog.reason"
+              placeholder="Ej: Error en datos del cliente, duplicado, etc."
+              rows="2"
+              class="w-full bg-slate-900/50 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-200 focus:ring-2 focus:ring-rose-500/20 focus:border-rose-500/50 transition-all outline-none resize-none"
+            ></textarea>
+          </div>
+        </div>
+        <div class="p-4 bg-slate-800/30 border-t border-slate-800 flex justify-end gap-3">
+          <button
+            @click="showCancelDialog.open = false; showCancelDialog.reason = ''"
+            class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-white transition-colors"
+          >
+            Volver
+          </button>
+          <button
+            @click="handleCancelInvoice"
+            class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white text-sm font-medium rounded-lg transition-all flex items-center gap-2"
+          >
+            <X class="w-4 h-4" />
+            Confirmar Cancelación
+          </button>
         </div>
       </div>
     </div>

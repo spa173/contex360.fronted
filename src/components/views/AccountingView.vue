@@ -1,5 +1,5 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import { useAccountingStore } from '@/stores/accountingStore'
 import { formatCurrency, formatDate } from '@/utils/ui'
 import {
@@ -27,6 +27,10 @@ defineProps({
 const store = useAccountingStore()
 const activeTab = ref('ledger')
 const isRefreshing = ref(false)
+
+onMounted(() => {
+  store.fetchLedgerEntries()
+})
 
 async function handleRefresh() {
   isRefreshing.value = true
@@ -205,8 +209,14 @@ function refTypeBadge(refType) {
             </div>
           </div>
 
+          <!-- Loading state -->
+          <div v-if="store.isLoading" class="py-20 text-center flex flex-col items-center gap-4">
+            <RefreshCw class="w-8 h-8 text-slate-600 animate-spin" />
+            <p class="text-slate-500 text-sm">Cargando asientos del Ledger...</p>
+          </div>
+
           <!-- Empty state -->
-          <div v-if="flatJournalLines.length === 0" class="py-20 text-center flex flex-col items-center gap-4">
+          <div v-else-if="flatJournalLines.length === 0" class="py-20 text-center flex flex-col items-center gap-4">
             <div class="p-4 bg-slate-800/40 rounded-full">
               <BookOpen class="w-8 h-8 text-slate-600" />
             </div>
@@ -219,7 +229,7 @@ function refTypeBadge(refType) {
           </div>
 
           <!-- Table: one row per LedgerLine -->
-          <div v-else class="overflow-x-auto">
+          <div v-else-if="!store.isLoading" class="overflow-x-auto">
             <table class="w-full text-left border-collapse min-w-[720px]">
               <thead>
                 <tr class="bg-[#0f1623] text-[10px] uppercase tracking-widest text-slate-600 font-bold border-b border-slate-800/60">

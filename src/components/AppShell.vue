@@ -11,6 +11,8 @@ import AccountingView from './views/AccountingView.vue'
 import AiView from './views/AiView.vue'
 import BillingView from './views/BillingView.vue'
 import PurchasesView from './views/PurchasesView.vue'
+import TreasuryView from './views/TreasuryView.vue'
+import ReportsView from './views/ReportsView.vue'
 import DashboardView from './views/DashboardView.vue'
 import InventoryView from './views/InventoryView.vue'
 import ThirdPartiesView from './views/ThirdPartiesView.vue'
@@ -22,6 +24,7 @@ import TermsOfUseView from './views/TermsOfUseView.vue'
 import DemoRequestView from './views/DemoRequestView.vue'
 import ChangePasswordView from './views/ChangePasswordView.vue'
 import ProfileView from './views/ProfileView.vue'
+import AboutView from './views/AboutView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 
 const store = useAuthStore()
@@ -155,6 +158,11 @@ onUnmounted(() => {
           :is-active="store.activeView === 'purchases'"
           @notify="handleNotify"
         />
+        <TreasuryView
+          v-if="store.visibleViews.includes('treasury')"
+          :is-active="store.activeView === 'treasury'"
+          @notify="handleNotify"
+        />
         <InventoryView
           v-if="store.visibleViews.includes('inventory')"
           :is-active="store.activeView === 'inventory'"
@@ -179,6 +187,11 @@ onUnmounted(() => {
           :is-active="store.activeView === 'ai'"
           @notify="handleNotify"
         />
+        <ReportsView
+          v-if="store.visibleViews.includes('reports')"
+          :is-active="store.activeView === 'reports'"
+          @notify="handleNotify"
+        />
         <AdminConsoleView
           v-if="store.visibleViews.includes('admin-console')"
           :is-active="store.activeView === 'admin-console'"
@@ -191,6 +204,9 @@ onUnmounted(() => {
         />
         <TermsOfUseView
           v-if="store.activeView === 'terms-of-use'"
+        />
+        <AboutView
+          v-if="store.activeView === 'about'"
         />
         <DemoRequestView
           v-if="store.activeView === 'demo'"

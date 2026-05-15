@@ -30,16 +30,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   const visibleViews = computed(() => {
     if (isSystemOwner.value) {
-      return ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile']
+      return ['dashboard', 'billing', 'purchases', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'profile', 'about']
     }
     const role = activeMembership.value?.role
-    if (!role) return ['dashboard', 'profile']
+    if (!role) return ['dashboard', 'profile', 'about']
     const definitions: any = {
-      'Administrador': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'users', 'ai', 'admin-console', 'profile'],
-      'Contador': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'profile'],
-      'Visor': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'profile']
+      'Administrador': ['dashboard', 'billing', 'purchases', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'profile', 'about'],
+      'Contador': ['dashboard', 'billing', 'purchases', 'treasury', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about'],
+      'Visor': ['dashboard', 'billing', 'purchases', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about']
     }
-    return definitions[role] || ['dashboard', 'profile']
+    return definitions[role] || ['dashboard', 'profile', 'about']
   })
 
   async function loginWithBackend(credentials: { 

@@ -71,19 +71,45 @@ export const businessApi = {
   async getInvoices(tenantId?: string | null) {
     return request<any[]>('/invoices', { tenantId })
   },
+  async getNextInvoiceNumber(tenantId?: string | null) {
+    return request<{ prefix: string; nextNumber: number; preview: string }>('/invoices/next-number', { tenantId })
+  },
   async createInvoice(data: any, tenantId?: string | null) {
     return request<any>('/invoices', { method: 'POST', body: data, tenantId })
+  },
+  async updateInvoiceStatus(id: string, status: string, tenantId?: string | null) {
+    return request<any>(`/invoices/${id}/status`, { method: 'PATCH', body: { status }, tenantId })
+  },
+  async cancelInvoice(id: string, reason?: string, tenantId?: string | null) {
+    return request<any>(`/invoices/${id}/cancel`, { method: 'POST', body: { reason }, tenantId })
   },
 
   // Purchases
   async getPurchases(tenantId?: string | null) {
     return request<any[]>('/purchases', { tenantId })
   },
+  async getNextPurchaseNumber(tenantId?: string | null) {
+    return request<{ prefix: string; nextNumber: number; preview: string }>('/purchases/next-number', { tenantId })
+  },
   async createPurchase(data: any, tenantId?: string | null) {
     return request<any>('/purchases', { method: 'POST', body: data, tenantId })
   },
   async deletePurchase(id: string, tenantId?: string | null) {
     return request<any>(`/purchases/${id}`, { method: 'DELETE', tenantId })
+  },
+  async updatePurchaseStatus(id: string, status: string, tenantId?: string | null) {
+    return request<any>(`/purchases/${id}/status`, { method: 'PATCH', body: { status }, tenantId })
+  },
+
+  // Treasury
+  async getTransactions(tenantId?: string | null) {
+    return request<any[]>('/treasury', { tenantId })
+  },
+  async getTreasuryBalance(tenantId?: string | null) {
+    return request<{ balance: number; incomeMonth: number; expenseMonth: number }>('/treasury/balance', { tenantId })
+  },
+  async createTransaction(data: any, tenantId?: string | null) {
+    return request<any>('/treasury/transactions', { method: 'POST', body: data, tenantId })
   },
 
   // Products
@@ -107,8 +133,32 @@ export const businessApi = {
   async getSalesByMonth(tenantId?: string | null) {
     return request<any[]>('/analytics/sales-by-month', { tenantId })
   },
+  async getSalesReport(from?: string, to?: string, tenantId?: string | null) {
+    const query = new URLSearchParams()
+    if (from) query.append('from', from)
+    if (to) query.append('to', to)
+    return request<any>(`/analytics/sales-report?${query.toString()}`, { tenantId })
+  },
+  async getTopProducts(limit?: number, tenantId?: string | null) {
+    const query = limit ? `?limit=${limit}` : ''
+    return request<any[]>(`/analytics/top-products${query}`, { tenantId })
+  },
   getExportInvoicesUrl() {
     return `${getApiBaseUrl()}/analytics/export/invoices`
+  },
+
+  // DIAN Integration
+  async sendInvoiceToDian(invoiceId: string, tenantId?: string | null) {
+    return request<any>(`/dian/invoices/${invoiceId}/send`, { method: 'POST', tenantId })
+  },
+  async checkDianInvoiceStatus(invoiceId: string, tenantId?: string | null) {
+    return request<any>(`/dian/invoices/${invoiceId}/status`, { tenantId })
+  },
+  async validateDianConfig(tenantId?: string | null) {
+    return request<{ valid: boolean; errors: string[]; warnings: string[] }>('/dian/config/validate', { tenantId })
+  },
+  async updateDianConfig(config: any, tenantId?: string | null) {
+    return request<any>('/dian/config', { method: 'POST', body: config, tenantId })
   },
 
   // AI

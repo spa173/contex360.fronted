@@ -2,13 +2,16 @@ export const viewLabels: Record<string, string> = {
   dashboard: 'Dashboard',
   billing: 'Facturación',
   purchases: 'Compras',
+  treasury: 'Tesorería',
   inventory: 'Inventario',
   accounting: 'Contabilidad',
   'third-parties': 'Terceros',
   users: 'Usuarios',
+  reports: 'Reportes',
   ai: 'IA / OCR',
   'admin-console': 'Consola Admin',
   profile: 'Perfil',
+  about: 'Acerca de',
 }
 
 export const moduleRows: Array<[string, string, string]> = [

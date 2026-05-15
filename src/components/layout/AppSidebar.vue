@@ -30,6 +30,7 @@ const navBlueprint = [
       { id: 'purchases', icon: 'cart' },
       { id: 'inventory', icon: 'inventory' },
       { id: 'accounting', icon: 'ledger' },
+      { id: 'treasury', icon: 'treasury' },
       { id: 'third-parties', icon: 'people' },
     ],
   },
@@ -37,6 +38,7 @@ const navBlueprint = [
     label: 'Control',
     items: [
       { id: 'users', icon: 'user' },
+      { id: 'reports', icon: 'chart' },
       { id: 'ai', icon: 'spark' },
     ],
   },
@@ -44,6 +46,12 @@ const navBlueprint = [
     label: 'Administración',
     items: [
       { id: 'admin-console', icon: 'settings' },
+    ],
+  },
+  {
+    label: 'Información',
+    items: [
+      { id: 'about', icon: 'info' },
     ],
   },
 ]
@@ -107,6 +115,11 @@ const userInitials = computed(() => {
             <circle cx="6.5" cy="13" r="1" fill="currentColor" />
             <circle cx="11.5" cy="13" r="1" fill="currentColor" />
           </svg>
+          <svg v-else-if="item.icon === 'treasury'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="1.5" y="5.5" width="13" height="9" rx="1.4" stroke="currentColor" stroke-width="1.4" />
+            <path d="M4 5.5V4a4 4 0 0 1 8 0v1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
+            <circle cx="8" cy="10" r="1.5" fill="currentColor" opacity="0.8" />
+          </svg>
           <svg v-else-if="item.icon === 'inventory'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <rect x="1.8" y="5" width="12.4" height="9" rx="1.4" stroke="currentColor" stroke-width="1.4" />
             <path d="M5 5V3.7A3 3 0 0 1 8 1a3 3 0 0 1 3 2.7V5" stroke="currentColor" stroke-width="1.4" />
@@ -127,11 +140,20 @@ const userInitials = computed(() => {
             <path d="M8 5a3 3 0 1 0 0 6 3 3 0 0 0 0-6z" fill="currentColor" opacity="0.72" />
             <path d="M14 7.5c0-.3-.2-.5-.5-.5h-1c-.1-.4-.2-.8-.4-1.2l.7-.7c.2-.2.2-.5 0-.7l-.7-.7c-.2-.2-.5-.2-.7 0l-.7.7c-.4-.2-.8-.3-1.2-.4v-1c0-.3-.2-.5-.5-.5h-1c-.3 0-.5.2-.5.5v1c-.4.1-.8.2-1.2.4l-.7-.7c-.2-.2-.5-.2-.7 0l-.7.7c-.2.2-.2.5 0 .7l.7.7c-.2.4-.3.8-.4 1.2h-1c-.3 0-.5.2-.5.5v1c0 .3.2.5.5.5h1c.1.4.2.8.4 1.2l-.7.7c-.2.2-.2.5 0 .7l.7.7c.2.2.5.2.7 0l.7-.7c.4.2.8.3 1.2.4v1c0 .3.2.5.5.5h1c.3 0 .5-.2.5-.5v-1c.4-.1.8-.2 1.2-.4l.7.7c.2.2.5.2.7 0l.7-.7c.2-.2.2-.5 0-.7l-.7-.7c.2-.4.3-.8.4-1.2h1c.3 0 .5-.2.5-.5v-1z" stroke="currentColor" stroke-width="1.4" />
           </svg>
-          <svg v-else class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+          <svg v-else-if="item.icon === 'spark'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M8 1.7v2M8 12.3v2M1.7 8h2M12.3 8h2M3.6 3.6 5 5M11 11l1.4 1.4M3.6 12.4 5 11M11 5l1.4-1.4" stroke="currentColor" stroke-linecap="round" stroke-width="1.4" />
             <circle cx="8" cy="8" r="2.4" stroke="currentColor" stroke-width="1.4" />
           </svg>
-            <span class="nav-item-label">{{ viewLabels[item.id] || item.id }}</span>
+          <svg v-else-if="item.icon === 'chart'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <rect x="2" y="9" width="3" height="5" rx="1" fill="currentColor" opacity="0.6" />
+            <rect x="6.5" y="5" width="3" height="9" rx="1" fill="currentColor" opacity="0.8" />
+            <rect x="11" y="2" width="3" height="12" rx="1" fill="currentColor" />
+          </svg>
+          <svg v-else-if="item.icon === 'info'" class="nav-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.4" />
+            <path d="M8 7v4M8 5v1" stroke="currentColor" stroke-linecap="round" stroke-width="1.4" />
+          </svg>
+          <span class="nav-item-label">{{ viewLabels[item.id] || item.id }}</span>
         </button>
       </section>
     </nav>

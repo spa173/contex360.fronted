@@ -14,6 +14,7 @@ export const useBillingStore = defineStore('billing', () => {
   const accounting = useAccountingStore()
 
   const invoices = ref<Invoice[]>([])
+  const nextInvoiceNumber = ref<{ prefix: string; nextNumber: number; preview: string } | null>(null)
 
   const selections = ref({
     invoiceId: null as string | null,
@@ -41,6 +42,17 @@ export const useBillingStore = defineStore('billing', () => {
     } catch (error) { 
       console.error('Error fetching invoices:', error)
       invoices.value = []
+    }
+  }
+
+  async function fetchNextNumber() {
+    if (!activeTenantId.value) return
+    try {
+      const data = await businessApi.getNextInvoiceNumber(activeTenantId.value)
+      nextInvoiceNumber.value = data
+    } catch (error) {
+      console.error('Error fetching next invoice number:', error)
+      nextInvoiceNumber.value = null
     }
   }
 
@@ -83,6 +95,97 @@ export const useBillingStore = defineStore('billing', () => {
     }
   }
 
+  async function cancelInvoice(invoiceId: string, reason?: string) {
+    if (!canEmitInvoice.value) return { ok: false, message: 'Tu rol actual no permite cancelar documentos.' }
+    
+    try {
+      const cancelled = await businessApi.cancelInvoice(invoiceId, reason)
+      const index = invoices.value.findIndex(inv => inv.id === invoiceId)
+      if (index !== -1) {
+        invoices.value[index] = { ...invoices.value[index], ...cancelled, status: 'cancelled' as InvoiceStatus }
+      }
+      appendAuditEvent(root.$state, { tenantId: root.activeTenantId, entity: 'factura', action: 'Cancelar', description: `Se canceló la factura ${cancelled.number}. Motivo: ${reason || 'No especificado'}`, actor: root.currentUser?.name || 'Sistema', severity: 'warning' })
+      return { ok: true, message: 'Factura cancelada correctamente. El inventario ha sido restaurado.' }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Error al cancelar factura.' }
+    }
+  }
+
+  async function sendToDian(invoiceId: string) {
+    if (!canEmitInvoice.value) return { ok: false, message: 'Tu rol actual no permite enviar a DIAN.' }
+    
+    try {
+      const result = await businessApi.sendInvoiceToDian(invoiceId)
+      if (result.success) {
+        const index = invoices.value.findIndex(inv => inv.id === invoiceId)
+        if (index !== -1) {
+          // Actualizar timeline con evento DIAN
+          const timeline = (invoices.value[index].timeline || []) as any[]
+          timeline.push({
+            id: uid('tl'),
+            status: result.status === 'accepted' ? 'aceptada' : result.status,
+            note: result.message,
+            at: new Date().toISOString(),
+            cufe: result.cufe,
+            qrCode: result.qrCode,
+          })
+          invoices.value[index] = { 
+            ...invoices.value[index], 
+            timeline,
+            status: (result.status === 'accepted' ? 'accepted' : invoices.value[index].status) as InvoiceStatus
+          }
+        }
+        appendAuditEvent(root.$state, { 
+          tenantId: root.activeTenantId, 
+          entity: 'dian', 
+          action: 'Enviar', 
+          description: `Factura enviada a DIAN. CUFE: ${result.cufe}`, 
+          actor: root.currentUser?.name || 'Sistema', 
+          severity: 'info' 
+        })
+      }
+      return { ok: result.success, message: result.message, data: result }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Error al enviar a DIAN.' }
+    }
+  }
+
+  async function checkDianStatus(invoiceId: string) {
+    try {
+      const result = await businessApi.checkDianInvoiceStatus(invoiceId)
+      if (result.success && result.status) {
+        const index = invoices.value.findIndex(inv => inv.id === invoiceId)
+        if (index !== -1) {
+          const timeline = (invoices.value[index].timeline || []) as any[]
+          const lastEvent = timeline[timeline.length - 1]
+          const newStatus = result.status === 'accepted' ? 'aceptada' : 
+                           result.status === 'rejected' ? 'rechazada' : 
+                           result.status
+          if (!lastEvent || lastEvent.status !== newStatus) {
+            timeline.push({
+              id: uid('tl'),
+              status: newStatus,
+              note: result.message,
+              at: new Date().toISOString(),
+              cufe: result.cufe,
+            })
+            const mappedStatus: InvoiceStatus = result.status === 'accepted' ? 'accepted' : 
+                                                 result.status === 'rejected' ? 'emitted' : 
+                                                 invoices.value[index].status
+            invoices.value[index] = { 
+              ...invoices.value[index], 
+              timeline,
+              status: mappedStatus
+            }
+          }
+        }
+      }
+      return { ok: true, message: result.message, status: result.status, cufe: result.cufe }
+    } catch (error) {
+      return { ok: false, message: error instanceof Error ? error.message : 'Error al consultar DIAN.' }
+    }
+  }
+
   function createInvoiceEntry(invoice: Invoice, clientName: string) {
     return { id: uid('entry'), tenantId: invoice.tenantId, referenceType: 'invoice', referenceId: invoice.id, description: `Factura ${invoice.number} - ${clientName}`, amount: invoice.total, entryAt: new Date().toISOString(), createdAt: new Date().toISOString(), lines: [{ account: '130505', label: 'Clientes nacionales', debit: invoice.total, credit: 0 }, { account: '413595', label: 'Ingresos operacionales', debit: 0, credit: invoice.subtotal }, { account: '240805', label: 'IVA generado', debit: 0, credit: invoice.taxTotal }] }
   }
@@ -120,5 +223,5 @@ export const useBillingStore = defineStore('billing', () => {
     if (newId && userId) fetchInvoices()
   }, { immediate: true })
 
-  return { invoices, selectedInvoice, canEmitInvoice, fetchInvoices, emitInvoice, scheduleDianUpdates, clearScheduledDianUpdates }
+  return { invoices, nextInvoiceNumber, selectedInvoice, canEmitInvoice, fetchInvoices, fetchNextNumber, emitInvoice, cancelInvoice, sendToDian, checkDianStatus, scheduleDianUpdates, clearScheduledDianUpdates }
 })
