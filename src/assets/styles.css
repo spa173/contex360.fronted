@@ -1050,28 +1050,28 @@ button {
 
 
 .app .sidebar {
-    background: var(--bg-strong);
+    background: #0B0F1A;
     backdrop-filter: blur(20px);
     -webkit-backdrop-filter: blur(20px);
     border: 0;
     border-radius: 0;
-    border-right: 1px solid var(--border);
-    box-shadow: 4px 0 40px rgba(0, 0, 0, 0.5);  
+    border-right: 1px solid rgba(148, 163, 184, 0.08);
+    box-shadow: 4px 0 32px rgba(0, 0, 0, 0.6);
     display: flex;
     flex-direction: column;
     flex-shrink: 0;
-  gap: 0;
-  height: 100vh;
-  left: 0;
-  min-height: 100vh;
-  padding: 20px 0;
-  position: fixed;                        
-  top: 0;
-  transform: translateX(-100%);           
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);  
-  width: 230px;
-  z-index: 50;                            
-}
+    gap: 0;
+    height: 100vh;
+    left: 0;
+    min-height: 100vh;
+    padding: 20px 0;
+    position: fixed;
+    top: 0;
+    transform: translateX(-100%);
+    transition: transform 0.26s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 200px;
+    z-index: 50;
+  }
 
 
 .app .sidebar.mobile-open {
@@ -1081,23 +1081,25 @@ button {
 
 
 .logo {
-  border-bottom: 0.5px solid var(--color-border-tertiary);
-  margin-bottom: 12px;
-  padding: 0 16px 20px;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.07);
+  margin-bottom: 8px;
+  padding: 4px 0 0;
 }
 
 
 .logo-mark {
   color: var(--color-text-primary);
-  font-size: 15px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
 
-
 .logo-sub {
-  color: var(--color-text-secondary);
-  font-size: 11px;
+  color: var(--color-text-tertiary);
+  font-size: 10px;
   margin-top: 2px;
+  letter-spacing: 0.01em;
 }
 
 .nav-links {
@@ -1123,7 +1125,7 @@ button {
 }
 
 .nav-label {
-  padding: 8px 8px 4px;
+  padding: 10px 10px 3px;
 }
 
 
@@ -1131,15 +1133,16 @@ button {
 .nav-link {
   align-items: center;
   background: transparent;
-  border: 0.5px solid transparent;
-  border-radius: var(--border-radius-md);
-  color: var(--color-text-secondary);  
+  border: 0 solid transparent;
+  border-left: 2px solid transparent;
+  border-radius: 0 var(--border-radius-md) var(--border-radius-md) 0;
+  color: var(--color-text-secondary);
   cursor: pointer;
   display: flex;
   font-size: 13px;
   gap: 8px;
-  margin: 0 0 2px;
-  padding: 7px 8px;
+  margin: 0 0 1px;
+  padding: 6px 10px 6px 6px;
   text-align: left;
   transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
   width: 100%;
@@ -1147,25 +1150,33 @@ button {
 
 
 .nav-item:hover,
-.nav-item.active,
-.nav-link:hover,
-.nav-link.active {
-  background: var(--color-background-primary);
-  border-color: var(--color-border-secondary);
-  color: var(--color-text-primary);  
-  font-weight: 500;
+.nav-link:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-left-color: rgba(99, 179, 237, 0.3);
+  color: var(--color-text-primary);
   transform: none;
+}
+
+.nav-item.active,
+.nav-link.active {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.12) 0%, rgba(59, 130, 246, 0.04) 100%);
+  border-left-color: #3B82F6;
+  color: #93C5FD;
+  font-weight: 600;
+  transform: none;
+}
+
+.nav-item.active .nav-icon,
+.nav-link.active .nav-icon {
+  opacity: 1;
+  color: #60A5FA;
 }
 
 .nav-icon {
   flex-shrink: 0;
-  height: 16px;
-  opacity: 0.68;
-  width: 16px;
-}
-
-.nav-item.active .nav-icon {
-  opacity: 1;
+  height: 15px;
+  opacity: 0.55;
+  width: 15px;
 }
 
 
@@ -1280,18 +1291,20 @@ button {
 
 .topbar {
   align-items: center;
-  backdrop-filter: none;
-  background: rgba(27, 27, 27, 0.97);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(11, 15, 26, 0.82);
   border: 0;
-  border-bottom: 1px solid rgba(16, 185, 129, 0.12);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
   border-radius: 0;
-  box-shadow: none;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
   display: flex;
   flex-shrink: 0;
   gap: 8px;
   justify-content: space-between;
   overflow: visible;
-  padding: 12px 24px;
+  padding: 0 24px;
+  height: 52px;
 }
 
 .topbar-title {
