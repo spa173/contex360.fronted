@@ -1,3 +1,4 @@
+<script setup>
 import { computed } from 'vue'
 import { useTranslationStore } from '../../stores/translationStore'
 
