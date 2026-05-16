@@ -72,7 +72,7 @@ onUnmounted(() => {
               @click="emit('request-demo')"
             >
               Solicitar demo gratis
-              <span class="material-symbols-outlined">arrow_forward</span>
+              <span class="material-symbols-outlined" translate="no">arrow_forward</span>
             </button>
             <button 
               class="border-2 border-[#E2E8F0] text-[#000000] text-[16px] px-8 py-4 rounded-xl font-bold hover:bg-[#F8FAFC] transition-all flex items-center justify-center gap-2"
@@ -100,7 +100,7 @@ onUnmounted(() => {
           <div class="absolute -bottom-6 -left-6 bg-white p-6 rounded-2xl shadow-xl border border-[#E2E8F0] hidden sm:block">
             <div class="flex items-center gap-4">
               <div class="w-12 h-12 rounded-full bg-[#047857]/10 flex items-center justify-center text-[#047857]">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                <span class="material-symbols-outlined" translate="no" style="font-variation-settings: 'FILL' 1;">check_circle</span>
               </div>
               <div class="text-left">
                 <p class="text-[14px] font-bold text-[#000000]">Facturación OK</p>
@@ -125,7 +125,7 @@ onUnmounted(() => {
           <!-- Benefit 1: Security -->
           <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-[#E2E8F0] hover:border-[#0051d5] transition-colors group text-left">
             <div class="w-14 h-14 bg-[#316bf3]/10 rounded-2xl flex items-center justify-center text-[#0051d5] mb-6 group-hover:bg-[#0051d5] group-hover:text-white transition-all">
-              <span class="material-symbols-outlined text-3xl">verified_user</span>
+              <span class="material-symbols-outlined text-3xl" translate="no">verified_user</span>
             </div>
             <h3 class="text-[20px] font-[600] text-[#000000] mb-3">Máxima Seguridad</h3>
             <p class="text-[14px] leading-[1.5] font-[400] text-[#45464d]">
@@ -135,7 +135,7 @@ onUnmounted(() => {
           <!-- Benefit 2: Speed -->
           <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-[#E2E8F0] hover:border-[#0051d5] transition-colors group text-left">
             <div class="w-14 h-14 bg-[#316bf3]/10 rounded-2xl flex items-center justify-center text-[#0051d5] mb-6 group-hover:bg-[#0051d5] group-hover:text-white transition-all">
-              <span class="material-symbols-outlined text-3xl">bolt</span>
+              <span class="material-symbols-outlined text-3xl" translate="no">bolt</span>
             </div>
             <h3 class="text-[20px] font-[600] text-[#000000] mb-3">Velocidad Extrema</h3>
             <p class="text-[14px] leading-[1.5] font-[400] text-[#45464d]">
@@ -145,7 +145,7 @@ onUnmounted(() => {
           <!-- Benefit 3: Made for Colombia -->
           <div class="bg-[#FFFFFF] p-8 rounded-3xl border border-[#E2E8F0] hover:border-[#0051d5] transition-colors group text-left">
             <div class="w-14 h-14 bg-[#316bf3]/10 rounded-2xl flex items-center justify-center text-[#0051d5] mb-6 group-hover:bg-[#0051d5] group-hover:text-white transition-all">
-              <span class="material-symbols-outlined text-3xl">apartment</span>
+              <span class="material-symbols-outlined text-3xl" translate="no">apartment</span>
             </div>
             <h3 class="text-[20px] font-[600] text-[#000000] mb-3">Hecho para Colombia</h3>
             <p class="text-[14px] leading-[1.5] font-[400] text-[#45464d]">
@@ -176,7 +176,7 @@ onUnmounted(() => {
             <ul class="space-y-6">
               <li class="flex gap-4">
                 <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
-                  <span class="material-symbols-outlined text-lg">check</span>
+                  <span class="material-symbols-outlined text-lg" translate="no">check</span>
                 </div>
                 <div>
                   <h4 class="text-[16px] font-bold text-[#000000]">Consolidación Multisede</h4>
@@ -185,7 +185,7 @@ onUnmounted(() => {
               </li>
               <li class="flex gap-4">
                 <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
-                  <span class="material-symbols-outlined text-lg">check</span>
+                  <span class="material-symbols-outlined text-lg" translate="no">check</span>
                 </div>
                 <div>
                   <h4 class="text-[16px] font-bold text-[#000000]">Automatización Contable</h4>
@@ -194,7 +194,7 @@ onUnmounted(() => {
               </li>
               <li class="flex gap-4">
                 <div class="flex-shrink-0 w-8 h-8 rounded-full bg-[#0051d5] text-white flex items-center justify-center">
-                  <span class="material-symbols-outlined text-lg">check</span>
+                  <span class="material-symbols-outlined text-lg" translate="no">check</span>
                 </div>
                 <div>
                   <h4 class="text-[16px] font-bold text-[#000000]">Inteligencia de Negocios</h4>
