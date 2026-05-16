@@ -25,8 +25,8 @@ const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, 
     <!-- Dashboard Header -->
     <div class="mb-10 flex justify-between items-end border-b border-[#F4F4F5] pb-8">
       <div>
-        <h2 class="text-[32px] font-bold text-[#18181B] tracking-tight mb-2">{{ translationStore.t('Performance Overview', 'Performance Overview') }}</h2>
-        <p class="text-[14px] font-medium text-[#71717A]">{{ translationStore.t('Financial metrics and operational insights', 'Financial metrics and operational insights') }}</p>
+        <h2 class="text-[32px] font-bold text-[#18181B] tracking-tight mb-2">{{ translationStore.t('Performance Overview', 'Resumen de Rendimiento') }}</h2>
+        <p class="text-[14px] font-medium text-[#71717A]">{{ translationStore.t('Financial metrics and operational insights', 'Métricas financieras e insights operativos') }}</p>
       </div>
       <div class="flex gap-4">
         <button class="flex items-center gap-2 px-4 py-2 bg-white border border-[#E4E4E7] rounded-lg text-[#18181B] hover:bg-[#FAFAFA] transition-all text-[13px] font-bold shadow-sm">

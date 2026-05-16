@@ -42,23 +42,23 @@ function handleLanguageChange(e) {
   
   // Collect all static texts in the sidebar to translate
   const textsToTranslate = {
-    'Overview': 'Overview',
-    'Sales & Billing': 'Sales & Billing',
-    'Purchases': 'Purchases',
-    'Quotations': 'Quotations',
-    'Inventory': 'Inventory',
-    'Accounting': 'Accounting',
-    'Treasury': 'Treasury',
-    'Contacts': 'Contacts',
-    'Team': 'Team',
-    'Analytics': 'Analytics',
-    'System Admin': 'System Admin',
-    'IA Executive Assistant': 'IA Executive Assistant',
-    'Preferences': 'Preferences',
-    'Support': 'Support',
-    'Active Organization': 'Active Organization',
-    'Display Language': 'Display Language',
-    'Enterprise Suite': 'Enterprise Suite'
+    'Overview': 'Resumen',
+    'Sales & Billing': 'Ventas y Facturación',
+    'Purchases': 'Compras',
+    'Quotations': 'Cotizaciones',
+    'Inventory': 'Inventario',
+    'Accounting': 'Contabilidad',
+    'Treasury': 'Tesorería',
+    'Contacts': 'Contactos',
+    'Team': 'Equipo',
+    'Analytics': 'Analítica',
+    'System Admin': 'Admin Sistema',
+    'IA Executive Assistant': 'Asistente IA Ejecutivo',
+    'Preferences': 'Preferencias',
+    'Support': 'Soporte',
+    'Active Organization': 'Organización Activa',
+    'Display Language': 'Idioma de Pantalla',
+    'Enterprise Suite': 'Suite Empresarial'
   }
   
   translationStore.setLanguage(targetLang, textsToTranslate)
