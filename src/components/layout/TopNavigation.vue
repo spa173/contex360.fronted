@@ -42,6 +42,7 @@ function handleTenantChange(tenantId) {
             :class="['tenant-tab', { active: activeTenant?.id === tenant.id }]"
           >
             {{ tenant.name }}
+            <span class="material-symbols-outlined text-[18px] ml-1 opacity-70">expand_more</span>
           </button>
         </nav>
       </div>
