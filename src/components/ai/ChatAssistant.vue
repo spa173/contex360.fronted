@@ -295,10 +295,12 @@ const scrollToBottom = async () => {
   font-size: 0.9rem;
   outline: none;
   transition: border-color 0.2s;
+  color: #18181B !important;
+  background-color: #FFFFFF !important;
 }
 
 .chat-footer input:focus {
-  border-color: #10b981;
+  border-color: #2563EB;
 }
 
 .chat-footer button {
