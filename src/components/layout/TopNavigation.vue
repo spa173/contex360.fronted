@@ -39,7 +39,7 @@ function handleTenantChange(tenantId) {
       <!-- Far Left: AI Status -->
       <div class="status-pill">
         <div class="pulse-ring">
-          <span :class="aiHealth.status === 'active' ? 'bg-[#06B6D4]' : 'bg-[#F43F5E]'" class="pulse-dot"></span>
+          <span :class="aiHealth.status === 'active' ? 'bg-[#10B981]' : 'bg-[#F43F5E]'" class="pulse-dot"></span>
         </div>
         <span class="status-text">{{ aiHealth.status === 'active' ? 'Sistema activo' : 'IA Offline' }}</span>
       </div>
@@ -131,10 +131,10 @@ function handleTenantChange(tenantId) {
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 1rem;
-  background: rgba(6, 182, 212, 0.05);
-  border: 1px solid rgba(6, 182, 212, 0.2);
+  background: rgba(132, 85, 239, 0.05); /* Muted Purple Background */
+  border: 1px solid rgba(132, 85, 239, 0.2); /* Purple Border */
   border-radius: 9999px;
-  color: #06B6D4;
+  color: #E2E8F0; /* Light Gray text instead of Cyan */
 }
 
 .pulse-ring {
@@ -147,19 +147,20 @@ function handleTenantChange(tenantId) {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7);
+  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); /* Standard Emerald for 'active' */
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(6, 182, 212, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
 }
 
 .status-text {
   font-size: 13px;
   font-weight: 600;
+  color: #10B981; /* Soft Emerald for the text 'Sistema activo' */
 }
 
 /* Divider */
