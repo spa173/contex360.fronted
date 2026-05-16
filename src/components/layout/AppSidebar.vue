@@ -6,77 +6,104 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  activeTenant: Object,
+  accessibleTenants: Array,
+  activeView: String,
 })
 
-const emit = defineEmits(['navigate'])
+const emit = defineEmits(['navigate', 'tenant-change'])
 
 const menuItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
-  { id: 'billing', label: 'Facturación', icon: 'receipt_long' },
-  { id: 'purchases', label: 'Compras', icon: 'shopping_cart' },
-  { id: 'quotes', label: 'Cotizaciones', icon: 'request_quote' },
-  { id: 'inventory', label: 'Inventario', icon: 'inventory_2' },
-  { id: 'accounting', label: 'Contabilidad', icon: 'account_balance' },
-  { id: 'treasury', label: 'Tesorería', icon: 'payments' },
-  { id: 'third-parties', label: 'Terceros', icon: 'groups' },
-  { id: 'users', label: 'Usuarios', icon: 'manage_accounts' },
-  { id: 'reports', label: 'Reportes', icon: 'bar_chart' },
-  { id: 'admin-console', label: 'Consola Admin', icon: 'settings_applications' },
+  { id: 'dashboard', label: 'Overview', icon: 'dashboard' },
+  { id: 'billing', label: 'Sales & Billing', icon: 'receipt_long' },
+  { id: 'purchases', label: 'Purchases', icon: 'shopping_cart' },
+  { id: 'quotes', label: 'Quotations', icon: 'request_quote' },
+  { id: 'inventory', label: 'Inventory', icon: 'inventory_2' },
+  { id: 'accounting', label: 'Accounting', icon: 'account_balance' },
+  { id: 'treasury', label: 'Treasury', icon: 'payments' },
+  { id: 'third-parties', label: 'Contacts', icon: 'groups' },
+  { id: 'users', label: 'Team', icon: 'manage_accounts' },
+  { id: 'reports', label: 'Analytics', icon: 'bar_chart' },
+  { id: 'admin-console', label: 'System Admin', icon: 'settings_applications' },
 ]
 
 function handleNavigate(id) {
   emit('navigate', id)
 }
+
+function handleTenantChange(e) {
+  emit('tenant-change', e.target.value)
+}
 </script>
 
 <template>
   <nav :class="['sidebar-nav', { 'desktop-open': isOpen }]">
-    <div class="px-6 pb-6 pt-4">
-      <!-- Logo Section -->
+    <!-- Header Section: Logo & Tenant Selector -->
+    <div class="px-6 py-8 border-b border-[var(--sidebar-border)] bg-[var(--surface-alt)]">
       <div class="flex items-center gap-3 mb-8">
-        <div class="w-8 h-8 rounded bg-[var(--primary-container)] flex items-center justify-center text-[var(--on-primary-container)] font-bold">
+        <div class="w-10 h-10 rounded-lg bg-[var(--primary)] flex items-center justify-center text-[var(--primary-foreground)] font-black text-xl shadow-sm">
           C
         </div>
         <div>
-          <h1 class="text-lg font-bold text-white leading-tight">Contex360 ERP</h1>
-          <p class="text-[10px] text-slate-400 uppercase tracking-wider">Enterprise Suite</p>
+          <h1 class="text-base font-bold text-[var(--foreground)] leading-tight tracking-tight">Contex360</h1>
+          <p class="text-[10px] text-[var(--muted)] uppercase font-semibold tracking-widest">Enterprise Suite</p>
         </div>
       </div>
 
-      <!-- Main Navigation -->
-      <div class="space-y-1">
-        <button
-          v-for="item in menuItems"
-          :key="item.id"
-          @click="handleNavigate(item.id)"
-          class="nav-item"
-        >
-          <span class="material-symbols-outlined icon">{{ item.icon }}</span>
-          {{ item.label }}
-        </button>
+      <!-- Multi-company selector -->
+      <div class="relative group">
+        <label class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-2 block">Active Organization</label>
+        <div class="relative">
+          <select 
+            @change="handleTenantChange"
+            :value="activeTenant?.id"
+            class="tenant-select"
+          >
+            <option v-for="tenant in accessibleTenants" :key="tenant.id" :value="tenant.id">
+              {{ tenant.name }}
+            </option>
+          </select>
+          <span class="material-symbols-outlined select-arrow">expand_more</span>
+        </div>
       </div>
     </div>
 
+    <!-- Main Navigation -->
+    <div class="flex-1 px-4 py-6 overflow-y-auto space-y-1">
+      <button
+        v-for="item in menuItems"
+        :key="item.id"
+        @click="handleNavigate(item.id)"
+        :class="['nav-item', { 'active': activeView === item.id }]"
+      >
+        <span class="material-symbols-outlined icon">{{ item.icon }}</span>
+        {{ item.label }}
+      </button>
+    </div>
+
     <!-- AI Action Button -->
-    <div class="mt-auto px-6 mb-6">
+    <div class="px-4 py-4">
       <button 
         @click="handleNavigate('ai')"
         class="ai-action-btn"
       >
-        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-        AI/OCR Analysis
+        <span class="material-symbols-outlined text-[18px]">smart_toy</span>
+        IA Executive Assistant
       </button>
     </div>
 
     <!-- Bottom Settings/Help -->
-    <div class="px-6 border-t border-white/5 pt-4 pb-2 space-y-1">
-      <button @click="handleNavigate('profile')" class="bottom-nav-item">
+    <div class="px-4 py-4 border-t border-[var(--sidebar-border)] bg-[var(--surface-alt)] space-y-1">
+      <button 
+        @click="handleNavigate('profile')" 
+        :class="['bottom-nav-item', { 'active': activeView === 'profile' }]"
+      >
         <span class="material-symbols-outlined icon">settings</span>
-        Settings
+        Preferences
       </button>
-      <button @click="handleNavigate('about')" class="bottom-nav-item">
+      <button @click="handleNavigate('help')" class="bottom-nav-item">
         <span class="material-symbols-outlined icon">help</span>
-        Help
+        Support
       </button>
     </div>
   </nav>
@@ -88,87 +115,125 @@ function handleNavigate(id) {
   left: 0;
   top: 0;
   height: 100vh;
-  width: 260px;
-  background-color: #0F172A;
-  color: #94a3b8;
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  color: var(--sidebar-foreground);
   display: flex;
   flex-direction: column;
   z-index: 150;
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
+  border-right: 1px solid var(--sidebar-border);
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 10px 0 30px rgba(0, 0, 0, 0.3);
 }
 
 .desktop-open {
   transform: translateX(0);
 }
 
+.tenant-select {
+  appearance: none;
+  width: 100%;
+  background: white;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  padding-right: 32px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: var(--shadow-sm);
+}
+
+.tenant-select:hover {
+  border-color: var(--muted);
+}
+
+.select-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 18px;
+  color: var(--muted);
+}
+
 .nav-item {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  color: rgba(218, 226, 253, 0.7);
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.15s ease;
+  transition: var(--transition);
   text-align: left;
 }
 
 .nav-item:hover {
-  background-color: rgba(218, 226, 253, 0.1);
-  color: #dae2fd;
+  background-color: var(--surface-alt);
+  color: var(--foreground);
+}
+
+.nav-item.active {
+  background-color: var(--surface-alt);
+  color: var(--accent);
+  font-weight: 600;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
 }
 
 .nav-item .icon {
   font-size: 20px;
-  opacity: 0.7;
+  opacity: 0.8;
 }
 
 .ai-action-btn {
   width: 100%;
-  background-color: #8455ef;
-  color: #fffbff;
-  font-size: 14px;
-  font-weight: 500;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 12px;
+  border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  transition: all 0.2s;
-  box-shadow: 0 0 15px rgba(139, 92, 246, 0.3);
+  gap: 8px;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
 }
 
 .ai-action-btn:hover {
-  background-color: #6b38d4;
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .bottom-nav-item {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  color: rgba(218, 226, 253, 0.7);
-  font-size: 14px;
-  transition: all 0.15s ease;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: var(--radius-sm);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 500;
+  transition: var(--transition);
   text-align: left;
 }
 
-.bottom-nav-item:hover {
-  background-color: rgba(218, 226, 253, 0.1);
-  color: #dae2fd;
+.bottom-nav-item:hover, .bottom-nav-item.active {
+  background-color: white;
+  color: var(--foreground);
+  box-shadow: var(--shadow-sm);
 }
 
 .bottom-nav-item .icon {
-  font-size: 20px;
-  opacity: 0.7;
+  font-size: 18px;
 }
 </style>

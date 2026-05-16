@@ -55,11 +55,15 @@ function toggleSidebar() {
 </script>
 
 <template>
-  <div class="app-shell bg-[#faf8ff] min-h-screen flex">
+  <div class="app-shell bg-[var(--background)] min-h-screen flex">
     <!-- Persistent Sidebar -->
     <AppSidebar
       :is-open="isSidebarOpen"
+      :active-tenant="store.activeTenant"
+      :accessible-tenants="store.accessibleTenants"
+      :active-view="store.activeView"
       @navigate="handleNavigate"
+      @tenant-change="handleTenantChange"
     />
 
     <!-- Main Content Area -->
@@ -71,9 +75,8 @@ function toggleSidebar() {
         :active-membership="store.activeMembership"
         :active-view="store.activeView"
         :sidebar-open="isSidebarOpen"
-        :can-switch-tenant="(store.accessibleTenants?.length || 0) > 1"
+        :can-switch-tenant="false" 
         @logout="handleLogout"
-        @tenant-change="handleTenantChange"
         @toggle-sidebar="toggleSidebar"
         @navigate="handleNavigate"
         @open-admin-panel="emit('open-admin-panel')"
@@ -161,11 +164,12 @@ function toggleSidebar() {
 
 .main-wrapper {
   flex: 1;
-  margin-left: 260px; /* Width of sidebar */
+  margin-left: var(--sidebar-width);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
   transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: var(--background);
 }
 
 .main-wrapper.sidebar-collapsed {
@@ -188,15 +192,15 @@ function toggleSidebar() {
   right: 2rem;
   width: 56px;
   height: 56px;
-  background-color: #8455ef;
+  background-color: var(--primary);
   border-radius: 9999px;
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--primary-foreground);
   z-index: 200;
-  transition: transform 0.2s, background-color 0.2s;
+  transition: transform 0.2s, opacity 0.2s;
 }
 
 .ai-floating-trigger:hover {
