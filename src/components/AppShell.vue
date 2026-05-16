@@ -144,16 +144,14 @@ function toggleSidebar() {
           :is-active="true"
           @notify="handleNotify"
         />
+        
+        <!-- Chat Assistant Integrated -->
+        <ChatAssistant 
+          @navigate="handleNavigate"
+        />
       </main>
     </div>
 
-    <!-- Floating AI Assistant Button -->
-    <button 
-      class="ai-floating-trigger"
-      @click="handleNavigate('ai')"
-    >
-      <span class="material-symbols-outlined">smart_toy</span>
-    </button>
   </div>
 </template>
 
