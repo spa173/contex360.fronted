@@ -185,8 +185,8 @@ export const businessApi = {
   },
 
   // AI
-  async chatWithAi(message: string) {
-    return request<any>('/ai/chat', { method: 'POST', body: { message } })
+  async chatWithAi(message: string, history: any[] = []) {
+    return request<any>('/ai/chat', { method: 'POST', body: { message, history } })
   },
   
   // 2FA / TOTP

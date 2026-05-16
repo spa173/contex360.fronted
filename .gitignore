@@ -37,3 +37,4 @@ tests-local/
 .windsurf/skills/
 .agents/
 .gemini/
+.graphify/

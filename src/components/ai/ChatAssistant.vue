@@ -25,7 +25,14 @@ const sendMessage = async () => {
   await scrollToBottom()
 
   try {
-    const response = await businessApi.chatWithAi(userMsg)
+    // Mapear el historial al formato requerido por Google Generative AI
+    // Omitimos el último elemento porque es el mensaje actual que ya se envía por separado
+    const historyToSend = chatHistory.value.slice(0, -1).map(msg => ({
+      role: msg.role === 'user' ? 'user' : 'model',
+      parts: [{ text: msg.content }]
+    }))
+
+    const response = await businessApi.chatWithAi(userMsg, historyToSend)
     if (response && response.role && response.content) {
       chatHistory.value.push(response)
     } else if (response && response.content) {
