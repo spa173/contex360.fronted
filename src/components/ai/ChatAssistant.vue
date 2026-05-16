@@ -27,12 +27,24 @@ const sendMessage = async () => {
   try {
     // Mapear el historial al formato requerido por Google Generative AI
     // Omitimos el último elemento porque es el mensaje actual que ya se envía por separado
-    const historyToSend = chatHistory.value.slice(0, -1).map(msg => ({
+    // IMPORTANTE: El historial DEBE comenzar con un mensaje de 'user'
+    let historyToSend = chatHistory.value.slice(0, -1)
+    
+    // Encontrar el primer índice que sea de tipo 'user'
+    const firstUserIndex = historyToSend.findIndex(msg => msg.role === 'user')
+    
+    if (firstUserIndex !== -1) {
+      historyToSend = historyToSend.slice(firstUserIndex)
+    } else {
+      historyToSend = []
+    }
+
+    const mappedHistory = historyToSend.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
       parts: [{ text: msg.content }]
     }))
 
-    const response = await businessApi.chatWithAi(userMsg, historyToSend)
+    const response = await businessApi.chatWithAi(userMsg, mappedHistory)
     if (response && response.role && response.content) {
       chatHistory.value.push(response)
     } else if (response && response.content) {
@@ -232,16 +244,16 @@ const scrollToBottom = async () => {
 }
 
 .user .bubble {
-  background: #10b981;
+  background: #2563EB;
   color: white;
   border-bottom-right-radius: 0.25rem;
 }
 
 .assistant .bubble {
-  background: white;
-  color: #334155;
+  background: #F4F4F5;
+  color: #18181B;
   border-bottom-left-radius: 0.25rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  font-weight: 500;
 }
 
 .action-wrapper {
@@ -293,14 +305,18 @@ const scrollToBottom = async () => {
   width: 2.25rem;
   height: 2.25rem;
   border-radius: 50%;
-  background: #10b981;
+  background: #2563EB;
   color: white;
   border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+}
+
+.chat-footer button:hover:not(:disabled) {
+  background: #1D4ED8;
 }
 
 .chat-footer button:disabled {
