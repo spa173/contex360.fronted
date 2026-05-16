@@ -1,5 +1,5 @@
-<script setup>
 import { computed } from 'vue'
+import { useTranslationStore } from '../../stores/translationStore'
 
 const props = defineProps({
   isOpen: {
@@ -12,6 +12,7 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['navigate', 'tenant-change'])
+const translationStore = useTranslationStore()
 
 const menuItems = [
   { id: 'dashboard', label: 'Overview', icon: 'dashboard' },
@@ -34,6 +35,33 @@ function handleNavigate(id) {
 function handleTenantChange(e) {
   emit('tenant-change', e.target.value)
 }
+
+function handleLanguageChange(e) {
+  const targetLang = e.target.value
+  
+  // Collect all static texts in the sidebar to translate
+  const textsToTranslate = {
+    'Overview': 'Overview',
+    'Sales & Billing': 'Sales & Billing',
+    'Purchases': 'Purchases',
+    'Quotations': 'Quotations',
+    'Inventory': 'Inventory',
+    'Accounting': 'Accounting',
+    'Treasury': 'Treasury',
+    'Contacts': 'Contacts',
+    'Team': 'Team',
+    'Analytics': 'Analytics',
+    'System Admin': 'System Admin',
+    'IA Executive Assistant': 'IA Executive Assistant',
+    'Preferences': 'Preferences',
+    'Support': 'Support',
+    'Active Organization': 'Active Organization',
+    'Display Language': 'Display Language',
+    'Enterprise Suite': 'Enterprise Suite'
+  }
+  
+  translationStore.setLanguage(targetLang, textsToTranslate)
+}
 </script>
 
 <template>
@@ -46,13 +74,13 @@ function handleTenantChange(e) {
         </div>
         <div>
           <h1 class="text-base font-bold text-[var(--foreground)] leading-tight tracking-tight">Contex360</h1>
-          <p class="text-[10px] text-[var(--muted)] uppercase font-semibold tracking-widest">Enterprise Suite</p>
+          <p class="text-[10px] text-[var(--muted)] uppercase font-semibold tracking-widest">{{ translationStore.t('Enterprise Suite', 'Enterprise Suite') }}</p>
         </div>
       </div>
 
       <!-- Multi-company selector -->
-      <div class="relative group">
-        <label class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-2 block">Active Organization</label>
+      <div class="relative group mb-6">
+        <label class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-2 block">{{ translationStore.t('Active Organization', 'Active Organization') }}</label>
         <div class="relative">
           <select 
             @change="handleTenantChange"
@@ -66,6 +94,24 @@ function handleTenantChange(e) {
           <span class="material-symbols-outlined select-arrow">expand_more</span>
         </div>
       </div>
+
+      <!-- Language selector -->
+      <div class="relative group">
+        <label class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-2 block">{{ translationStore.t('Display Language', 'Display Language') }}</label>
+        <div class="relative">
+          <select 
+            @change="handleLanguageChange"
+            :value="translationStore.currentLanguage"
+            class="tenant-select"
+            :disabled="translationStore.isTranslating"
+          >
+            <option v-for="lang in translationStore.availableLanguages" :key="lang.code" :value="lang.code">
+              {{ lang.name }} {{ translationStore.isTranslating && translationStore.currentLanguage === lang.code ? '...' : '' }}
+            </option>
+          </select>
+          <span class="material-symbols-outlined select-arrow">language</span>
+        </div>
+      </div>
     </div>
 
     <!-- Main Navigation -->
@@ -77,7 +123,7 @@ function handleTenantChange(e) {
         :class="['nav-item', { 'active': activeView === item.id }]"
       >
         <span class="material-symbols-outlined icon">{{ item.icon }}</span>
-        {{ item.label }}
+        {{ translationStore.t(item.label, item.label) }}
       </button>
     </div>
 
@@ -88,7 +134,7 @@ function handleTenantChange(e) {
         class="ai-action-btn"
       >
         <span class="material-symbols-outlined text-[18px]">smart_toy</span>
-        IA Executive Assistant
+        {{ translationStore.t('IA Executive Assistant', 'IA Executive Assistant') }}
       </button>
     </div>
 
@@ -99,11 +145,11 @@ function handleTenantChange(e) {
         :class="['bottom-nav-item', { 'active': activeView === 'profile' }]"
       >
         <span class="material-symbols-outlined icon">settings</span>
-        Preferences
+        {{ translationStore.t('Preferences', 'Preferences') }}
       </button>
       <button @click="handleNavigate('help')" class="bottom-nav-item">
         <span class="material-symbols-outlined icon">help</span>
-        Support
+        {{ translationStore.t('Support', 'Support') }}
       </button>
     </div>
   </nav>
