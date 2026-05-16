@@ -126,6 +126,12 @@ const togglePassword = () => {
   <div class="min-h-screen bg-[#FFFFFF] flex items-center justify-center p-6 font-['Inter']">
     <main class="w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700">
       
+      <!-- Navigation Back -->
+      <button @click="$emit('back')" class="mb-8 flex items-center gap-2 text-[#71717A] hover:text-[#18181B] transition-colors font-semibold text-sm">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Volver al inicio
+      </button>
+
       <!-- Brand Header (Centered) -->
       <div class="flex flex-col items-center mb-10">
         <div class="w-14 h-14 bg-[#18181B] rounded-[16px] flex items-center justify-center text-white font-black text-2xl shadow-sm mb-6">

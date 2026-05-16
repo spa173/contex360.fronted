@@ -32,6 +32,53 @@ const showRootPanel = computed(
   () => store.currentUser?.isSystemOwner && viewingAdminPanel.value
 )
 
+// --- Navegación Inteligente (Push vs Replace) ---
+const syncUrlWithState = (path, replace = false) => {
+  const currentPath = window.location.pathname
+  if (currentPath === path) return
+  
+  if (replace) {
+    window.history.replaceState({ path }, '', path)
+  } else {
+    window.history.pushState({ path }, '', path)
+  }
+}
+
+// Watchers para sincronizar estado -> URL
+import { watch } from 'vue'
+
+watch(() => store.currentUser, (user) => {
+  if (user) {
+    syncUrlWithState('/dashboard', true) // REPLACE al entrar a la app
+  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value) {
+    syncUrlWithState('/', true)
+  }
+}, { immediate: true })
+
+watch(showAuth, (val) => val && syncUrlWithState('/login'))
+watch(showDemo, (val) => val && syncUrlWithState('/demo'))
+watch(showAbout, (val) => val && syncUrlWithState('/nosotros'))
+watch(showPrivacy, (val) => val && syncUrlWithState('/privacidad'))
+watch(showTerms, (val) => val && syncUrlWithState('/terminos'))
+
+// Manejador del botón "Atrás" del navegador
+const handlePopState = (event) => {
+  const path = event.state?.path || window.location.pathname
+  
+  // Reset de todos los estados
+  showAuth.value = false
+  showDemo.value = false
+  showPrivacy.value = false
+  showTerms.value = false
+  showAbout.value = false
+
+  if (path === '/login') showAuth.value = true
+  else if (path === '/demo') showDemo.value = true
+  else if (path === '/nosotros') showAbout.value = true
+  else if (path === '/privacidad') showPrivacy.value = true
+  else if (path === '/terminos') showTerms.value = true
+}
+
 themeStore.initializeTheme()
 
 async function initApp() {
@@ -62,7 +109,15 @@ async function initApp() {
   }
 }
 
-onMounted(() => initApp())
+onMounted(() => {
+  initApp()
+  window.addEventListener('popstate', handlePopState)
+  
+  // Sincronización inicial basada en URL al cargar
+  const initialPath = window.location.pathname
+  if (initialPath === '/login') showAuth.value = true
+  else if (initialPath === '/demo') showDemo.value = true
+})
 </script>
 
 <template>
