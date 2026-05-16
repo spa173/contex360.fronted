@@ -1,9 +1,10 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useBillingStore } from '../../stores/billingStore'
 import { useDashboardStats } from '../../composables/useDashboardStats'
 import { useTranslationStore } from '../../stores/translationStore'
+import { businessApi } from '../../services/businessApi'
 
 const props = defineProps({
   isActive: {
@@ -17,7 +18,43 @@ const billing = useBillingStore()
 const { formatCompact } = useDashboardStats()
 const translationStore = useTranslationStore()
 
-const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, inv) => sum + (inv?.total || 0), 0))
+const dashboardData = ref({
+  totalSales: 0,
+  lowStockAlerts: 0,
+  pendingInvoices: 0,
+  aiInsight: 'Analizando datos en tiempo real...',
+})
+
+const isLoading = ref(true)
+
+async function fetchDashboardData() {
+  try {
+    isLoading.value = true
+    const [stats, insights] = await Promise.all([
+      businessApi.getDashboardKpis(),
+      businessApi.getAiInsights().catch(() => ({ insight: 'No se pudo cargar el insight de IA.' })),
+    ])
+    
+    dashboardData.value = {
+      totalSales: stats.totalSales || 0,
+      lowStockAlerts: stats.lowStockAlerts || 0,
+      pendingInvoices: stats.pendingInvoices || 0,
+      aiInsight: insights.insight || 'No hay insights disponibles en este momento.',
+    }
+  } catch (err) {
+    console.error('Error fetching dashboard data:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+onMounted(() => {
+  if (props.isActive) {
+    fetchDashboardData()
+  }
+})
+
+const totalRevenue = computed(() => dashboardData.value.totalSales)
 </script>
 
 <template>
@@ -40,56 +77,67 @@ const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, 
       </div>
     </div>
 
+    <!-- AI Insight Banner -->
+    <div class="mb-8 bg-gradient-to-r from-[#8455ef]/10 to-[#06B6D4]/10 border border-[#8455ef]/20 rounded-xl p-4 flex items-center gap-4 animate-in slide-in-from-top duration-700">
+      <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm text-[#8455ef]">
+        <span class="material-symbols-outlined">psychology</span>
+      </div>
+      <p class="text-sm font-semibold text-[#1E293B]">
+        <span class="text-[#8455ef]">IA Insight:</span> 
+        {{ dashboardData.aiInsight }}
+      </p>
+    </div>
+
     <!-- Bento Grid Layout -->
     <div class="grid grid-cols-12 gap-6">
       <!-- KPI Cards Row -->
       <div class="col-span-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <!-- Revenue Card -->
-        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <!-- Sales Card -->
+        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow group">
           <div class="flex justify-between items-start mb-4">
             <div>
-              <p class="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Ingresos (MTD)</p>
-              <h3 class="text-2xl font-bold text-[#1E293B] mt-1">{{ formatCompact(totalRevenue) }}</h3>
+              <p class="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Ventas del Día</p>
+              <h3 class="text-2xl font-bold text-[#1E293B] mt-1">{{ formatCompact(dashboardData.totalSales) }}</h3>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-[#06B6D4]/10 flex items-center justify-center text-[#06B6D4]">
-              <span class="material-symbols-outlined">trending_up</span>
+            <div class="w-10 h-10 rounded-lg bg-[#06B6D4]/10 flex items-center justify-center text-[#06B6D4] group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined">payments</span>
             </div>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-emerald-600 text-xs font-bold flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px]">arrow_upward</span> 12.5%
+              <span class="material-symbols-outlined text-[14px]">arrow_upward</span> 15%
             </span>
-            <span class="text-[11px] font-medium text-[#64748B]">vs mes anterior</span>
+            <span class="text-[11px] font-medium text-[#64748B]">vs ayer</span>
           </div>
         </div>
 
-        <!-- Expenditures Card -->
-        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <!-- Inventory Alert Card -->
+        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow group border-t-4 border-t-[#F43F5E]">
           <div class="flex justify-between items-start mb-4">
             <div>
-              <p class="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Egresos (MTD)</p>
-              <h3 class="text-2xl font-bold text-[#1E293B] mt-1">$842,300</h3>
+              <p class="text-[11px] font-bold text-[#F43F5E] uppercase tracking-wider">Estado Inventario</p>
+              <h3 class="text-2xl font-bold text-[#1E293B] mt-1">{{ dashboardData.lowStockAlerts > 0 ? 'Crítico' : 'Óptimo' }}</h3>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-[#F43F5E]/10 flex items-center justify-center text-[#F43F5E]">
-              <span class="material-symbols-outlined">trending_down</span>
+            <div class="w-10 h-10 rounded-lg bg-[#F43F5E]/10 flex items-center justify-center text-[#F43F5E] group-hover:scale-110 transition-transform">
+              <span class="material-symbols-outlined">inventory_2</span>
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <span class="text-[#F43F5E] text-xs font-bold flex items-center gap-1">
-              <span class="material-symbols-outlined text-[14px]">arrow_upward</span> 4.2%
+            <span :class="dashboardData.lowStockAlerts > 0 ? 'text-[#F43F5E]' : 'text-emerald-600'" class="text-xs font-bold flex items-center gap-1">
+              <span class="material-symbols-outlined text-[14px]">{{ dashboardData.lowStockAlerts > 0 ? 'warning' : 'check_circle' }}</span> {{ dashboardData.lowStockAlerts }} productos
             </span>
-            <span class="text-[11px] font-medium text-[#64748B]">vs mes anterior</span>
+            <span class="text-[11px] font-medium text-[#64748B]">bajo stock</span>
           </div>
         </div>
 
         <!-- Invoices Card -->
-        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow">
+        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow group">
           <div class="flex justify-between items-start mb-4">
             <div>
-              <p class="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Facturas Pendientes</p>
+              <p class="text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Facturación Pendiente</p>
               <h3 class="text-2xl font-bold text-[#1E293B] mt-1">42</h3>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B]">
+            <div class="w-10 h-10 rounded-lg bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B] group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined">receipt_long</span>
             </div>
           </div>
@@ -100,7 +148,7 @@ const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, 
         </div>
 
         <!-- AI Tasks Card -->
-        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-[#8455ef]">
+        <div class="bg-white border border-[#E2E8F0] rounded-xl p-5 shadow-sm hover:shadow-md transition-shadow border-l-4 border-l-[#8455ef] group">
           <div class="flex justify-between items-start mb-4">
             <div>
               <p class="text-[11px] font-bold text-[#8455ef] uppercase tracking-wider flex items-center gap-1">
@@ -108,7 +156,7 @@ const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, 
               </p>
               <h3 class="text-2xl font-bold text-[#1E293B] mt-1">8</h3>
             </div>
-            <div class="w-10 h-10 rounded-lg bg-[#8455ef]/10 flex items-center justify-center text-[#8455ef] shadow-inner">
+            <div class="w-10 h-10 rounded-lg bg-[#8455ef]/10 flex items-center justify-center text-[#8455ef] shadow-inner group-hover:scale-110 transition-transform">
               <span class="material-symbols-outlined">document_scanner</span>
             </div>
           </div>
@@ -120,11 +168,16 @@ const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, 
       </div>
 
       <!-- Main Chart: Projected Cash Flow -->
-      <div class="col-span-12 lg:col-span-8 bg-white border border-[#E2E8F0] rounded-xl shadow-sm p-6 flex flex-col h-[400px]">
-        <div class="flex justify-between items-center mb-6">
+      <div class="col-span-12 lg:col-span-8 bg-white border border-[#E2E8F0] rounded-xl shadow-sm p-6 flex flex-col h-[450px]">
+        <div class="flex justify-between items-start mb-6">
           <div>
             <h3 class="text-lg font-bold text-[#1E293B]">Flujo de Caja Proyectado</h3>
             <p class="text-xs font-medium text-[#64748B]">Histórico vs Predicción (15 días)</p>
+            <div class="mt-4 p-3 bg-[#F8F9FF] border-l-4 border-l-[#8455ef] rounded-r-lg">
+              <p class="text-xs text-[#1E293B] leading-relaxed">
+                <span class="font-bold text-[#8455ef]">Predicción Logística:</span> Según la tendencia de mayo, la IA estima que necesitarás reabastecer el inventario en <span class="font-bold">4 días</span> para evitar quiebre de stock.
+              </p>
+            </div>
           </div>
           <div class="flex gap-4">
             <div class="flex items-center gap-2">
@@ -160,46 +213,111 @@ const totalRevenue = computed(() => (billing.tenantInvoices || []).reduce((sum, 
       </div>
 
       <!-- IA Alerts Panel -->
-      <div class="col-span-12 lg:col-span-4 bg-white border border-[#E2E8F0] rounded-xl shadow-sm flex flex-col h-[400px]">
-        <div class="p-5 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8F9FF] rounded-t-xl">
-          <div class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-[#8455ef]">lightbulb</span>
-            <h3 class="text-base font-bold text-[#1E293B]">Alertas de IA</h3>
-          </div>
-          <span class="bg-[#F43F5E]/10 text-[#F43F5E] px-2 py-0.5 rounded text-[10px] font-bold uppercase">3 Urgentes</span>
-        </div>
-        <div class="p-2 flex-1 overflow-y-auto">
-          <div class="p-3 border-b border-[#E2E8F0] hover:bg-[#F8F9FF] transition-colors cursor-pointer group">
-            <div class="flex gap-3">
-              <div class="w-2 h-2 rounded-full bg-[#F43F5E] mt-1.5 flex-shrink-0"></div>
-              <div>
-                <h4 class="text-xs font-bold text-[#1E293B] group-hover:text-[#8455ef] transition-colors">Inconsistencia en Factura F-203</h4>
-                <p class="text-[11px] font-medium text-[#64748B] mt-1">Monto OCR ($4,500) difiere de orden de compra ($4,050).</p>
-                <button class="text-[10px] text-[#8455ef] font-bold hover:underline mt-2">Revisar Ahora</button>
-              </div>
+      <div class="col-span-12 lg:col-span-4 grid grid-rows-2 gap-6 h-[450px]">
+        <!-- Alerts -->
+        <div class="bg-white border border-[#E2E8F0] rounded-xl shadow-sm flex flex-col overflow-hidden">
+          <div class="p-4 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8F9FF]">
+            <div class="flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#8455ef] text-[18px]">lightbulb</span>
+              <h3 class="text-xs font-bold text-[#1E293B]">Alertas de IA</h3>
             </div>
+            <span class="bg-[#F43F5E]/10 text-[#F43F5E] px-1.5 py-0.5 rounded text-[9px] font-bold uppercase">3 Urgentes</span>
           </div>
-          <div class="p-3 border-b border-[#E2E8F0] hover:bg-[#F8F9FF] transition-colors cursor-pointer group">
-            <div class="flex gap-3">
-              <div class="w-2 h-2 rounded-full bg-[#F59E0B] mt-1.5 flex-shrink-0"></div>
-              <div>
-                <h4 class="text-xs font-bold text-[#1E293B] group-hover:text-[#8455ef] transition-colors">Déficit de caja proyectado</h4>
-                <p class="text-[11px] font-medium text-[#64748B] mt-1">Se prevé brecha de liquidez para el 5 de Noviembre por pago a 'TechCorp'.</p>
-              </div>
+          <div class="flex-1 overflow-y-auto p-2">
+            <div class="p-2 border-b border-[#F1F5F9] hover:bg-[#F8F9FF] transition-colors cursor-pointer group">
+              <h4 class="text-[11px] font-bold text-[#1E293B] group-hover:text-[#8455ef]">Inconsistencia F-203</h4>
+              <p class="text-[10px] text-[#64748B] mt-0.5">Diferencia de $450 detectada.</p>
             </div>
-          </div>
-          <div class="p-3 hover:bg-[#F8F9FF] transition-colors cursor-pointer group">
-            <div class="flex gap-3">
-              <div class="w-2 h-2 rounded-full bg-[#06B6D4] mt-1.5 flex-shrink-0"></div>
-              <div>
-                <h4 class="text-xs font-bold text-[#1E293B] group-hover:text-[#8455ef] transition-colors">5 Documentos Clasificados</h4>
-                <p class="text-[11px] font-medium text-[#64748B] mt-1">El motor OCR ha categorizado 5 gastos operativos nuevos.</p>
-              </div>
+            <div class="p-2 hover:bg-[#F8F9FF] transition-colors cursor-pointer group">
+              <h4 class="text-[11px] font-bold text-[#1E293B] group-hover:text-[#8455ef]">Stock Crítico</h4>
+              <p class="text-[10px] text-[#64748B] mt-0.5">Insumo X bajo nivel mínimo.</p>
             </div>
           </div>
         </div>
-        <div class="p-4 border-t border-[#E2E8F0] text-center">
-          <button class="text-xs font-bold text-[#8455ef] hover:text-[#7c3aed] transition-colors">Ver todas las alertas</button>
+
+        <!-- Logistics Map Placeholder -->
+        <div class="bg-white border border-[#E2E8F0] rounded-xl shadow-sm flex flex-col overflow-hidden relative">
+          <div class="p-4 border-b border-[#E2E8F0] bg-[#F8F9FF]">
+            <h3 class="text-xs font-bold text-[#1E293B] flex items-center gap-2">
+              <span class="material-symbols-outlined text-[#06B6D4] text-[18px]">map</span>
+              Mapa Logístico
+            </h3>
+          </div>
+          <div class="flex-1 bg-[#F1F5F9] relative overflow-hidden">
+            <!-- Simulated Map -->
+            <div class="absolute inset-0 opacity-20 bg-[radial-gradient(#CBD5E1_1px,transparent_1px)] [background-size:20px_20px]"></div>
+            <div class="absolute top-1/4 left-1/3 w-3 h-3 rounded-full bg-[#06B6D4] shadow-[0_0_10px_rgba(6,182,212,0.5)] animate-pulse"></div>
+            <div class="absolute top-1/2 left-2/3 w-3 h-3 rounded-full bg-[#8455ef] shadow-[0_0_10px_rgba(132,85,239,0.5)]"></div>
+            <div class="absolute bottom-1/4 left-1/2 w-3 h-3 rounded-full bg-[#F59E0B] shadow-[0_0_10px_rgba(245,158,11,0.5)] animate-pulse"></div>
+            <div class="absolute bottom-4 left-4 text-[9px] font-bold text-[#64748B] bg-white/80 backdrop-blur px-2 py-1 rounded">
+              3 Envíos Activos
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions & Audit Feed Row -->
+    <div class="grid grid-cols-12 gap-6 mt-6">
+      <!-- Quick Actions Bento Grid -->
+      <div class="col-span-12 lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <button class="flex flex-col items-center justify-center p-6 bg-white border border-[#E2E8F0] rounded-xl shadow-sm hover:border-[#8455ef]/50 hover:bg-[#F8F9FF] transition-all group">
+          <div class="w-12 h-12 rounded-full bg-[#06B6D4]/10 flex items-center justify-center text-[#06B6D4] mb-3 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined">add_shopping_cart</span>
+          </div>
+          <span class="text-xs font-bold text-[#1E293B]">Nueva Venta</span>
+        </button>
+        <button class="flex flex-col items-center justify-center p-6 bg-white border border-[#E2E8F0] rounded-xl shadow-sm hover:border-[#8455ef]/50 hover:bg-[#F8F9FF] transition-all group">
+          <div class="w-12 h-12 rounded-full bg-[#8455ef]/10 flex items-center justify-center text-[#8455ef] mb-3 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined">inventory</span>
+          </div>
+          <span class="text-xs font-bold text-[#1E293B]">Entrada Almacén</span>
+        </button>
+        <button class="flex flex-col items-center justify-center p-6 bg-white border border-[#E2E8F0] rounded-xl shadow-sm hover:border-[#8455ef]/50 hover:bg-[#F8F9FF] transition-all group">
+          <div class="w-12 h-12 rounded-full bg-[#F59E0B]/10 flex items-center justify-center text-[#F59E0B] mb-3 group-hover:scale-110 transition-transform">
+            <span class="material-symbols-outlined">support_agent</span>
+          </div>
+          <span class="text-xs font-bold text-[#1E293B]">Soporte IA</span>
+        </button>
+
+        <!-- Drag & Drop Zone -->
+        <div class="col-span-full border-2 border-dashed border-[#E2E8F0] rounded-xl p-8 flex flex-col items-center justify-center bg-[#F8F9FF]/50 hover:bg-[#F8F9FF] hover:border-[#8455ef]/30 transition-all cursor-pointer group">
+          <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center shadow-sm text-[#64748B] group-hover:text-[#8455ef] transition-colors mb-4">
+            <span class="material-symbols-outlined text-[32px]">upload_file</span>
+          </div>
+          <h4 class="text-sm font-bold text-[#1E293B]">Arrastra archivos para procesar</h4>
+          <p class="text-[11px] text-[#64748B] mt-1">Sube PDFs de facturas o Excels de inventario (Procesado por IA)</p>
+        </div>
+      </div>
+
+      <!-- Activity Feed -->
+      <div class="col-span-12 lg:col-span-4 bg-white border border-[#E2E8F0] rounded-xl shadow-sm p-5">
+        <h3 class="text-sm font-bold text-[#1E293B] mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-[18px]">history</span>
+          Feed de Actividad
+        </h3>
+        <div class="space-y-4">
+          <div class="flex gap-3 pb-3 border-b border-[#F1F5F9]">
+            <div class="w-8 h-8 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[10px] font-bold text-[#64748B]">C</div>
+            <div>
+              <p class="text-[11px] text-[#1E293B] font-medium"><span class="font-bold">Camilo</span> generó factura #001</p>
+              <p class="text-[9px] text-[#64748B]">Hace 5 minutos</p>
+            </div>
+          </div>
+          <div class="flex gap-3 pb-3 border-b border-[#F1F5F9]">
+            <div class="w-8 h-8 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[10px] font-bold text-[#64748B]">S</div>
+            <div>
+              <p class="text-[11px] text-[#1E293B] font-medium"><span class="font-bold">Sistema</span> Sincronización exitosa</p>
+              <p class="text-[9px] text-[#64748B]">Hace 12 minutos</p>
+            </div>
+          </div>
+          <div class="flex gap-3">
+            <div class="w-8 h-8 rounded-full bg-[#F1F5F9] flex items-center justify-center text-[10px] font-bold text-[#64748B]">L</div>
+            <div>
+              <p class="text-[11px] text-[#1E293B] font-medium"><span class="font-bold">Landing</span> Nueva consulta recibida</p>
+              <p class="text-[9px] text-[#64748B]">Hace 1 hora</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

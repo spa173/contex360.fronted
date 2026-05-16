@@ -20,6 +20,7 @@ import AccountingView from './views/AccountingView.vue'
 import TwoFactorView from './views/TwoFactorView.vue'
 import ProfileView from './views/ProfileView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
+import SpotlightCommand from './layout/SpotlightCommand.vue'
 
 const store = useAuthStore()
 const themeStore = useThemeStore()
@@ -50,6 +51,15 @@ function handleLogout() {
 
 function handleNotify(payload) {
   pushToast(payload.message, payload.detail || '')
+}
+
+function handleSpotlightAction(payload) {
+  if (payload.type === 'navigate') {
+    handleNavigate(payload.view)
+  } else if (payload.type === 'action' && payload.action === 'open-chat') {
+    // Logic to open AI chat (assuming ChatAssistant has an open state or we can trigger it)
+    console.log('Opening AI Chat from Spotlight...')
+  }
 }
 
 function toggleSidebar() {
@@ -176,6 +186,9 @@ function setSidebarHover(state) {
         <ChatAssistant 
           @navigate="handleNavigate"
         />
+
+        <!-- Spotlight Command Bar (Ctrl + K) -->
+        <SpotlightCommand @select="handleSpotlightAction" />
       </main>
     </div>
 
