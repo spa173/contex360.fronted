@@ -12,6 +12,7 @@ const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy'])
 
 const email = ref('')
 const password = ref('')
+const selectedTenant = ref('Contex360 Cloud') // Default or selectable
 const showPassword = ref(false)
 const isLoading = ref(false)
 const rememberMe = ref(false)
@@ -122,200 +123,186 @@ const togglePassword = () => {
 </script>
 
 <template>
-  <div class="pattern-bg min-h-screen flex items-center justify-center p-4 md:p-8 font-inter">
-    <main class="w-full max-w-[480px]">
-      <!-- Brand Header -->
-      <div class="flex flex-col items-center mb-8">
-        <div class="flex items-center gap-3 mb-2">
-          <span class="material-symbols-outlined text-[40px] text-[#0051d5]">business_center</span>
-          <h1 class="text-3xl font-bold text-[#0b1c30] tracking-tight">Contex360</h1>
+  <div class="min-h-screen bg-[#FFFFFF] flex items-center justify-center p-6 font-['Inter']">
+    <main class="w-full max-w-[440px] animate-in fade-in slide-in-from-bottom-4 duration-700">
+      
+      <!-- Brand Header (Centered) -->
+      <div class="flex flex-col items-center mb-10">
+        <div class="w-14 h-14 bg-[#18181B] rounded-[16px] flex items-center justify-center text-white font-black text-2xl shadow-sm mb-6">
+          C
         </div>
-        <p class="text-sm text-[#45464d]">ERP Administrativo y Contable</p>
+        <h1 class="text-[28px] font-bold text-[#18181B] tracking-tight mb-2">Acceda a Contex360</h1>
+        <p class="text-[14px] text-[#71717A] font-medium">Plataforma Administrativa de Grado Enterprise</p>
       </div>
 
       <!-- Login Card -->
-      <div class="bg-white border border-[#E2E8F0] rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] p-8 md:p-10">
+      <div class="bg-white rounded-[24px] border border-[#F4F4F5] p-10 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.06)]">
         
+        <!-- Error / Status Messages -->
+        <div v-if="errorMessage" class="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 text-[12px] font-bold rounded-xl text-center">
+          {{ errorMessage }}
+        </div>
+        <div v-if="statusMessage" class="mb-6 p-3 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[12px] font-bold rounded-xl text-center">
+          {{ statusMessage }}
+        </div>
+
         <!-- Password Change Flow -->
         <template v-if="requiresPasswordChange">
-          <div class="mb-8 text-center">
-            <h2 class="text-xl font-semibold text-[#0b1c30] mb-2">Contraseña expirada</h2>
-            <p class="text-sm text-[#45464d]">Tu contraseña ha vencido. Por seguridad debes establecer una nueva.</p>
-          </div>
-          
-          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 text-xs rounded-lg text-center">
-            {{ errorMessage }}
-          </div>
-
-          <div class="space-y-4">
-            <div>
-              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1">Nueva contraseña</label>
-              <input 
-                v-model="newPassword" 
-                type="password" 
-                class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all"
-                placeholder="Mínimo 8 caracteres"
-              />
+          <div class="space-y-6">
+            <div class="text-center mb-4">
+              <p class="text-[13px] text-[#71717A] font-medium">Su contraseña ha expirado. Por favor establezca una nueva.</p>
             </div>
-            <div>
-              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1">Confirmar contraseña</label>
-              <input 
-                v-model="newPasswordConfirm" 
-                type="password" 
-                class="w-full px-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all"
-                placeholder="Repite la nueva contraseña"
-              />
+            <div class="space-y-4">
+              <div class="space-y-1.5">
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider ml-1">Nueva Contraseña</label>
+                <input 
+                  v-model="newPassword" 
+                  type="password" 
+                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                />
+              </div>
+              <div class="space-y-1.5">
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider ml-1">Confirmar Contraseña</label>
+                <input 
+                  v-model="newPasswordConfirm" 
+                  type="password" 
+                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                />
+              </div>
+              <button 
+                @click="handleChangePassword"
+                class="w-full py-4 bg-[#18181B] text-white font-bold text-[15px] rounded-xl hover:bg-[#27272A] active:scale-[0.98] transition-all shadow-lg shadow-black/5"
+                :disabled="changePasswordLoading"
+              >
+                {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y Acceder' }}
+              </button>
             </div>
-            <button 
-              @click="handleChangePassword"
-              class="w-full py-4 bg-[#131b2e] text-white font-semibold text-sm rounded-lg shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-              :disabled="changePasswordLoading || newPassword.length < 8"
-            >
-              {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y continuar' }}
-            </button>
           </div>
         </template>
 
         <!-- Normal Login Flow -->
         <template v-else>
-          <div class="mb-8 text-center">
-            <h2 class="text-xl font-semibold text-[#0b1c30] mb-2">Bienvenido de nuevo</h2>
-            <p class="text-sm text-[#45464d]">Ingresa tus credenciales para acceder</p>
-          </div>
-
-          <div v-if="errorMessage" class="mb-4 p-3 bg-red-50 border border-red-100 text-red-600 text-xs rounded-lg text-center">
-            {{ errorMessage }}
-          </div>
-          
-          <div v-if="statusMessage" class="mb-4 p-3 bg-emerald-50 border border-emerald-100 text-emerald-700 text-xs rounded-lg text-center">
-            {{ statusMessage }}
-          </div>
-
-          <form @submit.prevent="handleSubmit" class="space-y-4">
+          <form @submit.prevent="handleSubmit" class="space-y-6">
             <!-- Email -->
-            <div>
-              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1" for="email">Correo electrónico</label>
-              <div class="relative flex items-center">
-                <span class="material-symbols-outlined absolute left-4 text-[#76777d] text-[20px]">mail</span>
-                <input 
-                  id="email" 
-                  v-model="email"
-                  type="email" 
-                  required
-                  placeholder="nombre@empresa.com"
-                  class="w-full pl-12 pr-4 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all placeholder:text-[#76777d]/60"
-                />
+            <div class="space-y-1.5">
+              <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider ml-1" for="email">Correo Electrónico</label>
+              <input 
+                id="email" 
+                v-model="email"
+                type="email" 
+                required
+                placeholder="nombre@empresa.com"
+                class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+              />
+            </div>
+
+            <!-- Multi-tenant Selector (Mocked style as requested) -->
+            <div class="space-y-1.5">
+              <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider ml-1" for="tenant">Organización / Workspace</label>
+              <div class="relative">
+                <select 
+                  id="tenant"
+                  v-model="selectedTenant"
+                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium appearance-none cursor-pointer"
+                >
+                  <option>Contex360 Cloud</option>
+                  <option>Seleccionar al iniciar sesión...</option>
+                </select>
+                <span class="material-symbols-outlined absolute right-4 top-1/2 -translate-y-1/2 text-[#A1A1AA] pointer-events-none">expand_more</span>
               </div>
             </div>
 
             <!-- Password -->
-            <div>
-              <label class="block text-xs font-medium text-[#45464d] mb-2 ml-1" for="password">Contraseña</label>
-              <div class="relative flex items-center">
-                <span class="material-symbols-outlined absolute left-4 text-[#76777d] text-[20px]">lock</span>
+            <div class="space-y-1.5">
+              <div class="flex justify-between items-center px-1">
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider" for="password">Contraseña</label>
+                <button type="button" @click="forgotAccessOpen = !forgotAccessOpen" class="text-[11px] font-bold text-[#2563EB] hover:underline uppercase tracking-wider">¿Olvidó su acceso?</button>
+              </div>
+              <div class="relative">
                 <input 
                   id="password" 
                   v-model="password"
                   :type="showPassword ? 'text' : 'password'" 
                   required
                   placeholder="••••••••"
-                  class="w-full pl-12 pr-12 py-3 bg-[#F8FAFC] border border-[#E2E8F0] rounded-lg text-sm text-[#0b1c30] focus:ring-2 focus:ring-[#0051d5]/20 focus:border-[#0051d5] outline-none transition-all placeholder:text-[#76777d]/60"
+                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
                 />
                 <button 
                   type="button"
                   @click="togglePassword"
-                  class="absolute right-4 text-[#76777d] hover:text-[#0b1c30] transition-colors"
+                  class="absolute right-4 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-[#18181B] transition-colors"
                 >
                   <span class="material-symbols-outlined text-[20px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                 </button>
               </div>
+              <p v-if="forgotAccessOpen" class="text-[11px] text-amber-600 font-medium px-1 mt-2">Por favor contacte al administrador de su organización para restablecer su acceso.</p>
             </div>
 
             <!-- 2FA Block -->
-            <div v-if="requiresTotp" class="p-4 bg-slate-50 border border-slate-200 rounded-lg space-y-3">
-              <label class="block text-xs font-bold text-[#0b1c30]">🔐 Código de verificación (2FA)</label>
+            <div v-if="requiresTotp" class="p-5 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-4 animate-in slide-in-from-top-2 duration-300">
+              <label class="block text-[11px] font-bold text-[#18181B] uppercase tracking-wider text-center">🔐 Código de Verificación</label>
               <input 
                 v-model="totpCode"
                 type="text"
                 maxlength="6"
                 placeholder="000000"
-                class="w-full px-4 py-2 text-center text-lg font-mono tracking-[0.5em] border border-[#E2E8F0] rounded-md focus:ring-2 focus:ring-[#0051d5]/20 outline-none"
+                class="w-full px-4 py-3 text-center text-xl font-mono tracking-[0.5em] border border-[#E4E4E7] rounded-xl focus:border-[#2563EB] outline-none"
               />
-              <p class="text-[10px] text-[#45464d] text-center italic">Ingresa el código de 6 dígitos de tu aplicación.</p>
             </div>
 
-            <!-- Helpers -->
-            <div class="space-y-3 py-2">
-              <label class="flex items-start gap-2 cursor-pointer group">
-                <input v-model="hasAcceptedPrivacy" type="checkbox" class="mt-0.5 w-4 h-4 rounded border-[#E2E8F0] text-[#0051d5] focus:ring-[#0051d5]/20" />
-                <span class="text-xs text-[#45464d] group-hover:text-[#0b1c30] transition-colors">
-                  Acepto la Política de Tratamiento de Datos (Ley 1581)
+            <!-- Policies & Remember -->
+            <div class="space-y-4 pt-2">
+              <label class="flex items-start gap-3 cursor-pointer group">
+                <input v-model="hasAcceptedPrivacy" type="checkbox" class="mt-1 w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
+                <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors leading-tight">
+                  Acepto la Política de Tratamiento de Datos Personales.
                 </span>
               </label>
-
-              <div class="flex items-center justify-between">
-                <label class="flex items-center gap-2 cursor-pointer group">
-                  <input v-model="rememberMe" type="checkbox" class="w-4 h-4 rounded border-[#E2E8F0] text-[#0051d5] focus:ring-[#0051d5]/20" />
-                  <span class="text-xs text-[#45464d] group-hover:text-[#0b1c30] transition-colors">Recordarme</span>
-                </label>
-                <a @click.prevent="forgotAccessOpen = true" class="text-xs text-[#0051d5] hover:underline font-semibold cursor-pointer">
-                  ¿Olvidaste tu contraseña?
-                </a>
-              </div>
-              
-              <p v-if="forgotAccessOpen" class="text-[10px] text-amber-700 bg-amber-50 p-2 rounded border border-amber-100 text-center animate-in fade-in slide-in-from-top-1">
-                Por favor, contacta al administrador de tu sistema para restablecer tu acceso.
-              </p>
+              <label class="flex items-center gap-3 cursor-pointer group">
+                <input v-model="rememberMe" type="checkbox" class="w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
+                <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors">Mantener sesión iniciada</span>
+              </label>
             </div>
 
             <!-- Submit Button -->
             <button 
               type="submit" 
-              class="w-full py-4 bg-[#131b2e] text-white font-semibold text-sm rounded-lg shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+              class="w-full py-4 bg-[#2563EB] text-white font-bold text-[15px] rounded-xl hover:bg-[#1D4ED8] active:scale-[0.98] transition-all flex items-center justify-center gap-3 shadow-lg shadow-[#2563EB]/10 disabled:opacity-50"
               :disabled="isLoading || (requiresTotp && totpCode.length < 6)"
             >
-              <span>{{ isLoading ? 'Verificando...' : 'Entrar' }}</span>
-              <span class="material-symbols-outlined text-[20px]">login</span>
+              <span>{{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}</span>
+              <span v-if="!isLoading" class="material-symbols-outlined text-[20px]">login</span>
+              <span v-else class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
             </button>
           </form>
         </template>
 
         <!-- Footer -->
-        <div class="mt-8 pt-8 border-t border-[#E2E8F0] text-center">
-          <p class="text-sm text-[#45464d]">
-            ¿No tienes una cuenta? 
-            <a @click.prevent="$emit('request-demo')" class="text-[#0051d5] font-semibold hover:underline cursor-pointer">Solicita una demo</a>
+        <div class="mt-10 pt-8 border-t border-[#F4F4F5] text-center">
+          <p class="text-[13px] text-[#71717A] font-medium">
+            ¿No tiene una cuenta? 
+            <button @click="$emit('request-demo')" class="text-[#2563EB] font-bold hover:underline ml-1">Solicite una demo</button>
           </p>
         </div>
       </div>
 
-      <!-- Footer Info -->
-      <div class="flex justify-center items-center gap-6 mt-8">
-        <div class="flex items-center gap-1 text-[#45464d] opacity-60">
-          <span class="material-symbols-outlined text-[16px]">language</span>
-          <span class="text-[12px]">Español (Colombia)</span>
+      <!-- Security Info -->
+      <div class="flex justify-center items-center gap-8 mt-10">
+        <div class="flex items-center gap-2 text-[#A1A1AA]">
+          <span class="material-symbols-outlined text-[16px]">lock</span>
+          <span class="text-[11px] font-bold uppercase tracking-widest">Encriptación SSL</span>
         </div>
-        <div class="flex items-center gap-1 text-[#45464d] opacity-60">
+        <div class="flex items-center gap-2 text-[#A1A1AA]">
           <span class="material-symbols-outlined text-[16px]">verified_user</span>
-          <span class="text-[12px]">Conexión Segura</span>
+          <span class="text-[11px] font-bold uppercase tracking-widest">Cumplimiento DIAN</span>
         </div>
       </div>
     </main>
-
-    <!-- Decoration -->
-    <div class="hidden lg:block fixed bottom-12 right-12 opacity-[0.03] pointer-events-none">
-      <span class="material-symbols-outlined text-[240px]">account_balance</span>
-    </div>
   </div>
 </template>
 
 <style scoped>
-.pattern-bg {
-  background-color: #f8f9ff;
-  background-image: radial-gradient(#d3e4fe 1px, transparent 1px);
-  background-size: 24px 24px;
-}
-.font-inter {
-  font-family: 'Inter', sans-serif;
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 </style>
