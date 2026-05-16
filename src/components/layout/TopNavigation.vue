@@ -144,8 +144,8 @@ function handleTenantChange(tenantId) {
 }
 
 .tenant-tab.active {
-  color: #6b38d4;
-  border-bottom-color: #6b38d4;
+  color: var(--primary);
+  border-bottom-color: var(--primary);
   font-weight: 700;
 }
 

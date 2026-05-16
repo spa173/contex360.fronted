@@ -203,7 +203,7 @@ function toggleSidebar() {
 
 .ai-floating-trigger:hover {
   transform: scale(1.05);
-  background-color: #6b38d4;
+  background-color: #7c3aed;
 }
 
 .ai-floating-trigger span {

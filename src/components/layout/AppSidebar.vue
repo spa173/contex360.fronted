@@ -68,20 +68,20 @@ function handleLanguageChange(e) {
 <template>
   <nav :class="['sidebar-nav', { 'desktop-open': isOpen }]">
     <!-- Header Section: Logo & Tenant Selector -->
-    <div class="px-6 py-8 border-b border-[var(--sidebar-border)] bg-[var(--surface-alt)]">
+    <div class="px-6 py-8 border-b border-white/5">
       <div class="flex items-center gap-3 mb-8">
-        <div class="w-10 h-10 rounded-lg bg-[var(--primary)] flex items-center justify-center text-[var(--primary-foreground)] font-black text-xl shadow-sm">
+        <div class="w-10 h-10 rounded-lg bg-[#8455ef] flex items-center justify-center text-white font-black text-xl shadow-lg">
           C
         </div>
         <div>
-          <h1 class="text-base font-bold text-[var(--foreground)] leading-tight tracking-tight">Contex360</h1>
-          <p class="text-[10px] text-[var(--muted)] uppercase font-semibold tracking-widest">{{ translationStore.t('Enterprise Suite', 'Enterprise Suite') }}</p>
+          <h1 class="text-base font-bold text-white leading-tight tracking-tight">Contex360</h1>
+          <p class="text-[10px] text-white/50 uppercase font-semibold tracking-widest">{{ translationStore.t('Enterprise Suite', 'Enterprise Suite') }}</p>
         </div>
       </div>
 
       <!-- Multi-company selector -->
       <div class="relative group mb-6">
-        <label class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-2 block">{{ translationStore.t('Active Organization', 'Active Organization') }}</label>
+        <label class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2 block">{{ translationStore.t('Active Organization', 'Active Organization') }}</label>
         <div class="relative">
           <select 
             @change="handleTenantChange"
@@ -98,7 +98,7 @@ function handleLanguageChange(e) {
 
       <!-- Language selector -->
       <div class="relative group">
-        <label class="text-[10px] font-bold text-[var(--muted)] uppercase tracking-wider mb-2 block">{{ translationStore.t('Display Language', 'Display Language') }}</label>
+        <label class="text-[10px] font-bold text-white/40 uppercase tracking-wider mb-2 block">{{ translationStore.t('Display Language', 'Display Language') }}</label>
         <div class="relative">
           <select 
             @change="handleLanguageChange"
@@ -134,13 +134,13 @@ function handleLanguageChange(e) {
         @click="handleNavigate('ai')"
         class="ai-action-btn"
       >
-        <span class="material-symbols-outlined text-[18px]">smart_toy</span>
-        {{ translationStore.t('IA Executive Assistant', 'IA Executive Assistant') }}
+        <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+        {{ translationStore.t('AI/OCR Analysis', 'AI/OCR Analysis') }}
       </button>
     </div>
 
     <!-- Bottom Settings/Help -->
-    <div class="px-4 py-4 border-t border-[var(--sidebar-border)] bg-[var(--surface-alt)] space-y-1">
+    <div class="px-4 py-4 border-t border-white/5 space-y-1">
       <button 
         @click="handleNavigate('profile')" 
         :class="['bottom-nav-item', { 'active': activeView === 'profile' }]"
@@ -162,13 +162,13 @@ function handleLanguageChange(e) {
   left: 0;
   top: 0;
   height: 100vh;
-  width: var(--sidebar-width);
-  background-color: var(--sidebar-bg);
-  color: var(--sidebar-foreground);
+  width: 260px;
+  background-color: #0F172A;
+  color: #ffffff;
   display: flex;
   flex-direction: column;
   z-index: 150;
-  border-right: 1px solid var(--sidebar-border);
+  border-right: 1px solid rgba(255, 255, 255, 0.05);
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -180,21 +180,26 @@ function handleLanguageChange(e) {
 .tenant-select {
   appearance: none;
   width: 100%;
-  background: white;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   padding: 8px 12px;
   padding-right: 32px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--foreground);
+  color: #ffffff;
   cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
+  transition: all 0.2s;
 }
 
 .tenant-select:hover {
-  border-color: var(--muted);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tenant-select option {
+  background: #0F172A;
+  color: white;
 }
 
 .select-arrow {
@@ -204,7 +209,7 @@ function handleLanguageChange(e) {
   transform: translateY(-50%);
   pointer-events: none;
   font-size: 18px;
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .nav-item {
@@ -213,25 +218,25 @@ function handleLanguageChange(e) {
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  border-radius: var(--radius-sm);
-  color: var(--muted);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 14px;
   font-weight: 500;
-  transition: var(--transition);
+  transition: all 0.2s;
   text-align: left;
+  border-left: 4px solid transparent;
 }
 
 .nav-item:hover {
-  background-color: var(--surface-alt);
-  color: var(--foreground);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .nav-item.active {
-  background-color: var(--surface-alt);
-  color: var(--accent);
+  background-color: rgba(132, 85, 239, 0.1);
+  color: #06B6D4;
   font-weight: 600;
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-sm);
+  border-left-color: #06B6D4;
 }
 
 .nav-item .icon {
@@ -241,22 +246,22 @@ function handleLanguageChange(e) {
 
 .ai-action-btn {
   width: 100%;
-  background-color: var(--primary);
-  color: var(--primary-foreground);
+  background-color: #8455ef;
+  color: #ffffff;
   font-size: 13px;
   font-weight: 600;
   padding: 12px;
-  border-radius: var(--radius-sm);
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: var(--transition);
-  box-shadow: var(--shadow);
+  transition: all 0.2s;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .ai-action-btn:hover {
-  opacity: 0.9;
+  background-color: #7c3aed;
   transform: translateY(-1px);
 }
 
@@ -266,18 +271,17 @@ function handleLanguageChange(e) {
   align-items: center;
   gap: 12px;
   padding: 10px 16px;
-  border-radius: var(--radius-sm);
-  color: var(--muted);
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 13px;
   font-weight: 500;
-  transition: var(--transition);
+  transition: all 0.2s;
   text-align: left;
 }
 
 .bottom-nav-item:hover, .bottom-nav-item.active {
-  background-color: white;
-  color: var(--foreground);
-  box-shadow: var(--shadow-sm);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
 }
 
 .bottom-nav-item .icon {

@@ -1,23 +1,23 @@
 :root {
   /* === CORPORATE PREMIUM PALETTE - Enterprise Grade === */
-  --background: #FFFFFF;
-  --foreground: #09090B;
+  --background: #faf8ff;
+  --foreground: #1E293B;
   
-  --primary: #18181B; /* Charcoal/Deep Navy equivalent */
-  --primary-foreground: #FAFAFA;
+  --primary: #8455ef; /* AI Purple */
+  --primary-foreground: #FFFFFF;
   
-  --secondary: #F4F4F5;
-  --secondary-foreground: #18181B;
+  --secondary: #F8F9FF;
+  --secondary-foreground: #1E293B;
   
-  --accent: #2563EB; /* Professional Blue accent */
+  --accent: #06B6D4; /* Action Cyan */
   --accent-foreground: #FFFFFF;
   
-  --muted: #71717A;
-  --muted-foreground: #71717A;
+  --muted: #64748B;
+  --muted-foreground: #64748B;
   
-  --border: #E4E4E7;
-  --input: #E4E4E7;
-  --ring: #18181B;
+  --border: #E2E8F0;
+  --input: #E2E8F0;
+  --ring: #06B6D4;
 
   /* === SURFACES === */
   --surface: #FFFFFF;
@@ -25,10 +25,10 @@
   --surface-border: #F4F4F5;
   
   /* === SIDEBAR === */
-  --sidebar-bg: #FFFFFF;
-  --sidebar-foreground: #18181B;
-  --sidebar-border: #E4E4E7;
-  --sidebar-width: 280px;
+  --sidebar-bg: #0F172A;
+  --sidebar-foreground: #FFFFFF;
+  --sidebar-border: rgba(255, 255, 255, 0.05);
+  --sidebar-width: 260px;
   
   /* === SHADOWS === */
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
