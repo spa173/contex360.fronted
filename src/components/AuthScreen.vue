@@ -305,4 +305,23 @@ const togglePassword = () => {
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
+
+/* Force Contrast for Enterprise Grade Visibility */
+input, select {
+  color: #18181B !important;
+  background-color: #FFFFFF !important;
+}
+
+input::placeholder {
+  color: #A1A1AA !important;
+}
+
+/* Fix Autofill Blue Background */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #18181B !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
+}
 </style>
