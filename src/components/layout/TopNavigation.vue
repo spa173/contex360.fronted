@@ -1,21 +1,12 @@
 <script setup>
-import { computed } from 'vue'
-import { viewLabels } from '../../utils/ui'
-
-const props = defineProps({
-  user: { type: Object, default: null },
-  activeTenant: { type: Object, default: null },
-  accessibleTenants: { type: Array, default: () => [] },
-  activeMembership: { type: Object, default: null },
-  activeView: { type: String, default: 'dashboard' },
-  sidebarOpen: { type: Boolean, default: false },
-  isDark: { type: Boolean, default: false },
-  canSwitchTenant: { type: Boolean, default: false }
-})
+import { ref, onMounted } from 'vue'
+import { businessApi } from '../../services/businessApi'
 
 const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'toggle-theme', 'navigate'])
+const props = defineProps(['activeTenant', 'accessibleTenants', 'user'])
 
 const aiHealth = ref({ status: 'loading', latency: '...', tokens: '...' })
+const currentYear = ref(new Date().getFullYear())
 
 async function checkAiHealth() {
   try {
@@ -25,7 +16,7 @@ async function checkAiHealth() {
     aiHealth.value = {
       status: health.status === 'ok' ? 'active' : 'error',
       latency: `${end - start}ms`,
-      tokens: '1.2k' // Simulated for now as backend doesn't track per request yet
+      tokens: '1.2k'
     }
   } catch (err) {
     aiHealth.value = { status: 'error', latency: 'N/A', tokens: '0' }
@@ -34,7 +25,6 @@ async function checkAiHealth() {
 
 onMounted(() => {
   checkAiHealth()
-  // Refresh health every 2 minutes
   setInterval(checkAiHealth, 120000)
 })
 
@@ -45,73 +35,63 @@ function handleTenantChange(tenantId) {
 
 <template>
   <header class="top-nav">
-    <div class="nav-container">
-      <!-- Left: Context & Tenant Tabs -->
-      <div class="nav-left">
-        <button
-          @click="emit('toggle-sidebar')"
-          class="sidebar-toggle"
-          title="Abrir menú"
-        >
-          <span class="material-symbols-outlined text-[24px]">menu</span>
-        </button>
-
-        <span class="nav-brand">Contex360</span>
-
-        <nav class="tenant-tabs">
-          <button
-            v-for="tenant in accessibleTenants"
-            :key="tenant.id"
-            @click="handleTenantChange(tenant.id)"
-            :class="['tenant-tab', { active: activeTenant?.id === tenant.id }]"
-          >
-            {{ tenant.name }}
-            <span class="material-symbols-outlined text-[18px] ml-1 opacity-70">expand_more</span>
-          </button>
-        </nav>
+    <div class="nav-wrapper">
+      <!-- Far Left: AI Status -->
+      <div class="status-pill">
+        <div class="pulse-ring">
+          <span :class="aiHealth.status === 'active' ? 'bg-[#06B6D4]' : 'bg-[#F43F5E]'" class="pulse-dot"></span>
+        </div>
+        <span class="status-text">{{ aiHealth.status === 'active' ? 'Sistema activo' : 'IA Offline' }}</span>
       </div>
 
-      <!-- Right: Actions & Profile -->
-      <div class="nav-right">
-        <!-- AI Brain Health Monitor -->
-        <div class="hidden md:flex items-center gap-3 px-3 py-1.5 bg-[#F8F9FF] border border-[#E2E8F0] rounded-full mr-4">
-          <div class="relative flex h-2 w-2">
-            <span :class="aiHealth.status === 'active' ? 'bg-[#8455ef]' : 'bg-[#F43F5E]'" class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"></span>
-            <span :class="aiHealth.status === 'active' ? 'bg-[#8455ef]' : 'bg-[#F43F5E]'" class="relative inline-flex rounded-full h-2 w-2"></span>
-          </div>
-          <div class="flex flex-col">
-            <span class="text-[9px] font-bold text-[#1E293B] leading-none">{{ aiHealth.status === 'active' ? 'Cerebro IA Activo' : 'Cerebro IA Offline' }}</span>
-            <span class="text-[8px] text-[#64748B] font-medium uppercase tracking-tighter">{{ aiHealth.latency }} · {{ aiHealth.tokens }} Tokens</span>
-          </div>
-        </div>
+      <div class="divider"></div>
 
-        <div class="action-icons">
-          <button class="icon-btn" title="Notificaciones">
-            <span class="material-symbols-outlined">notifications</span>
-          </button>
-          <button class="icon-btn" title="Apps">
-            <span class="material-symbols-outlined">apps</span>
-          </button>
-          <button class="icon-btn" title="Ayuda">
-            <span class="material-symbols-outlined">help</span>
-          </button>
-        </div>
+      <!-- Company Selector -->
+      <div class="pill-selector group" @click="handleTenantChange(activeTenant?.id)">
+        <span class="pill-label">{{ activeTenant?.name || 'Seleccionar Empresa' }}</span>
+        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+      </div>
 
-        <div class="v-divider"></div>
+      <!-- Search Bar -->
+      <div class="search-pill">
+        <span class="material-symbols-outlined text-[18px] opacity-60">search</span>
+        <span class="search-placeholder">Buscar...</span>
+        <div class="search-shortcut">⌘K</div>
+      </div>
 
-        <div class="profile-block" @click="emit('navigate', 'profile')">
-          <div class="profile-info text-right hidden sm:block">
-            <p class="u-name">System Owner</p>
-            <p class="u-role">Admin</p>
-          </div>
-          <img 
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBNox0mrq9yfLyncFpelSs-7YE-Y-YrTye0D7kE7-dPypDKWU1P6bMmmqLkqhIhML7RxmzCjasXSdxRZwnGhyD64VTJG6vjGnt45ipdG9zQbUTk_QKJmgoXbtdZCN6u8YgDly4nJHhocnijLuF3bkisw5LDrbwN38s_qe3-gqMZxBMCnw-qWXVANtFBbDZ1bEJQAJ4zFw2n0cUfZbekvdIYzbe40WnmI9niHawK96kgRrR5gwqWjmYRGNkyjhejD9i2n_SZMPPSps0w" 
-            alt="Profile" 
-            class="u-avatar"
-          />
+      <!-- Year Selector -->
+      <div class="pill-selector">
+        <span class="material-symbols-outlined text-[16px] opacity-60">calendar_today</span>
+        <span class="pill-label">{{ currentYear }}</span>
+        <span class="material-symbols-outlined text-[16px]">expand_more</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Currency Indicator -->
+      <div class="currency-pill">
+        <span class="currency-symbol">$</span>
+        <span class="currency-code">COP</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Right Actions -->
+      <div class="right-actions">
+        <button class="action-btn">
+          <span class="material-symbols-outlined">notifications</span>
+          <div class="notification-badge"></div>
+        </button>
+        <button class="action-btn">
+          <span class="material-symbols-outlined">settings</span>
+        </button>
+        
+        <div class="user-pill" @click="emit('navigate', 'profile')">
+          <div class="avatar-circle">CD</div>
+          <span class="material-symbols-outlined text-[16px]">expand_more</span>
         </div>
         
-        <button @click="emit('logout')" class="logout-btn" title="Cerrar Sesión">
+        <button @click="emit('logout')" class="logout-pill" title="Cerrar Sesión">
           <span class="material-symbols-outlined">logout</span>
         </button>
       </div>
@@ -121,163 +101,219 @@ function handleTenantChange(tenantId) {
 
 <style scoped>
 .top-nav {
-  height: 64px;
-  background-color: #ffffff;
-  border-bottom: 1px solid #E2E8F0;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  height: 60px;
+  background-color: #111111; /* Ultra dark background as in image */
   position: fixed;
-  top: 0;
-  right: 0;
-  width: 100%; /* Full width as sidebar is now an overlay */
-  z-index: 100;
+  top: 10px; /* Floating effect */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 95%;
+  max-width: 1400px;
+  z-index: 1000;
+  border-radius: 100px; /* Pill shape */
+  border: 1px solid #333333;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
   display: flex;
   align-items: center;
-  transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  padding: 0 1rem;
 }
 
-@media (max-width: 768px) {
-  .top-nav { width: 100%; }
-}
-
-.nav-container {
+.nav-wrapper {
   width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding: 0 2rem;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.nav-left {
+/* Status Pill */
+.status-pill {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  height: 64px;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: rgba(6, 182, 212, 0.05);
+  border: 1px solid rgba(6, 182, 212, 0.2);
+  border-radius: 9999px;
+  color: #06B6D4;
 }
 
-.sidebar-toggle {
+.pulse-ring {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 6px;
-  color: #64748B;
-  transition: all 0.2s;
+}
+
+.pulse-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(6, 182, 212, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(6, 182, 212, 0); }
+}
+
+.status-text {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Divider */
+.divider {
+  width: 1px;
+  height: 24px;
+  background-color: #333333;
+  margin: 0 0.25rem;
+}
+
+/* Common Pill Styles */
+.pill-selector, .search-pill, .currency-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid #333333;
+  border-radius: 9999px;
+  color: #E2E8F0;
   cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
 }
 
-.sidebar-toggle:hover {
-  background-color: #f1f5f9;
-  color: var(--primary);
+.pill-selector:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: #444444;
 }
 
-.nav-brand {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1E293B;
-}
-
-.tenant-tabs {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  height: 100%;
-}
-
-.tenant-tab {
-  height: 100%;
-  display: flex;
-  align-items: center;
-  font-size: 14px;
+.pill-label {
+  font-size: 13px;
   font-weight: 500;
+}
+
+/* Search Pill */
+.search-pill {
+  flex: 1; /* Grow to fill space */
+  max-width: 300px;
+  justify-content: space-between;
+  cursor: text;
+}
+
+.search-placeholder {
+  font-size: 13px;
   color: #64748B;
-  border-bottom: 2px solid transparent;
+}
+
+.search-shortcut {
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid #333333;
+}
+
+/* Currency Pill */
+.currency-pill {
+  border-color: rgba(245, 158, 11, 0.2);
+  color: #F59E0B;
+}
+
+.currency-symbol {
+  font-weight: 700;
+  opacity: 0.7;
+}
+
+.currency-code {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* Right Actions */
+.right-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: auto;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94A3B8;
+  border-radius: 50%;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.action-btn:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #FFFFFF;
+}
+
+.notification-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 6px;
+  height: 6px;
+  background: #F43F5E;
+  border-radius: 50%;
+  border: 2px solid #111111;
+}
+
+/* User Pill */
+.user-pill {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 8px 4px 4px;
+  background: rgba(132, 85, 239, 0.1);
+  border: 1px solid rgba(132, 85, 239, 0.2);
+  border-radius: 9999px;
+  cursor: pointer;
   transition: all 0.2s;
 }
 
-.tenant-tab.active {
-  color: var(--primary);
-  border-bottom-color: var(--primary);
+.user-pill:hover {
+  background: rgba(132, 85, 239, 0.15);
+}
+
+.avatar-circle {
+  width: 28px;
+  height: 28px;
+  background: #8455ef;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
   font-weight: 700;
 }
 
-.tenant-tab:hover:not(.active) {
-  color: #1E293B;
-  border-bottom-color: #E2E8F0;
-}
-
-.nav-right {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.action-icons {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.icon-btn {
+.logout-pill {
   color: #64748B;
+  padding: 0.5rem;
   transition: color 0.2s;
 }
 
-.icon-btn:hover {
-  color: #6b38d4;
+.logout-pill:hover {
+  color: #F43F5E;
 }
 
-.v-divider {
-  width: 1px;
-  height: 24px;
-  background-color: #E2E8F0;
-  margin: 0 0.5rem;
-}
-
-.profile-block {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.5rem;
-  transition: background-color 0.2s;
-}
-
-.profile-block:hover {
-  background-color: #f8fafc;
-}
-
-.u-name {
-  font-size: 12px;
-  font-weight: 600;
-  color: #1E293B;
-  line-height: 1.2;
-}
-
-.u-role {
-  font-size: 11px;
-  color: #64748B;
-}
-
-.u-avatar {
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-  border: 1px solid #E2E8F0;
-}
-
-.logout-btn {
-  color: #94a3b8;
-  padding: 0.5rem;
-  border-radius: 9999px;
-  transition: all 0.2s;
-}
-
-.logout-btn:hover {
-  background-color: #fee2e2;
-  color: #dc2626;
+/* Mobile Adjustments */
+@media (max-width: 1024px) {
+  .search-pill, .currency-pill, .divider:nth-of-type(3) {
+    display: none;
+  }
 }
 </style>

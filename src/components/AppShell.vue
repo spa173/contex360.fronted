@@ -214,7 +214,7 @@ function setSidebarHover(state) {
 
 .content-canvas {
   flex: 1;
-  margin-top: 64px; /* Height of topnav */
+  margin-top: 80px; /* Increased for floating topnav */
   padding: 24px;
   max-width: 1600px; /* Slightly wider since sidebar is overlay */
   width: 100%;
