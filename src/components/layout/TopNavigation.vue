@@ -27,12 +27,13 @@ function handleTenantChange(tenantId) {
       <div class="nav-left">
         <button
           @click="emit('toggle-sidebar')"
-          class="sidebar-toggle md:hidden"
+          class="sidebar-toggle"
+          title="Abrir menú"
         >
-          <span class="material-symbols-outlined">menu</span>
+          <span class="material-symbols-outlined text-[24px]">menu</span>
         </button>
 
-        <span class="nav-brand hidden lg:block">Contex360</span>
+        <span class="nav-brand">Contex360</span>
 
         <nav class="tenant-tabs">
           <button
@@ -118,6 +119,23 @@ function handleTenantChange(tenantId) {
   align-items: center;
   gap: 1.5rem;
   height: 64px;
+}
+
+.sidebar-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  color: #64748B;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+
+.sidebar-toggle:hover {
+  background-color: #f1f5f9;
+  color: var(--primary);
 }
 
 .nav-brand {
