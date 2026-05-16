@@ -91,7 +91,7 @@ function handleTenantChange(tenantId) {
   position: fixed;
   top: 0;
   right: 0;
-  width: calc(100% - 260px); /* Adjust to sidebar width */
+  width: 100%; /* Full width as sidebar is now an overlay */
   z-index: 100;
   display: flex;
   align-items: center;

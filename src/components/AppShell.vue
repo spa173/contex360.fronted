@@ -24,7 +24,8 @@ import ChatAssistant from './ai/ChatAssistant.vue'
 const store = useAuthStore()
 const themeStore = useThemeStore()
 const { pushToast } = useToasts()
-const isSidebarOpen = ref(true) // Sidebar persistent on desktop
+const isSidebarOpen = ref(false) // Hidden by default, reveals on hover
+const isHoveringSidebar = ref(false)
 const emit = defineEmits(['open-admin-panel', 'exit-erp'])
 
 function handleNavigate(viewId) {
@@ -32,6 +33,8 @@ function handleNavigate(viewId) {
   if (!result.ok) {
     pushToast(result.message, result.detail || '')
   }
+  // Close sidebar after navigation
+  isSidebarOpen.value = false
 }
 
 function handleTenantChange(tenantId) {
@@ -52,11 +55,33 @@ function handleNotify(payload) {
 function toggleSidebar() {
   isSidebarOpen.value = !isSidebarOpen.value
 }
+
+function revealSidebar() {
+  isSidebarOpen.value = true
+}
+
+function hideSidebar() {
+  if (!isHoveringSidebar.value) {
+    isSidebarOpen.value = false
+  }
+}
+
+function setSidebarHover(state) {
+  isHoveringSidebar.value = state
+  if (state) isSidebarOpen.value = true
+  else isSidebarOpen.value = false
+}
 </script>
 
 <template>
-  <div class="app-shell bg-[var(--background)] min-h-screen flex">
-    <!-- Persistent Sidebar -->
+  <div class="app-shell bg-[var(--background)] min-h-screen flex relative overflow-x-hidden">
+    <!-- Hover Trigger Zone (Invisible 10px area on left) -->
+    <div 
+      class="fixed left-0 top-0 bottom-0 w-[10px] z-[210] cursor-pointer"
+      @mouseenter="revealSidebar"
+    ></div>
+
+    <!-- Persistent Sidebar (Now as Overlay) -->
     <AppSidebar
       :is-open="isSidebarOpen"
       :active-tenant="store.activeTenant"
@@ -64,10 +89,12 @@ function toggleSidebar() {
       :active-view="store.activeView"
       @navigate="handleNavigate"
       @tenant-change="handleTenantChange"
+      @hover-start="setSidebarHover(true)"
+      @hover-end="setSidebarHover(false)"
     />
 
     <!-- Main Content Area -->
-    <div :class="['main-wrapper', { 'sidebar-collapsed': !isSidebarOpen }]">
+    <div class="main-wrapper full-width">
       <TopNavigation
         :user="store.currentUser"
         :active-tenant="store.activeTenant"
@@ -162,23 +189,21 @@ function toggleSidebar() {
 
 .main-wrapper {
   flex: 1;
-  margin-left: var(--sidebar-width);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   background: var(--background);
 }
 
-.main-wrapper.sidebar-collapsed {
-  margin-left: 0;
+.main-wrapper.full-width {
+  margin-left: 0 !important;
 }
 
 .content-canvas {
   flex: 1;
   margin-top: 64px; /* Height of topnav */
   padding: 24px;
-  max-width: 1440px;
+  max-width: 1600px; /* Slightly wider since sidebar is overlay */
   width: 100%;
   margin-left: auto;
   margin-right: auto;
