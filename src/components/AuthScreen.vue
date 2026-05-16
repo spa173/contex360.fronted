@@ -158,7 +158,7 @@ const togglePassword = () => {
                 <input 
                   v-model="newPassword" 
                   type="password" 
-                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                  class="w-full px-4 py-3.5 bg-white border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium text-[#18181B]"
                 />
               </div>
               <div class="space-y-1.5">
@@ -166,7 +166,7 @@ const togglePassword = () => {
                 <input 
                   v-model="newPasswordConfirm" 
                   type="password" 
-                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                  class="w-full px-4 py-3.5 bg-white border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium text-[#18181B]"
                 />
               </div>
               <button 
@@ -192,7 +192,7 @@ const togglePassword = () => {
                 type="email" 
                 required
                 placeholder="nombre@empresa.com"
-                class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                class="w-full px-4 py-3.5 bg-white border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA]"
               />
             </div>
 
@@ -203,7 +203,7 @@ const togglePassword = () => {
                 <select 
                   id="tenant"
                   v-model="selectedTenant"
-                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium appearance-none cursor-pointer"
+                  class="w-full px-4 py-3.5 bg-white border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium text-[#18181B] appearance-none cursor-pointer"
                 >
                   <option>Contex360 Cloud</option>
                   <option>Seleccionar al iniciar sesión...</option>
@@ -225,7 +225,7 @@ const togglePassword = () => {
                   :type="showPassword ? 'text' : 'password'" 
                   required
                   placeholder="••••••••"
-                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                  class="w-full px-4 py-3.5 bg-white border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA]"
                 />
                 <button 
                   type="button"
