@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 
-defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
+const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
 const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel'])
 
 const showNotifications = ref(false)
@@ -29,7 +29,7 @@ onUnmounted(() => {
 })
 
 function userInitials() {
-  const name = (props || {}).user?.name || 'Usuario'
+  const name = props.user?.name || 'Usuario'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 </script>

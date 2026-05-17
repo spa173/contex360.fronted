@@ -76,8 +76,8 @@ const scrollToBottom = async () => {
   <div class="ai-assistant-wrapper" :class="{ 'is-open': isOpen }">
     <!-- Trigger Button -->
     <button @click="isOpen = !isOpen" class="chat-trigger" :class="{ 'is-active': isOpen }">
-      <span v-if="!isOpen" class="material-symbols-outlined">smart_toy</span>
-      <span v-else class="material-symbols-outlined">close</span>
+      <span v-if="!isOpen" class="material-symbols-outlined text-[24px]">auto_awesome</span>
+      <span v-else class="material-symbols-outlined text-[24px]">close</span>
     </button>
 
     <!-- Chat Window -->
@@ -138,12 +138,12 @@ const scrollToBottom = async () => {
   width: 3.5rem;
   height: 3.5rem;
   border-radius: 50%;
-  background: #2563EB;
+  background: #18181B;
   border: none;
   color: white;
   font-size: 1.5rem;
   cursor: pointer;
-  box-shadow: 0 10px 25px -5px rgba(37, 99, 235, 0.35);
+  box-shadow: 0 10px 25px -5px rgba(24, 24, 27, 0.35);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -151,13 +151,13 @@ const scrollToBottom = async () => {
 }
 
 .chat-trigger:hover {
-  transform: scale(1.1);
-  box-shadow: 0 15px 30px -5px rgba(37, 99, 235, 0.5);
-  background: #1D4ED8;
+  transform: scale(1.08);
+  box-shadow: 0 15px 30px -5px rgba(24, 24, 27, 0.5);
+  background: #27272A;
 }
 
 .chat-trigger.is-active {
-  background: #18181B;
+  background: #2563EB;
 }
 
 .chat-window {
