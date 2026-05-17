@@ -122,6 +122,13 @@ function userInitials() {
         </div>
       </div>
 
+      <!-- Help -->
+      <button
+        class="w-9 h-9 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors"
+      >
+        <span class="material-symbols-outlined text-[20px]">help</span>
+      </button>
+
       <div class="w-px h-6 bg-[#E4E4E7] mx-1"></div>
 
       <!-- Avatar -->
