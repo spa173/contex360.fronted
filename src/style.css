@@ -16,4 +16,9 @@
   *:focus-visible {
     outline: none;
   }
+  input[type="checkbox"] {
+    appearance: auto !important;
+    accent-color: #2563eb !important;
+    cursor: pointer;
+  }
 }
