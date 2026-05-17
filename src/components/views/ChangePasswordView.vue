@@ -62,24 +62,24 @@ const handleSubmit = async () => {
 
         <form @submit.prevent="handleSubmit" class="space-y-4">
           <div>
-            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Contraseña actual</label>
+            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="currentPassword">Contraseña actual</label>
             <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
               <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">lock</span>
-              <input v-model="form.currentPassword" type="password" placeholder="Tu contraseña temporal" required class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
+              <input id="currentPassword" name="currentPassword" autocomplete="current-password" v-model="form.currentPassword" type="password" placeholder="Tu contraseña temporal" required class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
             </div>
           </div>
           <div>
-            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nueva contraseña</label>
+            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="newPassword">Nueva contraseña</label>
             <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
               <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">lock_reset</span>
-              <input v-model="form.newPassword" type="password" placeholder="Mínimo 8 caracteres" required minlength="8" class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
+              <input id="newPassword" name="newPassword" autocomplete="new-password" v-model="form.newPassword" type="password" placeholder="Mínimo 8 caracteres" required minlength="8" class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
             </div>
           </div>
           <div>
-            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Confirmar contraseña</label>
+            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="confirmPassword">Confirmar contraseña</label>
             <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
               <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">check</span>
-              <input v-model="form.confirmPassword" type="password" placeholder="Repite la contraseña" required class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
+              <input id="confirmPassword" name="confirmPassword" autocomplete="new-password" v-model="form.confirmPassword" type="password" placeholder="Repite la contraseña" required class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
             </div>
           </div>
 

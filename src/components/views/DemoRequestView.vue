@@ -148,10 +148,13 @@ const handleSubmit = async () => {
             <form @submit.prevent="handleSubmit" class="space-y-5">
               <div class="grid grid-cols-2 gap-5">
                 <div>
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nombre Completo *</label>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="nombre">Nombre Completo *</label>
                   <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
                     <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">person</span>
                     <input
+                      id="nombre"
+                      name="nombre"
+                      autocomplete="name"
                       v-model="form.nombre"
                       required
                       placeholder="Carlos Mendoza"
@@ -160,10 +163,13 @@ const handleSubmit = async () => {
                   </div>
                 </div>
                 <div>
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Empresa / Cargo *</label>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="empresa">Empresa / Cargo *</label>
                   <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
                     <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">apartment</span>
                     <input
+                      id="empresa"
+                      name="empresa"
+                      autocomplete="organization"
                       v-model="form.empresa"
                       required
                       placeholder="Logística S.A."
@@ -174,10 +180,13 @@ const handleSubmit = async () => {
               </div>
 
               <div>
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Correo Corporativo *</label>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="correo">Correo Corporativo *</label>
                 <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
                   <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">mail</span>
                   <input
+                    id="correo"
+                    name="correo"
+                    autocomplete="email"
                     v-model="form.correo"
                     required
                     type="email"
@@ -189,10 +198,13 @@ const handleSubmit = async () => {
 
               <div class="grid grid-cols-2 gap-5">
                 <div>
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Teléfono</label>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="telefono">Teléfono</label>
                   <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
                     <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">call</span>
                     <input
+                      id="telefono"
+                      name="telefono"
+                      autocomplete="tel"
                       v-model="form.telefono"
                       placeholder="+57 300..."
                       class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
@@ -200,10 +212,13 @@ const handleSubmit = async () => {
                   </div>
                 </div>
                 <div>
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Sector</label>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="sector">Sector</label>
                   <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
                     <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">category</span>
                     <select
+                      id="sector"
+                      name="sector"
+                      autocomplete="off"
                       v-model="form.sector"
                       class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] appearance-none cursor-pointer border-0"
                     >
@@ -219,8 +234,11 @@ const handleSubmit = async () => {
               </div>
 
               <div>
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">¿Cómo podemos ayudarle?</label>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="mensaje">¿Cómo podemos ayudarle?</label>
                 <textarea
+                  id="mensaje"
+                  name="mensaje"
+                  autocomplete="off"
                   v-model="form.mensaje"
                   rows="3"
                   placeholder="Cuéntenos sus retos operativos..."

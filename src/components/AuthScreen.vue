@@ -227,16 +227,22 @@ const togglePassword = () => {
                 <p class="text-[13px] text-[#71717A] font-medium">Su contraseña ha expirado. Por favor establezca una nueva.</p>
               </div>
               <div>
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nueva Contraseña</label>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="newPassword">Nueva Contraseña</label>
                 <input
+                  id="newPassword"
+                  name="newPassword"
+                  autocomplete="new-password"
                   v-model="newPassword"
                   type="password"
                   class="w-full px-4 py-3 bg-white border border-[#E4E4E7] rounded-[10px] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all text-[14px] font-medium text-[#18181B]"
                 />
               </div>
               <div>
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Confirmar Contraseña</label>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="newPasswordConfirm">Confirmar Contraseña</label>
                 <input
+                  id="newPasswordConfirm"
+                  name="newPasswordConfirm"
+                  autocomplete="new-password"
                   v-model="newPasswordConfirm"
                   type="password"
                   class="w-full px-4 py-3 bg-white border border-[#E4E4E7] rounded-[10px] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all text-[14px] font-medium text-[#18181B]"
@@ -263,6 +269,8 @@ const togglePassword = () => {
                   <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">mail</span>
                   <input
                     id="email"
+                    name="email"
+                    autocomplete="username"
                     v-model="email"
                     type="email"
                     required
@@ -279,6 +287,8 @@ const togglePassword = () => {
                   <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">apartment</span>
                   <select
                     id="tenant"
+                    name="tenant"
+                    autocomplete="off"
                     v-model="selectedTenant"
                     class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] appearance-none cursor-pointer border-0"
                   >
@@ -301,6 +311,8 @@ const togglePassword = () => {
                   <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">lock</span>
                   <input
                     id="password"
+                    name="password"
+                    autocomplete="current-password"
                     v-model="password"
                     :type="showPassword ? 'text' : 'password'"
                     required
@@ -322,8 +334,11 @@ const togglePassword = () => {
 
               <!-- 2FA Block -->
               <div v-if="requiresTotp" class="p-5 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 animate-in slide-in-from-top-2 duration-300">
-                <label class="block text-[11px] font-bold text-[#18181B] uppercase tracking-wider text-center">🔐 Código de Verificación</label>
+                <label class="block text-[11px] font-bold text-[#18181B] uppercase tracking-wider text-center" for="totpCode">🔐 Código de Verificación</label>
                 <input
+                  id="totpCode"
+                  name="totpCode"
+                  autocomplete="one-time-code"
                   v-model="totpCode"
                   type="text"
                   maxlength="6"
@@ -334,14 +349,14 @@ const togglePassword = () => {
 
               <!-- Policies & Remember -->
               <div class="space-y-3 pt-1">
-                <label class="flex items-start gap-3 cursor-pointer group">
-                  <input v-model="hasAcceptedPrivacy" type="checkbox" class="mt-0.5 w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
+                <label class="flex items-start gap-3 cursor-pointer group" for="hasAcceptedPrivacy">
+                  <input id="hasAcceptedPrivacy" name="hasAcceptedPrivacy" autocomplete="off" v-model="hasAcceptedPrivacy" type="checkbox" class="mt-0.5 w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
                   <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors leading-snug">
                     Acepto la Política de Tratamiento de Datos Personales.
                   </span>
                 </label>
-                <label class="flex items-center gap-3 cursor-pointer group">
-                  <input v-model="rememberMe" type="checkbox" class="w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
+                <label class="flex items-center gap-3 cursor-pointer group" for="rememberMe">
+                  <input id="rememberMe" name="rememberMe" autocomplete="off" v-model="rememberMe" type="checkbox" class="w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
                   <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors">Mantener sesión iniciada</span>
                 </label>
               </div>

@@ -41,8 +41,11 @@ function handleSubmit() {
             {{ canOcr ? 'Acceso autorizado' : 'Solo lectura' }}
           </span>
         </div>
-        <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-2 block">Texto OCR del soporte</label>
+        <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-2 block" for="ocrInput">Texto OCR del soporte</label>
         <textarea
+          id="ocrInput"
+          name="ocrInput"
+          autocomplete="off"
           v-model="ocrForm.source"
           :disabled="!canOcr"
           rows="14"
