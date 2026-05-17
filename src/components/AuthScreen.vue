@@ -380,7 +380,7 @@ const togglePassword = () => {
 @keyframes spin { to { transform: rotate(360deg); } }
 
 /* Force Contrast for Enterprise Grade Visibility */
-input, select {
+input:not([type="checkbox"]), select {
   color: #18181B !important;
   background-color: transparent !important;
 }

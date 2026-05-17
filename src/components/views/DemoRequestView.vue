@@ -260,7 +260,7 @@ const handleSubmit = async () => {
 .c360-mark .rotor { transform-origin: 28px 28px; animation: spin 8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-input, select, textarea {
+input:not([type="checkbox"]), select, textarea {
   color: #18181B !important;
   background-color: transparent !important;
 }
