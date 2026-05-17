@@ -1,11 +1,18 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { useThemeStore } from '../../stores/themeStore'
+import { useTranslationStore } from '../../stores/translationStore'
 
 const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
 const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel'])
 
+const themeStore = useThemeStore()
+const translationStore = useTranslationStore()
+
 const showNotifications = ref(false)
 const showAvatar = ref(false)
+const currentThemeMode = ref(themeStore.theme || 'light')
+const currentLang = computed(() => translationStore.currentLanguage || 'es')
 
 function closeAll() {
   showNotifications.value = false
@@ -31,6 +38,26 @@ onUnmounted(() => {
 function userInitials() {
   const name = props.user?.name || 'Usuario'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
+}
+
+function tenantInitials(name) {
+  if (!name) return 'AC'
+  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
+}
+
+function setThemeMode(mode) {
+  currentThemeMode.value = mode
+  if (mode === 'light' || mode === 'dark') {
+    themeStore.setTheme(mode)
+  }
+}
+
+function setLang(lang) {
+  translationStore.setLanguage(lang, {})
+}
+
+function openSupportModal(modalType) {
+  // Placeholder para modales de soporte/ayuda
 }
 </script>
 
@@ -141,8 +168,8 @@ function userInitials() {
             {{ userInitials() }}
           </div>
           <div class="hidden sm:block text-left">
-            <p class="text-[12px] font-semibold text-[#18181B] leading-tight">{{ user?.name || 'Usuario' }}</p>
-            <p class="text-[10px] text-[#A1A1AA] leading-tight">{{ user?.title || 'Admin' }}</p>
+            <p class="text-[12px] font-semibold text-[#18181B] leading-tight">{{ props.user?.name || 'Daniel Castro' }}</p>
+            <p class="text-[10px] text-[#A1A1AA] leading-tight">{{ props.user?.title || 'Admin' }}</p>
           </div>
           <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">expand_more</span>
         </button>
@@ -151,17 +178,37 @@ function userInitials() {
           v-if="showAvatar"
           class="fixed sm:absolute inset-x-4 top-20 sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[280px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50"
         >
+          <!-- User card -->
           <div class="px-4 py-4 border-b border-[#F4F4F5] flex items-center gap-3">
             <div class="w-11 h-11 rounded-full bg-[#18181B] text-white flex items-center justify-center font-bold text-[15px]">
               {{ userInitials() }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate">{{ user?.name || 'Usuario' }}</p>
-              <p class="text-[11px] text-[#71717A] truncate">{{ user?.email || '' }}</p>
+              <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate">{{ props.user?.name || 'Daniel Castro' }}</p>
+              <p class="text-[11px] text-[#71717A] truncate">{{ props.user?.email || 'daniel@contex360.com' }}</p>
+              <span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[10px] font-semibold uppercase tracking-wider mt-1.5">
+                {{ props.activeMembership?.role || 'Administrador' }}
+              </span>
             </div>
           </div>
 
-          <div class="py-1">
+          <!-- Workspace -->
+          <div class="px-2 pt-2 pb-1">
+            <p class="px-2 pb-1 text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider">Workspace activo</p>
+            <button class="w-full flex items-center gap-2.5 px-2 py-2 rounded-[8px] hover:bg-[#FAFAFA] transition-colors text-left">
+              <div class="w-7 h-7 rounded-md bg-[#2563EB] text-white flex items-center justify-center font-bold text-[11px] flex-shrink-0">
+                {{ tenantInitials(props.activeTenant?.name) }}
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-[12px] font-semibold text-[#18181B] truncate">{{ props.activeTenant?.name || 'Andina Cargo SAS' }}</p>
+                <p class="text-[10px] text-[#A1A1AA] truncate">{{ props.accessibleTenants?.length > 1 ? (props.accessibleTenants.length - 1) + ' workspaces más' : '2 workspaces más' }}</p>
+              </div>
+              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA] flex-shrink-0">unfold_more</span>
+            </button>
+          </div>
+
+          <!-- Menu items -->
+          <div class="py-1 border-t border-[#F4F4F5]">
             <button @click="emit('navigate', 'profile'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[18px] text-[#71717A]">person</span>
               <span class="flex-1 text-[13px] font-medium text-[#18181B]">Mi perfil</span>
@@ -176,8 +223,84 @@ function userInitials() {
             </button>
           </div>
 
+          <!-- Theme picker -->
+          <div class="py-2 px-3 border-t border-[#F4F4F5]">
+            <div class="flex items-center gap-2.5 px-1 py-1">
+              <span class="material-symbols-outlined text-[16px] text-[#71717A]">palette</span>
+              <span class="text-[12px] font-semibold text-[#18181B]">Tema</span>
+            </div>
+            <div class="flex gap-1 mt-1 p-1 rounded-[8px] bg-[#FAFAFA]">
+              <button
+                @click="setThemeMode('light')"
+                :class="['flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[6px] text-[11px] font-semibold transition-all', currentThemeMode === 'light' ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:bg-white']"
+              >
+                <span class="material-symbols-outlined text-[14px]">light_mode</span>Claro
+              </button>
+              <button
+                @click="setThemeMode('dark')"
+                :class="['flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[6px] text-[11px] font-semibold transition-all', currentThemeMode === 'dark' ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:bg-white']"
+              >
+                <span class="material-symbols-outlined text-[14px]">dark_mode</span>Oscuro
+              </button>
+              <button
+                @click="setThemeMode('auto')"
+                :class="['flex-1 flex items-center justify-center gap-1.5 py-1.5 rounded-[6px] text-[11px] font-semibold transition-all', currentThemeMode === 'auto' ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:bg-white']"
+              >
+                <span class="material-symbols-outlined text-[14px]">contrast</span>Auto
+              </button>
+            </div>
+          </div>
+
+          <!-- Language picker -->
+          <div class="py-2 px-3 border-t border-[#F4F4F5]">
+            <div class="flex items-center gap-2.5 px-1 py-1">
+              <span class="material-symbols-outlined text-[16px] text-[#71717A]">language</span>
+              <span class="text-[12px] font-semibold text-[#18181B]">Idioma</span>
+            </div>
+            <div class="flex gap-1 mt-1 p-1 rounded-[8px] bg-[#FAFAFA]">
+              <button
+                @click="setLang('es')"
+                :class="['flex-1 py-1.5 rounded-[6px] text-[11px] font-semibold transition-all', currentLang === 'es' ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:bg-white']"
+              >
+                ES
+              </button>
+              <button
+                @click="setLang('en')"
+                :class="['flex-1 py-1.5 rounded-[6px] text-[11px] font-semibold transition-all', currentLang === 'en' ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:bg-white']"
+              >
+                EN
+              </button>
+              <button
+                @click="setLang('pt')"
+                :class="['flex-1 py-1.5 rounded-[6px] text-[11px] font-semibold transition-all', currentLang === 'pt' ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:bg-white']"
+              >
+                PT
+              </button>
+            </div>
+          </div>
+
+          <!-- Support & Shortcuts -->
           <div class="py-1 border-t border-[#F4F4F5]">
-            <button @click="emit('logout')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-rose-50 text-left text-rose-700">
+            <button @click="openSupportModal('help'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+              <span class="material-symbols-outlined text-[18px] text-[#71717A]">help</span>
+              <span class="flex-1 text-[13px] font-medium text-[#18181B]">Centro de ayuda</span>
+              <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>
+            </button>
+            <button @click="openSupportModal('support'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+              <span class="material-symbols-outlined text-[18px] text-[#71717A]">chat</span>
+              <span class="flex-1 text-[13px] font-medium text-[#18181B]">Contactar soporte</span>
+              <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>
+            </button>
+            <button @click="openSupportModal('shortcuts'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+              <span class="material-symbols-outlined text-[18px] text-[#71717A]">keyboard</span>
+              <span class="flex-1 text-[13px] font-medium text-[#18181B]">Atajos de teclado</span>
+              <kbd class="text-[10px] font-mono text-[#A1A1AA] border border-[#E4E4E7] rounded px-1.5 py-0.5 bg-[#FAFAFA]">?</kbd>
+            </button>
+          </div>
+
+          <!-- Logout -->
+          <div class="py-1 border-t border-[#F4F4F5]">
+            <button @click="emit('logout')" class="w-full flex items-center gap-3 px-4 py-2.5 hover:bg-rose-50 text-left text-rose-700">
               <span class="material-symbols-outlined text-[18px]">logout</span>
               <span class="flex-1 text-[13px] font-semibold">Cerrar sesión</span>
             </button>
