@@ -44,6 +44,7 @@
     "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^8.0.1",
     "@headlessui/vue": "^1.7.23",
+    "@previewjs/config": "^7.0.1",
     "@tailwindcss/forms": "^0.5.10",
     "@tailwindcss/typography": "^0.5.16",
     "@types/crypto-js": "^4.2.2",
