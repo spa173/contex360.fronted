@@ -150,10 +150,14 @@ const togglePassword = () => {
       <section class="max-w-[640px] animate-in fade-in slide-in-from-left-4 duration-700">
         <!-- Brand -->
         <div class="inline-flex items-center gap-3 mb-7">
-          <div class="w-11 h-11 bg-[#18181B] rounded-[12px] flex items-center justify-center text-white font-black text-[20px] shadow-sm">
-            C
-          </div>
-          <span class="font-bold text-[17px] tracking-tight text-[#18181B]">Contex360</span>
+          <svg class="c360-mark flex-shrink-0" width="44" height="44" viewBox="0 0 56 56">
+            <rect width="56" height="56" rx="12" fill="#18181B"/>
+            <g class="rotor">
+              <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+              <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            </g>
+          </svg>
+          <span class="font-bold text-[20px] tracking-tight text-[#18181B]">Contex360</span>
         </div>
 
         <!-- Headline -->
@@ -372,6 +376,8 @@ const togglePassword = () => {
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
+.c360-mark .rotor { transform-origin: 28px 28px; animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* Force Contrast for Enterprise Grade Visibility */
 input, select {
