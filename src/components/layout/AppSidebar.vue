@@ -36,18 +36,18 @@ function tenantInitials(name) {
     ]"
   >
     <!-- Brand -->
-    <div class="h-16 px-5 border-b border-[#E4E4E7] flex items-center">
+    <div class="px-5 pt-6 pb-5 border-b border-[#F4F4F5]">
       <div class="flex items-center gap-2.5">
-        <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56">
-          <rect width="56" height="56" rx="10" fill="#18181B"/>
+        <svg class="c360-mark" width="32" height="32" viewBox="0 0 56 56">
+          <rect width="56" height="56" rx="12" fill="#18181B"/>
           <g class="rotor">
             <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
             <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
           </g>
         </svg>
-        <div class="flex flex-col">
-          <p class="text-[15px] font-bold tracking-tight text-[#18181B] leading-none mb-0.5">Contex360</p>
-          <p class="text-[9px] text-[#A1A1AA] uppercase font-bold tracking-wider leading-none">Enterprise</p>
+        <div>
+          <p class="text-[14px] font-bold tracking-tight text-[#18181B] leading-tight">Contex360</p>
+          <p class="text-[10px] text-[#A1A1AA] uppercase font-semibold tracking-wider">Enterprise</p>
         </div>
       </div>
     </div>

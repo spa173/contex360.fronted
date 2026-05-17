@@ -2,35 +2,7 @@
 .env
 .env.*
 !.env.example
-
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-# Environment files with secrets
-.env
-.env.*
-!.env.example
+.env*.local
 
 # Logs
 logs
@@ -57,15 +29,52 @@ dist-ssr
 *.sln
 *.sw?
 .vercel
-.env*.local
 
 # Pruebas locales privadas
 tests-local/
 
 # Windsurf & AI Agents skills (privadas, no subir a GitHub)
-.windsurf/skills/
+skills/
+skills-lock.json
 .agents/
-.gemini/
-.graphify/
+.adal/
+.aider-desk/
+.augment/
+.bob/
 .claude/
 .claudeignore
+.codeartsdoer/
+.codebuddy/
+.codemaker/
+.codestudio/
+.commandcode/
+.continue/
+.cortex/
+.crush/
+.devin/
+.factory/
+.forge/
+.gemini/
+.goose/
+.graphify/
+.hermes/
+.iflow/
+.junie/
+.kilocode/
+.kiro/
+.kode/
+.mcpjam/
+.mux/
+.neovate/
+.openhands/
+.pi/
+.pochi/
+.qoder/
+.qwen/
+.roo/
+.rovodev/
+.tabnine/
+.trae/
+.vibe/
+.windsurf/
+.zencoder/

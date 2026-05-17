@@ -10,6 +10,13 @@ export default [
       'node_modules/**',
       'dist/**',
       '.vscode/**',
+      '.claude/**',
+      '.windsurf/**',
+      '.agents/**',
+      '.gemini/**',
+      '.graphify/**',
+      'skills/**',
+      'tests-local/**',
       '*.json'
     ]
   },

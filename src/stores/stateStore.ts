@@ -20,6 +20,7 @@ export interface User {
 }
 export interface Tenant { id: string; name: string; prefix: string; [key: string]: any }
 export interface AuditEvent { id: string; tenantId: string; entity: string; action: string; description: string; at: string; actor: string; severity: string }
+export interface AuditPayload { tenantId?: string; entity: string; action: string; description: string; actor?: string; severity?: string; attachmentUrl?: string }
 export interface OcrRun { id: string; tenantId: string; source: string; fields: any; confidence: number; createdAt: string }
 
 export interface AppState {
@@ -86,7 +87,7 @@ export const useStateStore = defineStore('state', {
 
     hydrateState() {
       const state = loadState()
-      this.$patch(state)
+      this.$patch(state as any)
     },
 
     async setActiveTenant(tenantId: string) {
