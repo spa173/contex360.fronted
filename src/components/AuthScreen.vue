@@ -118,418 +118,273 @@ const handleChangePassword = async () => {
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
-
-const handleSso = () => {
-  const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'
-  window.location.href = `${backendUrl}/auth/oauth/google`
-}
 </script>
 
 <template>
-  <main class="page">
+  <div class="min-h-screen bg-white font-['Inter'] relative overflow-hidden">
+    <!-- Subtle blue radial accent (top-right) -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
+      style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
+    ></div>
 
-    <!-- ── Columna izquierda: marca y pilares ── -->
-    <section class="left">
-      <div class="brand">
-        <span class="logo-mark">C</span>
-        <b>Contex360</b>
-      </div>
-
-      <h1>Su back-office en un solo <em>workspace</em>.</h1>
-      <p class="lede">La plataforma administrativa de grado Enterprise para empresas que no pueden permitirse la fricción.</p>
-
-      <div class="pillars">
-        <div class="pillar">
-          <b>Cumplimiento DIAN nativo</b>
-          <span>Facturación electrónica certificada y nómina en tiempo real.</span>
-        </div>
-        <div class="pillar">
-          <b>Multi-empresa</b>
-          <span>Consolide hasta 50 razones sociales bajo una sola cuenta.</span>
-        </div>
-        <div class="pillar">
-          <b>SSO + Auditoría</b>
-          <span>Microsoft, Google y SAML 2.0 con bitácora completa.</span>
-        </div>
-        <div class="pillar">
-          <b>API abierta</b>
-          <span>Conecte ERP, e-commerce y bancos sin intermediarios.</span>
-        </div>
-      </div>
-
-      <div class="trustrow">
-        <span class="chip">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
-          Encriptación SSL/TLS 1.3
-        </span>
-        <span class="chip">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2 4 6v6c0 5 3.5 8.5 8 10 4.5-1.5 8-5 8-10V6l-8-4Z"/><path d="m9 12 2 2 4-4"/></svg>
-          ISO 27001
-        </span>
-        <span class="chip">SOC 2 Type II</span>
-      </div>
-    </section>
-
-    <!-- ── Columna derecha: formulario ── -->
-    <div class="card">
-
-      <!-- Cambio de contraseña forzado -->
-      <template v-if="requiresPasswordChange">
-        <h2>Nueva contraseña</h2>
-        <p class="sub">Su contraseña ha expirado. Establezca una nueva para continuar.</p>
-
-        <div v-if="errorMessage" class="msg msg--error">{{ errorMessage }}</div>
-
-        <div class="form">
-          <div>
-            <label class="label" for="np">Nueva contraseña</label>
-            <div class="input-wrap">
-              <input id="np" v-model="newPassword" type="password" placeholder="Mínimo 8 caracteres" />
-            </div>
-          </div>
-          <div>
-            <label class="label" for="npc">Confirmar contraseña</label>
-            <div class="input-wrap">
-              <input id="npc" v-model="newPasswordConfirm" type="password" placeholder="Repita la nueva contraseña" />
-            </div>
-          </div>
-          <button class="btn-primary" type="button" :disabled="changePasswordLoading" @click="handleChangePassword">
-            {{ changePasswordLoading ? 'Actualizando...' : 'Guardar y acceder' }}
-          </button>
-        </div>
-      </template>
-
-      <!-- Login normal -->
-      <template v-else>
-        <h2>Inicie sesión</h2>
-        <p class="sub">Bienvenido de vuelta. Use sus credenciales corporativas.</p>
-
-        <div v-if="errorMessage" class="msg msg--error">{{ errorMessage }}</div>
-        <div v-if="statusMessage" class="msg msg--ok">{{ statusMessage }}</div>
-
-        <form class="form" @submit.prevent="handleSubmit">
-
-          <!-- Email -->
-          <div>
-            <label class="label" for="email">Correo electrónico</label>
-            <div class="input-wrap">
-              <span class="ic">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
-              </span>
-              <input id="email" v-model="email" name="email" type="email" placeholder="nombre@empresa.com" required />
-            </div>
-          </div>
-
-          <!-- Workspace -->
-          <div>
-            <label class="label" for="ws">Organización / Workspace</label>
-            <div class="input-wrap">
-              <span class="ic">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 21h18M5 21V7l7-4 7 4v14M9 21v-6h6v6"/></svg>
-              </span>
-              <select id="ws" v-model="selectedTenant" name="workspace">
-                <option>Contex360 Cloud</option>
-                <option>Seleccionar al iniciar sesión...</option>
-              </select>
-              <span class="ic">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </span>
-            </div>
-          </div>
-
-          <!-- Contraseña -->
-          <div>
-            <div class="row-head">
-              <label class="label" for="pwd" style="margin-bottom:0">Contraseña</label>
-              <button type="button" class="link" @click="forgotAccessOpen = !forgotAccessOpen">¿Olvidó su acceso?</button>
-            </div>
-            <div class="input-wrap with-action">
-              <span class="ic">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V8a4 4 0 1 1 8 0v3"/></svg>
-              </span>
-              <input id="pwd" v-model="password" name="password" :type="showPassword ? 'text' : 'password'" placeholder="••••••••" required />
-              <button class="icon-btn" type="button" aria-label="Mostrar contraseña" @click="togglePassword">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">
-                  <template v-if="showPassword">
-                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/>
-                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                  </template>
-                  <template v-else>
-                    <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </template>
-                </svg>
-              </button>
-            </div>
-            <p v-if="forgotAccessOpen" class="hint-warn">Por favor contacte al administrador de su organización para restablecer su acceso.</p>
-          </div>
-
-          <!-- TOTP -->
-          <div v-if="requiresTotp" class="totp-block">
-            <label class="label" style="text-align:center;display:block">🔐 Código de verificación (2FA)</label>
-            <input
-              v-model="totpCode"
-              type="text"
-              maxlength="6"
-              placeholder="000000"
-              class="totp-input"
-            />
-          </div>
-
-          <!-- Políticas -->
-          <label class="check-label">
-            <input v-model="hasAcceptedPrivacy" type="checkbox" class="check-input" />
-            <span class="check-box" :class="{ on: hasAcceptedPrivacy }" />
-            Acepto la Política de Tratamiento de Datos Personales.
-          </label>
-
-          <label class="check-label">
-            <input v-model="rememberMe" type="checkbox" class="check-input" />
-            <span class="check-box" :class="{ on: rememberMe }" />
-            Mantener sesión iniciada
-          </label>
-
-          <!-- Botón principal -->
-          <button
-            class="btn-primary"
-            type="submit"
-            :disabled="isLoading || (requiresTotp && totpCode.length < 6)"
-          >
-            <span>{{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}</span>
-            <svg v-if="!isLoading" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
-          </button>
-
-          <div class="divider"><span>O</span></div>
-
-          <!-- SSO -->
-          <button class="btn-ghost" type="button" @click="handleSso">
-            Continuar con SSO empresarial
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-          </button>
-
-          <div class="footer-line">
-            ¿No tiene cuenta?
-            <button type="button" class="link" @click="$emit('request-demo')">Solicite una demo</button>
-          </div>
-        </form>
-      </template>
+    <!-- Top bar: back button -->
+    <div class="relative max-w-[1440px] mx-auto px-6 lg:px-12 pt-8">
+      <button
+        @click="$emit('back')"
+        class="flex items-center gap-2 text-[#71717A] hover:text-[#18181B] transition-colors font-semibold text-sm"
+      >
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+        Volver al inicio
+      </button>
     </div>
 
-  </main>
+    <!-- Two-column shell -->
+    <div
+      class="relative max-w-[1440px] mx-auto px-6 lg:px-12 py-10 lg:py-16 grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-10 lg:gap-14 items-center"
+    >
+      <!-- ============ LEFT: brand + pillars ============ -->
+      <section class="max-w-[640px] animate-in fade-in slide-in-from-left-4 duration-700">
+        <!-- Brand -->
+        <div class="inline-flex items-center gap-3 mb-7">
+          <div class="w-11 h-11 bg-[#18181B] rounded-[12px] flex items-center justify-center text-white font-black text-[20px] shadow-sm">
+            C
+          </div>
+          <span class="font-bold text-[17px] tracking-tight text-[#18181B]">Contex360</span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="text-[40px] lg:text-[52px] leading-[1.02] tracking-[-0.03em] font-bold text-[#18181B] mb-4" style="text-wrap: balance;">
+          Su back-office en un solo <em class="not-italic text-[#2563EB]">workspace</em>.
+        </h1>
+        <p class="text-[16px] lg:text-[17px] leading-[1.55] text-[#71717A] max-w-[460px] mb-9">
+          La plataforma administrativa de grado Enterprise para empresas que no pueden permitirse la fricción.
+        </p>
+
+        <!-- Trust pillars -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-7 max-w-[520px]">
+          <div class="border-t border-[#E4E4E7] pt-3.5">
+            <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Cumplimiento DIAN nativo</b>
+            <span class="text-[13px] text-[#71717A] leading-[1.45]">Facturación electrónica certificada y nómina en tiempo real.</span>
+          </div>
+          <div class="border-t border-[#E4E4E7] pt-3.5">
+            <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Multi-empresa</b>
+            <span class="text-[13px] text-[#71717A] leading-[1.45]">Consolide múltiples razones sociales bajo una sola cuenta.</span>
+          </div>
+          <div class="border-t border-[#E4E4E7] pt-3.5">
+            <b class="block font-semibold text-[14px] text-[#18181B] mb-1">2FA + Auditoría</b>
+            <span class="text-[13px] text-[#71717A] leading-[1.45]">Verificación TOTP y bitácora completa de cada acción.</span>
+          </div>
+          <div class="border-t border-[#E4E4E7] pt-3.5">
+            <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Datos protegidos</b>
+            <span class="text-[13px] text-[#71717A] leading-[1.45]">Ley 1581 de 2012 y cifrado SSL/TLS extremo a extremo.</span>
+          </div>
+        </div>
+
+        <!-- Trust chips -->
+        <div class="mt-10 flex flex-wrap gap-2">
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+            <span class="material-symbols-outlined text-[14px]">lock</span>
+            Encriptación SSL/TLS 1.3
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+            <span class="material-symbols-outlined text-[14px]">verified_user</span>
+            Cumplimiento DIAN
+          </span>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+            <span class="material-symbols-outlined text-[14px]">shield</span>
+            Ley 1581 de 2012
+          </span>
+        </div>
+      </section>
+
+      <!-- ============ RIGHT: login card ============ -->
+      <main class="w-full max-w-[460px] mx-auto lg:mx-0 animate-in fade-in slide-in-from-bottom-4 duration-700">
+        <div class="bg-white rounded-[18px] border border-[#E4E4E7] p-8 lg:p-9 shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)]">
+
+          <h2 class="text-[22px] font-bold tracking-[-0.02em] text-[#18181B] mb-1">Inicie sesión</h2>
+          <p class="text-[13px] text-[#71717A] mb-7">Bienvenido de vuelta. Use sus credenciales corporativas.</p>
+
+          <!-- Error / Status Messages -->
+          <div v-if="errorMessage" class="mb-5 p-3 bg-red-50 border border-red-100 text-red-600 text-[12px] font-bold rounded-xl text-center">
+            {{ errorMessage }}
+          </div>
+          <div v-if="statusMessage" class="mb-5 p-3 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[12px] font-bold rounded-xl text-center">
+            {{ statusMessage }}
+          </div>
+
+          <!-- Password Change Flow -->
+          <template v-if="requiresPasswordChange">
+            <div class="space-y-5">
+              <div class="text-center">
+                <p class="text-[13px] text-[#71717A] font-medium">Su contraseña ha expirado. Por favor establezca una nueva.</p>
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nueva Contraseña</label>
+                <input
+                  v-model="newPassword"
+                  type="password"
+                  class="w-full px-4 py-3 bg-white border border-[#E4E4E7] rounded-[10px] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all text-[14px] font-medium text-[#18181B]"
+                />
+              </div>
+              <div>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Confirmar Contraseña</label>
+                <input
+                  v-model="newPasswordConfirm"
+                  type="password"
+                  class="w-full px-4 py-3 bg-white border border-[#E4E4E7] rounded-[10px] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all text-[14px] font-medium text-[#18181B]"
+                />
+              </div>
+              <button
+                @click="handleChangePassword"
+                class="w-full py-3.5 bg-[#2563EB] text-white font-semibold text-[15px] rounded-[10px] hover:bg-[#1D4ED8] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 disabled:opacity-50"
+                :disabled="changePasswordLoading"
+              >
+                <span>{{ changePasswordLoading ? 'Actualizando...' : 'Guardar y Acceder' }}</span>
+                <span v-if="!changePasswordLoading" class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              </button>
+            </div>
+          </template>
+
+          <!-- Normal Login Flow -->
+          <template v-else>
+            <form @submit.prevent="handleSubmit" class="space-y-5">
+              <!-- Email -->
+              <div>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="email">Correo Electrónico</label>
+                <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                  <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">mail</span>
+                  <input
+                    id="email"
+                    v-model="email"
+                    type="email"
+                    required
+                    placeholder="nombre@empresa.com"
+                    class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
+                  />
+                </div>
+              </div>
+
+              <!-- Tenant Selector -->
+              <div>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="tenant">Organización / Workspace</label>
+                <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                  <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">apartment</span>
+                  <select
+                    id="tenant"
+                    v-model="selectedTenant"
+                    class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] appearance-none cursor-pointer border-0"
+                  >
+                    <option>Contex360 Cloud</option>
+                    <option>Seleccionar al iniciar sesión...</option>
+                  </select>
+                  <span class="material-symbols-outlined text-[18px] text-[#A1A1AA] pointer-events-none">expand_more</span>
+                </div>
+              </div>
+
+              <!-- Password -->
+              <div>
+                <div class="flex justify-between items-baseline mb-2">
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider" for="password">Contraseña</label>
+                  <button type="button" @click="forgotAccessOpen = !forgotAccessOpen" class="text-[11px] font-semibold text-[#2563EB] hover:underline">
+                    ¿Olvidó su acceso?
+                  </button>
+                </div>
+                <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] pl-3.5 pr-1 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                  <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">lock</span>
+                  <input
+                    id="password"
+                    v-model="password"
+                    :type="showPassword ? 'text' : 'password'"
+                    required
+                    placeholder="••••••••"
+                    class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
+                  />
+                  <button
+                    type="button"
+                    @click="togglePassword"
+                    class="p-1.5 rounded-md text-[#A1A1AA] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-colors"
+                  >
+                    <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
+                  </button>
+                </div>
+                <p v-if="forgotAccessOpen" class="text-[11px] text-amber-600 font-medium mt-2">
+                  Por favor contacte al administrador de su organización para restablecer su acceso.
+                </p>
+              </div>
+
+              <!-- 2FA Block -->
+              <div v-if="requiresTotp" class="p-5 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 animate-in slide-in-from-top-2 duration-300">
+                <label class="block text-[11px] font-bold text-[#18181B] uppercase tracking-wider text-center">🔐 Código de Verificación</label>
+                <input
+                  v-model="totpCode"
+                  type="text"
+                  maxlength="6"
+                  placeholder="000000"
+                  class="w-full px-4 py-3 text-center text-xl font-mono tracking-[0.5em] border border-[#E4E4E7] rounded-xl focus:border-[#2563EB] outline-none"
+                />
+              </div>
+
+              <!-- Policies & Remember -->
+              <div class="space-y-3 pt-1">
+                <label class="flex items-start gap-3 cursor-pointer group">
+                  <input v-model="hasAcceptedPrivacy" type="checkbox" class="mt-0.5 w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
+                  <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors leading-snug">
+                    Acepto la Política de Tratamiento de Datos Personales.
+                  </span>
+                </label>
+                <label class="flex items-center gap-3 cursor-pointer group">
+                  <input v-model="rememberMe" type="checkbox" class="w-4 h-4 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
+                  <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors">Mantener sesión iniciada</span>
+                </label>
+              </div>
+
+              <!-- Submit -->
+              <button
+                type="submit"
+                class="w-full py-3.5 bg-[#2563EB] text-white font-semibold text-[15px] rounded-[10px] hover:bg-[#1D4ED8] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 shadow-lg shadow-[#2563EB]/10 disabled:opacity-50"
+                :disabled="isLoading || (requiresTotp && totpCode.length < 6)"
+              >
+                <span>{{ isLoading ? 'Verificando...' : 'Iniciar Sesión' }}</span>
+                <span v-if="!isLoading" class="material-symbols-outlined text-[18px]">login</span>
+                <span v-else class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+              </button>
+            </form>
+          </template>
+
+          <!-- Footer link -->
+          <div class="mt-7 pt-6 border-t border-[#F4F4F5] text-center">
+            <p class="text-[13px] text-[#71717A] font-medium">
+              ¿No tiene una cuenta?
+              <button @click="$emit('request-demo')" class="text-[#2563EB] font-semibold hover:underline ml-1">Solicite una demo</button>
+            </p>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
 </template>
 
 <style scoped>
-:root {
-  --ink: #0a0a0a;
-  --ink-2: #1a1a1a;
-  --muted: #6b7280;
-  --muted-2: #9ca3af;
-  --line: #e5e7eb;
-  --bg: #ffffff;
-  --bg-2: #f7f8fa;
-  --blue: #2563eb;
-  --blue-d: #1d4ed8;
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
-* { box-sizing: border-box; }
-
-.page {
-  min-height: 100vh;
-  padding: 48px;
-  display: grid;
-  grid-template-columns: 1fr 460px;
-  gap: 56px;
-  align-items: center;
-  background:
-    radial-gradient(900px 500px at 90% 0%, rgba(37,99,235,0.06), transparent 60%),
-    var(--bg);
-  font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  color: var(--ink);
-  -webkit-font-smoothing: antialiased;
+input, select {
+  color: #18181B !important;
+  background-color: transparent !important;
 }
 
-/* ── Left ── */
-.left { padding: 0 8px; max-width: 640px; }
-
-.brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 28px;
-}
-.logo-mark {
-  width: 44px; height: 44px; border-radius: 12px;
-  background: var(--ink); color: #fff;
-  display: inline-flex; align-items: center; justify-content: center;
-  font-weight: 700; font-size: 20px;
-}
-.brand b { font-weight: 700; font-size: 17px; letter-spacing: -0.01em; }
-
-.left h1 {
-  font-size: 52px; line-height: 1.02; letter-spacing: -0.03em;
-  font-weight: 700; margin: 0 0 16px; text-wrap: balance;
-}
-.left h1 em { font-style: normal; color: var(--blue); }
-
-.lede {
-  font-size: 17px; color: var(--muted); line-height: 1.55;
-  margin: 0 0 36px; max-width: 460px;
+input::placeholder {
+  color: #A1A1AA !important;
 }
 
-.pillars { display: grid; grid-template-columns: 1fr 1fr; gap: 20px 28px; max-width: 520px; }
-.pillar { border-top: 1px solid var(--line); padding-top: 14px; }
-.pillar b { display: block; font-weight: 600; font-size: 14px; margin-bottom: 4px; }
-.pillar span { font-size: 13px; color: var(--muted); line-height: 1.4; }
-
-.trustrow { margin-top: 40px; display: flex; flex-wrap: wrap; gap: 8px; }
-.chip {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px;
-  font-size: 11px; color: var(--muted); background: #fff;
-}
-
-/* ── Card ── */
-.card {
-  background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 36px;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.02), 0 24px 60px -20px rgba(10,10,10,0.12);
-}
-.card h2 { font-size: 22px; font-weight: 700; margin: 0 0 4px; letter-spacing: -0.02em; }
-.card .sub { font-size: 13px; color: var(--muted); margin: 0 0 24px; }
-
-/* Mensajes */
-.msg {
-  margin-bottom: 16px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  font-size: 13px;
-  font-weight: 600;
-  text-align: center;
-}
-.msg--error { background: #fef2f2; border: 1px solid #fee2e2; color: #dc2626; }
-.msg--ok    { background: #f0fdf4; border: 1px solid #bbf7d0; color: #16a34a; }
-
-/* Form */
-.form { display: flex; flex-direction: column; gap: 20px; }
-
-.label {
-  font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-  color: var(--muted); font-weight: 500; margin-bottom: 8px; display: block;
-}
-
-.input-wrap {
-  border: 1px solid var(--line); border-radius: 10px; padding: 4px 14px;
-  background: #fff; display: flex; align-items: center; gap: 10px;
-  transition: border-color .15s, box-shadow .15s;
-}
-.input-wrap:focus-within {
-  border-color: var(--ink);
-  box-shadow: 0 0 0 4px rgba(10,10,10,0.04);
-}
-.input-wrap input,
-.input-wrap select {
-  flex: 1; border: none; outline: none; background: transparent;
-  font: inherit; font-size: 14px; padding: 10px 0; color: var(--ink);
-  appearance: none; -webkit-appearance: none;
-}
-.input-wrap.with-action { padding-right: 8px; }
-.ic { color: var(--muted-2); display: inline-flex; flex-shrink: 0; }
-
-.icon-btn {
-  background: transparent; border: none; padding: 6px; border-radius: 6px;
-  cursor: pointer; color: var(--muted); display: inline-flex; align-items: center;
-}
-.icon-btn:hover { background: var(--bg-2); color: var(--ink); }
-
-.row-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
-
-.link {
-  background: none; border: none; padding: 0;
-  color: var(--blue); text-decoration: none; font-weight: 600; font-size: 12px;
-  cursor: pointer;
-}
-.link:hover { text-decoration: underline; }
-
-.hint-warn { font-size: 11px; color: #d97706; font-weight: 500; margin-top: 6px; }
-
-/* TOTP */
-.totp-block {
-  padding: 16px; background: rgba(37,99,235,0.04);
-  border: 1px solid rgba(37,99,235,0.12); border-radius: 12px;
-}
-.totp-input {
-  width: 100%; margin-top: 10px; padding: 12px;
-  text-align: center; font-size: 20px; font-family: monospace;
-  letter-spacing: 0.5em; border: 1px solid var(--line);
-  border-radius: 10px; outline: none;
-  transition: border-color .15s;
-}
-.totp-input:focus { border-color: var(--blue); }
-
-/* Checkbox custom */
-.check-label {
-  display: flex; align-items: center; gap: 10px;
-  font-size: 13px; color: var(--ink-2); cursor: pointer;
-}
-.check-input { display: none; }
-.check-box {
-  width: 16px; height: 16px; border: 1.5px solid var(--line);
-  border-radius: 4px; display: inline-block; position: relative; flex-shrink: 0;
-  transition: background .15s, border-color .15s;
-}
-.check-box.on { background: var(--blue); border-color: var(--blue); }
-.check-box.on::after {
-  content: ''; position: absolute; left: 4px; top: 1px;
-  width: 4px; height: 8px; border: solid #fff; border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
-
-/* Botones */
-.btn-primary {
-  width: 100%; background: var(--blue); color: #fff; border: none;
-  padding: 14px 18px; border-radius: 10px; font: inherit; font-weight: 600;
-  font-size: 15px; cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  transition: background .15s ease;
-}
-.btn-primary:hover:not(:disabled) { background: var(--blue-d); }
-.btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
-
-.btn-ghost {
-  width: 100%; border: 1px solid var(--line); background: #fff;
-  padding: 12px 14px; border-radius: 10px; font: inherit;
-  font-size: 14px; font-weight: 500; color: var(--ink-2); cursor: pointer;
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-}
-.btn-ghost:hover { background: var(--bg-2); }
-
-.divider {
-  display: grid; grid-template-columns: 1fr auto 1fr; align-items: center;
-  gap: 10px; color: var(--muted); font-size: 11px; letter-spacing: 0.08em;
-}
-.divider::before,
-.divider::after { content: ''; height: 1px; background: var(--line); }
-
-.footer-line { text-align: center; font-size: 13px; color: var(--muted); }
-
-/* Autofill fix */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--ink) !important;
-  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #18181B !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
   transition: background-color 5000s ease-in-out 0s !important;
-}
-
-/* ── Responsive ── */
-@media (max-width: 980px) {
-  .page {
-    grid-template-columns: 1fr;
-    padding: 32px 20px;
-    gap: 32px;
-  }
-  .left h1 { font-size: 36px; }
-  .pillars { max-width: none; }
-  .card { padding: 24px; }
 }
 </style>

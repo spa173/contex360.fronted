@@ -1,286 +1,218 @@
 <script setup lang="ts">
 const lastUpdated = '12 de mayo de 2026'
 const emit = defineEmits<{ (e: 'back'): void }>()
+
+const sections = [
+  {
+    n: '1',
+    title: 'Descripción del servicio',
+    body: 'Contex360 es una plataforma de gestión empresarial (ERP) que ofrece funcionalidades de facturación, contabilidad, inventario, gestión de terceros y analítica, orientada a empresas colombianas. El servicio se presta bajo modalidad SaaS (Software as a Service).',
+  },
+  {
+    n: '2',
+    title: 'Condiciones de acceso',
+    list: [
+      'El acceso requiere credenciales válidas asignadas por el administrador de su organización.',
+      'Cada usuario es responsable de mantener la confidencialidad de su contraseña.',
+      'El uso compartido de credenciales está estrictamente prohibido.',
+      'Se recomienda activar la autenticación de dos factores (2FA) para mayor seguridad.',
+      'Las cuentas inactivas por más de 90 días pueden ser suspendidas automáticamente.',
+    ],
+  },
+  {
+    n: '3',
+    title: 'Uso aceptable',
+    intro: 'El usuario se compromete a:',
+    list: [
+      'Utilizar la plataforma exclusivamente para fines legítimos de gestión empresarial.',
+      'No intentar acceder a datos de otras organizaciones o usuarios sin autorización.',
+      'No realizar ingeniería inversa, descompilar ni modificar el software.',
+      'No introducir virus, malware ni código malicioso en la plataforma.',
+      'Respetar los límites de uso establecidos para su plan.',
+    ],
+  },
+  {
+    n: '4',
+    title: 'Propiedad intelectual',
+    body: 'Todo el software, diseño, marcas, logotipos y contenido de Contex360 son propiedad exclusiva de sus desarrolladores y están protegidos por la legislación colombiana e internacional de propiedad intelectual. Queda prohibida su reproducción, distribución o uso no autorizado.',
+  },
+  {
+    n: '5',
+    title: 'Datos y privacidad',
+    body: 'El tratamiento de datos personales se rige por nuestra <strong>Política de Privacidad</strong> conforme a la Ley 1581 de 2012. Los datos contables y empresariales ingresados son propiedad de la organización usuaria. Contex360 actúa como encargado del tratamiento y no accede a dicha información salvo para fines de soporte técnico autorizado.',
+  },
+]
+
+const slaCards = [
+  { label: 'SLA objetivo',   body: '99.5% de disponibilidad mensual' },
+  { label: 'Mantenimientos', body: 'Notificados con mínimo 24h de anticipación' },
+  { label: 'Soporte',        body: 'A través del administrador de su organización' },
+  { label: 'Respaldos',      body: 'Copias de seguridad diarias automáticas' },
+]
+
+const finalSections = [
+  {
+    n: '7',
+    title: 'Limitación de responsabilidad',
+    body: 'Contex360 no será responsable por pérdidas de datos derivadas de uso indebido de credenciales, errores en la información ingresada por el usuario, o decisiones empresariales tomadas con base en los reportes de la plataforma. La responsabilidad máxima de Contex360 ante cualquier reclamación se limita al valor pagado por el servicio en los últimos 30 días.',
+  },
+  {
+    n: '8',
+    title: 'Facturación y pagos',
+    list: [
+      'El servicio puede estar sujeto a tarifas según el plan contratado.',
+      'Los pagos no son reembolsables salvo acuerdo expreso por escrito.',
+      'La falta de pago puede resultar en la suspensión temporal o cancelación del acceso.',
+      'Los precios pueden ajustarse con 30 días de notificación previa.',
+    ],
+  },
+  {
+    n: '9',
+    title: 'Cancelación y terminación',
+    body: 'Cualquiera de las partes puede dar por terminado el servicio con 15 días de aviso previo. Ante el incumplimiento de estos términos, Contex360 puede suspender o cancelar el acceso de forma inmediata. Tras la cancelación, los datos serán retenidos por 30 días para facilitar la exportación, tras lo cual serán eliminados de forma permanente.',
+  },
+  {
+    n: '10',
+    title: 'Legislación aplicable',
+    body: 'Estos Términos de Uso se rigen por las leyes de la República de Colombia. Cualquier controversia derivada del uso del servicio será sometida a la jurisdicción de los tribunales competentes de la ciudad de Bogotá D.C., Colombia.',
+  },
+]
 </script>
 
 <template>
-  <div class="tu-wrap">
-    <button
-      @click="emit('back')"
-      class="fixed top-4 left-4 z-50 flex items-center gap-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
-    >
-      ← Volver
-    </button>
-    <div class="tu-page">
-      <div class="tu-header">
-        <h1 class="tu-title">Términos de Uso</h1>
-        <p class="tu-meta">Última actualización: {{ lastUpdated }}</p>
+  <div class="min-h-screen bg-white text-[#18181B] font-['Inter'] relative overflow-x-hidden">
+    <!-- Subtle blue radial accent -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
+      style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
+    ></div>
+
+    <!-- Nav -->
+    <header class="relative sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#F4F4F5]">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+        <button
+          @click="emit('back')"
+          class="flex items-center gap-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors"
+        >
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Volver
+        </button>
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 bg-[#18181B] rounded-md flex items-center justify-center text-white font-black text-[14px]">C</div>
+          <span class="text-[16px] font-bold tracking-tight text-[#18181B]">Contex360</span>
+        </div>
+        <div class="w-[60px]"></div>
       </div>
+    </header>
 
-      <div class="tu-alert">
-        Al acceder y utilizar la plataforma <strong>Contex360</strong>, usted acepta los presentes
-        Términos de Uso en su totalidad. Si no está de acuerdo con alguno de estos términos, no debe
-        utilizar el servicio.
+    <!-- Hero -->
+    <section class="relative pt-14 pb-10">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">Legal</p>
+        <h1 class="text-[36px] lg:text-[48px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-3" style="text-wrap: balance;">
+          Términos de Uso
+        </h1>
+        <p class="text-[13px] text-[#71717A] font-medium">Última actualización: {{ lastUpdated }}</p>
       </div>
+    </section>
 
-      <section class="tu-section">
-        <h2 class="tu-heading">1. Descripción del servicio</h2>
-        <p class="tu-body">
-          Contex360 es una plataforma de gestión empresarial (ERP) que ofrece funcionalidades de
-          facturación, contabilidad, inventario, gestión de terceros y analítica, orientada a empresas
-          colombianas. El servicio se presta bajo modalidad SaaS (Software as a Service).
-        </p>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">2. Condiciones de acceso</h2>
-        <ul class="tu-list">
-          <li>El acceso requiere credenciales válidas asignadas por el administrador de su organización.</li>
-          <li>Cada usuario es responsable de mantener la confidencialidad de su contraseña.</li>
-          <li>El uso compartido de credenciales está estrictamente prohibido.</li>
-          <li>Se recomienda activar la autenticación de dos factores (2FA) para mayor seguridad.</li>
-          <li>Las cuentas inactivas por más de 90 días pueden ser suspendidas automáticamente.</li>
-        </ul>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">3. Uso aceptable</h2>
-        <p class="tu-body">El usuario se compromete a:</p>
-        <ul class="tu-list">
-          <li>Utilizar la plataforma exclusivamente para fines legítimos de gestión empresarial.</li>
-          <li>No intentar acceder a datos de otras organizaciones o usuarios sin autorización.</li>
-          <li>No realizar ingeniería inversa, descompilar ni modificar el software.</li>
-          <li>No introducir virus, malware ni código malicioso en la plataforma.</li>
-          <li>Respetar los límites de uso establecidos para su plan.</li>
-        </ul>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">4. Propiedad intelectual</h2>
-        <p class="tu-body">
-          Todo el software, diseño, marcas, logotipos y contenido de Contex360 son propiedad exclusiva
-          de sus desarrolladores y están protegidos por la legislación colombiana e internacional de
-          propiedad intelectual. Queda prohibida su reproducción, distribución o uso no autorizado.
-        </p>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">5. Datos y privacidad</h2>
-        <p class="tu-body">
-          El tratamiento de datos personales se rige por nuestra
-          <strong>Política de Privacidad</strong> conforme a la Ley 1581 de 2012. Los datos
-          contables y empresariales ingresados son propiedad de la organización usuaria. Contex360
-          actúa como encargado del tratamiento y no accede a dicha información salvo para fines de
-          soporte técnico autorizado.
-        </p>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">6. Disponibilidad del servicio</h2>
-        <div class="tu-cards">
-          <div class="tu-card">
-            <p class="tu-card-label">SLA objetivo</p>
-            <p class="tu-body">99.5% de disponibilidad mensual</p>
+    <!-- Acceptance alert -->
+    <section class="relative pb-10">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="flex gap-3 p-5 rounded-[18px] border border-[#E4E4E7] bg-[#FAFAFA]">
+          <div class="w-9 h-9 rounded-[10px] bg-white border border-[#E4E4E7] flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px] text-[#2563EB]">gavel</span>
           </div>
-          <div class="tu-card">
-            <p class="tu-card-label">Mantenimientos</p>
-            <p class="tu-body">Notificados con mínimo 24h de anticipación</p>
+          <p class="text-[13px] text-[#18181B] leading-[1.6] font-medium pt-1">
+            Al acceder y utilizar la plataforma <strong class="font-semibold">Contex360</strong>, usted acepta los presentes Términos de Uso en su totalidad. Si no está de acuerdo con alguno de estos términos, no debe utilizar el servicio.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sections 1-5 -->
+    <section class="relative pb-2">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 space-y-10">
+        <article v-for="s in sections" :key="s.n">
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
+            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
           </div>
-          <div class="tu-card">
-            <p class="tu-card-label">Soporte</p>
-            <p class="tu-body">A través del administrador de su organización</p>
-          </div>
-          <div class="tu-card">
-            <p class="tu-card-label">Respaldos</p>
-            <p class="tu-body">Copias de seguridad diarias automáticas</p>
+          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="s.body"></p>
+          <p v-if="s.intro" class="text-[14px] text-[#71717A] leading-[1.65] font-medium mb-3">{{ s.intro }}</p>
+          <ul v-if="s.list" class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
+            <li v-for="item in s.list" :key="item" class="relative pl-5">
+              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+              {{ item }}
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section 6: SLA grid -->
+    <section class="relative py-10">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="flex items-baseline gap-3 mb-3">
+          <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">06</span>
+          <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">Disponibilidad del servicio</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3 mb-5">
+          <div
+            v-for="c in slaCards"
+            :key="c.label"
+            class="p-4 rounded-[10px] border border-[#E4E4E7] bg-white"
+          >
+            <p class="text-[10px] font-bold text-[#18181B] uppercase tracking-wider mb-1.5">{{ c.label }}</p>
+            <p class="text-[13px] text-[#71717A] leading-[1.55] font-medium">{{ c.body }}</p>
           </div>
         </div>
-        <p class="tu-body" style="margin-top: 10px;">
-          Contex360 no se responsabiliza por interrupciones causadas por factores externos como fallas
-          de conectividad del usuario, eventos de fuerza mayor o interrupciones de proveedores de
-          infraestructura (AWS, Render, Neon).
+        <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium">
+          Contex360 no se responsabiliza por interrupciones causadas por factores externos como fallas de conectividad del usuario, eventos de fuerza mayor o interrupciones de proveedores de infraestructura (AWS, Render, Neon).
         </p>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">7. Limitación de responsabilidad</h2>
-        <p class="tu-body">
-          Contex360 no será responsable por pérdidas de datos derivadas de uso indebido de
-          credenciales, errores en la información ingresada por el usuario, o decisiones empresariales
-          tomadas con base en los reportes de la plataforma. La responsabilidad máxima de Contex360
-          ante cualquier reclamación se limita al valor pagado por el servicio en los últimos 30 días.
-        </p>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">8. Facturación y pagos</h2>
-        <ul class="tu-list">
-          <li>El servicio puede estar sujeto a tarifas según el plan contratado.</li>
-          <li>Los pagos no son reembolsables salvo acuerdo expreso por escrito.</li>
-          <li>La falta de pago puede resultar en la suspensión temporal o cancelación del acceso.</li>
-          <li>Los precios pueden ajustarse con 30 días de notificación previa.</li>
-        </ul>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">9. Cancelación y terminación</h2>
-        <p class="tu-body">
-          Cualquiera de las partes puede dar por terminado el servicio con 15 días de aviso previo.
-          Ante el incumplimiento de estos términos, Contex360 puede suspender o cancelar el acceso
-          de forma inmediata. Tras la cancelación, los datos serán retenidos por 30 días para
-          facilitar la exportación, tras lo cual serán eliminados de forma permanente.
-        </p>
-      </section>
-
-      <section class="tu-section">
-        <h2 class="tu-heading">10. Legislación aplicable</h2>
-        <p class="tu-body">
-          Estos Términos de Uso se rigen por las leyes de la República de Colombia. Cualquier
-          controversia derivada del uso del servicio será sometida a la jurisdicción de los tribunales
-          competentes de la ciudad de Bogotá D.C., Colombia.
-        </p>
-      </section>
-
-      <div class="tu-footer-note">
-        Estos términos pueden ser modificados periódicamente. Los cambios serán notificados a través
-        de la plataforma con al menos 15 días de anticipación. El uso continuado del servicio tras
-        la notificación implica la aceptación de los términos actualizados.
       </div>
-    </div>
+    </section>
+
+    <!-- Final sections 7-10 -->
+    <section class="relative pt-2 pb-12">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 space-y-10">
+        <article v-for="s in finalSections" :key="s.n">
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
+            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
+          </div>
+          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="s.body"></p>
+          <ul v-if="s.list" class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
+            <li v-for="item in s.list" :key="item" class="relative pl-5">
+              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+              {{ item }}
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Footer note -->
+    <section class="relative pb-20">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="p-5 rounded-[10px] border border-[#F4F4F5] bg-[#FAFAFA]">
+          <p class="text-[12px] text-[#71717A] leading-[1.6] font-medium">
+            Estos términos pueden ser modificados periódicamente. Los cambios serán notificados a través de la plataforma con al menos 15 días de anticipación. El uso continuado del servicio tras la notificación implica la aceptación de los términos actualizados.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#F4F4F5] py-7 text-center">
+      <p class="text-[12px] text-[#A1A1AA] font-medium">© 2026 Contex360. Todos los derechos reservados.</p>
+    </footer>
   </div>
 </template>
 
 <style scoped>
-.tu-wrap {
-  padding: 24px 16px 48px;
-}
-
-.tu-page {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  margin: 0 auto;
-  max-width: 760px;
-}
-
-.tu-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  padding-bottom: 16px;
-}
-
-.tu-title {
-  color: #f1f5f9;
-  font-size: 1.9rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0 0 4px;
-}
-
-.tu-meta {
-  color: #64748b;
-  font-size: 0.82rem;
-  margin: 0;
-}
-
-.tu-alert {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.25);
-  border-radius: 10px;
-  color: #6ee7b7;
-  font-size: 0.88rem;
-  line-height: 1.6;
-  padding: 14px 18px;
-}
-
-.tu-alert strong {
-  color: #a7f3d0;
-}
-
-.tu-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tu-heading {
-  color: #e2e8f0;
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.tu-body {
-  color: #94a3b8;
-  font-size: 0.875rem;
-  line-height: 1.65;
-  margin: 0;
-}
-
-.tu-body strong {
-  color: #cbd5e1;
-}
-
-.tu-list {
-  color: #94a3b8;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.875rem;
-  gap: 6px;
-  line-height: 1.55;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.tu-list li {
-  padding-left: 16px;
-  position: relative;
-}
-
-.tu-list li::before {
-  color: #10b981;
-  content: '•';
-  left: 0;
-  position: absolute;
-}
-
-.tu-list strong {
-  color: #cbd5e1;
-}
-
-.tu-cards {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  margin-top: 4px;
-}
-
-.tu-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px;
-}
-
-.tu-card-label {
-  color: #e2e8f0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.tu-footer-note {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  color: #475569;
-  font-size: 0.8rem;
-  line-height: 1.6;
-  padding: 14px 18px;
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 </style>

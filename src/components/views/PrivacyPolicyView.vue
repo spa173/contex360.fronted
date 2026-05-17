@@ -1,271 +1,219 @@
 <script setup lang="ts">
 const lastUpdated = '12 de mayo de 2026'
 const emit = defineEmits<{ (e: 'back'): void }>()
+
+const sections = [
+  {
+    n: '1',
+    title: 'Responsable del tratamiento',
+    body: '<strong>Contex360</strong> es el responsable del tratamiento de los datos personales recopilados a través de esta plataforma. Para cualquier consulta relacionada con el tratamiento de sus datos, puede contactarnos a través del administrador de su organización.',
+  },
+  {
+    n: '2',
+    title: 'Datos que recopilamos',
+    list: [
+      'Nombre completo y correo electrónico (identificación del usuario)',
+      'Dirección IP y agente de usuario (seguridad y trazabilidad)',
+      'Datos de la empresa: NIT, razón social, ciudad, sector',
+      'Información contable: facturas, movimientos, productos, terceros',
+      'Registros de acceso y eventos de auditoría',
+    ],
+  },
+  {
+    n: '3',
+    title: 'Finalidad del tratamiento',
+    list: [
+      'Prestación del servicio de gestión contable y ERP',
+      'Autenticación y control de acceso por roles',
+      'Auditoría interna y cumplimiento normativo (DIAN)',
+      'Mejora del servicio y soporte técnico',
+      'Cumplimiento de obligaciones legales y fiscales',
+    ],
+  },
+]
+
+const securityCards = [
+  { label: 'Cifrado en tránsito', body: 'TLS 1.2+ en todas las comunicaciones (HTTPS)' },
+  { label: 'Cifrado en reposo',   body: 'AES-256 en la infraestructura de base de datos (Neon/AWS)' },
+  { label: 'Contraseñas',         body: 'Hash irreversible con bcrypt (nunca en texto plano)' },
+  { label: 'Control de acceso',   body: 'JWT firmado + roles por empresa + 2FA opcional' },
+]
+
+const rights = [
+  '<strong>Conocer</strong> los datos personales que Contex360 tiene sobre usted',
+  '<strong>Actualizar</strong> sus datos cuando sean inexactos o estén desactualizados',
+  '<strong>Rectificar</strong> información incorrecta o incompleta',
+  '<strong>Suprimir</strong> sus datos cuando no sean necesarios para la finalidad del tratamiento',
+  '<strong>Revocar</strong> la autorización para el tratamiento de datos personales',
+  '<strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC)',
+]
+
+const finalSections = [
+  {
+    n: '6',
+    title: 'Transferencia de datos',
+    body: 'Los datos son almacenados en servidores de <strong>Neon (AWS us-east-1)</strong> y servidos desde <strong>Render</strong>. Ambos proveedores cuentan con certificaciones <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>. No se venden ni comparten datos con terceros con fines comerciales.',
+  },
+  {
+    n: '7',
+    title: 'Cookies y almacenamiento local',
+    body: 'Contex360 utiliza <strong>cookies HttpOnly</strong> para la sesión de autenticación y <strong>localStorage</strong> para mantener el estado de la sesión activa. No se utilizan cookies de seguimiento ni publicidad.',
+  },
+  {
+    n: '8',
+    title: 'Retención de datos',
+    body: 'Los datos contables se conservan por el tiempo exigido por la normativa tributaria colombiana (<strong>mínimo 5 años</strong> según el Código de Comercio y disposiciones de la DIAN). Los datos de sesión se eliminan al revocar la sesión o al vencimiento del token.',
+  },
+  {
+    n: '9',
+    title: 'Notificación de brechas',
+    body: 'En caso de una vulneración de seguridad que afecte datos personales, Contex360 notificará a los titulares afectados y a la SIC dentro de las <strong>72 horas</strong> siguientes al conocimiento del incidente, conforme a las disposiciones aplicables.',
+  },
+]
 </script>
 
 <template>
-  <div class="pp-wrap">
-    <button
-      @click="emit('back')"
-      class="fixed top-4 left-4 z-50 flex items-center gap-1.5 text-xs font-medium bg-white border border-gray-200 text-gray-600 hover:text-gray-900 px-3 py-1.5 rounded-lg shadow-sm transition-colors"
-    >
-      ← Volver
-    </button>
-    <div class="pp-page">
-      <div class="pp-header">
-        <h1 class="pp-title">Política de Privacidad</h1>
-        <p class="pp-meta">Última actualización: {{ lastUpdated }}</p>
+  <div class="min-h-screen bg-white text-[#18181B] font-['Inter'] relative overflow-x-hidden">
+    <!-- Subtle blue radial accent -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
+      style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
+    ></div>
+
+    <!-- Nav -->
+    <header class="relative sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#F4F4F5]">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
+        <button
+          @click="emit('back')"
+          class="flex items-center gap-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors"
+        >
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Volver
+        </button>
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 bg-[#18181B] rounded-md flex items-center justify-center text-white font-black text-[14px]">C</div>
+          <span class="text-[16px] font-bold tracking-tight text-[#18181B]">Contex360</span>
+        </div>
+        <div class="w-[60px]"></div>
       </div>
+    </header>
 
-      <div class="pp-alert">
-        De conformidad con la <strong>Ley 1581 de 2012</strong> y el <strong>Decreto 1377 de 2013</strong>
-        (Régimen de Protección de Datos Personales de Colombia), Contex360 informa su política de
-        tratamiento de datos personales.
+    <!-- Hero -->
+    <section class="relative pt-14 pb-10">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">Legal</p>
+        <h1 class="text-[36px] lg:text-[48px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-3" style="text-wrap: balance;">
+          Política de Privacidad
+        </h1>
+        <p class="text-[13px] text-[#71717A] font-medium">Última actualización: {{ lastUpdated }}</p>
       </div>
+    </section>
 
-      <section class="pp-section">
-        <h2 class="pp-heading">1. Responsable del tratamiento</h2>
-        <p class="pp-body">
-          <strong>Contex360</strong> es el responsable del tratamiento de los datos personales
-          recopilados a través de esta plataforma. Para cualquier consulta relacionada con el
-          tratamiento de sus datos, puede contactarnos a través del administrador de su organización.
-        </p>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">2. Datos que recopilamos</h2>
-        <ul class="pp-list">
-          <li>Nombre completo y correo electrónico (identificación del usuario)</li>
-          <li>Dirección IP y agente de usuario (seguridad y trazabilidad)</li>
-          <li>Datos de la empresa: NIT, razón social, ciudad, sector</li>
-          <li>Información contable: facturas, movimientos, productos, terceros</li>
-          <li>Registros de acceso y eventos de auditoría</li>
-        </ul>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">3. Finalidad del tratamiento</h2>
-        <ul class="pp-list">
-          <li>Prestación del servicio de gestión contable y ERP</li>
-          <li>Autenticación y control de acceso por roles</li>
-          <li>Auditoría interna y cumplimiento normativo (DIAN)</li>
-          <li>Mejora del servicio y soporte técnico</li>
-          <li>Cumplimiento de obligaciones legales y fiscales</li>
-        </ul>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">4. Seguridad de los datos</h2>
-        <p class="pp-body">Contex360 implementa las siguientes medidas técnicas para proteger sus datos:</p>
-        <div class="pp-security-grid">
-          <div class="pp-security-card">
-            <p class="pp-security-label">Cifrado en tránsito</p>
-            <p class="pp-body">TLS 1.2+ en todas las comunicaciones (HTTPS)</p>
+    <!-- Compliance alert -->
+    <section class="relative pb-10">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="flex gap-3 p-5 rounded-[18px] border border-[#E4E4E7] bg-[#FAFAFA]">
+          <div class="w-9 h-9 rounded-[10px] bg-white border border-[#E4E4E7] flex items-center justify-center flex-shrink-0">
+            <span class="material-symbols-outlined text-[18px] text-[#2563EB]">verified_user</span>
           </div>
-          <div class="pp-security-card">
-            <p class="pp-security-label">Cifrado en reposo</p>
-            <p class="pp-body">AES-256 en la infraestructura de base de datos (Neon/AWS)</p>
+          <p class="text-[13px] text-[#18181B] leading-[1.6] font-medium pt-1">
+            De conformidad con la <strong class="font-semibold">Ley 1581 de 2012</strong> y el <strong class="font-semibold">Decreto 1377 de 2013</strong> (Régimen de Protección de Datos Personales de Colombia), Contex360 informa su política de tratamiento de datos personales.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sections 1-3 -->
+    <section class="relative pb-2">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 space-y-10">
+        <article v-for="s in sections" :key="s.n">
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
+            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
           </div>
-          <div class="pp-security-card">
-            <p class="pp-security-label">Contraseñas</p>
-            <p class="pp-body">Hash irreversible con bcrypt (nunca en texto plano)</p>
-          </div>
-          <div class="pp-security-card">
-            <p class="pp-security-label">Control de acceso</p>
-            <p class="pp-body">JWT firmado + roles por empresa + 2FA opcional</p>
+          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="s.body"></p>
+          <ul v-if="s.list" class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
+            <li v-for="item in s.list" :key="item" class="relative pl-5">
+              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+              {{ item }}
+            </li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <!-- Section 4: Security grid -->
+    <section class="relative py-10">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="flex items-baseline gap-3 mb-3">
+          <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">04</span>
+          <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">Seguridad de los datos</h2>
+        </div>
+        <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium mb-5">Contex360 implementa las siguientes medidas técnicas para proteger sus datos:</p>
+        <div class="grid sm:grid-cols-2 gap-3">
+          <div
+            v-for="c in securityCards"
+            :key="c.label"
+            class="p-4 rounded-[10px] border border-[#E4E4E7] bg-white"
+          >
+            <p class="text-[10px] font-bold text-[#18181B] uppercase tracking-wider mb-1.5">{{ c.label }}</p>
+            <p class="text-[13px] text-[#71717A] leading-[1.55] font-medium">{{ c.body }}</p>
           </div>
         </div>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">5. Derechos del titular</h2>
-        <p class="pp-body">De conformidad con la Ley 1581 de 2012, usted tiene derecho a:</p>
-        <ul class="pp-list">
-          <li><strong>Conocer</strong> los datos personales que Contex360 tiene sobre usted</li>
-          <li><strong>Actualizar</strong> sus datos cuando sean inexactos o estén desactualizados</li>
-          <li><strong>Rectificar</strong> información incorrecta o incompleta</li>
-          <li><strong>Suprimir</strong> sus datos cuando no sean necesarios para la finalidad del tratamiento</li>
-          <li><strong>Revocar</strong> la autorización para el tratamiento de datos personales</li>
-          <li><strong>Presentar quejas</strong> ante la Superintendencia de Industria y Comercio (SIC)</li>
-        </ul>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">6. Transferencia de datos</h2>
-        <p class="pp-body">
-          Los datos son almacenados en servidores de <strong>Neon (AWS us-east-1)</strong> y servidos
-          desde <strong>Render</strong>. Ambos proveedores cuentan con certificaciones
-          <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>. No se venden ni comparten datos
-          con terceros con fines comerciales.
-        </p>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">7. Cookies y almacenamiento local</h2>
-        <p class="pp-body">
-          Contex360 utiliza <strong>cookies HttpOnly</strong> para la sesión de autenticación y
-          <strong>localStorage</strong> para mantener el estado de la sesión activa. No se utilizan
-          cookies de seguimiento ni publicidad.
-        </p>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">8. Retención de datos</h2>
-        <p class="pp-body">
-          Los datos contables se conservan por el tiempo exigido por la normativa tributaria colombiana
-          (<strong>mínimo 5 años</strong> según el Código de Comercio y disposiciones de la DIAN).
-          Los datos de sesión se eliminan al revocar la sesión o al vencimiento del token.
-        </p>
-      </section>
-
-      <section class="pp-section">
-        <h2 class="pp-heading">9. Notificación de brechas</h2>
-        <p class="pp-body">
-          En caso de una vulneración de seguridad que afecte datos personales, Contex360 notificará a
-          los titulares afectados y a la SIC dentro de las <strong>72 horas</strong> siguientes al
-          conocimiento del incidente, conforme a las disposiciones aplicables.
-        </p>
-      </section>
-
-      <div class="pp-footer-note">
-        Esta política puede ser actualizada periódicamente. Los cambios serán notificados a los usuarios
-        a través de la plataforma. El uso continuado del servicio implica la aceptación de la política vigente.
       </div>
-    </div>
+    </section>
+
+    <!-- Section 5: Rights -->
+    <section class="relative py-2">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="flex items-baseline gap-3 mb-3">
+          <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">05</span>
+          <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">Derechos del titular</h2>
+        </div>
+        <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium mb-3">De conformidad con la Ley 1581 de 2012, usted tiene derecho a:</p>
+        <ul class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
+          <li v-for="r in rights" :key="r" class="relative pl-5">
+            <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+            <span v-html="r"></span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- Final sections 6-9 -->
+    <section class="relative pt-10 pb-12">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8 space-y-10">
+        <article v-for="s in finalSections" :key="s.n">
+          <div class="flex items-baseline gap-3 mb-3">
+            <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
+            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
+          </div>
+          <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="s.body"></p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Footer note -->
+    <section class="relative pb-20">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="p-5 rounded-[10px] border border-[#F4F4F5] bg-[#FAFAFA]">
+          <p class="text-[12px] text-[#71717A] leading-[1.6] font-medium">
+            Esta política puede ser actualizada periódicamente. Los cambios serán notificados a los usuarios a través de la plataforma. El uso continuado del servicio implica la aceptación de la política vigente.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#F4F4F5] py-7 text-center">
+      <p class="text-[12px] text-[#A1A1AA] font-medium">© 2026 Contex360. Todos los derechos reservados.</p>
+    </footer>
   </div>
 </template>
 
 <style scoped>
-.pp-wrap {
-  padding: 24px 16px 48px;
-}
-
-.pp-page {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  margin: 0 auto;
-  max-width: 760px;
-}
-
-.pp-header {
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
-  padding-bottom: 16px;
-}
-
-.pp-title {
-  color: #f1f5f9;
-  font-size: 1.9rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  margin: 0 0 4px;
-}
-
-.pp-meta {
-  color: #64748b;
-  font-size: 0.82rem;
-  margin: 0;
-}
-
-.pp-alert {
-  background: rgba(16, 185, 129, 0.12);
-  border: 1px solid rgba(16, 185, 129, 0.28);
-  border-radius: 10px;
-  color: #6ee7b7;
-  font-size: 0.88rem;
-  line-height: 1.6;
-  padding: 14px 18px;
-}
-
-.pp-alert strong {
-  color: #a7f3d0;
-}
-
-.pp-section {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.pp-heading {
-  color: #e2e8f0;
-  font-size: 1.05rem;
-  font-weight: 600;
-  margin: 0;
-}
-
-.pp-body {
-  color: #94a3b8;
-  font-size: 0.875rem;
-  line-height: 1.65;
-  margin: 0;
-}
-
-.pp-body strong {
-  color: #cbd5e1;
-}
-
-.pp-list {
-  color: #94a3b8;
-  display: flex;
-  flex-direction: column;
-  font-size: 0.875rem;
-  gap: 6px;
-  line-height: 1.55;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.pp-list li {
-  padding-left: 16px;
-  position: relative;
-}
-
-.pp-list li::before {
-  color: #10b981;
-  content: '•';
-  left: 0;
-  position: absolute;
-}
-
-.pp-list strong {
-  color: #cbd5e1;
-}
-
-.pp-security-grid {
-  display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  margin-top: 4px;
-}
-
-.pp-security-card {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 12px 14px;
-}
-
-.pp-security-label {
-  color: #e2e8f0;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.05em;
-  margin: 0;
-  text-transform: uppercase;
-}
-
-.pp-footer-note {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  border-radius: 10px;
-  color: #475569;
-  font-size: 0.8rem;
-  line-height: 1.6;
-  padding: 14px 18px;
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 </style>

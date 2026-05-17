@@ -43,178 +43,203 @@ const handleSubmit = async () => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#FFFFFF] text-[#18181B] font-['Inter'] flex flex-col">
+  <div class="min-h-screen bg-white text-[#18181B] font-['Inter'] flex flex-col relative overflow-hidden">
+    <!-- Subtle blue radial accent -->
+    <div
+      aria-hidden="true"
+      class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
+      style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
+    ></div>
+
     <!-- Header -->
-    <header class="h-20 px-8 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50">
-      <div class="flex items-center gap-2">
+    <header class="relative h-20 px-6 lg:px-8 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50 border-b border-transparent">
+      <div class="flex items-center gap-2.5">
         <div class="w-8 h-8 bg-[#18181B] rounded-lg flex items-center justify-center text-white font-black text-lg">C</div>
-        <span class="text-[20px] font-bold tracking-tight text-[#18181B]">Contex360</span>
+        <span class="text-[18px] font-bold tracking-tight text-[#18181B]">Contex360</span>
       </div>
       <button
         @click="emit('back')"
-        class="flex items-center gap-2 text-[#71717A] hover:text-[#18181B] transition-all text-[13px] font-bold"
+        class="flex items-center gap-2 text-[#71717A] hover:text-[#18181B] transition-colors text-[13px] font-semibold"
       >
-        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         Volver al inicio
       </button>
     </header>
 
-    <!-- Main Content: Split Screen -->
-    <main class="flex-grow flex items-center justify-center py-12 px-6">
-      <div class="max-w-7xl w-full grid lg:grid-cols-2 gap-20 items-center">
-        
-        <!-- Lado Izquierdo: Propuesta de Valor -->
-        <div class="space-y-12">
-          <div class="space-y-6">
-            <div class="inline-flex items-center gap-2 px-3 py-1 text-[#2563EB] font-bold text-[12px] bg-[#2563EB]/5 rounded-full border border-[#2563EB]/10">
-              SOLUCIONES ENTERPRISE
+    <!-- Main -->
+    <main class="relative flex-grow flex items-center justify-center py-12 px-6 lg:px-8">
+      <div class="max-w-7xl w-full grid lg:grid-cols-[1fr_540px] gap-14 lg:gap-20 items-center">
+
+        <!-- LEFT: value prop -->
+        <div class="space-y-12 animate-in fade-in slide-in-from-left-4 duration-700">
+          <div class="space-y-6 max-w-[560px]">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+              <span class="material-symbols-outlined text-[14px]">workspace_premium</span>
+              Soluciones Enterprise
             </div>
-            <h1 class="text-[48px] lg:text-[60px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B]">
-              Experimente el futuro de la <span class="text-[#2563EB]">gestión logística</span>.
+            <h1 class="text-[44px] lg:text-[56px] leading-[1.02] tracking-[-0.03em] font-bold text-[#18181B]" style="text-wrap: balance;">
+              Experimente el futuro de la <em class="not-italic text-[#2563EB]">gestión logística</em>.
             </h1>
-            <p class="text-[18px] leading-relaxed text-[#71717A] max-w-md font-medium">
+            <p class="text-[17px] leading-[1.55] text-[#71717A] font-medium">
               Descubra cómo nuestra arquitectura multi-empresa e inteligencia artificial transforman operaciones complejas en flujos de trabajo fluidos.
             </p>
           </div>
 
-          <div class="space-y-8">
-            <div class="flex items-start gap-5">
-              <div class="w-12 h-12 rounded-xl bg-[#F4F4F5] flex items-center justify-center text-[#18181B] shrink-0">
-                <span class="material-symbols-outlined">smart_toy</span>
-              </div>
-              <div>
-                <h3 class="text-[16px] font-bold text-[#18181B] mb-1">Facturación Impulsada por IA</h3>
-                <p class="text-[14px] text-[#71717A] font-medium">Automatice el ciclo de ingresos y minimice errores humanos en segundos.</p>
-              </div>
+          <!-- Pillars (V2 system) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-5 gap-x-7 max-w-[520px]">
+            <div class="border-t border-[#E4E4E7] pt-3.5">
+              <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Facturación con IA</b>
+              <span class="text-[13px] text-[#71717A] leading-[1.45]">Automatice el ciclo de ingresos y minimice errores en segundos.</span>
             </div>
+            <div class="border-t border-[#E4E4E7] pt-3.5">
+              <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Multi-Tenant</b>
+              <span class="text-[13px] text-[#71717A] leading-[1.45]">Administre múltiples empresas desde un único panel centralizado.</span>
+            </div>
+            <div class="border-t border-[#E4E4E7] pt-3.5">
+              <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Seguridad Corporativa</b>
+              <span class="text-[13px] text-[#71717A] leading-[1.45]">Infraestructura blindada que cumple estándares globales.</span>
+            </div>
+            <div class="border-t border-[#E4E4E7] pt-3.5">
+              <b class="block font-semibold text-[14px] text-[#18181B] mb-1">Cumplimiento DIAN</b>
+              <span class="text-[13px] text-[#71717A] leading-[1.45]">Facturación electrónica, nómina y exógena integrados.</span>
+            </div>
+          </div>
 
-            <div class="flex items-start gap-5">
-              <div class="w-12 h-12 rounded-xl bg-[#F4F4F5] flex items-center justify-center text-[#18181B] shrink-0">
-                <span class="material-symbols-outlined">groups</span>
-              </div>
-              <div>
-                <h3 class="text-[16px] font-bold text-[#18181B] mb-1">Gestión Multi-Tenant</h3>
-                <p class="text-[14px] text-[#71717A] font-medium">Administre múltiples empresas desde un único panel de control centralizado.</p>
-              </div>
-            </div>
-
-            <div class="flex items-start gap-5">
-              <div class="w-12 h-12 rounded-xl bg-[#F4F4F5] flex items-center justify-center text-[#18181B] shrink-0">
-                <span class="material-symbols-outlined">verified_user</span>
-              </div>
-              <div>
-                <h3 class="text-[16px] font-bold text-[#18181B] mb-1">Seguridad de Nivel Corporativo</h3>
-                <p class="text-[14px] text-[#71717A] font-medium">Infraestructura blindada que cumple con los más altos estándares globales.</p>
-              </div>
-            </div>
+          <!-- Trust chips -->
+          <div class="flex flex-wrap gap-2">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+              <span class="material-symbols-outlined text-[14px]">lock</span>
+              SSL/TLS 1.3
+            </span>
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+              <span class="material-symbols-outlined text-[14px]">hub</span>
+              Multi-Tenant Enterprise
+            </span>
           </div>
         </div>
 
-        <!-- Lado Derecho: Formulario -->
-        <div class="relative">
-          <!-- Success Overlay -->
-          <div v-if="successMessage" class="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-8 rounded-[32px] animate-in fade-in zoom-in duration-300">
-            <div class="w-20 h-20 bg-emerald-50 rounded-full flex items-center justify-center mb-6">
-              <span class="material-symbols-outlined text-emerald-600 text-[40px]">check_circle</span>
+        <!-- RIGHT: form -->
+        <div class="relative w-full animate-in fade-in slide-in-from-bottom-4 duration-700">
+          <!-- Success overlay -->
+          <div
+            v-if="successMessage"
+            class="absolute inset-0 bg-white/95 backdrop-blur-sm z-20 flex flex-col items-center justify-center text-center p-8 rounded-[18px] animate-in fade-in zoom-in duration-300"
+          >
+            <div class="w-16 h-16 bg-emerald-50 rounded-full flex items-center justify-center mb-5">
+              <span class="material-symbols-outlined text-emerald-600 text-[36px]">check_circle</span>
             </div>
-            <h3 class="text-[24px] font-bold text-[#18181B] mb-2">¡Solicitud Enviada!</h3>
-            <p class="text-[15px] text-[#71717A] mb-8 font-medium">{{ successMessage }}</p>
-            <button @click="successMessage = ''" class="text-[#2563EB] font-bold hover:underline">Enviar otra consulta</button>
+            <h3 class="text-[22px] font-bold text-[#18181B] mb-2 tracking-tight">¡Solicitud Enviada!</h3>
+            <p class="text-[14px] text-[#71717A] mb-7 font-medium max-w-sm">{{ successMessage }}</p>
+            <button @click="successMessage = ''" class="text-[#2563EB] font-semibold text-[14px] hover:underline">
+              Enviar otra consulta
+            </button>
           </div>
 
-          <div class="bg-white rounded-[32px] border border-[#F4F4F5] p-10 lg:p-12 shadow-[0_10px_40px_-15px_rgba(0,0,0,0.08)]">
-            <h2 class="text-[24px] font-bold text-[#18181B] mb-8">Agendar una demostración</h2>
-            
-            <form @submit.prevent="handleSubmit" class="space-y-6">
-              <div class="grid grid-cols-2 gap-6">
-                <div class="space-y-2">
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">Nombre Completo</label>
+          <div class="bg-white rounded-[18px] border border-[#E4E4E7] p-8 lg:p-9 shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)]">
+            <h2 class="text-[22px] font-bold tracking-[-0.02em] text-[#18181B] mb-1">Agendar una demostración</h2>
+            <p class="text-[13px] text-[#71717A] mb-7">Un experto lo contactará en menos de 24 horas laborables.</p>
+
+            <form @submit.prevent="handleSubmit" class="space-y-5">
+              <div class="grid grid-cols-2 gap-5">
+                <div>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nombre Completo *</label>
+                  <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                    <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">person</span>
+                    <input
+                      v-model="form.nombre"
+                      required
+                      placeholder="Carlos Mendoza"
+                      class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Empresa / Cargo *</label>
+                  <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                    <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">apartment</span>
+                    <input
+                      v-model="form.empresa"
+                      required
+                      placeholder="Logística S.A."
+                      class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Correo Corporativo *</label>
+                <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                  <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">mail</span>
                   <input
-                    v-model="form.nombre"
+                    v-model="form.correo"
                     required
-                    placeholder="Ej. Carlos Mendoza"
-                    class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
-                  />
-                </div>
-                <div class="space-y-2">
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">Empresa / Cargo</label>
-                  <input
-                    v-model="form.empresa"
-                    required
-                    placeholder="Logística S.A."
-                    class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
+                    type="email"
+                    placeholder="ejecutivo@empresa.com"
+                    class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
                   />
                 </div>
               </div>
 
-              <div class="space-y-2">
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">Correo Corporativo</label>
-                <input
-                  v-model="form.correo"
-                  required
-                  type="email"
-                  placeholder="ejecutivo@empresa.com"
-                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
-                />
-              </div>
-
-              <div class="grid grid-cols-2 gap-6">
-                <div class="space-y-2">
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">Teléfono de Contacto</label>
-                  <input
-                    v-model="form.telefono"
-                    placeholder="+57 300..."
-                    class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
-                  />
+              <div class="grid grid-cols-2 gap-5">
+                <div>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Teléfono</label>
+                  <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                    <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">call</span>
+                    <input
+                      v-model="form.telefono"
+                      placeholder="+57 300..."
+                      class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
+                    />
+                  </div>
                 </div>
-                <div class="space-y-2">
-                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">Sector Económico</label>
-                  <select
-                    v-model="form.sector"
-                    class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium"
-                  >
-                    <option value="">Seleccione uno...</option>
-                    <option value="logistics">Logística & Transporte</option>
-                    <option value="retail">Comercio / Retail</option>
-                    <option value="fintech">Finanzas & Fintech</option>
-                    <option value="other">Otro sector</option>
-                  </select>
+                <div>
+                  <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Sector</label>
+                  <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+                    <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">category</span>
+                    <select
+                      v-model="form.sector"
+                      class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] appearance-none cursor-pointer border-0"
+                    >
+                      <option value="">Seleccione...</option>
+                      <option value="logistics">Logística & Transporte</option>
+                      <option value="retail">Comercio / Retail</option>
+                      <option value="fintech">Finanzas & Fintech</option>
+                      <option value="other">Otro sector</option>
+                    </select>
+                    <span class="material-symbols-outlined text-[18px] text-[#A1A1AA] pointer-events-none">expand_more</span>
+                  </div>
                 </div>
               </div>
 
-              <div class="space-y-2">
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider">¿Cómo podemos ayudarle?</label>
+              <div>
+                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">¿Cómo podemos ayudarle?</label>
                 <textarea
                   v-model="form.mensaje"
                   rows="3"
                   placeholder="Cuéntenos sus retos operativos..."
-                  class="w-full px-4 py-3.5 bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl outline-none focus:border-[#2563EB] focus:ring-4 focus:ring-[#2563EB]/5 transition-all text-[14px] font-medium resize-none"
+                  class="w-full px-4 py-3 bg-white border border-[#E4E4E7] rounded-[10px] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] resize-none"
                 ></textarea>
               </div>
 
-              <div v-if="errorMessage" class="p-3 bg-red-50 border border-red-100 text-red-600 text-[12px] font-bold rounded-lg">
+              <div v-if="errorMessage" class="p-3 bg-red-50 border border-red-100 text-red-600 text-[12px] font-bold rounded-[10px]">
                 {{ errorMessage }}
               </div>
 
               <button
                 type="submit"
                 :disabled="isLoading"
-                class="w-full py-4 bg-[#18181B] text-white font-bold text-[15px] rounded-xl hover:bg-[#27272A] active:scale-[0.98] transition-all flex items-center justify-center gap-3 disabled:opacity-50 shadow-lg shadow-black/5"
+                class="w-full py-3.5 bg-[#18181B] text-white font-semibold text-[15px] rounded-[10px] hover:bg-[#27272A] active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 disabled:opacity-50 shadow-lg shadow-black/5"
               >
-                <span v-if="isLoading" class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span>
-                {{ isLoading ? 'Procesando solicitud...' : 'Solicitar Acceso a Demo' }}
+                <span v-if="isLoading" class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                <span>{{ isLoading ? 'Procesando...' : 'Solicitar Acceso a Demo' }}</span>
+                <span v-if="!isLoading" class="material-symbols-outlined text-[18px]">arrow_forward</span>
               </button>
-              
+
               <p class="text-center text-[12px] text-[#71717A] font-medium">
-                Al solicitar acceso, un experto se pondrá en contacto con usted en menos de 24 horas laborables.
+                Sin compromiso, sin tarjeta de crédito.
               </p>
             </form>
-          </div>
-
-          <!-- Multi-tenant badge -->
-          <div class="mt-8 flex justify-center items-center gap-2 text-[#A1A1AA]">
-            <span class="material-symbols-outlined text-[16px]">hub</span>
-            <span class="text-[11px] font-bold uppercase tracking-widest">Infraestructura Multi-Tenant de Grado Enterprise</span>
           </div>
         </div>
       </div>
@@ -225,5 +250,20 @@ const handleSubmit = async () => {
 <style scoped>
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
+
+input, select, textarea {
+  color: #18181B !important;
+  background-color: transparent !important;
+}
+input::placeholder, textarea::placeholder {
+  color: #A1A1AA !important;
+}
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #18181B !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  transition: background-color 5000s ease-in-out 0s !important;
 }
 </style>
