@@ -1,320 +1,188 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import { businessApi } from '../../services/businessApi'
+import { ref, onMounted, onUnmounted } from 'vue'
 
-const emit = defineEmits(['tenant-change', 'logout', 'toggle-sidebar', 'open-admin-panel', 'toggle-theme', 'navigate'])
-const props = defineProps(['activeTenant', 'accessibleTenants', 'user'])
+defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
+const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel'])
 
-const aiHealth = ref({ status: 'loading', latency: '...', tokens: '...' })
-const currentYear = ref(new Date().getFullYear())
+const showNotifications = ref(false)
+const showAvatar = ref(false)
 
-async function checkAiHealth() {
-  try {
-    const start = Date.now()
-    const health = await businessApi.getAiHealth()
-    const end = Date.now()
-    aiHealth.value = {
-      status: health.status === 'ok' ? 'active' : 'error',
-      latency: `${end - start}ms`,
-      tokens: '1.2k'
-    }
-  } catch (err) {
-    aiHealth.value = { status: 'error', latency: 'N/A', tokens: '0' }
-  }
+function closeAll() {
+  showNotifications.value = false
+  showAvatar.value = false
+}
+
+function onClickOutside(e) {
+  if (!e.target.closest('[data-dropdown]')) closeAll()
+}
+function onEsc(e) {
+  if (e.key === 'Escape') closeAll()
 }
 
 onMounted(() => {
-  checkAiHealth()
-  setInterval(checkAiHealth, 120000)
+  document.addEventListener('click', onClickOutside)
+  document.addEventListener('keydown', onEsc)
+})
+onUnmounted(() => {
+  document.removeEventListener('click', onClickOutside)
+  document.removeEventListener('keydown', onEsc)
 })
 
-function handleTenantChange(tenantId) {
-  emit('tenant-change', tenantId)
+function userInitials() {
+  const name = (props || {}).user?.name || 'Usuario'
+  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 </script>
 
 <template>
-  <header class="top-nav">
-    <div class="nav-wrapper">
-      <!-- Far Left: AI Status -->
-      <div class="status-pill">
-        <div class="pulse-ring">
-          <span :class="aiHealth.status === 'active' ? 'bg-[#10B981]' : 'bg-[#F43F5E]'" class="pulse-dot"></span>
+  <header class="h-16 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-6 sticky top-0 z-30 gap-2">
+    <!-- Hamburger (mobile) -->
+    <button
+      @click="emit('toggle-sidebar')"
+      class="lg:hidden w-9 h-9 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] flex-shrink-0"
+    >
+      <span class="material-symbols-outlined text-[22px]">menu</span>
+    </button>
+
+    <!-- Search -->
+    <div class="flex items-center gap-3 flex-1 min-w-0 max-w-md">
+      <div class="flex items-center gap-2.5 w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#18181B] transition-colors">
+        <span class="material-symbols-outlined text-[18px] text-[#A1A1AA] flex-shrink-0">search</span>
+        <input
+          placeholder="Buscar..."
+          class="flex-1 min-w-0 bg-transparent outline-none text-[13px] text-[#18181B] placeholder:text-[#A1A1AA]"
+        />
+        <kbd class="hidden sm:inline-block text-[10px] font-mono text-[#A1A1AA] border border-[#E4E4E7] rounded px-1.5 py-0.5 bg-white">⌘K</kbd>
+      </div>
+    </div>
+
+    <!-- Right cluster -->
+    <div class="flex items-center gap-2">
+      <!-- Notifications -->
+      <div class="relative" data-dropdown>
+        <button
+          @click.stop="showNotifications = !showNotifications; showAvatar = false"
+          class="w-9 h-9 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors relative"
+        >
+          <span class="material-symbols-outlined text-[20px]">notifications</span>
+          <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#2563EB] border-2 border-white"></span>
+        </button>
+        <div
+          v-if="showNotifications"
+          class="fixed sm:absolute inset-x-4 top-20 sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[380px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50"
+        >
+          <div class="px-5 py-3.5 border-b border-[#F4F4F5] flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <h3 class="text-[14px] font-bold tracking-tight text-[#18181B]">Notificaciones</h3>
+              <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#2563EB] text-white text-[10px] font-bold">3</span>
+            </div>
+            <button class="text-[11px] font-semibold text-[#71717A] hover:text-[#18181B]">Marcar todo leído</button>
+          </div>
+          <div class="max-h-[420px] overflow-y-auto">
+            <a href="#" class="block px-5 py-3.5 hover:bg-[#FAFAFA] border-b border-[#F4F4F5]">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-[8px] bg-rose-50 flex items-center justify-center text-rose-700 flex-shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">error</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] font-semibold text-[#18181B] mb-0.5">Factura rechazada por DIAN</p>
+                  <p class="text-[11px] text-[#71717A] leading-snug">Requiere corrección antes de reenvío.</p>
+                  <p class="text-[10px] text-[#A1A1AA] mt-1.5">hace 12 min</p>
+                </div>
+              </div>
+            </a>
+            <a href="#" class="block px-5 py-3.5 hover:bg-[#FAFAFA] border-b border-[#F4F4F5]">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-[8px] bg-amber-50 flex items-center justify-center text-amber-700 flex-shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">inventory_2</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] font-semibold text-[#18181B] mb-0.5">Stock crítico</p>
+                  <p class="text-[11px] text-[#71717A] leading-snug">3 productos llegaron a 0 unidades.</p>
+                  <p class="text-[10px] text-[#A1A1AA] mt-1.5">hace 1 hora</p>
+                </div>
+              </div>
+            </a>
+            <a href="#" class="block px-5 py-3.5 hover:bg-[#FAFAFA]">
+              <div class="flex items-start gap-3">
+                <div class="w-8 h-8 rounded-[8px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0">
+                  <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <p class="text-[13px] font-semibold text-[#18181B] mb-0.5">Insight de IA disponible</p>
+                  <p class="text-[11px] text-[#71717A] leading-snug">Tus ventas crecieron 15% esta semana.</p>
+                  <p class="text-[10px] text-[#A1A1AA] mt-1.5">hace 2 horas</p>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="px-5 py-3 border-t border-[#F4F4F5] bg-[#FAFAFA] text-right">
+            <button class="text-[12px] font-semibold text-[#2563EB] hover:underline">Ver todas →</button>
+          </div>
         </div>
-        <span class="status-text">{{ aiHealth.status === 'active' ? 'Sistema activo' : 'IA Offline' }}</span>
       </div>
 
-      <div class="divider"></div>
+      <div class="w-px h-6 bg-[#E4E4E7] mx-1"></div>
 
-      <!-- Company Selector -->
-      <div class="pill-selector group" @click="handleTenantChange(activeTenant?.id)">
-        <span class="pill-label">{{ activeTenant?.name || 'Seleccionar Empresa' }}</span>
-        <span class="material-symbols-outlined text-[16px]">expand_more</span>
-      </div>
-
-      <!-- Search Bar -->
-      <div class="search-pill">
-        <span class="material-symbols-outlined text-[18px] opacity-60">search</span>
-        <span class="search-placeholder">Buscar...</span>
-        <div class="search-shortcut">⌘K</div>
-      </div>
-
-      <!-- Year Selector -->
-      <div class="pill-selector">
-        <span class="material-symbols-outlined text-[16px] opacity-60">calendar_today</span>
-        <span class="pill-label">{{ currentYear }}</span>
-        <span class="material-symbols-outlined text-[16px]">expand_more</span>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Currency Indicator -->
-      <div class="currency-pill">
-        <span class="currency-symbol">$</span>
-        <span class="currency-code">COP</span>
-      </div>
-
-      <div class="divider"></div>
-
-      <!-- Right Actions -->
-      <div class="right-actions">
-        <button class="action-btn">
-          <span class="material-symbols-outlined">notifications</span>
-          <div class="notification-badge"></div>
+      <!-- Avatar -->
+      <div class="relative" data-dropdown>
+        <button
+          @click.stop="showAvatar = !showAvatar; showNotifications = false"
+          class="flex items-center gap-2.5 pl-1 pr-2.5 py-1 rounded-[8px] hover:bg-[#FAFAFA] transition-colors"
+        >
+          <div class="w-7 h-7 rounded-full bg-[#18181B] flex items-center justify-center text-white font-semibold text-[11px]">
+            {{ userInitials() }}
+          </div>
+          <div class="hidden sm:block text-left">
+            <p class="text-[12px] font-semibold text-[#18181B] leading-tight">{{ user?.name || 'Usuario' }}</p>
+            <p class="text-[10px] text-[#A1A1AA] leading-tight">{{ user?.title || 'Admin' }}</p>
+          </div>
+          <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">expand_more</span>
         </button>
-        <button class="action-btn">
-          <span class="material-symbols-outlined">settings</span>
-        </button>
-        
-        <div class="user-pill" @click="emit('navigate', 'profile')">
-          <div class="avatar-circle">CD</div>
-          <span class="material-symbols-outlined text-[16px]">expand_more</span>
+
+        <div
+          v-if="showAvatar"
+          class="fixed sm:absolute inset-x-4 top-20 sm:inset-auto sm:right-0 sm:top-full sm:mt-2 sm:w-[280px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50"
+        >
+          <div class="px-4 py-4 border-b border-[#F4F4F5] flex items-center gap-3">
+            <div class="w-11 h-11 rounded-full bg-[#18181B] text-white flex items-center justify-center font-bold text-[15px]">
+              {{ userInitials() }}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate">{{ user?.name || 'Usuario' }}</p>
+              <p class="text-[11px] text-[#71717A] truncate">{{ user?.email || '' }}</p>
+            </div>
+          </div>
+
+          <div class="py-1">
+            <button @click="emit('navigate', 'profile'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+              <span class="material-symbols-outlined text-[18px] text-[#71717A]">person</span>
+              <span class="flex-1 text-[13px] font-medium text-[#18181B]">Mi perfil</span>
+            </button>
+            <button @click="emit('navigate', 'two-factor'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+              <span class="material-symbols-outlined text-[18px] text-[#71717A]">verified_user</span>
+              <span class="flex-1 text-[13px] font-medium text-[#18181B]">Seguridad y 2FA</span>
+            </button>
+            <button @click="emit('navigate', 'admin-console'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+              <span class="material-symbols-outlined text-[18px] text-[#71717A]">settings</span>
+              <span class="flex-1 text-[13px] font-medium text-[#18181B]">Preferencias</span>
+            </button>
+          </div>
+
+          <div class="py-1 border-t border-[#F4F4F5]">
+            <button @click="emit('logout')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-rose-50 text-left text-rose-700">
+              <span class="material-symbols-outlined text-[18px]">logout</span>
+              <span class="flex-1 text-[13px] font-semibold">Cerrar sesión</span>
+            </button>
+          </div>
         </div>
-        
-        <button @click="emit('logout')" class="logout-pill" title="Cerrar Sesión">
-          <span class="material-symbols-outlined">logout</span>
-        </button>
       </div>
     </div>
   </header>
 </template>
 
 <style scoped>
-.top-nav {
-  height: 60px;
-  background-color: #111111; /* Ultra dark background as in image */
-  position: fixed;
-  top: 10px; /* Floating effect */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 95%;
-  max-width: 1400px;
-  z-index: 1000;
-  border-radius: 100px; /* Pill shape */
-  border: 1px solid #333333;
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
-  display: flex;
-  align-items: center;
-  padding: 0 1rem;
-}
-
-.nav-wrapper {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Status Pill */
-.status-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.5rem 1rem;
-  background: rgba(132, 85, 239, 0.05); /* Muted Purple Background */
-  border: 1px solid rgba(132, 85, 239, 0.2); /* Purple Border */
-  border-radius: 9999px;
-  color: #E2E8F0; /* Light Gray text instead of Cyan */
-}
-
-.pulse-ring {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pulse-dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); /* Standard Emerald for 'active' */
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-}
-
-.status-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: #10B981; /* Soft Emerald for the text 'Sistema activo' */
-}
-
-/* Divider */
-.divider {
-  width: 1px;
-  height: 24px;
-  background-color: #333333;
-  margin: 0 0.25rem;
-}
-
-/* Common Pill Styles */
-.pill-selector, .search-pill, .currency-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid #333333;
-  border-radius: 9999px;
-  color: #E2E8F0;
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.pill-selector:hover {
-  background: rgba(255, 255, 255, 0.07);
-  border-color: #444444;
-}
-
-.pill-label {
-  font-size: 13px;
-  font-weight: 500;
-}
-
-/* Search Pill */
-.search-pill {
-  flex: 1; /* Grow to fill space */
-  max-width: 300px;
-  justify-content: space-between;
-  cursor: text;
-}
-
-.search-placeholder {
-  font-size: 13px;
-  color: #64748B;
-}
-
-.search-shortcut {
-  font-size: 11px;
-  font-weight: 700;
-  color: #475569;
-  background: rgba(0, 0, 0, 0.3);
-  padding: 2px 6px;
-  border-radius: 4px;
-  border: 1px solid #333333;
-}
-
-/* Currency Pill */
-.currency-pill {
-  border-color: rgba(245, 158, 11, 0.2);
-  color: #F59E0B;
-}
-
-.currency-symbol {
-  font-weight: 700;
-  opacity: 0.7;
-}
-
-.currency-code {
-  font-size: 12px;
-  font-weight: 700;
-}
-
-/* Right Actions */
-.right-actions {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-left: auto;
-}
-
-.action-btn {
-  width: 36px;
-  height: 36px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #94A3B8;
-  border-radius: 50%;
-  transition: all 0.2s;
-  position: relative;
-}
-
-.action-btn:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: #FFFFFF;
-}
-
-.notification-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
-  width: 6px;
-  height: 6px;
-  background: #F43F5E;
-  border-radius: 50%;
-  border: 2px solid #111111;
-}
-
-/* User Pill */
-.user-pill {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 4px 8px 4px 4px;
-  background: rgba(132, 85, 239, 0.1);
-  border: 1px solid rgba(132, 85, 239, 0.2);
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.user-pill:hover {
-  background: rgba(132, 85, 239, 0.15);
-}
-
-.avatar-circle {
-  width: 28px;
-  height: 28px;
-  background: #8455ef;
-  color: white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-}
-
-.logout-pill {
-  color: #64748B;
-  padding: 0.5rem;
-  transition: color 0.2s;
-}
-
-.logout-pill:hover {
-  color: #F43F5E;
-}
-
-/* Mobile Adjustments */
-@media (max-width: 1024px) {
-  .search-pill, .currency-pill, .divider:nth-of-type(3) {
-    display: none;
-  }
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 </style>

@@ -1,19 +1,12 @@
 <script setup>
-import { computed } from 'vue'
-import { useTranslationStore } from '../../stores/translationStore'
-
-const props = defineProps({
-  isOpen: {
-    type: Boolean,
-    default: false,
-  },
+defineProps({
+  isOpen: { type: Boolean, default: false },
   activeTenant: Object,
   accessibleTenants: Array,
   activeView: String,
 })
 
-const emit = defineEmits(['navigate', 'tenant-change', 'hover-start', 'hover-end'])
-const translationStore = useTranslationStore()
+const emit = defineEmits(['navigate', 'tenant-change', 'close', 'open-ai-chat'])
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -29,214 +22,92 @@ const menuItems = [
   { id: 'admin-console', label: 'Consola Admin', icon: 'settings_applications' },
 ]
 
-function handleNavigate(id) {
-  emit('navigate', id)
-}
-
-function handleTenantChange(e) {
-  emit('tenant-change', e.target.value)
-}
-
-function handleLanguageChange(e) {
-  const targetLang = e.target.value
-  
-  const textsToTranslate = {
-    'Dashboard': 'Dashboard',
-    'Facturación': 'Facturación',
-    'Compras': 'Compras',
-    'Cotizaciones': 'Cotizaciones',
-    'Inventario': 'Inventario',
-    'Contabilidad': 'Contabilidad',
-    'Tesorería': 'Tesorería',
-    'Terceros': 'Terceros',
-    'Usuarios': 'Usuarios',
-    'Reportes': 'Reportes',
-    'Consola Admin': 'Consola Admin',
-    'AI/OCR Analysis': 'AI/OCR Analysis',
-    'Settings': 'Settings',
-    'Help': 'Help',
-    'Enterprise Suite': 'Enterprise Suite'
-  }
-  
-  translationStore.setLanguage(targetLang, textsToTranslate)
+function tenantInitials(name) {
+  if (!name) return 'C3'
+  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 </script>
 
 <template>
-  <nav 
-    :class="['sidebar-nav', { 'desktop-open': isOpen }]"
-    @mouseenter="emit('hover-start')"
-    @mouseleave="emit('hover-end')"
+  <aside
+    :class="[
+      'fixed lg:sticky top-0 left-0 z-50 w-[260px] h-screen bg-white border-r border-[#E4E4E7] flex flex-col transition-transform',
+      isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+    ]"
   >
-    <!-- Header Section -->
-    <div class="px-6 py-8">
-      <div class="flex items-center gap-3 mb-8">
-        <div class="w-8 h-8 rounded bg-[#8455ef] flex items-center justify-center text-white font-bold text-lg">
-          C
-        </div>
+    <!-- Brand -->
+    <div class="px-5 pt-6 pb-5 border-b border-[#F4F4F5]">
+      <div class="flex items-center gap-2.5">
+        <svg class="c360-mark" width="32" height="32" viewBox="0 0 56 56">
+          <rect width="56" height="56" rx="12" fill="#18181B"/>
+          <g class="rotor">
+            <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+          </g>
+        </svg>
         <div>
-          <h1 class="text-[15px] font-bold text-white leading-tight tracking-tight">Contex360 ERP</h1>
-          <p class="text-[9px] text-white/40 uppercase font-bold tracking-[0.1em]">{{ translationStore.t('Enterprise Suite', 'ENTERPRISE SUITE') }}</p>
+          <p class="text-[14px] font-bold tracking-tight text-[#18181B] leading-tight">Contex360</p>
+          <p class="text-[10px] text-[#A1A1AA] uppercase font-semibold tracking-wider">Enterprise</p>
         </div>
       </div>
     </div>
 
-    <!-- Main Navigation -->
-    <div class="flex-1 px-3 space-y-1 overflow-y-auto custom-scrollbar">
+    <!-- Tenant switcher -->
+    <div class="px-3 pt-3">
+      <div class="flex items-center gap-2.5 px-2.5 py-2 rounded-[8px] hover:bg-[#FAFAFA] cursor-pointer transition-colors">
+        <div class="w-7 h-7 bg-[#2563EB] rounded-md flex items-center justify-center text-white font-bold text-[11px] flex-shrink-0">
+          {{ tenantInitials(activeTenant?.name) }}
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="text-[12px] font-semibold text-[#18181B] truncate">{{ activeTenant?.name || 'Sin workspace' }}</p>
+          <p class="text-[10px] text-[#A1A1AA] truncate">{{ activeTenant?.idNumber || '' }}</p>
+        </div>
+        <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">unfold_more</span>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
       <button
         v-for="item in menuItems"
         :key="item.id"
-        @click="handleNavigate(item.id)"
-        :class="['nav-item', { 'active': activeView === item.id }]"
+        @click="emit('navigate', item.id)"
+        :class="[
+          'w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] font-medium transition-colors text-left',
+          activeView === item.id
+            ? 'bg-[#18181B] text-white'
+            : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA]'
+        ]"
       >
-        <span class="material-symbols-outlined icon text-[20px]">{{ item.icon }}</span>
-        <span class="label">{{ translationStore.t(item.label, item.label) }}</span>
+        <span class="material-symbols-outlined text-[18px]">{{ item.icon }}</span>
+        <span>{{ item.label }}</span>
       </button>
-    </div>
+    </nav>
 
-    <!-- AI Action Button -->
-    <div class="px-4 py-6">
-      <button 
-        @click="handleNavigate('ai')"
-        class="ai-action-btn"
+    <!-- Bottom: AI + Settings -->
+    <div class="px-3 py-3 border-t border-[#F4F4F5] space-y-1">
+      <button
+        @click="emit('open-ai-chat')"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] font-semibold text-white bg-[#18181B] hover:bg-[#27272A] transition-colors"
       >
         <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
-        {{ translationStore.t('AI/OCR Analysis', 'AI/OCR Analysis') }}
+        Asistente IA
       </button>
-    </div>
-
-    <!-- Bottom Settings/Help -->
-    <div class="px-4 py-4 border-t border-white/5 bg-[#0F172A]">
-      <button 
-        @click="handleNavigate('profile')" 
-        :class="['bottom-nav-item', { 'active': activeView === 'profile' }]"
+      <button
+        @click="emit('navigate', 'admin-console')"
+        class="w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] font-medium text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA] transition-colors"
       >
-        <span class="material-symbols-outlined icon">settings</span>
-        {{ translationStore.t('Settings', 'Settings') }}
-      </button>
-      <button @click="handleNavigate('help')" class="bottom-nav-item">
-        <span class="material-symbols-outlined icon">help</span>
-        {{ translationStore.t('Help', 'Help') }}
+        <span class="material-symbols-outlined text-[18px]">settings</span>
+        Configuración
       </button>
     </div>
-  </nav>
+  </aside>
 </template>
 
 <style scoped>
-.sidebar-nav {
-  position: fixed;
-  left: 0;
-  top: 0;
-  height: 100vh;
-  width: 260px;
-  background-color: #0F172A;
-  color: #ffffff;
-  display: flex;
-  flex-direction: column;
-  z-index: 200; /* Above topnav */
-  border-right: 1px solid rgba(255, 255, 255, 0.05);
-  transform: translateX(-100%);
-  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 20px 0 50px rgba(0, 0, 0, 0.3);
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
-
-.desktop-open {
-  transform: translateX(0);
-}
-
-.nav-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: 8px 16px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  font-weight: 500;
-  transition: all 0.2s;
-  text-align: left;
-  position: relative;
-}
-
-.nav-item:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.03);
-}
-
-.nav-item.active {
-  background: linear-gradient(90deg, rgba(132, 85, 239, 0.15) 0%, rgba(132, 85, 239, 0.05) 100%);
-  color: #06B6D4;
-  font-weight: 600;
-}
-
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  left: 0;
-  top: 15%;
-  height: 70%;
-  width: 3px;
-  background-color: #06B6D4;
-  border-radius: 0 4px 4px 0;
-}
-
-.nav-item .icon {
-  opacity: 0.8;
-}
-
-.ai-action-btn {
-  width: 100%;
-  background-color: #8455ef;
-  color: #ffffff;
-  font-size: 13px;
-  font-weight: 600;
-  padding: 10px;
-  border-radius: 8px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  transition: all 0.2s;
-  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.4);
-}
-
-.ai-action-btn:hover {
-  background-color: #7c3aed;
-  transform: translateY(-1px);
-}
-
-.bottom-nav-item {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 13px;
-  font-weight: 500;
-  transition: all 0.2s;
-  text-align: left;
-}
-
-.bottom-nav-item:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.05);
-}
-
-.bottom-nav-item .icon {
-  font-size: 18px;
-}
-
-.custom-scrollbar::-webkit-scrollbar {
-  width: 4px;
-}
-.custom-scrollbar::-webkit-scrollbar-track {
-  background: transparent;
-}
-.custom-scrollbar::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-}
+.c360-mark .rotor { transform-origin: 28px 28px; animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>

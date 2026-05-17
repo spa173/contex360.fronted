@@ -4,22 +4,15 @@ import { useBillingStore } from '../../stores/billingStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { formatCurrency } from '../../utils/ui'
 
-const props = defineProps({
-  isActive: { type: Boolean, required: true }
-})
-
+defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const billing = useBillingStore()
 const thirdParties = useThirdPartiesStore()
 
-const newInvoice = ref({
-  customerId: '',
-  concept: '',
-  amount: 0,
-})
+const newInvoice = ref({ customerId: '', concept: '', amount: 0 })
 
-const subtotal = computed(() => newInvoice.value.amount || 0)
+const subtotal = computed(() => Number(newInvoice.value.amount) || 0)
 const iva = computed(() => subtotal.value * 0.19)
 const retefuente = computed(() => subtotal.value * 0.025)
 const reteica = computed(() => subtotal.value * 0.00966)
@@ -27,195 +20,167 @@ const totalNeto = computed(() => subtotal.value + iva.value - retefuente.value -
 
 async function handleCreateInvoice() {
   if (!newInvoice.value.customerId || !newInvoice.value.amount) {
-    emit('notify', { message: 'Faltan datos', detail: 'Seleccione un cliente y asigne un valor.' })
+    emit('notify', { message: 'Faltan datos', detail: 'Selecciona un cliente y asigna un valor.' })
     return
   }
-  
   const res = await billing.createInvoice({
     ...newInvoice.value,
     total: totalNeto.value,
-    status: 'aceptada'
+    status: 'aceptada',
   })
-  
   if (res.ok) {
-    emit('notify', { message: 'Factura Generada', detail: `La factura ${res.invoice.number} fue enviada a la DIAN exitosamente.` })
+    emit('notify', { message: 'Factura generada', detail: `La factura ${res.invoice.number} fue enviada a la DIAN.` })
     newInvoice.value = { customerId: '', concept: '', amount: 0 }
   } else {
     emit('notify', { message: 'Error', detail: res.message })
   }
 }
+
+function statusBadge(status) {
+  const s = (status || '').toLowerCase()
+  if (s === 'aceptada') return { class: 'bg-emerald-50 text-emerald-700', icon: 'check_circle', label: 'Aceptada' }
+  if (s === 'rechazada') return { class: 'bg-rose-50 text-rose-700', icon: 'error', label: 'Rechazada' }
+  return { class: 'bg-amber-50 text-amber-700', icon: 'schedule', label: 'En proceso' }
+}
 </script>
 
 <template>
   <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-    <!-- Header Section -->
-    <div class="flex justify-between items-end mb-8">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
-        <h2 class="text-3xl font-bold text-slate-900">Facturación</h2>
-        <p class="text-sm text-slate-500 mt-1">Gestión de comprobantes y estado DIAN</p>
+        <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
+          <span>Operaciones</span>
+          <span class="material-symbols-outlined text-[14px]">chevron_right</span>
+          <span class="text-[#71717A]">Facturación</span>
+        </div>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Facturación</h1>
+        <p class="text-[14px] text-[#71717A]">Gestión de comprobantes electrónicos y estado DIAN.</p>
       </div>
-      <div class="flex space-x-3">
-        <button class="px-4 py-2 border border-slate-200 rounded-lg text-slate-700 bg-white hover:bg-slate-50 transition-colors flex items-center text-xs font-bold shadow-sm">
-          <span class="material-symbols-outlined mr-2 text-[18px]">download</span>
-          Exportar
+      <div class="flex gap-2">
+        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+          <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
       </div>
     </div>
 
-    <!-- Rapid Filters -->
-    <div class="flex space-x-2 mb-6">
-      <button class="px-3 py-1.5 rounded-full bg-slate-100 text-slate-900 text-[11px] font-bold border border-slate-200 hover:bg-slate-200 transition-colors">Todos</button>
-      <button class="px-3 py-1.5 rounded-full bg-white text-slate-500 text-[11px] font-bold border border-slate-200 hover:bg-slate-50 transition-colors flex items-center">
-        <span class="w-2 h-2 rounded-full bg-cyan-400 mr-2"></span>
-        Aceptado DIAN
-      </button>
-      <button class="px-3 py-1.5 rounded-full bg-white text-slate-500 text-[11px] font-bold border border-slate-200 hover:bg-slate-50 transition-colors flex items-center">
-        <span class="w-2 h-2 rounded-full bg-rose-500 mr-2"></span>
-        Rechazado DIAN
-      </button>
-      <button class="px-3 py-1.5 rounded-full bg-white text-slate-500 text-[11px] font-bold border border-slate-200 hover:bg-slate-50 transition-colors">Pendiente</button>
-    </div>
-
-    <!-- Split Layout -->
-    <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
-      <!-- Left: Management Table -->
-      <div class="xl:col-span-8 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-          <h3 class="text-lg font-bold text-slate-900">Historial de Facturas</h3>
+    <!-- Split: table + new invoice -->
+    <div class="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4">
+      <!-- Table -->
+      <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
+        <div class="px-5 py-4 border-b border-[#F4F4F5] flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
+          <div class="flex items-center gap-2 flex-wrap">
+            <button class="px-3 py-1.5 rounded-[8px] bg-[#18181B] text-white text-[12px] font-semibold">Todas</button>
+            <button class="px-3 py-1.5 rounded-[8px] bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA] text-[12px] font-medium flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Aceptadas
+            </button>
+            <button class="px-3 py-1.5 rounded-[8px] bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA] text-[12px] font-medium flex items-center gap-1.5">
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Rechazadas
+            </button>
+          </div>
           <div class="relative">
-            <span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-            <input class="pl-8 pr-3 py-1.5 text-xs border border-slate-200 rounded-lg bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-500/20 w-48" placeholder="Filtrar..." type="text"/>
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
+            <input placeholder="Filtrar..." class="pl-8 pr-3 py-1.5 text-[12px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-full sm:w-56" />
           </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left">
             <thead>
-              <tr class="bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider">
-                <th class="px-6 py-3">Factura #</th>
-                <th class="px-6 py-3">Cliente</th>
-                <th class="px-6 py-3">Fecha</th>
-                <th class="px-6 py-3 text-right">Monto</th>
-                <th class="px-6 py-3 text-center">Estado DIAN</th>
-                <th class="px-6 py-3 text-right">Acciones</th>
+              <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
+                <th class="px-5 py-3">Factura</th>
+                <th class="px-5 py-3">Cliente</th>
+                <th class="px-5 py-3">Fecha</th>
+                <th class="px-5 py-3 text-right">Monto</th>
+                <th class="px-5 py-3">Estado DIAN</th>
+                <th class="px-5 py-3"></th>
               </tr>
             </thead>
-            <tbody class="text-xs text-slate-700 divide-y divide-slate-50">
-              <tr v-for="invoice in billing.tenantInvoices" :key="invoice.id" class="hover:bg-slate-50 transition-colors">
-                <td class="px-6 py-4 font-mono text-violet-600 font-semibold">{{ invoice.number }}</td>
-                <td class="px-6 py-4 font-bold">{{ invoice.customerName }}</td>
-                <td class="px-6 py-4 text-slate-500">{{ new Date(invoice.date).toLocaleDateString() }}</td>
-                <td class="px-6 py-4 text-right font-mono font-bold">{{ formatCurrency(invoice.total) }}</td>
-                <td class="px-6 py-4 text-center">
-                  <span :class="['inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold uppercase', 
-                    invoice.status === 'aceptada' ? 'bg-cyan-50 text-cyan-700' : 'bg-rose-50 text-rose-700']">
-                    <span class="material-symbols-outlined text-[12px] mr-1">{{ invoice.status === 'aceptada' ? 'check_circle' : 'error' }}</span>
-                    {{ invoice.status }}
+            <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
+              <tr v-for="invoice in billing.tenantInvoices" :key="invoice.id" class="hover:bg-[#FAFAFA] transition-colors">
+                <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ invoice.number }}</td>
+                <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ invoice.customerName }}</td>
+                <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(invoice.date).toLocaleDateString() }}</td>
+                <td class="px-5 py-3.5 text-right font-mono font-semibold text-[#18181B]">{{ formatCurrency(invoice.total) }}</td>
+                <td class="px-5 py-3.5">
+                  <span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', statusBadge(invoice.status).class]">
+                    <span class="material-symbols-outlined text-[12px]">{{ statusBadge(invoice.status).icon }}</span>
+                    {{ statusBadge(invoice.status).label }}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-right text-slate-400">
-                  <button class="hover:text-violet-600 mx-1"><span class="material-symbols-outlined text-[18px]">visibility</span></button>
-                  <button class="hover:text-violet-600 mx-1"><span class="material-symbols-outlined text-[18px]">more_vert</span></button>
+                <td class="px-5 py-3.5 text-right">
+                  <button class="text-[#A1A1AA] hover:text-[#18181B]">
+                    <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+                  </button>
                 </td>
               </tr>
               <tr v-if="billing.tenantInvoices.length === 0">
-                <td colspan="6" class="px-6 py-10 text-center text-slate-400">No hay facturas registradas.</td>
+                <td colspan="6" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay facturas registradas.</td>
               </tr>
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- Right: Crear Factura Form -->
-      <div class="xl:col-span-4 flex flex-col space-y-6">
-        <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-6 relative overflow-hidden">
-          <h3 class="text-lg font-bold text-slate-900 mb-6 flex items-center">
-            <span class="material-symbols-outlined mr-2 text-violet-500">add_circle</span>
-            Crear Factura
-          </h3>
-          <form class="space-y-4" @submit.prevent="handleCreateInvoice">
-            <div>
-              <label class="block text-[11px] font-bold text-slate-900 uppercase tracking-wide mb-1">Cliente</label>
-              <select 
-                v-model="newInvoice.customerId"
-                class="w-full border border-slate-200 rounded-lg py-2 px-3 text-xs bg-slate-50 focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none"
-              >
+      <!-- New invoice form -->
+      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 self-start">
+        <h3 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h3>
+        <p class="text-[12px] text-[#71717A] mb-5">Se enviará automáticamente a la DIAN.</p>
+
+        <form @submit.prevent="handleCreateInvoice" class="space-y-4">
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Cliente</label>
+            <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
+              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">person</span>
+              <select v-model="newInvoice.customerId" class="flex-1 py-2.5 bg-transparent outline-none text-[13px] text-[#18181B] appearance-none">
                 <option value="">Seleccionar cliente...</option>
-                <option v-for="tp in thirdParties.tenantThirdParties" :key="tp.id" :value="tp.id">
-                  {{ tp.name }}
-                </option>
+                <option v-for="tp in thirdParties.tenantThirdParties" :key="tp.id" :value="tp.id">{{ tp.name }}</option>
               </select>
+              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">expand_more</span>
             </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-900 uppercase tracking-wide mb-1">Concepto Base</label>
-              <input 
-                v-model="newInvoice.concept"
-                class="w-full border border-slate-200 rounded-lg py-2 px-3 text-xs bg-slate-50 focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none" 
-                placeholder="Ej. Servicios de Consultoría" 
-                type="text"
-              />
-            </div>
-            <div>
-              <label class="block text-[11px] font-bold text-slate-900 uppercase tracking-wide mb-1">Valor Unitario (COP)</label>
-              <input 
-                v-model="newInvoice.amount"
-                class="w-full border border-slate-200 rounded-lg py-2 px-3 text-xs bg-slate-50 focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 outline-none font-mono font-bold" 
-                placeholder="0.00" 
-                type="number"
-              />
-            </div>
+          </div>
 
-            <hr class="my-6 border-slate-100"/>
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Concepto</label>
+            <input v-model="newInvoice.concept" placeholder="Ej. Servicios de consultoría" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" />
+          </div>
 
-            <!-- Real-time Tax Calculator -->
-            <div class="bg-slate-50 rounded-lg p-4 border border-slate-100">
-              <h4 class="text-[10px] font-bold text-slate-400 mb-4 uppercase tracking-wider">Cálculo de Impuestos</h4>
-              <div class="space-y-3 text-xs font-mono">
-                <div class="flex justify-between text-slate-900">
-                  <span class="font-semibold">Subtotal</span>
-                  <span class="font-bold">{{ formatCurrency(subtotal) }}</span>
-                </div>
-                <div class="flex justify-between text-slate-500">
-                  <span>IVA (19%)</span>
-                  <span>{{ formatCurrency(iva) }}</span>
-                </div>
-                <div class="flex justify-between text-rose-500">
-                  <span>Retefuente (2.5%)</span>
-                  <span>-{{ formatCurrency(retefuente) }}</span>
-                </div>
-                <div class="flex justify-between text-rose-500">
-                  <span>ReteICA (9.66/1000)</span>
-                  <span>-{{ formatCurrency(reteica) }}</span>
-                </div>
-                <div class="h-px bg-slate-200 my-2"></div>
-                <div class="flex justify-between text-sm font-bold text-slate-900">
-                  <span>Total Neto</span>
-                  <span class="text-violet-600">{{ formatCurrency(totalNeto) }}</span>
-                </div>
-              </div>
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Valor (COP)</label>
+            <input v-model="newInvoice.amount" type="number" placeholder="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[14px] text-[#18181B] font-mono font-semibold outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" />
+          </div>
+
+          <!-- Tax breakdown -->
+          <div class="bg-[#FAFAFA] rounded-[10px] p-4 border border-[#F4F4F5]">
+            <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-3">Cálculo automático</p>
+            <div class="space-y-2 text-[12px] font-mono">
+              <div class="flex justify-between text-[#18181B]"><span>Subtotal</span><span class="font-semibold">{{ formatCurrency(subtotal) }}</span></div>
+              <div class="flex justify-between text-[#71717A]"><span>IVA (19%)</span><span>{{ formatCurrency(iva) }}</span></div>
+              <div class="flex justify-between text-rose-600"><span>Retefuente (2.5%)</span><span>-{{ formatCurrency(retefuente) }}</span></div>
+              <div class="flex justify-between text-rose-600"><span>ReteICA (9.66‰)</span><span>-{{ formatCurrency(reteica) }}</span></div>
+              <div class="h-px bg-[#E4E4E7] my-2"></div>
+              <div class="flex justify-between text-[13px] font-bold text-[#18181B]"><span>Total neto</span><span class="text-[#2563EB]">{{ formatCurrency(totalNeto) }}</span></div>
             </div>
+          </div>
 
-            <!-- AI Accent Box -->
-            <div class="mt-4 p-4 bg-violet-50 border border-violet-100 rounded-lg flex items-start">
-              <span class="material-symbols-outlined text-violet-600 mr-2 text-[20px]">auto_awesome</span>
-              <p class="text-[11px] text-violet-900 leading-relaxed">
-                <strong>ContexAI:</strong> Basado en el perfil del cliente, se aplicaron automáticamente las retenciones de ICA y Fuente para servicios de consultoría.
-              </p>
-            </div>
+          <div class="flex gap-2.5 p-3 rounded-[10px] border border-[#E4E4E7] bg-white">
+            <span class="material-symbols-outlined text-[18px] text-[#2563EB] flex-shrink-0">auto_awesome</span>
+            <p class="text-[11px] text-[#18181B] leading-[1.5]">
+              <strong class="font-semibold">ContexAI:</strong> Retenciones aplicadas automáticamente según el perfil del cliente.
+            </p>
+          </div>
 
-            <button 
-              type="submit"
-              class="w-full mt-6 py-3 bg-violet-600 text-white rounded-lg text-xs font-bold hover:bg-violet-700 transition-all shadow-md shadow-violet-200 flex items-center justify-center"
-            >
-              <span class="material-symbols-outlined mr-2 text-[18px]">send</span>
-              Generar y Enviar a DIAN
-            </button>
-          </form>
-        </div>
+          <button type="submit" class="w-full py-3 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] transition-colors flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+            Generar y enviar a DIAN
+          </button>
+        </form>
       </div>
     </div>
   </section>
 </template>
 
 <style scoped>
-/* No specific styles needed as everything is Tailwind */
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+}
 </style>

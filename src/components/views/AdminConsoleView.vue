@@ -1,256 +1,177 @@
 <script setup>
 import { ref } from 'vue'
 
-const props = defineProps({
-  isActive: { type: Boolean, required: true }
-})
-
+defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
-const activeTab = ref('Empresa')
-const tabs = ['General', 'Empresa', 'Impuestos', 'Integraciones', 'Logs']
-
-const aiSettings = ref({
-  ocr: true,
-  predictive: true,
-  anomaly: false,
-  confidence: 85
-})
+const activeTab = ref('empresa')
+const tabs = [
+  { id: 'empresa', label: 'Empresa' },
+  { id: 'general', label: 'General' },
+  { id: 'impuestos', label: 'Impuestos' },
+  { id: 'integraciones', label: 'Integraciones' },
+  { id: 'logs', label: 'Logs' },
+]
 
 function handleSave() {
-  emit('notify', { message: 'Configuración Guardada', detail: 'Los parámetros del sistema han sido actualizados exitosamente.' })
+  emit('notify', { message: 'Configuración guardada', detail: 'Los parámetros del sistema han sido actualizados.' })
 }
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col h-full">
-    <!-- Main Content Area with Right Sidebar -->
-    <div class="flex-1 flex gap-6 overflow-hidden">
-      <!-- Primary Content Canvas -->
-      <div class="flex-1 space-y-8 overflow-y-auto pr-2 pb-8">
-        <!-- Header -->
-        <div class="flex items-start justify-between flex-wrap gap-4">
-          <div>
-            <h1 class="text-3xl font-bold text-slate-900 tracking-tight">Consola de Administración</h1>
-            <p class="text-sm text-slate-500 mt-1">Configuración global del sistema, identidad corporativa y parámetros fiscales.</p>
-          </div>
-          <div class="flex items-center gap-3">
-            <button class="px-5 py-2.5 rounded-lg border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition-all bg-white shadow-sm">
-              Descartar Cambios
-            </button>
-            <button @click="handleSave" class="px-5 py-2.5 rounded-lg bg-violet-600 text-white font-bold text-xs hover:bg-violet-700 transition-all shadow-md shadow-violet-100 flex items-center gap-2">
-              <span class="material-symbols-outlined text-[18px]">save</span>
-              Guardar Configuración
-            </button>
-          </div>
+  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
+      <div>
+        <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
+          <span>Sistema</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-[#71717A]">Consola Admin</span>
         </div>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Consola de Administración</h1>
+        <p class="text-[14px] text-[#71717A]">Configuración global del sistema.</p>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#71717A] hover:bg-[#FAFAFA] text-[13px] font-semibold">Descartar</button>
+        <button @click="handleSave" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
+          <span class="material-symbols-outlined text-[18px]">save</span>Guardar
+        </button>
+      </div>
+    </div>
 
-        <!-- Horizontal Tabs -->
-        <div class="border-b border-slate-200 w-full flex overflow-x-auto scrollbar-hide">
-          <button 
-            v-for="tab in tabs" 
-            :key="tab"
-            @click="activeTab = tab"
-            :class="['px-6 py-3 text-xs font-bold transition-all whitespace-nowrap', 
-              activeTab === tab ? 'text-violet-600 border-b-2 border-violet-600 bg-violet-50/30' : 'text-slate-400 hover:text-slate-600']"
-          >
-            {{ tab }}
-          </button>
+    <!-- Tabs -->
+    <div class="border-b border-[#E4E4E7] mb-6">
+      <div class="flex gap-1 -mb-px overflow-x-auto">
+        <button
+          v-for="t in tabs" :key="t.id"
+          @click="activeTab = t.id"
+          :class="[
+            'px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors whitespace-nowrap',
+            activeTab === t.id ? 'text-[#18181B] border-[#18181B]' : 'text-[#71717A] hover:text-[#18181B] border-transparent'
+          ]"
+        >{{ t.label }}</button>
+      </div>
+    </div>
+
+    <!-- Empresa -->
+    <div v-if="activeTab === 'empresa'" class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="lg:col-span-2 space-y-4">
+        <section class="bg-white border border-[#E4E4E7] rounded-[14px] p-6">
+          <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
+            <span class="material-symbols-outlined text-[20px] text-[#18181B]">domain</span>
+            <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Identidad Corporativa</h3>
+          </div>
+          <div class="grid md:grid-cols-2 gap-5">
+            <div><label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Razón Social</label><input value="Andina Cargo SAS" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" /></div>
+            <div><label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">NIT</label><input value="900.123.456-7" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] font-mono outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" /></div>
+          </div>
+        </section>
+      </div>
+      <div class="space-y-4">
+        <section class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
+          <div class="flex items-center gap-2 mb-5">
+            <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span>
+            <h3 class="text-[14px] font-bold tracking-tight text-[#18181B]">ContexAI Global</h3>
+          </div>
+          <div class="space-y-4">
+            <div class="flex items-center justify-between"><div><p class="text-[12px] font-semibold text-[#18181B]">OCR Automático</p><p class="text-[11px] text-[#71717A]">Procesar facturas con IA</p></div><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-9 h-5 bg-[#E4E4E7] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]"></div></label></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- General -->
+    <div v-if="activeTab === 'general'" class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 max-w-3xl">
+      <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
+        <span class="material-symbols-outlined text-[20px] text-[#18181B]">tune</span>
+        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Preferencias regionales</h3>
+      </div>
+      <div class="grid md:grid-cols-2 gap-5">
+        <div>
+          <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Idioma</label>
+          <select class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none">
+            <option>Español (Colombia)</option><option>English (US)</option><option>Português (Brasil)</option>
+          </select>
         </div>
-
-        <!-- Bento Grid Content -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div class="lg:col-span-2 space-y-6">
-            <!-- Corporate Identity -->
-            <section class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <div class="flex items-center justify-between mb-6 border-b border-slate-50 pb-4">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-violet-600">domain</span>
-                  Identidad Corporativa
-                </h3>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-5">
-                  <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Nombre de la Empresa</label>
-                    <input class="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none text-xs font-bold text-slate-900" value="Contex Solutions SAS"/>
-                  </div>
-                  <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">NIT / ID Fiscal</label>
-                    <input class="w-full h-10 px-3 rounded-lg border border-slate-200 focus:ring-2 focus:ring-violet-500/20 outline-none text-xs font-mono text-slate-900" value="900.123.456-7"/>
-                  </div>
-                  <div>
-                    <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Color de Marca</label>
-                    <div class="flex items-center gap-3">
-                      <div class="w-10 h-10 rounded-lg bg-violet-600 shadow-inner"></div>
-                      <input class="flex-1 h-10 px-3 rounded-lg border border-slate-200 text-xs font-mono uppercase" value="#6B38D4"/>
-                    </div>
-                  </div>
-                </div>
-                <div class="flex flex-col h-full">
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Logotipo</label>
-                  <div class="flex-1 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50 flex flex-col items-center justify-center p-6 text-center hover:bg-violet-50/30 hover:border-violet-300 transition-all cursor-pointer group">
-                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mb-3 shadow-sm group-hover:scale-110 transition-transform">
-                      <span class="material-symbols-outlined text-[24px] text-violet-500">cloud_upload</span>
-                    </div>
-                    <p class="text-[10px] font-bold text-slate-600 uppercase">Subir Imagen</p>
-                    <p class="text-[9px] text-slate-400 mt-1">SVG, PNG, JPG (Max 2MB)</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Tax Parameters -->
-            <section class="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <div class="flex items-center justify-between mb-6 border-b border-slate-50 pb-4">
-                <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
-                  <span class="material-symbols-outlined text-cyan-500">account_balance_wallet</span>
-                  Parámetros Fiscales
-                </h3>
-                <span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-[9px] font-bold flex items-center gap-1 uppercase">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> DIAN Conectado
-                </span>
-              </div>
-              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div>
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">IVA (%)</label>
-                  <div class="relative">
-                    <input class="w-full h-10 pl-3 pr-8 rounded-lg border border-slate-200 text-xs font-mono text-right" value="19.00"/>
-                    <span class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">%</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Retefuente (%)</label>
-                  <div class="relative">
-                    <input class="w-full h-10 pl-3 pr-8 rounded-lg border border-slate-200 text-xs font-mono text-right" value="2.50"/>
-                    <span class="absolute right-3 top-2.5 text-[10px] font-bold text-slate-400">%</span>
-                  </div>
-                </div>
-                <div>
-                  <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5">Resolución</label>
-                  <input class="w-full h-10 px-3 rounded-lg border border-slate-200 bg-slate-50 text-xs font-mono text-slate-400" readonly value="1876203189"/>
-                </div>
-              </div>
-            </section>
-
-            <!-- Logs Preview -->
-            <section class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-              <div class="p-4 border-b border-slate-50 flex items-center justify-between bg-slate-50/30">
-                <h3 class="text-xs font-bold text-slate-900 uppercase tracking-widest">Logs del Sistema</h3>
-                <button class="text-[10px] font-bold text-violet-600 hover:underline uppercase tracking-widest">Ver Todos</button>
-              </div>
-              <table class="w-full text-left">
-                <tbody class="text-[11px] text-slate-600 divide-y divide-slate-50">
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-3 px-6 font-bold text-slate-900">Juan Admin</td>
-                    <td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-blue-700 uppercase">UPDATE</span> Tasa IVA</td>
-                    <td class="py-3 px-6 text-slate-400 font-mono text-right">10:42:05 12/Oct</td>
-                  </tr>
-                  <tr class="hover:bg-slate-50 transition-colors">
-                    <td class="py-3 px-6 font-bold text-slate-900">Sistema (API)</td>
-                    <td class="py-3 px-6"><span class="px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 uppercase">SYNC</span> DIAN Connect</td>
-                    <td class="py-3 px-6 text-slate-400 font-mono text-right">08:00:01 12/Oct</td>
-                  </tr>
-                </tbody>
-              </table>
-            </section>
-          </div>
-
-          <!-- Side Panel Stats -->
-          <div class="space-y-6">
-            <!-- ContexAI Global -->
-            <section class="bg-gradient-to-br from-violet-50 to-white rounded-xl border border-violet-100 p-6 shadow-sm">
-              <h3 class="text-sm font-bold text-violet-700 flex items-center gap-2 mb-6">
-                <span class="material-symbols-outlined">psychology</span> ContexAI Global
-              </h3>
-              <div class="space-y-5">
-                <div v-for="(val, key) in {ocr: 'Automatización OCR', predictive: 'Analítica Predictiva', anomaly: 'Monitoreo Anomalías'}" :key="key" class="flex items-center justify-between gap-4">
-                  <div>
-                    <p class="text-xs font-bold text-slate-900">{{ val }}</p>
-                    <p class="text-[10px] text-slate-500 leading-tight">Activar motor inteligente para este módulo.</p>
-                  </div>
-                  <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" v-model="aiSettings[key]" class="sr-only peer">
-                    <div class="w-8 h-4 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-violet-600"></div>
-                  </label>
-                </div>
-                <div class="pt-4 border-t border-violet-100">
-                  <div class="flex justify-between items-center mb-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Umbral AI</label>
-                    <span class="font-mono text-violet-600 font-bold text-xs">{{ aiSettings.confidence }}%</span>
-                  </div>
-                  <input type="range" v-model="aiSettings.confidence" min="0" max="100" class="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-violet-600">
-                </div>
-              </div>
-            </section>
-
-            <!-- Usage Stats -->
-            <section class="bg-slate-900 rounded-xl p-6 text-white shadow-lg relative overflow-hidden">
-              <h3 class="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-6">Uso del Sistema</h3>
-              <div class="space-y-6">
-                <div>
-                  <div class="flex justify-between text-[10px] font-bold mb-2 uppercase">
-                    <span class="text-slate-400">Almacenamiento (50GB)</span>
-                    <span class="text-cyan-400">68%</span>
-                  </div>
-                  <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div class="h-full bg-cyan-400 rounded-full" style="width: 68%"></div>
-                  </div>
-                </div>
-                <div>
-                  <div class="flex justify-between text-[10px] font-bold mb-2 uppercase">
-                    <span class="text-slate-400">Llamadas API</span>
-                    <span class="text-violet-400">14.2k / 50k</span>
-                  </div>
-                  <div class="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                    <div class="h-full bg-violet-400 rounded-full" style="width: 28%"></div>
-                  </div>
-                </div>
-              </div>
-              <button class="w-full mt-8 py-2 rounded-lg border border-white/10 hover:bg-white/5 transition-all text-[10px] font-bold uppercase tracking-widest">Ver Métricas Completas</button>
-            </section>
-          </div>
+        <div>
+          <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Zona horaria</label>
+          <select class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none">
+            <option>(UTC-05) Bogotá</option><option>(UTC-03) Buenos Aires</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Moneda</label>
+          <select class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none">
+            <option>COP · Peso colombiano</option><option>USD · Dólar</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Formato de fecha</label>
+          <select class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none">
+            <option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option>
+          </select>
         </div>
       </div>
+    </div>
 
-      <!-- Right Sidebar: ContexAI Insights -->
-      <aside class="w-80 flex flex-col gap-6 shrink-0 border-l border-slate-100 pl-6 h-full overflow-y-auto">
-        <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
-          <span class="material-symbols-outlined text-violet-600 text-[20px]">auto_awesome</span>
-          <h3 class="text-sm font-bold text-slate-900">System Insights</h3>
-        </div>
-        <div class="space-y-4">
-          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-violet-300 transition-all">
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-[18px]">key</span>
-              </div>
-              <div>
-                <h4 class="text-[11px] font-bold text-slate-900 uppercase">Actualizar API Keys</h4>
-                <p class="text-[11px] text-slate-500 mt-1 leading-snug">Las llaves de integración con la pasarela expiran en 5 días.</p>
-                <button class="mt-2 text-[10px] font-bold text-violet-600 uppercase hover:underline">Renovar</button>
-              </div>
-            </div>
+    <!-- Impuestos -->
+    <div v-if="activeTab === 'impuestos'" class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
+      <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
+        <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-[#18181B]">percent</span><h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Impuestos configurados</h3></div>
+        <button class="flex items-center gap-2 px-3 py-1.5 bg-[#18181B] text-white rounded-[8px] text-[12px] font-semibold"><span class="material-symbols-outlined text-[16px]">add</span>Nuevo impuesto</button>
+      </div>
+      <table class="w-full text-left">
+        <thead><tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]"><th class="px-6 py-3">Nombre</th><th class="px-6 py-3">Código DIAN</th><th class="px-6 py-3">Tipo</th><th class="px-6 py-3 text-right">Tasa</th><th class="px-6 py-3">Activo</th></tr></thead>
+        <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
+          <tr class="hover:bg-[#FAFAFA]"><td class="px-6 py-3.5 font-semibold text-[#18181B]">IVA</td><td class="px-6 py-3.5 font-mono text-[#A1A1AA] text-[12px]">01</td><td class="px-6 py-3.5"><span class="inline-flex px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold">Suma</span></td><td class="px-6 py-3.5 text-right font-mono font-semibold">19.00%</td><td class="px-6 py-3.5"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-9 h-5 bg-[#E4E4E7] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]"></div></label></td></tr>
+          <tr class="hover:bg-[#FAFAFA]"><td class="px-6 py-3.5 font-semibold text-[#18181B]">Retefuente</td><td class="px-6 py-3.5 font-mono text-[#A1A1AA] text-[12px]">06</td><td class="px-6 py-3.5"><span class="inline-flex px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-semibold">Resta</span></td><td class="px-6 py-3.5 text-right font-mono font-semibold">2.50%</td><td class="px-6 py-3.5"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-9 h-5 bg-[#E4E4E7] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]"></div></label></td></tr>
+          <tr class="hover:bg-[#FAFAFA]"><td class="px-6 py-3.5 font-semibold text-[#18181B]">ReteICA</td><td class="px-6 py-3.5 font-mono text-[#A1A1AA] text-[12px]">07</td><td class="px-6 py-3.5"><span class="inline-flex px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-semibold">Resta</span></td><td class="px-6 py-3.5 text-right font-mono font-semibold">9.66‰</td><td class="px-6 py-3.5"><label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-9 h-5 bg-[#E4E4E7] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]"></div></label></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Integraciones -->
+    <div v-if="activeTab === 'integraciones'" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-[10px] bg-emerald-50 flex items-center justify-center text-emerald-700"><span class="material-symbols-outlined text-[22px]">verified_user</span></div>
+            <div><p class="text-[14px] font-bold tracking-tight text-[#18181B]">DIAN</p><p class="text-[11px] text-[#A1A1AA]">Facturación electrónica</p></div>
           </div>
-          <div class="bg-white border border-slate-200 rounded-xl p-4 shadow-sm hover:border-violet-300 transition-all">
-            <div class="flex items-start gap-3">
-              <div class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
-                <span class="material-symbols-outlined text-[18px]">speed</span>
-              </div>
-              <div>
-                <h4 class="text-[11px] font-bold text-slate-900 uppercase">Optimización BD</h4>
-                <p class="text-[11px] text-slate-500 mt-1 leading-snug">Se sugiere archivar logs antiguos para mejorar la velocidad en un 12%.</p>
-                <button class="mt-2 text-[10px] font-bold text-violet-600 uppercase hover:underline">Ejecutar</button>
-              </div>
-            </div>
-          </div>
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Conectado</span>
         </div>
-      </aside>
+        <button class="w-full py-2 border border-[#E4E4E7] rounded-[8px] text-[12px] font-semibold text-[#18181B] hover:bg-[#FAFAFA]">Configurar</button>
+      </div>
+      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
+        <div class="flex items-start justify-between mb-4">
+          <div class="flex items-center gap-3">
+            <div class="w-11 h-11 rounded-[10px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] font-bold">B</div>
+            <div><p class="text-[14px] font-bold tracking-tight text-[#18181B]">Bancolombia</p><p class="text-[11px] text-[#A1A1AA]">Conciliación bancaria</p></div>
+          </div>
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Conectado</span>
+        </div>
+        <button class="w-full py-2 border border-[#E4E4E7] rounded-[8px] text-[12px] font-semibold text-[#18181B] hover:bg-[#FAFAFA]">Configurar</button>
+      </div>
+      <div class="bg-white border border-dashed border-[#E4E4E7] rounded-[14px] p-5 flex flex-col items-center justify-center text-center min-h-[180px] hover:border-[#2563EB] hover:bg-[#FAFAFA] cursor-pointer transition-all">
+        <div class="w-11 h-11 rounded-[10px] bg-[#FAFAFA] flex items-center justify-center text-[#A1A1AA] mb-3"><span class="material-symbols-outlined text-[22px]">add</span></div>
+        <p class="text-[13px] font-semibold text-[#18181B]">Explorar integraciones</p>
+        <p class="text-[11px] text-[#71717A] mt-1">+24 conectores disponibles</p>
+      </div>
+    </div>
+
+    <!-- Logs -->
+    <div v-if="activeTab === 'logs'" class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
+      <div class="px-5 py-4 border-b border-[#F4F4F5]">
+        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Auditoría del sistema</h3>
+      </div>
+      <table class="w-full text-left">
+        <thead><tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]"><th class="px-5 py-3">Usuario</th><th class="px-5 py-3">Acción</th><th class="px-5 py-3">Entidad</th><th class="px-5 py-3 text-right">Fecha</th></tr></thead>
+        <tbody class="text-[12px] divide-y divide-[#F4F4F5]">
+          <tr class="hover:bg-[#FAFAFA]"><td class="px-5 py-3 font-semibold text-[#18181B]">Daniel C.</td><td class="px-5 py-3"><span class="inline-flex px-1.5 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[10px] font-semibold uppercase">UPDATE</span></td><td class="px-5 py-3 text-[#71717A]">Tasa IVA</td><td class="px-5 py-3 font-mono text-[#A1A1AA] text-right">10:42 hoy</td></tr>
+          <tr class="hover:bg-[#FAFAFA]"><td class="px-5 py-3 font-semibold text-[#18181B]">Sistema</td><td class="px-5 py-3"><span class="inline-flex px-1.5 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[10px] font-semibold uppercase">SYNC</span></td><td class="px-5 py-3 text-[#71717A]">DIAN Connect</td><td class="px-5 py-3 font-mono text-[#A1A1AA] text-right">08:00 hoy</td></tr>
+        </tbody>
+      </table>
     </div>
   </section>
 </template>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
 </style>

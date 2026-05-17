@@ -1,169 +1,99 @@
 <script setup>
-import { computed } from 'vue'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { formatCurrency } from '../../utils/ui'
 
-const props = defineProps({
-  isActive: { type: Boolean, required: true }
-})
-
+defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const store = useThirdPartiesStore()
 
-function handleAction(thirdParty) {
-  emit('notify', { message: 'Solicitud Enviada', detail: `Se ha solicitado la actualización de RUT a ${thirdParty.name} vía email.` })
+function initials(name) {
+  if (!name) return '—'
+  return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
+}
+
+function handleAction(tp) {
+  emit('notify', { message: 'Solicitud enviada', detail: `Se solicitó actualización de RUT a ${tp.name}.` })
 }
 </script>
 
 <template>
   <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
-    <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
-        <h2 class="text-3xl font-bold text-slate-900 tracking-tight">Gestión de Terceros</h2>
-        <p class="text-sm text-slate-500 mt-1">Administración integral de clientes, proveedores y socios de negocio.</p>
+        <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
+          <span>Gestión</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-[#71717A]">Terceros</span>
+        </div>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Terceros</h1>
+        <p class="text-[14px] text-[#71717A]">Administración integral de clientes, proveedores y socios.</p>
       </div>
-      <div class="flex items-center gap-3">
-        <button class="flex items-center gap-2 px-4 py-2 border border-slate-200 bg-white rounded-lg text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors shadow-sm">
-          <span class="material-symbols-outlined text-[18px]">download</span>
-          Exportar
+      <div class="flex gap-2">
+        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+          <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
-        <button class="flex items-center gap-2 px-4 py-2 bg-cyan-500 text-white rounded-lg text-xs font-bold shadow-md shadow-cyan-200 hover:bg-cyan-600 transition-all">
-          <span class="material-symbols-outlined text-[18px]">add</span>
-          Nuevo Tercero
+        <button class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
+          <span class="material-symbols-outlined text-[18px]">add</span>Nuevo tercero
         </button>
       </div>
     </div>
 
-    <!-- Layout Grid -->
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-      <!-- Main Data Section -->
-      <div class="md:col-span-8 lg:col-span-9 flex flex-col gap-6">
-        <!-- Filters Bar -->
-        <div class="bg-white border border-slate-200 rounded-xl p-4 flex flex-wrap items-center gap-4 shadow-sm">
-          <div class="relative flex-grow min-w-[240px]">
-            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[18px]">search</span>
-            <input class="w-full pl-10 pr-4 py-2 border border-slate-200 rounded-lg text-xs focus:ring-2 focus:ring-cyan-500/20 outline-none bg-slate-50/50" placeholder="Buscar por nombre, NIT o email..." type="text"/>
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
+      <div>
+        <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-4 mb-4 flex items-center gap-3 flex-wrap">
+          <div class="relative flex-1 min-w-[240px]">
+            <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
+            <input placeholder="Buscar por nombre, NIT o email..." class="w-full pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B]" />
           </div>
-          <div class="flex items-center gap-2">
-            <select class="border border-slate-200 rounded-lg py-2 pl-3 pr-8 text-xs font-bold text-slate-600 focus:ring-2 focus:ring-cyan-500/20 outline-none bg-white">
-              <option>Todos los tipos</option>
-              <option>Cliente</option>
-              <option>Proveedor</option>
-            </select>
-          </div>
+          <select class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white">
+            <option>Todos los tipos</option><option>Cliente</option><option>Proveedor</option>
+          </select>
         </div>
 
-        <!-- Data Table -->
-        <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+        <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
           <div class="overflow-x-auto">
             <table class="w-full text-left">
               <thead>
-                <tr class="bg-slate-900 text-white text-[10px] font-bold uppercase tracking-wider">
-                  <th class="px-6 py-3">Entidad</th>
-                  <th class="px-6 py-3">NIT / ID</th>
-                  <th class="px-6 py-3">Tipo</th>
-                  <th class="px-6 py-3 text-right">Límite Crédito</th>
-                  <th class="px-6 py-3 text-right">Saldo Actual</th>
-                  <th class="px-6 py-3 text-center">Estado</th>
-                  <th class="px-6 py-3 text-center">AI Val</th>
-                  <th class="px-6 py-3 w-10"></th>
+                <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
+                  <th class="px-5 py-3">Entidad</th>
+                  <th class="px-5 py-3">NIT</th>
+                  <th class="px-5 py-3">Tipo</th>
+                  <th class="px-5 py-3 text-right">Saldo</th>
+                  <th class="px-5 py-3">Estado</th>
                 </tr>
               </thead>
-              <tbody class="text-xs text-slate-700 divide-y divide-slate-50">
-                <tr v-for="tp in store.tenantThirdParties" :key="tp.id" class="hover:bg-slate-50 transition-colors group">
-                  <td class="px-6 py-4 flex items-center gap-3">
-                    <div class="w-8 h-8 rounded bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 font-bold text-[10px]">
-                      {{ tp.name.substring(0, 2).toUpperCase() }}
+              <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
+                <tr v-for="tp in store.tenantThirdParties" :key="tp.id" class="hover:bg-[#FAFAFA] group">
+                  <td class="px-5 py-3.5">
+                    <div class="flex items-center gap-3">
+                      <div class="w-7 h-7 rounded-md bg-[#18181B] text-white flex items-center justify-center font-semibold text-[10px]">{{ initials(tp.name) }}</div>
+                      <span class="font-semibold text-[#18181B]">{{ tp.name }}</span>
                     </div>
-                    <span class="font-bold text-slate-900">{{ tp.name }}</span>
                   </td>
-                  <td class="px-6 py-4 font-mono text-slate-400">{{ tp.idNumber }}</td>
-                  <td class="px-6 py-4">
-                    <span class="px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-bold text-[9px] uppercase tracking-tighter">
-                      {{ tp.type }}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 font-mono text-right text-slate-400">$ 150.000.000</td>
-                  <td class="px-6 py-4 font-mono font-bold text-right text-slate-900">$ 45.200.000</td>
-                  <td class="px-6 py-4 text-center">
-                    <span class="inline-flex items-center gap-1 text-emerald-600 font-bold text-[9px] uppercase">
-                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Activo
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-center">
-                    <span class="material-symbols-outlined text-violet-500 text-[18px]">verified</span>
-                  </td>
-                  <td class="px-6 py-4 text-right">
-                    <button class="text-slate-300 hover:text-slate-600 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <span class="material-symbols-outlined text-[18px]">more_vert</span>
-                    </button>
-                  </td>
+                  <td class="px-5 py-3.5 font-mono text-[#A1A1AA] text-[12px]">{{ tp.idNumber }}</td>
+                  <td class="px-5 py-3.5"><span class="inline-flex px-2 py-0.5 rounded-md bg-[#F4F4F5] text-[#71717A] text-[11px] font-semibold uppercase">{{ tp.type }}</span></td>
+                  <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(tp.balance || 0) }}</td>
+                  <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 text-emerald-700 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Activo</span></td>
                 </tr>
                 <tr v-if="store.tenantThirdParties.length === 0">
-                  <td colspan="8" class="px-6 py-10 text-center text-slate-400">No hay terceros registrados.</td>
+                  <td colspan="5" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay terceros registrados.</td>
                 </tr>
               </tbody>
             </table>
           </div>
-          <!-- Pagination -->
-          <div class="px-6 py-4 border-t border-slate-50 flex items-center justify-between bg-slate-50/20">
-            <span class="text-[10px] font-bold text-slate-400 uppercase">Mostrando {{ store.tenantThirdParties.length }} de 248 registros</span>
-            <div class="flex items-center gap-2">
-              <button class="p-1 rounded text-slate-300 hover:text-slate-600"><span class="material-symbols-outlined text-[20px]">chevron_left</span></button>
-              <button class="p-1 rounded text-slate-900 font-bold"><span class="material-symbols-outlined text-[20px]">chevron_right</span></button>
-            </div>
-          </div>
         </div>
       </div>
 
-      <!-- Right Sidebar: ContexAI Insights -->
-      <div class="md:col-span-4 lg:col-span-3 flex flex-col gap-6">
-        <div class="flex items-center gap-2 pb-2 border-b border-slate-200">
-          <span class="material-symbols-outlined text-violet-600 text-[24px]">auto_awesome</span>
-          <h3 class="text-sm font-bold text-slate-900">ContexAI Insights</h3>
+      <div class="space-y-3">
+        <div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Insights de IA</h3></div>
+        <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-4">
+          <div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[16px] text-amber-600">gavel</span><p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Validación legal</p></div>
+          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Detectado RUT próximo a caducar en algunos terceros.</p>
+          <button @click="handleAction({name:'TechCorp'})" class="w-full py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold">Revisar</button>
         </div>
-        
-        <!-- AI Card 1 -->
-        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden group border-l-4 border-l-rose-500">
-          <div class="flex items-center gap-2 text-rose-600 mb-3">
-            <span class="material-symbols-outlined text-[18px]">gavel</span>
-            <h4 class="text-[10px] font-bold uppercase tracking-wider">Validación Legal</h4>
-          </div>
-          <p class="text-xs text-slate-700 leading-relaxed mb-4">
-            El RUT de <strong>TechCorp Solutions</strong> registra una caducidad próxima en su responsabilidad fiscal de IVA.
-          </p>
-          <div class="flex items-center justify-between">
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Hace 2h</span>
-            <button @click="handleAction({name: 'TechCorp'})" class="text-[10px] font-bold text-violet-600 hover:text-violet-800 uppercase tracking-widest">Solicitar Actualización</button>
-          </div>
-        </div>
-
-        <!-- AI Card 2 -->
-        <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm relative overflow-hidden group border-l-4 border-l-violet-600">
-          <div class="flex items-center gap-2 text-violet-600 mb-3">
-            <span class="material-symbols-outlined text-[18px]">trending_up</span>
-            <h4 class="text-[10px] font-bold uppercase tracking-wider">Comportamiento</h4>
-          </div>
-          <p class="text-xs text-slate-700 leading-relaxed mb-4">
-            <strong>Industrias del Norte S.A.</strong> presenta un patrón de pago anticipado. Se sugiere ofrecer un <span class="font-bold text-cyan-600 bg-cyan-50 px-1 rounded">2.5% de descuento</span> para optimizar flujo.
-          </p>
-          <div class="flex items-center justify-between">
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">Confianza: 94%</span>
-            <button class="text-[10px] font-bold text-violet-600 hover:text-violet-800 uppercase tracking-widest">Aplicar Política</button>
-          </div>
-        </div>
-
-        <!-- Quick Metric -->
-        <div class="bg-slate-900 rounded-xl p-5 text-white">
-          <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Riesgo de Cartera Global</span>
-          <div class="flex items-baseline gap-2 mt-2">
-            <span class="text-2xl font-bold">12%</span>
-            <span class="text-[10px] font-bold text-emerald-400 flex items-center">
-              <span class="material-symbols-outlined text-[14px]">arrow_downward</span> 2.4%
-            </span>
-          </div>
+        <div class="bg-[#18181B] rounded-[14px] p-4 text-white">
+          <p class="text-[10px] font-semibold text-white/60 uppercase tracking-wider mb-2">Riesgo de cartera</p>
+          <div class="flex items-baseline gap-2"><span class="text-[28px] font-bold tracking-[-0.02em]">12%</span><span class="text-[11px] font-semibold text-emerald-400">↓ 2.4%</span></div>
+          <p class="text-[11px] text-white/60 mt-1">Bajo riesgo</p>
         </div>
       </div>
     </div>
@@ -171,4 +101,5 @@ function handleAction(thirdParty) {
 </template>
 
 <style scoped>
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
 </style>

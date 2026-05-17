@@ -1,64 +1,3 @@
-<template>
-  <div class="change-password-container">
-    <div class="change-password-card">
-      <div class="header">
-        <span class="material-icons icon">lock</span>
-        <h1>Cambia tu contraseña</h1>
-        <p>Por seguridad, debes cambiar tu contraseña temporal antes de continuar.</p>
-      </div>
-
-      <form @submit.prevent="handleSubmit" class="form">
-        <div class="form-group">
-          <label for="currentPassword">Contraseña actual</label>
-          <input
-            id="currentPassword"
-            v-model="form.currentPassword"
-            type="password"
-            placeholder="Ingresa tu contraseña temporal"
-            required
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="newPassword">Nueva contraseña</label>
-          <input
-            id="newPassword"
-            v-model="form.newPassword"
-            type="password"
-            placeholder="Mínimo 8 caracteres"
-            required
-            minlength="8"
-          />
-        </div>
-
-        <div class="form-group">
-          <label for="confirmPassword">Confirmar contraseña</label>
-          <input
-            id="confirmPassword"
-            v-model="form.confirmPassword"
-            type="password"
-            placeholder="Repite tu nueva contraseña"
-            required
-          />
-        </div>
-
-        <div v-if="error" class="error-message">
-          {{ error }}
-        </div>
-
-        <div v-if="success" class="success-message">
-          Contraseña cambiada exitosamente. Redirigiendo...
-        </div>
-
-        <button type="submit" class="submit-btn" :disabled="loading">
-          <span v-if="loading">Cambiando...</span>
-          <span v-else>Cambiar contraseña</span>
-        </button>
-      </form>
-    </div>
-  </div>
-</template>
-
 <script setup>
 import { ref } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
@@ -67,12 +6,7 @@ import { useRouter } from 'vue-router'
 const authStore = useAuthStore()
 const router = useRouter()
 
-const form = ref({
-  currentPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-})
-
+const form = ref({ currentPassword: '', newPassword: '', confirmPassword: '' })
 const loading = ref(false)
 const error = ref('')
 const success = ref(false)
@@ -85,154 +19,79 @@ const handleSubmit = async () => {
     error.value = 'Las contraseñas no coinciden'
     return
   }
-
   if (form.value.newPassword.length < 8) {
     error.value = 'La contraseña debe tener al menos 8 caracteres'
     return
   }
 
   loading.value = true
-
   try {
-    await authStore.changePassword(
-      form.value.currentPassword,
-      form.value.newPassword
-    )
+    await authStore.changePassword(form.value.currentPassword, form.value.newPassword)
     success.value = true
-    setTimeout(() => {
-      router.push('/')
-    }, 2000)
+    setTimeout(() => router.push('/'), 2000)
   } catch (err) {
     error.value = err.message || 'Error al cambiar la contraseña'
-  } finally {
-    loading.value = false
-  }
+  } finally { loading.value = false }
 }
 </script>
 
+<template>
+  <div class="min-h-screen bg-white font-['Inter'] relative overflow-hidden flex items-center justify-center p-6">
+    <div aria-hidden="true" class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60" style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"></div>
+
+    <div class="relative w-full max-w-[440px]">
+      <div class="flex items-center gap-3 mb-7">
+        <div class="w-11 h-11 bg-[#18181B] rounded-[12px] flex items-center justify-center text-white font-black text-[20px]">C</div>
+        <span class="font-bold text-[17px] tracking-tight text-[#18181B]">Contex360</span>
+      </div>
+
+      <div class="bg-white rounded-[18px] border border-[#E4E4E7] p-8 lg:p-9 shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)]">
+        <div class="flex items-center gap-3 mb-5">
+          <div class="w-10 h-10 rounded-[10px] bg-amber-50 flex items-center justify-center text-amber-700"><span class="material-symbols-outlined text-[20px]">lock_reset</span></div>
+          <div>
+            <h2 class="text-[18px] font-bold tracking-[-0.02em] text-[#18181B]">Cambia tu contraseña</h2>
+            <p class="text-[12px] text-[#71717A]">Por seguridad, debes cambiar tu contraseña temporal.</p>
+          </div>
+        </div>
+
+        <form @submit.prevent="handleSubmit" class="space-y-4">
+          <div>
+            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Contraseña actual</label>
+            <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">lock</span>
+              <input v-model="form.currentPassword" type="password" placeholder="Tu contraseña temporal" required class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
+            </div>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nueva contraseña</label>
+            <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">lock_reset</span>
+              <input v-model="form.newPassword" type="password" placeholder="Mínimo 8 caracteres" required minlength="8" class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
+            </div>
+          </div>
+          <div>
+            <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Confirmar contraseña</label>
+            <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">check</span>
+              <input v-model="form.confirmPassword" type="password" placeholder="Repite la contraseña" required class="flex-1 py-2.5 bg-transparent outline-none text-[14px] text-[#18181B] border-0" />
+            </div>
+          </div>
+
+          <div v-if="error" class="p-3 bg-rose-50 border border-rose-100 text-rose-700 text-[12px] font-semibold rounded-[10px]">{{ error }}</div>
+          <div v-if="success" class="p-3 bg-emerald-50 border border-emerald-100 text-emerald-700 text-[12px] font-semibold rounded-[10px]">Contraseña cambiada exitosamente. Redirigiendo…</div>
+
+          <button type="submit" :disabled="loading" class="w-full py-3 bg-[#2563EB] text-white rounded-[10px] text-[14px] font-semibold hover:bg-[#1D4ED8] disabled:opacity-50 flex items-center justify-center gap-2">
+            <span>{{ loading ? 'Cambiando…' : 'Cambiar contraseña y continuar' }}</span>
+            <span v-if="!loading" class="material-symbols-outlined text-[18px]">arrow_forward</span>
+          </button>
+        </form>
+      </div>
+
+      <p class="text-center text-[12px] text-[#A1A1AA] mt-5">¿Necesitas ayuda? <a href="#" class="text-[#2563EB] font-semibold hover:underline">Contacta a soporte</a></p>
+    </div>
+  </div>
+</template>
+
 <style scoped>
-.change-password-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background:
-    radial-gradient(circle at 70% 22%, rgba(255, 255, 255, 0.05), transparent 18%),
-    radial-gradient(circle at 84% 84%, rgba(255, 255, 255, 0.05), transparent 22%),
-    linear-gradient(180deg, #182833 0%, #15232d 52%, #1b2b35 100%);
-  color: #f7fbff;
-  padding: 2rem;
-}
-
-.change-password-card {
-  background: rgba(21, 35, 45, 0.95);
-  border: 1px solid rgba(16, 185, 129, 0.2);
-  border-radius: 16px;
-  padding: 3rem;
-  max-width: 450px;
-  width: 100%;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
-}
-
-.header {
-  text-align: center;
-  margin-bottom: 2.5rem;
-}
-
-.icon {
-  font-size: 3rem;
-  color: #10b981;
-  margin-bottom: 1rem;
-}
-
-h1 {
-  font-size: 1.75rem;
-  font-weight: 700;
-  margin: 0 0 0.75rem 0;
-  color: #fff;
-}
-
-p {
-  color: #94a3b8;
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-.form {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-label {
-  font-weight: 600;
-  font-size: 0.9rem;
-  color: #e2e8f0;
-}
-
-input {
-  padding: 0.875rem 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  background: rgba(15, 23, 42, 0.5);
-  color: #fff;
-  font-size: 1rem;
-  transition: all 0.2s;
-}
-
-input:focus {
-  outline: none;
-  border-color: #10b981;
-  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
-}
-
-input::placeholder {
-  color: #64748b;
-}
-
-.error-message {
-  background: rgba(239, 68, 68, 0.1);
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  color: #fca5a5;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.success-message {
-  background: rgba(16, 185, 129, 0.1);
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  color: #6ee7b7;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-}
-
-.submit-btn {
-  padding: 1rem;
-  background: #10b981;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.submit-btn:hover:not(:disabled) {
-  background: #059669;
-  transform: translateY(-1px);
-}
-
-.submit-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-}
+.material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24; }
 </style>
