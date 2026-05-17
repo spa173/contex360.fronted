@@ -32,7 +32,7 @@ export const useBillingStore = defineStore('billing', () => {
     (tenantInvoices.value || []).find(inv => inv.id === selections.value.invoiceId) || tenantInvoices.value[0] || null
   )
 
-  const canEmitInvoice = computed(() => root.can('emit_invoice'))
+  const canEmitInvoice = computed(() => root.can('manage_billing'))
 
   async function fetchInvoices() {
     if (!activeTenantId.value) return
@@ -62,7 +62,7 @@ export const useBillingStore = defineStore('billing', () => {
     try {
       invoiceSchema.parse(payload)
 
-      const response = await businessApi.createInvoice(payload)
+      const response = await businessApi.createInvoice(payload, activeTenantId.value)
       const invoice = response as Invoice
       invoices.value.unshift(invoice)
       const client = root.thirdParties.find(tp => tp.id === invoice.clientId)

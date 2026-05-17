@@ -229,7 +229,7 @@ export const useInventoryStore = defineStore('inventory', () => {
   async function fetchProducts() {
     if (!activeTenantId.value) return
     try {
-      const data = await businessApi.getProducts()
+      const data = await businessApi.getProducts(activeTenantId.value)
       products.value = data as Product[]
     } catch (e) { console.error('Error fetching products', e) }
   }

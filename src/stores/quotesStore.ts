@@ -21,15 +21,14 @@ export interface Quote {
   id: string
   tenantId: string
   number: string
-  customerId: string | null
-  customerName: string
-  status: 'Draft' | 'Sent' | 'Approved' | 'Expired' | 'Converted'
+  clientId: string | null
+  status: 'draft' | 'sent' | 'accepted' | 'expired' | 'converted'
   subtotal: number
   taxTotal: number
   total: number
-  date: string
-  dueDate: string
+  validUntil: string | null
   items: QuoteItem[]
+  client?: { id: string; name: string }
   createdAt: string
   updatedAt?: string
 }
@@ -94,7 +93,7 @@ export const useQuotesStore = defineStore('quotes', () => {
         tenantId: quote.tenantId, 
         entity: 'cotización', 
         action: 'Crear', 
-        description: `Se creó la cotización ${quote.number} para ${quote.customerName}.`, 
+        description: `Se creó la cotización ${quote.number} para ${quote.client?.name || quote.clientId}.`,
         actor: root.currentUser?.name || 'Sistema', 
         severity: 'info' 
       })
@@ -115,7 +114,7 @@ export const useQuotesStore = defineStore('quotes', () => {
       // Update local state
       const index = quotes.value.findIndex(q => q.id === quoteId)
       if (index !== -1) {
-        quotes.value[index].status = 'Converted'
+        quotes.value[index].status = 'converted'
       }
       
       appendAuditEvent(root.$state, { 

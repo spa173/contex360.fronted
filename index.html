@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark" data-theme="dark" style="color-scheme:dark">
+<html lang="en" class="light" data-theme="light">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -11,9 +11,14 @@
     <title>Contex360</title>
     <script>
       // --- THEME ---
-      localStorage.setItem('contex360-theme', 'dark');
-      document.documentElement.classList.add('dark');
-      document.documentElement.classList.remove('light');
+      (function() {
+        var stored = localStorage.getItem('contex360-theme');
+        var theme = (stored === 'light' || stored === 'dark') ? stored : 'light';
+        document.documentElement.classList.add(theme);
+        document.documentElement.classList.remove(theme === 'dark' ? 'light' : 'dark');
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
 
       // --- VERSION CHECK ---
       (function() {
