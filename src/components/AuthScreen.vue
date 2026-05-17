@@ -1,10 +1,12 @@
 <script setup>
 import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
+import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
 import { toast } from 'vue-sonner'
 
 const authStore = useAuthStore()
+const themeStore = useThemeStore()
 
 const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy', 'back'])
 
@@ -371,6 +373,7 @@ const togglePassword = () => {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
 
+/* Force Contrast for Enterprise Grade Visibility */
 input, select {
   color: #18181B !important;
   background-color: transparent !important;
@@ -380,6 +383,7 @@ input::placeholder {
   color: #A1A1AA !important;
 }
 
+/* Fix Autofill Blue Background */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus {
