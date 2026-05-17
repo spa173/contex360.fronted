@@ -54,7 +54,13 @@ const handleSubmit = async () => {
     <!-- Header -->
     <header class="relative h-20 px-6 lg:px-8 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50 border-b border-transparent">
       <div class="flex items-center gap-2.5">
-        <div class="w-8 h-8 bg-[#18181B] rounded-lg flex items-center justify-center text-white font-black text-lg">C</div>
+        <svg class="c360-mark flex-shrink-0" width="32" height="32" viewBox="0 0 56 56">
+          <rect width="56" height="56" rx="12" fill="#18181B"/>
+          <g class="rotor">
+            <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+          </g>
+        </svg>
         <span class="text-[18px] font-bold tracking-tight text-[#18181B]">Contex360</span>
       </div>
       <button
@@ -251,6 +257,8 @@ const handleSubmit = async () => {
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
+.c360-mark .rotor { transform-origin: 28px 28px; animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 
 input, select, textarea {
   color: #18181B !important;

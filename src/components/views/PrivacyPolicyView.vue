@@ -92,7 +92,13 @@ const finalSections = [
           Volver
         </button>
         <div class="flex items-center gap-2.5">
-          <div class="w-7 h-7 bg-[#18181B] rounded-md flex items-center justify-center text-white font-black text-[14px]">C</div>
+          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56">
+            <rect width="56" height="56" rx="12" fill="#18181B"/>
+            <g class="rotor">
+              <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+              <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            </g>
+          </svg>
           <span class="text-[16px] font-bold tracking-tight text-[#18181B]">Contex360</span>
         </div>
         <div class="w-[60px]"></div>
@@ -216,4 +222,6 @@ const finalSections = [
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
+.c360-mark .rotor { transform-origin: 28px 28px; animation: spin 8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
 </style>
