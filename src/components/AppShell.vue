@@ -21,6 +21,7 @@ import ProfileView from './views/ProfileView.vue'
 import AiView from './views/AiView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 import SpotlightCommand from './layout/SpotlightCommand.vue'
+import AlertsCenterModal from './common/AlertsCenterModal.vue'
 
 const store = useAuthStore()
 const themeStore = useThemeStore()
@@ -115,6 +116,7 @@ function toggleSidebar() {
 
       <ChatAssistant ref="chatRef" @navigate="handleNavigate" />
       <SpotlightCommand @select="handleSpotlightAction" />
+      <AlertsCenterModal />
     </div>
   </div>
 </template>

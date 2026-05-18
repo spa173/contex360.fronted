@@ -60,7 +60,7 @@ async function handleExport() {
 }
 
 function handleViewAlerts() {
-  emit('notify', { message: 'Centro de Alertas', detail: 'Abriendo panel de notificaciones avanzadas de ContexAI.' })
+  window.dispatchEvent(new CustomEvent('open-alerts-modal'))
 }
 
 async function fetchDashboardData() {

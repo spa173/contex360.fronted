@@ -59,6 +59,11 @@ function handleLanguageSelect(lang) {
 function handleHelpLink(title) {
   emit('notify', { message: title, detail: `Abriendo portal de asistencia para ${title.toLowerCase()}...` })
 }
+
+function handleViewAllAlerts() {
+  showNotifications.value = false
+  window.dispatchEvent(new CustomEvent('open-alerts-modal'))
+}
 </script>
 
 <template>
@@ -144,7 +149,7 @@ function handleHelpLink(title) {
             </a>
           </div>
           <div class="px-4 py-2.5 border-t border-[#F4F4F5] bg-[#FAFAFA] text-right">
-            <button class="text-[11px] font-semibold text-[#2563EB] hover:underline">Ver todas →</button>
+            <button @click="handleViewAllAlerts" class="text-[11px] font-semibold text-[#2563EB] hover:underline">Ver todas →</button>
           </div>
         </div>
       </div>
