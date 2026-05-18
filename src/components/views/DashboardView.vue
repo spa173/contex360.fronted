@@ -20,6 +20,8 @@ const dashboardData = ref({
   aiInsight: 'Tus ventas crecieron 15% esta semana vs la anterior. El producto con mayor rotación es Cable UTP Cat6 305m, considera reabastecer antes del 20 de mayo.',
 })
 const isLoading = ref(false)
+const selectedPeriod = ref('Este mes')
+const periods = ['Este mes', 'Este trimestre', 'Este año']
 
 const userName = computed(() => {
   const name = auth.currentUser?.name || 'Daniel Castro'
@@ -29,6 +31,23 @@ const userName = computed(() => {
 const formattedDate = computed(() => {
   return 'Hoy, 16 may 2026'
 })
+
+function togglePeriod() {
+  const nextIdx = (periods.indexOf(selectedPeriod.value) + 1) % periods.length
+  selectedPeriod.value = periods[nextIdx]
+  if (selectedPeriod.value === 'Este mes') dashboardData.value.totalSales = 8400000
+  if (selectedPeriod.value === 'Este trimestre') dashboardData.value.totalSales = 26500000
+  if (selectedPeriod.value === 'Este año') dashboardData.value.totalSales = 112400000
+}
+
+function handleExport() {
+  const emitObj = props.isActive ? props : null
+  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Exportación completada', detail: `Reporte financiero de ${selectedPeriod.value.toLowerCase()} generado en PDF.` } }))
+}
+
+function handleViewAlerts() {
+  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Centro de Alertas', detail: 'Abriendo panel de notificaciones avanzadas de ContexAI.' } }))
+}
 
 async function fetchDashboardData() {
   try {
@@ -69,12 +88,12 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
         <p class="text-[14px] text-[#71717A]">Aquí están los movimientos importantes de las últimas 24 horas.</p>
       </div>
       <div class="flex gap-2">
-        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors shadow-sm">
+        <button @click="togglePeriod" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors shadow-sm">
           <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-          Este mes
+          {{ selectedPeriod }}
           <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">expand_more</span>
         </button>
-        <button class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors shadow-sm">
+        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors shadow-sm">
           <span class="material-symbols-outlined text-[18px]">download</span>
           Exportar
         </button>
@@ -255,7 +274,7 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
         </div>
 
         <div class="pt-6 mt-6 border-t border-[#F4F4F5]">
-          <button class="text-[13px] font-bold text-[#18181B] hover:text-[#2563EB] transition-colors flex items-center gap-1.5 group">
+          <button @click="handleViewAlerts" class="text-[13px] font-bold text-[#18181B] hover:text-[#2563EB] transition-colors flex items-center gap-1.5 group">
             Ver todas las alertas <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
           </button>
         </div>

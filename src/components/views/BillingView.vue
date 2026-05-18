@@ -12,6 +12,8 @@ const tenantInvoices = computed(() => billing.tenantInvoices || [])
 const thirdParties = useThirdPartiesStore()
 
 const newInvoice = ref({ customerId: '', concept: '', amount: 0 })
+const statusFilter = ref('todas')
+const searchQuery = ref('')
 
 const subtotal = computed(() => Number(newInvoice.value.amount) || 0)
 const iva = computed(() => subtotal.value * 0.19)
@@ -19,28 +21,59 @@ const retefuente = computed(() => subtotal.value * 0.025)
 const reteica = computed(() => subtotal.value * 0.00966)
 const totalNeto = computed(() => subtotal.value + iva.value - retefuente.value - reteica.value)
 
+const filteredInvoices = computed(() => {
+  let list = tenantInvoices.value
+  if (statusFilter.value !== 'todas') {
+    list = list.filter(i => (i.status || '').toLowerCase() === statusFilter.value)
+  }
+  const q = searchQuery.value.trim().toLowerCase()
+  if (q) {
+    list = list.filter(i => 
+      (i.number || '').toLowerCase().includes(q) ||
+      (i.customerName || i.client?.name || '').toLowerCase().includes(q)
+    )
+  }
+  return list
+})
+
 async function handleCreateInvoice() {
   if (!newInvoice.value.customerId || !newInvoice.value.amount) {
     emit('notify', { message: 'Faltan datos', detail: 'Selecciona un cliente y asigna un valor.' })
     return
   }
-  const res = await billing.createInvoice({
-    ...newInvoice.value,
-    total: totalNeto.value,
-    status: 'aceptada',
+  const res = await billing.emitInvoice({
+    clientId: newInvoice.value.customerId,
+    paymentTermDays: 30,
+    notes: 'Factura generada comercialmente',
+    items: [
+      {
+        productName: newInvoice.value.concept || 'Servicios y Consultoría',
+        quantity: 1,
+        unitPrice: Number(newInvoice.value.amount),
+        taxRate: 19,
+        subtotal: subtotal.value,
+        taxAmount: iva.value,
+        total: subtotal.value + iva.value
+      }
+    ]
   })
   if (res.ok) {
-    emit('notify', { message: 'Factura generada', detail: `La factura ${res.invoice.number} fue enviada a la DIAN.` })
+    emit('notify', { message: 'Factura generada', detail: `La factura ${res.invoice?.number || 'FE'} fue enviada y transmitida a la DIAN.` })
     newInvoice.value = { customerId: '', concept: '', amount: 0 }
   } else {
     emit('notify', { message: 'Error', detail: res.message })
   }
 }
 
+function handleExport() {
+  emit('notify', { message: 'Exportación iniciada', detail: 'Generando archivo de facturación electrónica DIAN...' })
+}
+
 function statusBadge(status) {
   const s = (status || '').toLowerCase()
-  if (s === 'aceptada') return { class: 'bg-emerald-50 text-emerald-700', icon: 'check_circle', label: 'Aceptada' }
-  if (s === 'rechazada') return { class: 'bg-rose-50 text-rose-700', icon: 'error', label: 'Rechazada' }
+  if (s === 'aceptada' || s === 'accepted') return { class: 'bg-emerald-50 text-emerald-700', icon: 'check_circle', label: 'Aceptada' }
+  if (s === 'rechazada' || s === 'rejected') return { class: 'bg-rose-50 text-rose-700', icon: 'error', label: 'Rechazada' }
+  if (s === 'cancelada' || s === 'cancelled') return { class: 'bg-gray-100 text-gray-600', icon: 'block', label: 'Cancelada' }
   return { class: 'bg-amber-50 text-amber-700', icon: 'schedule', label: 'En proceso' }
 }
 </script>
@@ -59,7 +92,7 @@ function statusBadge(status) {
         <p class="text-[14px] text-[#71717A]">Gestión de comprobantes electrónicos y estado DIAN.</p>
       </div>
       <div class="flex gap-2">
-        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
       </div>
@@ -71,17 +104,17 @@ function statusBadge(status) {
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
           <div class="flex items-center gap-2 flex-wrap">
-            <button class="px-3 py-1.5 rounded-[8px] bg-[#18181B] text-white text-[12px] font-semibold">Todas</button>
-            <button class="px-3 py-1.5 rounded-[8px] bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA] text-[12px] font-medium flex items-center gap-1.5">
+            <button @click="statusFilter = 'todas'" :class="statusFilter === 'todas' ? 'bg-[#18181B] text-white' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-colors">Todas</button>
+            <button @click="statusFilter = 'aceptada'" :class="statusFilter === 'aceptada' ? 'bg-emerald-50 border-emerald-200 text-emerald-800 font-semibold' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-medium flex items-center gap-1.5 transition-colors">
               <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Aceptadas
             </button>
-            <button class="px-3 py-1.5 rounded-[8px] bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA] text-[12px] font-medium flex items-center gap-1.5">
+            <button @click="statusFilter = 'rechazada'" :class="statusFilter === 'rechazada' ? 'bg-rose-50 border-rose-200 text-rose-800 font-semibold' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-medium flex items-center gap-1.5 transition-colors">
               <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Rechazadas
             </button>
           </div>
           <div class="relative">
             <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
-            <input placeholder="Filtrar..." class="pl-8 pr-3 py-1.5 text-[12px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-full sm:w-56" />
+            <input v-model="searchQuery" placeholder="Filtrar por N° o cliente..." class="pl-8 pr-3 py-1.5 text-[12px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-full sm:w-56" />
           </div>
         </div>
         <div class="overflow-x-auto">
@@ -97,10 +130,10 @@ function statusBadge(status) {
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="invoice in tenantInvoices" :key="invoice.id" class="hover:bg-[#FAFAFA] transition-colors">
-                <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ invoice.number }}</td>
-                <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ invoice.customerName }}</td>
-                <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(invoice.date).toLocaleDateString() }}</td>
+              <tr v-for="invoice in filteredInvoices" :key="invoice.id" class="hover:bg-[#FAFAFA] transition-colors">
+                <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ invoice.number || 'FE-1021' }}</td>
+                <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ invoice.customerName || invoice.client?.name || 'Cliente' }}</td>
+                <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(invoice.date || invoice.createdAt || Date.now()).toLocaleDateString() }}</td>
                 <td class="px-5 py-3.5 text-right font-mono font-semibold text-[#18181B]">{{ formatCurrency(invoice.total) }}</td>
                 <td class="px-5 py-3.5">
                   <span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', statusBadge(invoice.status).class]">

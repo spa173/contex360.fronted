@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useTreasuryStore } from '../../stores/treasuryStore'
 import { formatCurrency } from '../../utils/ui'
 
@@ -12,13 +12,36 @@ const pendingPayments = computed(() => treasury.pendingPaymentsCount || 0)
 const pendingCollections = computed(() => treasury.pendingCollectionsCount || 0)
 const programmedPayments = computed(() => treasury.programmedPayments || [])
 
+const showAiInsight = ref(true)
+
 function handleApplyInsight() {
-  emit('notify', { message: 'Insight aplicado', detail: 'La programación fue optimizada por ContexAI.' })
+  treasury.applyInsightOptimization()
+  showAiInsight.value = false
+  emit('notify', { message: 'Insight de IA aplicado', detail: 'La fecha y prioridad del pago a TechCorp fueron optimizadas por ContexAI.' })
+}
+
+function handleIgnoreInsight() {
+  showAiInsight.value = false
+  emit('notify', { message: 'Insight descartado', detail: 'La programación original se mantendrá sin cambios.' })
+}
+
+function handleNewPayment() {
+  treasury.schedulePayment({
+    vendorName: 'Nuevo Proveedor SAS',
+    amount: 3500000,
+    priority: 'Alta'
+  })
+  emit('notify', { message: 'Pago programado', detail: 'Se ha agregado el nuevo pago al calendario de tesorería.' })
+}
+
+function handleExport() {
+  emit('notify', { message: 'Exportación iniciada', detail: 'Generando reporte de flujo de caja y programación de pagos...' })
 }
 
 function priorityClass(p) {
   if (p === 'Alta') return 'bg-rose-50 text-rose-700'
   if (p === 'Media') return 'bg-amber-50 text-amber-700'
+  if (p === 'Optimizada') return 'bg-purple-50 text-purple-700 font-bold'
   return 'bg-[#F4F4F5] text-[#71717A]'
 }
 </script>
@@ -34,10 +57,10 @@ function priorityClass(p) {
         <p class="text-[14px] text-[#71717A]">Gestión de liquidez, programación de pagos y flujo de caja.</p>
       </div>
       <div class="flex gap-2">
-        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
-        <button class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
+        <button @click="handleNewPayment" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
           <span class="material-symbols-outlined text-[18px]">add</span>Nuevo pago
         </button>
       </div>
@@ -83,7 +106,7 @@ function priorityClass(p) {
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="item in programmedPayments" :key="item.id" class="hover:bg-[#FAFAFA]">
+              <tr v-for="item in programmedPayments" :key="item.id" class="hover:bg-[#FAFAFA] transition-colors">
                 <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ item.vendorName }}</td>
                 <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(item.dueDate).toLocaleDateString() }}</td>
                 <td class="px-5 py-3.5"><span :class="['inline-flex px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase', priorityClass(item.priority)]">{{ item.priority }}</span></td>
@@ -100,13 +123,20 @@ function priorityClass(p) {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Insights de IA</h3></div>
-        <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-4">
+        <div v-if="showAiInsight" class="bg-white border border-[#E4E4E7] rounded-[14px] p-4 transition-all">
           <div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[16px] text-[#2563EB]">lightbulb</span><p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Optimización</p></div>
           <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Mover el pago a <strong>TechCorp</strong> al día 25 para evitar déficit temporal proyectado.</p>
           <div class="flex gap-2">
-            <button @click="handleApplyInsight" class="flex-1 py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold">Aplicar</button>
-            <button class="px-3 py-1.5 border border-[#E4E4E7] text-[#71717A] rounded-[8px] text-[11px] font-semibold">Ignorar</button>
+            <button @click="handleApplyInsight" class="flex-1 py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold hover:bg-[#1D4ED8] transition-colors">Aplicar</button>
+            <button @click="handleIgnoreInsight" class="px-3 py-1.5 border border-[#E4E4E7] text-[#71717A] rounded-[8px] text-[11px] font-semibold hover:bg-[#FAFAFA] transition-colors">Ignorar</button>
           </div>
+        </div>
+        <div v-else class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-[14px] p-4 text-center">
+          <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center text-emerald-600 mx-auto mb-1.5">
+            <span class="material-symbols-outlined text-[16px]">verified</span>
+          </div>
+          <p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Flujo de caja óptimo</p>
+          <p class="text-[11px] text-[#71717A] mt-0.5">Programación ajustada exitosamente.</p>
         </div>
       </div>
     </div>

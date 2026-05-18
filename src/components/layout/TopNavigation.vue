@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useThemeStore } from '../../stores/themeStore'
+import { useTranslationStore } from '../../stores/translationStore'
 
 const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
 const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel'])
@@ -38,6 +39,25 @@ function userInitials() {
 function tenantInitials(name) {
   if (!name) return 'AC'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
+}
+
+const translationStore = useTranslationStore()
+
+function handleLanguageSelect(lang) {
+  const code = lang.toLowerCase()
+  translationStore.setLanguage(code, {
+    dashboard: 'Visión general',
+    invoices: 'Facturación',
+    inventory: 'Inventario',
+    treasury: 'Tesorería',
+    reports: 'Reportes',
+    settings: 'Preferencias'
+  })
+  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Idioma actualizado', detail: `Cambiando idioma de la interfaz a ${lang}.` } }))
+}
+
+function handleHelpLink(title) {
+  window.dispatchEvent(new CustomEvent('notify', { detail: { message: title, detail: `Abriendo portal de asistencia para ${title.toLowerCase()}...` } }))
 }
 </script>
 
@@ -228,9 +248,10 @@ function tenantInitials(name) {
               <button
                 v-for="lang in ['ES', 'EN', 'PT']"
                 :key="lang"
+                @click="handleLanguageSelect(lang)"
                 :class="[
                   'flex-1 py-1 text-[11px] font-semibold rounded-[6px] transition-colors',
-                  lang === 'ES' ? 'bg-white text-[#18181B] shadow-sm' : 'text-[#71717A] hover:text-[#18181B]'
+                  translationStore.currentLanguage === lang.toLowerCase() ? 'bg-white text-[#18181B] shadow-sm font-bold' : 'text-[#71717A] hover:text-[#18181B]'
                 ]"
               >{{ lang }}</button>
             </div>
@@ -238,17 +259,17 @@ function tenantInitials(name) {
 
           <!-- Help links -->
           <div class="py-1 border-t border-[#F4F4F5]">
-            <button class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+            <button @click="handleHelpLink('Centro de ayuda')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">help</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Centro de ayuda</span>
               <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>
             </button>
-            <button class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+            <button @click="handleHelpLink('Contactar soporte')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">headset_mic</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Contactar soporte</span>
               <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>
             </button>
-            <button class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+            <button @click="handleHelpLink('Atajos de teclado')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">keyboard</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Atajos de teclado</span>
               <kbd class="text-[9px] font-mono text-[#A1A1AA] border border-[#E4E4E7] rounded px-1 py-0.5 bg-white">?</kbd>

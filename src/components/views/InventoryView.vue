@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { useInventoryStore } from '../../stores/inventoryStore'
 import { formatCurrency } from '../../utils/ui'
 
@@ -9,10 +9,54 @@ const emit = defineEmits(['notify'])
 const inventory = useInventoryStore()
 const tenantProducts = computed(() => inventory.tenantProducts || [])
 
+const searchQuery = ref('')
+const stockFilter = ref('todos')
+
 const totalValue = computed(() => tenantProducts.value.reduce((s, p) => s + (p.price * p.stock || 0), 0))
 const totalItems = computed(() => tenantProducts.value.reduce((s, p) => s + (p.stock || 0), 0))
 const lowStockCount = computed(() => tenantProducts.value.filter(p => p.stock <= p.minStock && p.stock > 0).length)
 const criticalStockCount = computed(() => tenantProducts.value.filter(p => p.stock === 0).length)
+
+const filteredProducts = computed(() => {
+  let list = tenantProducts.value
+  if (stockFilter.value === 'bajo') {
+    list = list.filter(p => p.stock <= p.minStock && p.stock > 0)
+  } else if (stockFilter.value === 'critico') {
+    list = list.filter(p => p.stock === 0)
+  }
+  const q = searchQuery.value.trim().toLowerCase()
+  if (q) {
+    list = list.filter(p => 
+      (p.sku || '').toLowerCase().includes(q) ||
+      (p.name || '').toLowerCase().includes(q) ||
+      (p.category || '').toLowerCase().includes(q)
+    )
+  }
+  return list
+})
+
+function handleNewProduct() {
+  const num = Math.floor(1000 + Math.random() * 9000)
+  const res = inventory.createProduct({
+    sku: `SKU-${num}`,
+    name: `Teclado Mecánico K${num}`,
+    price: 350000,
+    cost: 220000,
+    taxRate: 19,
+    stock: 25,
+    minStock: 5,
+    maxStock: 50,
+    category: 'Periféricos',
+    location: 'Bodega Central'
+  })
+  if (res?.ok) {
+    emit('notify', { message: 'Producto registrado', detail: res.detail || `SKU-${num} añadido correctamente.` })
+  }
+}
+
+function handleExport() {
+  emit('notify', { message: 'Exportación en curso', detail: 'Descargando existencias y valoración de inventario en Excel...' })
+}
 
 function statusBadge(product) {
   if (product.stock === 0) return { label: 'Crítico', class: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' }
@@ -32,10 +76,10 @@ function statusBadge(product) {
         <p class="text-[14px] text-[#71717A]">Gestión de existencias, rotación y alertas de reabastecimiento.</p>
       </div>
       <div class="flex gap-2">
-        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors">
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
-        <button class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
+        <button @click="handleNewProduct" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors">
           <span class="material-symbols-outlined text-[18px]">add</span>Nuevo producto
         </button>
       </div>
@@ -78,14 +122,14 @@ function statusBadge(product) {
       <div class="px-5 py-4 border-b border-[#F4F4F5] flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
         <div class="relative w-full sm:w-72">
           <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
-          <input placeholder="Buscar SKU o nombre..." class="pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-full" />
+          <input v-model="searchQuery" placeholder="Buscar SKU o nombre..." class="pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-full" />
         </div>
         <div class="flex gap-2">
-          <button class="px-3 py-1.5 rounded-[8px] bg-[#18181B] text-white text-[12px] font-semibold">Todos</button>
-          <button class="px-3 py-1.5 rounded-[8px] bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA] text-[12px] font-medium flex items-center gap-1.5">
+          <button @click="stockFilter = 'todos'" :class="stockFilter === 'todos' ? 'bg-[#18181B] text-white' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-colors">Todos</button>
+          <button @click="stockFilter = 'bajo'" :class="stockFilter === 'bajo' ? 'bg-amber-50 border-amber-200 text-amber-800 font-semibold' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-medium flex items-center gap-1.5 transition-colors">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Bajo
           </button>
-          <button class="px-3 py-1.5 rounded-[8px] bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA] text-[12px] font-medium flex items-center gap-1.5">
+          <button @click="stockFilter = 'critico'" :class="stockFilter === 'critico' ? 'bg-rose-50 border-rose-200 text-rose-800 font-semibold' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-medium flex items-center gap-1.5 transition-colors">
             <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Crítico
           </button>
         </div>
@@ -105,7 +149,7 @@ function statusBadge(product) {
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="p in tenantProducts" :key="p.id" class="hover:bg-[#FAFAFA]">
+            <tr v-for="p in filteredProducts" :key="p.id" class="hover:bg-[#FAFAFA] transition-colors">
               <td class="px-5 py-3.5 font-mono text-[#A1A1AA] text-[12px]">{{ p.sku || 'N/A' }}</td>
               <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ p.name }}</td>
               <td class="px-5 py-3.5 text-[#71717A]">{{ p.category || 'General' }}</td>
@@ -134,8 +178,8 @@ function statusBadge(product) {
                 </button>
               </td>
             </tr>
-            <tr v-if="tenantProducts.length === 0">
-              <td colspan="7" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay productos registrados.</td>
+            <tr v-if="filteredProducts.length === 0">
+              <td colspan="7" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No se encontraron productos con el criterio de búsqueda.</td>
             </tr>
           </tbody>
         </table>

@@ -29,13 +29,30 @@ export const useTreasuryStore = defineStore('treasury', () => {
     ),
   )
 
-  const programmedPayments = computed(() => {
-    return [
-      { id: 'pay-1', vendorName: 'TechCorp Solutions', dueDate: new Date(Date.now() + 86400000).toISOString(), priority: 'Alta', amount: 12500000, status: 'Programado' },
-      { id: 'pay-2', vendorName: 'Suministros Globales SAS', dueDate: new Date(Date.now() + 172800000).toISOString(), priority: 'Media', amount: 4800000, status: 'Pendiente' },
-      { id: 'pay-3', vendorName: 'Servicios Logísticos del Norte', dueDate: new Date(Date.now() + 345600000).toISOString(), priority: 'Baja', amount: 1850000, status: 'Aprobado' },
-    ]
-  })
+  const programmedPayments = ref<any[]>([
+    { id: 'pay-1', vendorName: 'TechCorp Solutions', dueDate: new Date(Date.now() + 86400000).toISOString(), priority: 'Alta', amount: 12500000, status: 'Programado' },
+    { id: 'pay-2', vendorName: 'Suministros Globales SAS', dueDate: new Date(Date.now() + 172800000).toISOString(), priority: 'Media', amount: 4800000, status: 'Pendiente' },
+    { id: 'pay-3', vendorName: 'Servicios Logísticos del Norte', dueDate: new Date(Date.now() + 345600000).toISOString(), priority: 'Baja', amount: 1850000, status: 'Aprobado' },
+  ])
+
+  function applyInsightOptimization() {
+    const techCorp = programmedPayments.value.find(p => p.vendorName === 'TechCorp Solutions')
+    if (techCorp) {
+      techCorp.dueDate = new Date(Date.now() + 86400000 * 9).toISOString() // Moved 9 days later
+      techCorp.priority = 'Optimizada'
+    }
+  }
+
+  function schedulePayment(payment: any) {
+    programmedPayments.value.unshift({
+      id: `pay-${Date.now()}`,
+      vendorName: payment.vendorName || 'Proveedor General',
+      dueDate: payment.dueDate || new Date(Date.now() + 86400000 * 5).toISOString(),
+      priority: payment.priority || 'Media',
+      amount: Number(payment.amount) || 1000000,
+      status: 'Programado'
+    })
+  }
 
   const totalBalance = computed(() => balance.value.balance || 24580000)
   const pendingPaymentsCount = computed(() => programmedPayments.value.length)
@@ -98,5 +115,7 @@ export const useTreasuryStore = defineStore('treasury', () => {
     pendingCollectionsCount,
     fetchAll,
     createTransaction,
+    applyInsightOptimization,
+    schedulePayment,
   }
 })

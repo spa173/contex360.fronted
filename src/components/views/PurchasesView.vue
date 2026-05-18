@@ -14,9 +14,27 @@ const isProcessing = ref(false)
 
 async function handleFileUpload() {
   isProcessing.value = true
-  setTimeout(() => {
+  setTimeout(async () => {
     isProcessing.value = false
-    emit('notify', { message: 'IA finalizada', detail: 'Documento procesado con 98% de precisión.' })
+    const res = await purchases.registerPurchase({
+      providerId: 'tp-2',
+      paymentTermDays: 30,
+      notes: 'Factura procesada con ContexAI OCR (98% precisión)',
+      items: [
+        {
+          productId: 'prod-1',
+          productName: 'Suministros de Oficina y Hardware',
+          quantity: 2,
+          unitPrice: 2400000,
+          taxRate: 0.19
+        }
+      ]
+    })
+    if (res.ok) {
+      emit('notify', { message: 'Factura registrada', detail: `Compra ${res.purchase?.number || 'FAC-OCR'} contabilizada exitosamente.` })
+    } else {
+      emit('notify', { message: 'Aviso IA', detail: res.message })
+    }
   }, 2000)
 }
 </script>

@@ -54,6 +54,39 @@ export const useAccountingStore = defineStore('accounting', () => {
     }
   }
 
+  async function createLedgerEntry(payload: Record<string, any>) {
+    isLoading.value = true
+    try {
+      const created = await businessApi.createLedgerEntry(payload, activeTenantId.value!)
+      const entry: LedgerEntry = {
+        id: created.id || uid('entry'),
+        tenantId: activeTenantId.value || '',
+        referenceType: payload.referenceType || 'manual',
+        referenceId: payload.referenceId || uid('ref'),
+        description: payload.description || 'Asiento contable',
+        amount: payload.amount || 0,
+        entryAt: payload.entryAt || new Date().toISOString(),
+        createdAt: new Date().toISOString(),
+        lines: payload.lines || []
+      }
+      ledgerEntries.value.unshift(entry)
+      appendAuditEvent(root.$state, {
+        tenantId: entry.tenantId,
+        entity: 'contabilidad',
+        action: 'Crear asiento',
+        description: `Se creó el asiento ${entry.description}.`,
+        actor: root.currentUser?.name || 'Sistema',
+        severity: 'info'
+      })
+      return { ok: true, message: 'Asiento contable creado exitosamente.', entry }
+    } catch (error) {
+      console.error('Error creating ledger entry:', error)
+      return { ok: false, message: error instanceof Error ? error.message : 'Error al crear asiento.' }
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   // Report Generators
   const balanceSheet = computed((): BalanceSheet => {
     const entries = tenantLedgerEntries.value
@@ -93,5 +126,6 @@ export const useAccountingStore = defineStore('accounting', () => {
     if (newId) fetchLedgerEntries()
   }, { immediate: true })
 
-  return { ledgerEntries, selections, isLoading, tenantLedgerEntries, selectedEntry, addEntry, selectEntry, fetchLedgerEntries, balanceSheet, profitAndLoss }
+  return { ledgerEntries, selections, isLoading, tenantLedgerEntries, selectedEntry, addEntry, selectEntry, fetchLedgerEntries, createLedgerEntry, balanceSheet, profitAndLoss }
 })
+
