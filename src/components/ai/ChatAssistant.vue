@@ -209,7 +209,7 @@ const sendMessage = async () => {
 
     const mappedHistory = historyToSend.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
-      parts: [{ text: msg.content }]
+      parts: [{ text: msg.extractedData ? `${msg.content}\n\n[MEMORIA DEL ARCHIVO ADJUNTO EN ESTA CONVERSACIÓN]: ${msg.extractedData}` : msg.content }]
     }))
 
     const response = await businessApi.chatWithAi(userMsg, mappedHistory, attachmentBase64).catch((err) => {
@@ -218,6 +218,12 @@ const sendMessage = async () => {
     })
     
     if (response && response.content) {
+      if (response.extractedData) {
+        const lastUserMsg = chatHistory.value[chatHistory.value.length - 1]
+        if (lastUserMsg && lastUserMsg.role === 'user') {
+          lastUserMsg.extractedData = response.extractedData
+        }
+      }
       chatHistory.value.push({
         role: 'assistant',
         content: response.content,
