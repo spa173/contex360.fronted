@@ -43,7 +43,14 @@ const chatHistory = ref([
 const suggestions = [
   '¿Cuánto facturé este mes?',
   'Productos por reabastecer',
-  'Top clientes Q2'
+  'Top clientes Q2',
+  'Conciliar pagos pendientes',
+  'Recomendar acciones de optimización fiscal',
+  'Análisis de flujo de caja',
+  'Listado de productos con bajo stock',
+  'Resumen financiero del mes',
+  'Comparativa de ventas vs presupuesto',
+  'Mejores horarios de atención'
 ]
 
 const toggleChat = () => {
