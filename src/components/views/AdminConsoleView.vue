@@ -118,10 +118,21 @@ function handleIntegration(name) {
                 <p class="text-[13px] font-extrabold text-[#18181B]">OCR Automático</p>
                 <p class="text-[12px] text-[#71717A] mt-0.5">Procesar facturas con IA</p>
               </div>
-              <label class="relative inline-flex items-center cursor-pointer select-none">
-                <input type="checkbox" v-model="adminStore.ocrEnabled" @change="handleOcrChange" class="opacity-0 w-0 h-0 absolute peer">
-                <div class="w-11 h-6 bg-[#D4D4D8] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-[#2563EB]"></div>
-              </label>
+              <button
+                type="button"
+                @click="handleOcrChange"
+                :class="[
+                  'w-12 h-7 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center shadow-inner cursor-pointer select-none border border-black/10',
+                  adminStore.ocrEnabled ? 'bg-[#2563EB]' : 'bg-[#D4D4D8]'
+                ]"
+              >
+                <div
+                  :class="[
+                    'bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300',
+                    adminStore.ocrEnabled ? 'translate-x-5' : 'translate-x-0'
+                  ]"
+                ></div>
+              </button>
             </div>
           </div>
         </section>
@@ -187,10 +198,21 @@ function handleIntegration(name) {
             </td>
             <td class="px-6 py-4 text-right font-mono font-bold text-[#18181B]">{{ t.rate }}</td>
             <td class="px-6 py-4">
-              <label class="relative inline-flex items-center cursor-pointer select-none">
-                <input type="checkbox" v-model="t.active" @change="adminStore.saveSettings()" class="opacity-0 w-0 h-0 absolute peer">
-                <div class="w-10 h-5 bg-[#D4D4D8] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]"></div>
-              </label>
+              <button
+                type="button"
+                @click="t.active = !t.active; adminStore.saveSettings()"
+                :class="[
+                  'w-11 h-6 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center shadow-inner cursor-pointer select-none border border-black/10',
+                  t.active ? 'bg-[#18181B]' : 'bg-[#D4D4D8]'
+                ]"
+              >
+                <div
+                  :class="[
+                    'bg-white w-4 h-4 rounded-full shadow transform transition-transform duration-300',
+                    t.active ? 'translate-x-5' : 'translate-x-0'
+                  ]"
+                ></div>
+              </button>
             </td>
           </tr>
         </tbody>
