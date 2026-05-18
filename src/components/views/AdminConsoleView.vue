@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useAdminStore } from '../../stores/adminStore'
+import { useTranslationStore } from '../../stores/translationStore'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const adminStore = useAdminStore()
+const translationStore = useTranslationStore()
 
 const activeTab = ref('empresa')
 const tabs = [
@@ -18,6 +20,12 @@ const tabs = [
 
 onMounted(() => {
   adminStore.loadSettings()
+})
+
+watch(() => adminStore.language, (newVal) => {
+  if (newVal.includes('English')) translationStore.setLanguage('en')
+  else if (newVal.includes('Português')) translationStore.setLanguage('pt')
+  else translationStore.setLanguage('es')
 })
 
 function handleSave() {

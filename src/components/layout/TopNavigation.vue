@@ -45,15 +45,9 @@ const translationStore = useTranslationStore()
 
 function handleLanguageSelect(lang) {
   const code = lang.toLowerCase()
-  translationStore.setLanguage(code, {
-    dashboard: 'Visión general',
-    invoices: 'Facturación',
-    inventory: 'Inventario',
-    treasury: 'Tesorería',
-    reports: 'Reportes',
-    settings: 'Preferencias'
-  })
-  emit('notify', { message: 'Idioma actualizado', detail: `Cambiando idioma de la interfaz a ${lang}.` })
+  translationStore.setLanguage(code)
+  const langNames = { es: 'Español', en: 'English (US)', pt: 'Português (Brasil)' }
+  emit('notify', { message: 'Idioma actualizado', detail: `La interfaz ha sido traducida a ${langNames[code]}.` })
 }
 
 function handleHelpLink(title) {

@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
+import { useTranslationStore } from '../stores/translationStore'
 import { useToasts } from '../composables/useToasts'
 import AppSidebar from './layout/AppSidebar.vue'
 import TopNavigation from './layout/TopNavigation.vue'
@@ -25,6 +26,7 @@ import AlertsCenterModal from './common/AlertsCenterModal.vue'
 
 const store = useAuthStore()
 const themeStore = useThemeStore()
+const translationStore = useTranslationStore()
 const { pushToast } = useToasts()
 const isSidebarOpen = ref(false)
 const emit = defineEmits(['open-admin-panel', 'exit-erp'])
@@ -57,6 +59,7 @@ function onWindowNavigate(e) {
 }
 
 onMounted(() => {
+  translationStore.initLanguage()
   window.addEventListener('notify', onWindowNotify)
   window.addEventListener('navigate', onWindowNavigate)
 })
