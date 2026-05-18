@@ -18,6 +18,30 @@ const tabs = [
   { id: 'logs', label: 'Logs' },
 ]
 
+const showTaxModal = ref(false)
+const newTax = ref({
+  name: '',
+  code: '',
+  type: 'Suma',
+  rate: ''
+})
+
+function submitNewTax() {
+  if (!newTax.value.name || !newTax.value.rate) {
+    emit('notify', { message: 'Campos incompletos', detail: 'Por favor ingresa un nombre y una tasa para el nuevo impuesto.' })
+    return
+  }
+  adminStore.addTax({
+    name: newTax.value.name,
+    code: newTax.value.code || '01',
+    type: newTax.value.type,
+    rate: newTax.value.rate
+  })
+  emit('notify', { message: 'Impuesto configurado', detail: `El impuesto ${newTax.value.name} ha sido guardado exitosamente en el sistema.` })
+  showTaxModal.value = false
+  newTax.value = { name: '', code: '', type: 'Suma', rate: '' }
+}
+
 onMounted(() => {
   adminStore.loadSettings()
 })
@@ -197,46 +221,103 @@ function handleIntegration(name) {
     <div v-if="activeTab === 'impuestos'" class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
       <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
         <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-[#18181B]">percent</span><h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Impuestos configurados</h3></div>
-        <button @click="emit('notify', { message: 'Nuevo impuesto', detail: 'Abriendo formulario de creación de retención fiscal.' })" class="flex items-center gap-2 px-3.5 py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-[10px] text-[12px] font-semibold transition-colors">
+        <button @click="showTaxModal = true" class="flex items-center gap-2 px-3.5 py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-[10px] text-[12px] font-semibold transition-colors">
           <span class="material-symbols-outlined text-[16px]">add</span>Nuevo impuesto
         </button>
       </div>
-      <table class="w-full text-left">
-        <thead>
-          <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-            <th class="px-6 py-3">Nombre</th><th class="px-6 py-3">Código DIAN</th><th class="px-6 py-3">Tipo</th><th class="px-6 py-3 text-right">Tasa</th><th class="px-6 py-3">Activo</th>
-          </tr>
-        </thead>
-        <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-          <tr v-for="t in adminStore.taxes" :key="t.id" class="hover:bg-[#FAFAFA]/50 transition-colors">
-            <td class="px-6 py-4 font-bold text-[#18181B]">{{ t.name }}</td>
-            <td class="px-6 py-4 font-mono text-[#A1A1AA] text-[12px]">{{ t.code }}</td>
-            <td class="px-6 py-4">
-              <span :class="['inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm', t.type === 'Suma' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200']">
-                {{ t.type }}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-right font-mono font-bold text-[#18181B]">{{ t.rate }}</td>
-            <td class="px-6 py-4">
-              <button
-                type="button"
-                @click="t.active = !t.active; adminStore.saveSettings()"
-                :class="[
-                  'w-11 h-6 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center shadow-inner cursor-pointer select-none border border-black/10',
-                  t.active ? 'bg-[#18181B]' : 'bg-[#D4D4D8]'
-                ]"
-              >
-                <div
+      <div class="overflow-x-auto">
+        <table class="w-full text-left min-w-[550px]">
+          <thead>
+            <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
+              <th class="px-6 py-3">Nombre</th><th class="px-6 py-3">Código DIAN</th><th class="px-6 py-3">Tipo</th><th class="px-6 py-3 text-right">Tasa</th><th class="px-6 py-3">Activo</th>
+            </tr>
+          </thead>
+          <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
+            <tr v-for="t in adminStore.taxes" :key="t.id" class="hover:bg-[#FAFAFA]/50 transition-colors">
+              <td class="px-6 py-4 font-bold text-[#18181B]">{{ t.name }}</td>
+              <td class="px-6 py-4 font-mono text-[#A1A1AA] text-[12px]">{{ t.code }}</td>
+              <td class="px-6 py-4">
+                <span :class="['inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm', t.type === 'Suma' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200']">
+                  {{ t.type }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-right font-mono font-bold text-[#18181B]">{{ t.rate }}</td>
+              <td class="px-6 py-4">
+                <button
+                  type="button"
+                  @click="t.active = !t.active; adminStore.saveSettings()"
                   :class="[
-                    'bg-white w-4 h-4 rounded-full shadow transform transition-transform duration-300',
-                    t.active ? 'translate-x-5' : 'translate-x-0'
+                    'w-11 h-6 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center shadow-inner cursor-pointer select-none border border-black/10',
+                    t.active ? 'bg-[#18181B]' : 'bg-[#D4D4D8]'
                   ]"
-                ></div>
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+                >
+                  <div
+                    :class="[
+                      'bg-white w-4 h-4 rounded-full shadow transform transition-transform duration-300',
+                      t.active ? 'translate-x-5' : 'translate-x-0'
+                    ]"
+                  ></div>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Modal Nuevo Impuesto -->
+    <div v-if="showTaxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-full bg-[#FAFAFA] border border-[#E4E4E7] flex items-center justify-center text-[#18181B]">
+              <span class="material-symbols-outlined text-[18px]">account_balance</span>
+            </div>
+            <div>
+              <h3 class="text-[16px] font-bold text-[#18181B]">Configurar nuevo impuesto</h3>
+              <p class="text-[12px] text-[#71717A]">Agrega una retención o tributo al catálogo</p>
+            </div>
+          </div>
+          <button @click="showTaxModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <form @submit.prevent="submitNewTax" class="space-y-4">
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Nombre comercial (Ej. Impoconsumo)</label>
+            <input v-model="newTax.name" required placeholder="Nombre del impuesto" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-medium outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Código DIAN</label>
+              <input v-model="newTax.code" placeholder="Ej. 08" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tipo de impacto</label>
+              <select v-model="newTax.type" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option value="Suma">Suma (+)</option>
+                <option value="Resta">Resta (-)</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tasa Porcentual (%) o por mil (‰)</label>
+            <input v-model="newTax.rate" required placeholder="Ej. 8% o 4‰" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono font-bold outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
+            <button type="button" @click="showTaxModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm">
+              Guardar impuesto
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
 
     <!-- Integraciones -->

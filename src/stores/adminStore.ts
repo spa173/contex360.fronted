@@ -133,6 +133,18 @@ export const useAdminStore = defineStore('admin', () => {
     return ocrEnabled.value
   }
 
+  function addTax(tax: { name: string; code: string; type: string; rate: string }) {
+    taxes.value.push({
+      id: tax.name.toLowerCase().replace(/\s+/g, '-'),
+      name: tax.name,
+      code: tax.code,
+      type: tax.type,
+      rate: tax.rate.includes('%') || tax.rate.includes('‰') ? tax.rate : `${tax.rate}%`,
+      active: true
+    })
+    saveSettings()
+  }
+
   return {
     ocrEnabled,
     razonSocial,
@@ -145,6 +157,7 @@ export const useAdminStore = defineStore('admin', () => {
     loadSettings,
     saveSettings,
     toggleOcr,
+    addTax,
     applyRegionalFormatting
   }
 })
