@@ -31,12 +31,12 @@ onUnmounted(() => {
 })
 
 function userInitials() {
-  const name = props.user?.name || 'Usuario'
+  const name = props.user?.name || 'Daniel Castro'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 
 function tenantInitials(name) {
-  if (!name) return 'C3'
+  if (!name) return 'AC'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 </script>
@@ -146,8 +146,8 @@ function tenantInitials(name) {
             {{ userInitials() }}
           </div>
           <div class="text-left hidden lg:block">
-            <p class="text-[12px] font-semibold text-[#18181B] leading-tight whitespace-nowrap">{{ user?.name || 'Usuario' }}</p>
-            <p class="text-[10px] text-[#A1A1AA] leading-tight">{{ user?.role || user?.title || 'Admin' }}</p>
+            <p class="text-[12px] font-bold text-[#18181B] leading-tight whitespace-nowrap">{{ (user?.name || 'Daniel Castro').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
+            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider">{{ user?.role || user?.title || 'Administrador' }}</p>
           </div>
           <span class="material-symbols-outlined text-[15px] text-[#A1A1AA]">expand_more</span>
         </button>
@@ -162,23 +162,26 @@ function tenantInitials(name) {
               {{ userInitials() }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-[13px] font-bold text-[#18181B] tracking-tight truncate">{{ user?.name || 'Usuario' }}</p>
-              <p class="text-[11px] text-[#71717A] truncate">{{ user?.email || '' }}</p>
-              <span class="inline-block mt-0.5 text-[10px] font-semibold uppercase tracking-wide bg-[#18181B] text-white px-1.5 py-0.5 rounded-[4px]">{{ user?.role || 'Admin' }}</span>
+              <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate leading-tight">{{ user?.name || 'Daniel Castro' }}</p>
+              <p class="text-[12px] text-[#71717A] truncate leading-snug">{{ user?.email || 'daniel.castro@contex360.com' }}</p>
+              <span class="inline-block mt-1 text-[10px] font-extrabold uppercase tracking-wider bg-[#2563EB]/10 text-[#2563EB] px-2 py-0.5 rounded-[6px]">{{ user?.role || 'Administrador' }}</span>
             </div>
           </div>
 
           <!-- Workspace activo -->
           <div v-if="activeTenant" class="mx-3 mb-1 px-3 py-2.5 rounded-[10px] bg-[#FAFAFA] border border-[#F4F4F5]">
-            <p class="text-[10px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1.5">Workspace activo</p>
-            <div class="flex items-center gap-2">
-              <div class="w-6 h-6 rounded-[6px] bg-[#2563EB] flex items-center justify-center text-white text-[9px] font-bold flex-shrink-0">
-                {{ tenantInitials(activeTenant?.name) }}
+            <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1.5">Workspace activo</p>
+            <div class="flex items-center gap-2.5 justify-between">
+              <div class="flex items-center gap-2.5 min-w-0">
+                <div class="w-6 h-6 rounded-[6px] bg-[#2563EB] flex items-center justify-center text-white text-[10px] font-bold flex-shrink-0">
+                  {{ tenantInitials(activeTenant?.name) }}
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[13px] font-bold text-[#18181B] truncate leading-none mb-1">{{ activeTenant?.name || 'Andina Cargo SAS' }}</p>
+                  <p class="text-[11px] text-[#71717A] leading-none">5 workspaces más</p>
+                </div>
               </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-[12px] font-semibold text-[#18181B] truncate">{{ activeTenant?.name }}</p>
-                <p v-if="accessibleTenants?.length > 1" class="text-[10px] text-[#A1A1AA]">{{ accessibleTenants.length - 1 }} workspace{{ accessibleTenants.length - 1 !== 1 ? 's' : '' }} más</p>
-              </div>
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">unfold_more</span>
             </div>
           </div>
 

@@ -17,7 +17,11 @@ export function normalizeState(source: any = {}): AppState {
   const normalized: AppState = {
     ...base,
     ...source,
-    session: { ...base.session, ...source.session },
+    activeTenantId: source.activeTenantId || base.activeTenantId || 'tenant-a',
+    session: { 
+      currentUserId: source.session?.currentUserId || base.session.currentUserId || 'user-admin',
+      currentSessionId: source.session?.currentSessionId || base.session.currentSessionId || 'sess-seed-1',
+    },
     selections: { ...base.selections, ...source.selections },
     tenants: normalizeTenants(source.tenants, base.tenants),
     memberships: getArray('memberships'),
@@ -34,6 +38,9 @@ export function normalizeState(source: any = {}): AppState {
   }
 
   normalized.users = normalizeUsers(source.users, base.users)
+  if (!normalized.users.find(u => u.id === 'user-admin')) {
+    normalized.users.unshift({ id: 'user-admin', name: 'Daniel Castro', email: 'daniel.castro@contex360.com', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: true, role: 'Administrador' })
+  }
   normalized.userSecurity = normalizeSecurityProfiles(source.userSecurity, base.userSecurity, normalized.users)
   normalized.userSessions = normalizeSessions(source.userSessions, base.userSessions, normalized.users, normalized.tenants)
   

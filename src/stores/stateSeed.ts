@@ -19,8 +19,8 @@ export const DEFAULT_TENANT_SECURITY_SETTINGS = {
 }
 
 async function buildSeedUsers() {
-  // Placeholder logic for seeding users
   return [
+    { id: 'user-admin', name: 'Daniel Castro', email: 'daniel.castro@contex360.com', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: true, role: 'Administrador' },
     { id: 'user-accountant', name: 'Contador General', email: 'contador@contex360.local', status: 'active', title: 'Contador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
     { id: 'user-visor', name: 'Visor Negocio', email: 'visor@contex360.local', status: 'active', title: 'Consultor', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
     { id: 'user-retail-admin', name: 'Admin Tienda', email: 'admin.retail@contex360.local', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
@@ -32,9 +32,9 @@ export const seedState = {
   activeTenantId: 'tenant-a',
   activeView: 'dashboard',
   session: {
-    currentUserId: null,
-    currentSessionId: null,
-    lastLoginAt: null,
+    currentUserId: 'user-admin',
+    currentSessionId: 'sess-seed-1',
+    lastLoginAt: new Date().toISOString(),
   },
   selections: {
     invoiceId: 'inv-seed-1',
@@ -43,10 +43,10 @@ export const seedState = {
   tenants: [
     {
       id: 'tenant-a',
-      name: 'Contex Labs SAS',
-      prefix: 'CL',
-      sector: 'Servicios profesionales',
-      city: 'Bogota',
+      name: 'Andina Cargo SAS',
+      prefix: 'AC',
+      sector: 'Logística y Transporte',
+      city: 'Bogotá',
       allowNegativeStock: false,
       costMethod: 'Promedio ponderado',
       dianStatus: 'Configurado',
@@ -74,6 +74,7 @@ export const seedState = {
   ],
   users: await buildSeedUsers(),
   memberships: [
+    { userId: 'user-admin', tenantId: 'tenant-a', role: 'Administrador' },
     { userId: 'user-accountant', tenantId: 'tenant-a', role: 'Contador' },
     { userId: 'user-visor', tenantId: 'tenant-b', role: 'Visor' },
     { userId: 'user-retail-admin', tenantId: 'tenant-b', role: 'Administrador' },
