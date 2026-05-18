@@ -162,10 +162,45 @@ const sendSuggestedPrompt = async (promptText) => {
   await sendMessage()
 }
 
-const fileToBase64 = (file) => new Promise((resolve, reject) => {
+const compressFileToBase64 = (file) => new Promise((resolve, reject) => {
+  if (!file.type.startsWith('image/')) {
+    const reader = new FileReader()
+    reader.readAsDataURL(file)
+    reader.onload = () => resolve(reader.result)
+    reader.onerror = error => reject(error)
+    return
+  }
+
   const reader = new FileReader()
   reader.readAsDataURL(file)
-  reader.onload = () => resolve(reader.result)
+  reader.onload = (event) => {
+    const img = new Image()
+    img.src = event.target.result
+    img.onload = () => {
+      const canvas = document.createElement('canvas')
+      let width = img.width
+      let height = img.height
+      const maxDim = 1600
+
+      if (width > maxDim || height > maxDim) {
+        if (width > height) {
+          height = Math.round((height * maxDim) / width)
+          width = maxDim
+        } else {
+          width = Math.round((width * maxDim) / height)
+          height = maxDim
+        }
+      }
+
+      canvas.width = width
+      canvas.height = height
+      const ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, width, height)
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.85)
+      resolve(dataUrl)
+    }
+    img.onerror = error => reject(error)
+  }
   reader.onerror = error => reject(error)
 })
 
@@ -176,7 +211,7 @@ const sendMessage = async () => {
   let attachmentBase64 = null
   if (fileData && fileData.raw) {
     try {
-      attachmentBase64 = await fileToBase64(fileData.raw)
+      attachmentBase64 = await compressFileToBase64(fileData.raw)
     } catch (e) {
       console.error('Error converting file to base64', e)
     }
