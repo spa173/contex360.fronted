@@ -165,9 +165,12 @@ const sendSuggestedPrompt = async (promptText) => {
 const sendMessage = async () => {
   if ((!message.value.trim() && !attachedFile.value) || isLoading.value) return
 
-  const userMsg = message.value || (attachedFile.value ? `Por favor analiza el archivo adjunto: ${attachedFile.value.name}` : '')
   const fileData = attachedFile.value
-  
+  let userMsg = message.value.trim()
+  if (fileData) {
+    userMsg = userMsg ? `[Archivo adjunto: ${fileData.name}] ${userMsg}` : `[Archivo adjunto: ${fileData.name}] Por favor analiza este documento o imagen.`
+  }
+
   chatHistory.value.push({ 
     role: 'user', 
     content: userMsg, 
