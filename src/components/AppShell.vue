@@ -52,11 +52,17 @@ function onWindowNotify(e) {
   if (e.detail) handleNotify(e.detail)
 }
 
+function onWindowNavigate(e) {
+  if (e.detail) handleNavigate(e.detail)
+}
+
 onMounted(() => {
   window.addEventListener('notify', onWindowNotify)
+  window.addEventListener('navigate', onWindowNavigate)
 })
 onUnmounted(() => {
   window.removeEventListener('notify', onWindowNotify)
+  window.removeEventListener('navigate', onWindowNavigate)
 })
 
 function handleSpotlightAction(payload) {

@@ -106,6 +106,8 @@ function toggleRead(id) {
   if (alert) alert.read = !alert.read
 }
 
+const selectedXmlAlert = ref(null)
+
 async function exportAlerts() {
   await generatePdfReport({
     title: 'Historial de Alertas y Eventos del Sistema',
@@ -122,9 +124,55 @@ async function exportAlerts() {
 
 function handleAlertAction(alert) {
   alert.read = true
+  if (alert.id === 1 || alert.actionLabel.includes('XML')) {
+    selectedXmlAlert.value = alert
+    return
+  }
+  if (alert.id === 2 || alert.actionLabel.includes('orden de compra')) {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'purchases' }))
+    window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Módulo Compras', detail: 'ContexAI ha precargado la orden de compra sugerida.' } }))
+    closeModal()
+    return
+  }
+  if (alert.id === 3 || alert.actionLabel.includes('comprobantes')) {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'billing' }))
+    window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Facturación DIAN', detail: 'Mostrando comprobantes electrónicos sincronizados.' } }))
+    closeModal()
+    return
+  }
+  if (alert.id === 4 || alert.actionLabel.includes('sesión')) {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'profile' }))
+    window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Seguridad de Cuenta', detail: 'Historial de accesos y sesiones activas.' } }))
+    closeModal()
+    return
+  }
+  if (alert.id === 5 || alert.actionLabel.includes('flujo de caja')) {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'treasury' }))
+    window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Tesorería', detail: 'Proyección de liquidez y compromisos próximos.' } }))
+    closeModal()
+    return
+  }
+  if (alert.id === 6 || alert.actionLabel.includes('ajuste')) {
+    window.dispatchEvent(new CustomEvent('navigate', { detail: 'inventory' }))
+    window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Inventario', detail: 'Sugerencia de reabastecimiento inteligente aplicada.' } }))
+    closeModal()
+    return
+  }
   window.dispatchEvent(new CustomEvent('notify', {
-    detail: { message: `Acción: ${alert.actionLabel}`, detail: `Ejecutando procedimiento para: "${alert.title}".` }
+    detail: { message: `Acción: ${alert.actionLabel}`, detail: `Procedimiento ejecutado para: "${alert.title}".` }
   }))
+  closeModal()
+}
+
+function handleEmitCreditNote() {
+  selectedXmlAlert.value = null
+  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Nota Crédito Emitida', detail: 'Se ha generado y transmitido la Nota Crédito Electrónica a la DIAN.' } }))
+  closeModal()
+}
+
+function handleResendXml() {
+  selectedXmlAlert.value = null
+  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'XML Transmitido', detail: 'El XML corregido fue firmado digitalmente y reenviado a la DIAN con éxito.' } }))
   closeModal()
 }
 
@@ -245,6 +293,51 @@ defineExpose({ open: openModal, close: closeModal })
           <span class="material-symbols-outlined text-[18px]">download</span>
           Exportar historial en PDF
         </button>
+      </div>
+
+      <!-- XML Viewer Modal (Nested) -->
+      <div v-if="selectedXmlAlert" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
+        <div @click.stop class="w-full max-w-3xl bg-[#18181B] text-[#D4D4D8] rounded-[20px] shadow-2xl border border-[#27272A] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+          <div class="px-6 py-4 border-b border-[#27272A] bg-[#18181B] flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2.5">
+              <span class="material-symbols-outlined text-[20px] text-[#2563EB]">code</span>
+              <h3 class="text-[16px] font-bold text-white">Inspección de XML Fiscal · {{ selectedXmlAlert.title }}</h3>
+            </div>
+            <button @click="selectedXmlAlert = null" class="w-8 h-8 rounded-full bg-[#27272A] hover:bg-[#3F3F46] text-[#A1A1AA] hover:text-white flex items-center justify-center transition-colors">
+              <span class="material-symbols-outlined text-[18px]">close</span>
+            </button>
+          </div>
+          <div class="p-6 bg-[#09090B] font-mono text-[13px] leading-relaxed overflow-x-auto max-h-[50vh] border-b border-[#27272A]">
+            <pre class="text-[#38BDF8]">&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;Invoice xmlns="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"&gt;
+  &lt;cbc:UBLVersionID&gt;2.1&lt;/cbc:UBLVersionID&gt;
+  &lt;cbc:CustomizationID&gt;10&lt;/cbc:CustomizationID&gt;
+  &lt;cbc:ID&gt;F-203&lt;/cbc:ID&gt;
+  &lt;cbc:IssueDate&gt;2026-05-16&lt;/cbc:IssueDate&gt;
+  &lt;cac:AccountingSupplierParty&gt;
+    &lt;cbc:CustomerAssignedAccountID&gt;800192334&lt;/cbc:CustomerAssignedAccountID&gt;
+  &lt;/cac:AccountingSupplierParty&gt;
+  &lt;cac:LegalMonetaryTotal&gt;
+    &lt;cbc:LineExtensionAmount currencyID="COP"&gt;&lt;span class="bg-rose-500/20 text-rose-400 px-1 rounded"&gt;18050000.00&lt;/span&gt;&lt;/cbc:LineExtensionAmount&gt;
+    &lt;cbc:TaxInclusiveAmount currencyID="COP"&gt;&lt;span class="bg-rose-500/20 text-rose-400 px-1 rounded"&gt;21479500.00&lt;/span&gt;&lt;/cbc:LineExtensionAmount&gt;
+  &lt;/cac:LegalMonetaryTotal&gt;
+&lt;/Invoice&gt;</pre>
+          </div>
+          <div class="p-4 bg-[#18181B] flex items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-[12px] text-[#A1A1AA]">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span>Discrepancia detectada en LegalMonetaryTotal vs Auxiliar Contable</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button @click="handleEmitCreditNote" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[12px] rounded-[10px] transition-colors shadow-sm">
+                Generar Nota Crédito Electrónica
+              </button>
+              <button @click="handleResendXml" class="px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] rounded-[10px] transition-colors shadow-sm">
+                Reenviar a DIAN
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
 
     </div>
