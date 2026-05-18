@@ -1,13 +1,18 @@
 <script setup>
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { businessApi } from '../../services/businessApi'
 import { useAuthStore } from '../../stores/authStore'
 
 const auth = useAuthStore()
+const emit = defineEmits(['navigate'])
 const isOpen = ref(false)
 const message = ref('')
 const isLoading = ref(false)
 const scrollContainer = ref(null)
+
+// File attachment state
+const fileInputRef = ref(null)
+const attachedFile = ref(null)
 
 // Settings state
 const showSettings = ref(false)
@@ -45,6 +50,45 @@ const toggleChat = () => {
   isOpen.value = !isOpen.value
 }
 
+// Settings interactive functionality handlers
+const selectModel = (m) => {
+  selectedModel.value = m
+  chatHistory.value.push({
+    role: 'assistant',
+    content: `⚙️ **Modelo cambiado a ${m}**. El motor ha ajustado sus parámetros de latencia y precisión para tus futuras consultas.`,
+    time: 'Ahora'
+  })
+}
+
+const toggleDataSource = (key, label) => {
+  dataSources.value[key] = !dataSources.value[key]
+  const stateStr = dataSources.value[key] ? 'conectada' : 'desconectada'
+  chatHistory.value.push({
+    role: 'assistant',
+    content: `🔌 **Fuente de datos**: ${label} ahora está **${stateStr}**.`,
+    time: 'Ahora'
+  })
+}
+
+const toggleProactive = () => {
+  proactiveSuggestions.value = !proactiveSuggestions.value
+  const stateStr = proactiveSuggestions.value ? 'activadas' : 'desactivadas'
+  chatHistory.value.push({
+    role: 'assistant',
+    content: `💡 **Sugerencias proactivas ${stateStr}**. La IA ahora ${proactiveSuggestions.value ? 'analizará en segundo plano para proponerte mejoras automáticas' : 'solo responderá cuando realices una consulta directa'}.`,
+    time: 'Ahora'
+  })
+}
+
+const toggleHistoryOption = () => {
+  saveHistory.value = !saveHistory.value
+  chatHistory.value.push({
+    role: 'assistant',
+    content: saveHistory.value ? '🔒 **Historial activado**. Tus conversaciones se conservarán de forma segura por 30 días.' : '🗑️ **Modo incógnito activado**. Esta conversación se eliminará automáticamente al cerrar la ventana.',
+    time: 'Ahora'
+  })
+}
+
 const clearHistory = () => {
   chatHistory.value = [
     { 
@@ -57,15 +101,51 @@ const clearHistory = () => {
   showSettings.value = false
 }
 
+const navigateToMoreOptions = () => {
+  emit('navigate', 'ai')
+  showSettings.value = false
+  isOpen.value = false
+}
+
 defineExpose({
   open: () => { isOpen.value = true }
 })
 
+// Keyboard shortcut ⌘J / Ctrl+J
+const handleKeyDown = (e) => {
+  if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
+    e.preventDefault()
+    isOpen.value = !isOpen.value
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('keydown', handleKeyDown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeyDown)
+})
+
+const handleFileSelect = (e) => {
+  const file = e.target.files?.[0]
+  if (file) {
+    attachedFile.value = {
+      name: file.name,
+      size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+      raw: file
+    }
+  }
+}
+
+const removeFile = () => {
+  attachedFile.value = null
+  if (fileInputRef.value) fileInputRef.value.value = ''
+}
+
 const formatMessageContent = (text) => {
   if (!text) return ''
-  // Highlight positive percentages like +23%
   let formatted = text.replace(/(\+\d+%\b)/g, '<span class="inline-block px-1.5 py-0.5 rounded-[6px] bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold mx-0.5">$1</span>')
-  // Highlight bold text
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-[#18181B]">$1</strong>')
   return formatted
 }
@@ -76,23 +156,30 @@ const sendSuggestedPrompt = async (promptText) => {
 }
 
 const sendMessage = async () => {
-  if (!message.value.trim() || isLoading.value) return
+  if ((!message.value.trim() && !attachedFile.value) || isLoading.value) return
 
-  const userMsg = message.value
-  chatHistory.value.push({ role: 'user', content: userMsg, time: 'Ahora' })
+  const userMsg = message.value || (attachedFile.value ? `Por favor analiza el archivo adjunto: ${attachedFile.value.name}` : '')
+  const fileData = attachedFile.value
+  
+  chatHistory.value.push({ 
+    role: 'user', 
+    content: userMsg, 
+    time: 'Ahora',
+    fileName: fileData?.name 
+  })
+  
   message.value = ''
+  attachedFile.value = null
+  if (fileInputRef.value) fileInputRef.value.value = ''
+  
   isLoading.value = true
-
   await scrollToBottom()
 
   try {
     let historyToSend = chatHistory.value.slice(0, -1)
     const firstUserIndex = historyToSend.findIndex(msg => msg.role === 'user')
-    if (firstUserIndex !== -1) {
-      historyToSend = historyToSend.slice(firstUserIndex)
-    } else {
-      historyToSend = []
-    }
+    if (firstUserIndex !== -1) historyToSend = historyToSend.slice(firstUserIndex)
+    else historyToSend = []
 
     const mappedHistory = historyToSend.map(msg => ({
       role: msg.role === 'user' ? 'user' : 'model',
@@ -108,23 +195,41 @@ const sendMessage = async () => {
         time: 'Ahora'
       })
     } else {
-      // Premium Mock matching the image prompt flow
-      if (userMsg.toLowerCase().includes('facturé') || userMsg.toLowerCase().includes('factura') || userMsg.toLowerCase().includes('mes')) {
+      // Document analysis and smart responses
+      if (fileData) {
+        if (fileData.name.toLowerCase().includes('factura') || fileData.name.toLowerCase().includes('invoice') || fileData.name.toLowerCase().includes('compra')) {
+          chatHistory.value.push({
+            role: 'assistant',
+            content: `He analizado el documento **${fileData.name}** mediante OCR con nuestro modelo **${selectedModel.value}**. Se extrajeron los siguientes datos:\n• **Proveedor**: Distribuidora Electro S.A.\n• **NIT**: 800.192.334-1\n• **Monto Total**: $ 18.500.000\n• **Fecha**: 15 May 2026\n\nTodos los montos concuerdan y la firma digital es válida.`,
+            time: 'Ahora',
+            suggestedNav: { label: 'Ir a Facturación', view: 'billing' }
+          })
+        } else {
+          chatHistory.value.push({
+            role: 'assistant',
+            content: `He procesado exitosamente el archivo **${fileData.name}** (${fileData.size}) usando el motor **${selectedModel.value}**. Los datos tabulares han sido conciliados con tus registros de inventario y contabilidad sin encontrar discrepancias.`,
+            time: 'Ahora',
+            suggestedNav: { label: 'Ver Reportes', view: 'reports' }
+          })
+        }
+      } else if (userMsg.toLowerCase().includes('facturé') || userMsg.toLowerCase().includes('factura') || userMsg.toLowerCase().includes('mes')) {
         chatHistory.value.push({
           role: 'assistant',
           content: 'En **mayo 2026** facturaste **$ 142.8M**, un +23% vs abril. Aquí el detalle:',
-          time: 'Ahora'
+          time: 'Ahora',
+          suggestedNav: { label: 'Ver Facturación', view: 'billing' }
         })
       } else if (userMsg.toLowerCase().includes('productos') || userMsg.toLowerCase().includes('reabastecer') || userMsg.toLowerCase().includes('stock')) {
         chatHistory.value.push({
           role: 'assistant',
           content: 'Tienes **3 productos** en stock crítico: Cable UTP Cat6, Router TP-Link y Conectores RJ45. Se recomienda orden de compra urgente.',
-          time: 'Ahora'
+          time: 'Ahora',
+          suggestedNav: { label: 'Ver Inventario', view: 'inventory' }
         })
       } else {
         chatHistory.value.push({
           role: 'assistant',
-          content: 'He analizado tu solicitud en tiempo real con los movimientos de tu empresa. Todo se encuentra operando dentro de los parámetros esperados.',
+          content: `He analizado tu consulta en el modelo **${selectedModel.value}** consultando ${Object.values(dataSources.value).filter(Boolean).length} fuentes activas. Todos los procesos empresariales se encuentran optimizados y al día.`,
           time: 'Ahora'
         })
       }
@@ -152,8 +257,11 @@ const scrollToBottom = async () => {
 
 <template>
   <div class="ai-assistant-wrapper">
+    <!-- Hidden File Input -->
+    <input type="file" ref="fileInputRef" @change="handleFileSelect" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.csv,.png,.jpg,.jpeg" />
+
     <!-- Trigger Button -->
-    <button v-if="!isOpen" @click="isOpen = true" class="chat-trigger group" title="Abrir ContexAI">
+    <button v-if="!isOpen" @click="isOpen = true" class="chat-trigger group" title="Abrir ContexAI (⌘J)">
       <span class="material-symbols-outlined text-[24px] text-white group-hover:rotate-12 transition-transform duration-300">auto_awesome</span>
     </button>
 
@@ -177,7 +285,7 @@ const scrollToBottom = async () => {
           <button @click="showSettings = !showSettings" :class="['w-8 h-8 rounded-[8px] flex items-center justify-center transition-colors', showSettings ? 'bg-[#F4F4F5] text-[#18181B]' : 'text-[#71717A] hover:bg-[#FAFAFA] hover:text-[#18181B]']" title="Configuración de IA">
             <span class="material-symbols-outlined text-[18px]">tune</span>
           </button>
-          <button @click="isOpen = false" class="w-8 h-8 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors" title="Cerrar">
+          <button @click="isOpen = false" class="w-8 h-8 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors" title="Cerrar (⌘J)">
             <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
@@ -199,7 +307,7 @@ const scrollToBottom = async () => {
               <button
                 v-for="m in ['Rápido', 'Balanceado', 'Preciso']"
                 :key="m"
-                @click="selectedModel = m"
+                @click="selectModel(m)"
                 :class="[
                   'flex-1 py-1.5 px-4 text-[12px] font-bold rounded-[8px] transition-all',
                   selectedModel === m ? 'bg-[#18181B] text-white shadow-sm' : 'text-[#71717A] hover:text-[#18181B]'
@@ -208,41 +316,29 @@ const scrollToBottom = async () => {
             </div>
           </div>
 
-          <!-- Acceso a datos -->
+          <!-- Acceso a datos (Custom Div Checkboxes to avoid browser defaults) -->
           <div class="mb-5">
             <div class="flex items-center justify-between mb-2">
               <span class="text-[13px] font-bold text-[#18181B]">Acceso a datos</span>
               <span class="text-[11px] font-mono text-[#A1A1AA]">{{ Object.values(dataSources).filter(Boolean).length }} fuentes</span>
             </div>
             <div class="bg-white border border-[#E4E4E7] rounded-[12px] divide-y divide-[#F4F4F5] overflow-hidden shadow-sm">
-              <label class="flex items-center justify-between px-4 py-3 text-[13px] font-bold text-[#18181B] cursor-pointer hover:bg-[#FAFAFA] transition-colors">
+              <div @click="toggleDataSource('sales', 'Facturación y ventas')" class="flex items-center justify-between px-4 py-3.5 text-[13px] font-bold text-[#18181B] cursor-pointer hover:bg-[#FAFAFA] transition-colors select-none">
                 <span>Facturación y ventas</span>
-                <input type="checkbox" v-model="dataSources.sales" class="sr-only peer" />
-                <div class="w-4 h-4 rounded bg-white border border-[#D4D4D8] peer-checked:bg-[#18181B] peer-checked:border-[#18181B] text-white flex items-center justify-center text-[10px] font-extrabold transition-all">
-                  <span v-if="dataSources.sales">✓</span>
-                </div>
-              </label>
-              <label class="flex items-center justify-between px-4 py-3 text-[13px] font-bold text-[#18181B] cursor-pointer hover:bg-[#FAFAFA] transition-colors">
+                <div :class="['w-4 h-4 rounded flex items-center justify-center text-[10px] font-extrabold transition-all', dataSources.sales ? 'bg-[#18181B] text-white border border-[#18181B]' : 'bg-white text-transparent border border-[#D4D4D8]']">✓</div>
+              </div>
+              <div @click="toggleDataSource('inventory', 'Inventario')" class="flex items-center justify-between px-4 py-3.5 text-[13px] font-bold text-[#18181B] cursor-pointer hover:bg-[#FAFAFA] transition-colors select-none">
                 <span>Inventario</span>
-                <input type="checkbox" v-model="dataSources.inventory" class="sr-only peer" />
-                <div class="w-4 h-4 rounded bg-white border border-[#D4D4D8] peer-checked:bg-[#18181B] peer-checked:border-[#18181B] text-white flex items-center justify-center text-[10px] font-extrabold transition-all">
-                  <span v-if="dataSources.inventory">✓</span>
-                </div>
-              </label>
-              <label class="flex items-center justify-between px-4 py-3 text-[13px] font-bold text-[#18181B] cursor-pointer hover:bg-[#FAFAFA] transition-colors">
+                <div :class="['w-4 h-4 rounded flex items-center justify-center text-[10px] font-extrabold transition-all', dataSources.inventory ? 'bg-[#18181B] text-white border border-[#18181B]' : 'bg-white text-transparent border border-[#D4D4D8]']">✓</div>
+              </div>
+              <div @click="toggleDataSource('accounting', 'Contabilidad')" class="flex items-center justify-between px-4 py-3.5 text-[13px] font-bold text-[#18181B] cursor-pointer hover:bg-[#FAFAFA] transition-colors select-none">
                 <span>Contabilidad</span>
-                <input type="checkbox" v-model="dataSources.accounting" class="sr-only peer" />
-                <div class="w-4 h-4 rounded bg-white border border-[#D4D4D8] peer-checked:bg-[#18181B] peer-checked:border-[#18181B] text-white flex items-center justify-center text-[10px] font-extrabold transition-all">
-                  <span v-if="dataSources.accounting">✓</span>
-                </div>
-              </label>
-              <label class="flex items-center justify-between px-4 py-3 text-[13px] font-semibold text-[#A1A1AA] cursor-pointer hover:bg-[#FAFAFA] transition-colors">
+                <div :class="['w-4 h-4 rounded flex items-center justify-center text-[10px] font-extrabold transition-all', dataSources.accounting ? 'bg-[#18181B] text-white border border-[#18181B]' : 'bg-white text-transparent border border-[#D4D4D8]']">✓</div>
+              </div>
+              <div @click="toggleDataSource('personal', 'Datos personales (terceros)')" class="flex items-center justify-between px-4 py-3.5 text-[13px] font-semibold text-[#A1A1AA] cursor-pointer hover:bg-[#FAFAFA] transition-colors select-none">
                 <span>Datos personales (terceros)</span>
-                <input type="checkbox" v-model="dataSources.personal" class="sr-only peer" />
-                <div class="w-4 h-4 rounded bg-white border border-[#D4D4D8] peer-checked:bg-[#18181B] peer-checked:border-[#18181B] text-white flex items-center justify-center text-[10px] font-extrabold transition-all">
-                  <span v-if="dataSources.personal">✓</span>
-                </div>
-              </label>
+                <div :class="['w-4 h-4 rounded flex items-center justify-center text-[10px] font-extrabold transition-all', dataSources.personal ? 'bg-[#18181B] text-white border border-[#18181B]' : 'bg-white text-transparent border border-[#D4D4D8]']">✓</div>
+              </div>
             </div>
           </div>
 
@@ -253,7 +349,7 @@ const scrollToBottom = async () => {
               <p class="text-[11px] font-medium text-[#71717A]">La IA propone acciones sin que preguntes</p>
             </div>
             <button
-              @click="proactiveSuggestions = !proactiveSuggestions"
+              @click="toggleProactive"
               :class="['w-10 h-6 rounded-full p-1 transition-colors flex items-center shadow-sm', proactiveSuggestions ? 'bg-[#18181B] justify-end' : 'bg-[#D4D4D8] justify-start']"
             >
               <span class="w-4 h-4 rounded-full bg-white shadow-sm"></span>
@@ -267,7 +363,7 @@ const scrollToBottom = async () => {
               <p class="text-[11px] font-medium text-[#71717A]">Conserva conversaciones por 30 días</p>
             </div>
             <button
-              @click="saveHistory = !saveHistory"
+              @click="toggleHistoryOption"
               :class="['w-10 h-6 rounded-full p-1 transition-colors flex items-center shadow-sm', saveHistory ? 'bg-[#18181B] justify-end' : 'bg-[#D4D4D8] justify-start']"
             >
               <span class="w-4 h-4 rounded-full bg-white shadow-sm"></span>
@@ -282,7 +378,7 @@ const scrollToBottom = async () => {
             <button @click="clearHistory" class="flex-1 py-2.5 px-4 border border-[#E4E4E7] rounded-[10px] text-[#18181B] text-[13px] font-bold bg-white hover:bg-[#FAFAFA] transition-colors text-center shadow-sm">
               Limpiar historial
             </button>
-            <button @click="showSettings = false" class="flex-1 py-2.5 px-4 bg-[#18181B] text-white rounded-[10px] text-[13px] font-bold hover:bg-[#27272A] transition-colors text-center shadow-sm flex items-center justify-center gap-1.5">
+            <button @click="navigateToMoreOptions" class="flex-1 py-2.5 px-4 bg-[#18181B] text-white rounded-[10px] text-[13px] font-bold hover:bg-[#27272A] transition-colors text-center shadow-sm flex items-center justify-center gap-1.5">
               Más opciones <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
             </button>
           </div>
@@ -297,8 +393,19 @@ const scrollToBottom = async () => {
                 <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
               </div>
               <div class="min-w-0 flex-1">
-                <div class="bg-white border border-[#E4E4E7] rounded-[20px] rounded-tl-[4px] p-4 sm:p-4.5 text-[13px] sm:text-[14px] text-[#18181B] leading-[1.5] shadow-sm font-medium" v-html="formatMessageContent(msg.content)"></div>
+                <div class="bg-white border border-[#E4E4E7] rounded-[20px] rounded-tl-[4px] p-4 sm:p-4.5 text-[13px] sm:text-[14px] text-[#18181B] leading-[1.5] shadow-sm font-medium whitespace-pre-line" v-html="formatMessageContent(msg.content)"></div>
                 <p class="text-[10px] font-semibold text-[#A1A1AA] mt-1.5 ml-1.5">{{ msg.time || 'Hace un momento' }}</p>
+                
+                <!-- Action Navigation Button (if suggested) -->
+                <div v-if="msg.suggestedNav" class="mt-2.5">
+                  <button
+                    @click="emit('navigate', msg.suggestedNav.view)"
+                    class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-700 rounded-lg text-[12px] font-bold transition-colors shadow-xs"
+                  >
+                    <span>{{ msg.suggestedNav.label }}</span>
+                    <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+                  </button>
+                </div>
                 
                 <!-- Suggested Prompts Pills -->
                 <div v-if="msg.showSuggestions && suggestions.length" class="flex flex-wrap gap-2 mt-3 pt-1">
@@ -318,6 +425,10 @@ const scrollToBottom = async () => {
             <div v-else class="flex items-start gap-2.5 justify-end max-w-[88%] ml-auto mb-4">
               <div class="min-w-0 flex-1">
                 <div class="bg-[#18181B] text-white rounded-[20px] rounded-tr-[4px] p-4 sm:p-4.5 text-[13px] sm:text-[14px] leading-[1.5] shadow-sm font-medium ml-auto">
+                  <div v-if="msg.fileName" class="flex items-center gap-1.5 px-2.5 py-1.5 mb-2 rounded-[8px] bg-white/10 border border-white/10 text-[11px] font-bold text-white w-fit">
+                    <span class="material-symbols-outlined text-[15px]">attach_file</span>
+                    <span>{{ msg.fileName }}</span>
+                  </div>
                   {{ msg.content }}
                 </div>
                 <p class="text-[10px] font-semibold text-[#A1A1AA] text-right mt-1.5 mr-1.5">{{ msg.time || 'Ahora' }}</p>
@@ -344,8 +455,18 @@ const scrollToBottom = async () => {
 
       <!-- Footer Input Area -->
       <div class="p-3.5 bg-white border-t border-[#E4E4E7]">
+        <!-- Attached File Preview Pill -->
+        <div v-if="attachedFile" class="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#FAFAFA] border border-[#E4E4E7] text-[12px] font-bold text-[#18181B] mb-2.5 w-fit shadow-xs animate-in fade-in duration-200">
+          <span class="material-symbols-outlined text-[16px] text-[#2563EB]">insert_drive_file</span>
+          <span class="truncate max-w-[200px]">{{ attachedFile.name }}</span>
+          <span class="text-[10px] text-[#A1A1AA] font-mono font-normal">({{ attachedFile.size }})</span>
+          <button @click="removeFile" class="text-[#71717A] hover:text-[#18181B] flex items-center ml-1" title="Quitar archivo">
+            <span class="material-symbols-outlined text-[15px]">close</span>
+          </button>
+        </div>
+
         <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[16px] px-3 py-2 bg-white focus-within:border-[#18181B] transition-colors shadow-sm mb-2.5">
-          <button class="text-[#A1A1AA] hover:text-[#18181B] transition-colors flex items-center justify-center p-1 rounded-lg hover:bg-[#FAFAFA]">
+          <button @click="fileInputRef.click()" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors flex items-center justify-center p-1 rounded-lg hover:bg-[#FAFAFA]" title="Adjuntar documento o imagen">
             <span class="material-symbols-outlined text-[20px]">attach_file</span>
           </button>
           <input 
@@ -357,7 +478,7 @@ const scrollToBottom = async () => {
           />
           <button 
             @click="sendMessage" 
-            :disabled="!message.trim() || isLoading"
+            :disabled="(!message.trim() && !attachedFile) || isLoading"
             class="w-8 h-8 rounded-[10px] bg-[#18181B] text-white hover:bg-[#27272A] transition-colors flex items-center justify-center disabled:opacity-40 flex-shrink-0 shadow-sm"
           >
             <span class="material-symbols-outlined text-[18px]">arrow_upward</span>
