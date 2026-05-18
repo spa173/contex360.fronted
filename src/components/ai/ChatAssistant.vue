@@ -585,4 +585,36 @@ const scrollToBottom = async () => {
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
+
+@media (max-width: 640px) {
+  .ai-assistant-wrapper {
+    bottom: 0;
+    right: 0;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100dvh;
+    align-items: center;
+    justify-content: flex-end;
+    pointer-events: none;
+  }
+
+  .ai-assistant-wrapper > * {
+    pointer-events: auto;
+  }
+
+  .chat-window {
+    width: 100%;
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 0;
+    border: none;
+  }
+
+  .chat-trigger {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+  }
+}
 </style>
