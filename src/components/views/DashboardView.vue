@@ -5,6 +5,7 @@ import { useBillingStore } from '../../stores/billingStore'
 import { useDashboardStats } from '../../composables/useDashboardStats'
 import { useTranslationStore } from '../../stores/translationStore'
 import { businessApi } from '../../services/businessApi'
+import { generatePdfReport } from '../../utils/pdfExport'
 
 const props = defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -42,8 +43,20 @@ function togglePeriod() {
   emit('notify', { message: 'Periodo actualizado', detail: `Mostrando métricas para: ${selectedPeriod.value.toLowerCase()}.` })
 }
 
-function handleExport() {
-  emit('notify', { message: 'Exportación completada', detail: `Reporte financiero de ${selectedPeriod.value.toLowerCase()} generado en PDF.` })
+async function handleExport() {
+  emit('notify', { message: 'Generando PDF con IA', detail: 'ContexAI está estructurando y empaquetando el reporte ejecutivo...' })
+  await generatePdfReport({
+    title: 'Visión General Financiera',
+    subtitle: `Periodo: ${selectedPeriod.value}`,
+    fileName: `Contex360_Dashboard_${selectedPeriod.value.replace(/ /g, '_')}.pdf`,
+    data: {
+      'Ventas Totales del Periodo': `$ ${Number(dashboardData.value.totalSales).toLocaleString()}`,
+      'Alertas de Stock en Nivel Crítico / Bajo': `${dashboardData.value.lowStockAlerts} SKUs`,
+      'Facturas Electrónicas en Proceso DIAN': `${dashboardData.value.pendingInvoices} documentos`
+    },
+    aiSummary: dashboardData.value.aiInsight || 'Operación con tendencia al alza. Se sugiere revisar inventario crítico.'
+  })
+  emit('notify', { message: 'PDF Descargado', detail: `El reporte financiero de ${selectedPeriod.value.toLowerCase()} ha sido descargado.` })
 }
 
 function handleViewAlerts() {

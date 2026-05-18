@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useTreasuryStore } from '../../stores/treasuryStore'
 import { formatCurrency } from '../../utils/ui'
+import { generatePdfReport } from '../../utils/pdfExport'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -34,8 +35,23 @@ function handleNewPayment() {
   emit('notify', { message: 'Pago programado', detail: 'Se ha agregado el nuevo pago al calendario de tesorería.' })
 }
 
-function handleExport() {
-  emit('notify', { message: 'Exportación iniciada', detail: 'Generando reporte de flujo de caja y programación de pagos...' })
+async function handleExport() {
+  emit('notify', { message: 'Generando PDF de Tesorería', detail: 'ContexAI está proyectando el flujo de caja y liquidez disponible...' })
+  const totalProg = programmedPayments.value.reduce((s, p) => s + (Number(p.amount) || 0), 0)
+
+  await generatePdfReport({
+    title: 'Reporte de Liquidez y Flujo de Caja',
+    subtitle: 'Módulo de Tesorería',
+    fileName: `Tesoreria_Contex360_${Date.now()}.pdf`,
+    data: {
+      'Balance Total Disponible': formatCurrency(totalBalance.value),
+      'Pagos Programados Totales': `${programmedPayments.value.length} transacciones`,
+      'Monto Total Programado': formatCurrency(totalProg),
+      'Cobros Pendientes': `${pendingCollections.value} clientes`
+    },
+    aiSummary: 'El flujo de liquidez proyectado cubre de forma holgada los compromisos a corto plazo para los próximos 30 días.'
+  })
+  emit('notify', { message: 'PDF Descargado', detail: 'El reporte de tesorería ha sido guardado exitosamente.' })
 }
 
 function priorityClass(p) {

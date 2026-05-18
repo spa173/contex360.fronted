@@ -2,6 +2,7 @@
 import { ref, computed } from 'vue'
 import { useInventoryStore } from '../../stores/inventoryStore'
 import { formatCurrency } from '../../utils/ui'
+import { generatePdfReport } from '../../utils/pdfExport'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -54,8 +55,25 @@ function handleNewProduct() {
   }
 }
 
-function handleExport() {
-  emit('notify', { message: 'Exportación en curso', detail: 'Descargando existencias y valoración de inventario en Excel...' })
+async function handleExport() {
+  emit('notify', { message: 'Generando PDF de Inventario', detail: 'ContexAI está valorizando las existencias en bodega...' })
+  const filteredCount = filteredProducts.value.length
+  const filteredVal = filteredProducts.value.reduce((s, p) => s + (p.price * p.stock || 0), 0)
+  const filteredUnits = filteredProducts.value.reduce((s, p) => s + (p.stock || 0), 0)
+
+  await generatePdfReport({
+    title: 'Reporte de Inventario y Existencias',
+    subtitle: `Filtro de stock: ${stockFilter.value.toUpperCase()}`,
+    fileName: `Inventario_Contex360_${Date.now()}.pdf`,
+    data: {
+      'SKUs en este reporte': `${filteredCount} productos`,
+      'Unidades Físicas Totales': `${filteredUnits} unidades`,
+      'Valorización de Existencias': formatCurrency(filteredVal),
+      'SKUs con Stock Bajo / Crítico': `${lowStockCount.value + criticalStockCount.value} productos`
+    },
+    aiSummary: criticalStockCount.value > 0 ? `¡ATENCIÓN! Se detectaron ${criticalStockCount.value} productos con stock agotado (0 unidades). Se recomienda emitir orden de compra inmediata.` : 'Los niveles de inventario se encuentran dentro de los márgenes óptimos de rotación.'
+  })
+  emit('notify', { message: 'PDF Descargado', detail: 'El reporte de existencias y valoración ha sido guardado exitosamente.' })
 }
 
 function statusBadge(product) {
