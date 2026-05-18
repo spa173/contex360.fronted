@@ -218,6 +218,10 @@ function handleViewAllAlerts() {
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">settings</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Preferencias</span>
             </button>
+            <button v-if="user?.isSystemOwner" @click="emit('open-admin-panel'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-amber-50 text-left border-t border-amber-100/50">
+              <span class="material-symbols-outlined text-[17px] text-amber-600 font-bold">shield_person</span>
+              <span class="flex-1 text-[12px] font-bold text-amber-800">Consola Super Admin</span>
+            </button>
           </div>
 
           <!-- Theme -->

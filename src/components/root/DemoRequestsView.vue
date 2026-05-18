@@ -1,26 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-import { getAuthToken } from '../../services/authApi'
-
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+import { businessApi } from '../../services/businessApi'
 
 const requests = ref<any[]>([])
 const loading = ref(true)
 const error = ref('')
 
-function getToken() {
-  return getAuthToken()
-}
-
 async function fetchRequests() {
   loading.value = true
   error.value = ''
   try {
-    const { data } = await axios.get(`${API}/demo`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    })
-    requests.value = data?.data ?? data
+    const response = await businessApi.getDemoRequests()
+    requests.value = response.data ?? response
   } catch (e: any) {
     error.value = 'Error cargando solicitudes de demo'
   } finally {
@@ -30,9 +21,7 @@ async function fetchRequests() {
 
 async function updateStatus(id: string, estado: string) {
   try {
-    await axios.put(`${API}/demo/${id}/status`, { estado }, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    })
+    await businessApi.updateDemoRequestStatus(id, estado)
     await fetchRequests()
   } catch (e: any) {
     alert('Error actualizando estado')
@@ -43,13 +32,11 @@ async function convertToCustomer(id: string) {
   if (!confirm('¿Estás seguro de convertir esta solicitud en un cliente activo? Se creará la empresa y el usuario administrador automáticamente.')) return
   
   try {
-    await axios.post(`${API}/demo/${id}/convert`, {}, {
-      headers: { Authorization: `Bearer ${getToken()}` },
-    })
-    alert('✅ Solicitud convertida a cliente exitosamente.')
+    const response = await businessApi.convertToCustomer(id)
+    alert(response.message || '✅ Solicitud convertida a cliente exitosamente.')
     await fetchRequests()
   } catch (e: any) {
-    alert(e.response?.data?.message || 'Error al convertir a cliente')
+    alert(e.message || 'Error al convertir a cliente')
   }
 }
 
