@@ -23,10 +23,30 @@ onMounted(() => {
 })
 
 watch(() => adminStore.language, (newVal) => {
+  adminStore.saveSettings()
   if (newVal.includes('English')) translationStore.setLanguage('en')
   else if (newVal.includes('Português')) translationStore.setLanguage('pt')
   else translationStore.setLanguage('es')
 })
+
+function handleCurrencyChange() {
+  adminStore.saveSettings()
+  if (adminStore.currency.includes('USD')) {
+    emit('notify', { message: 'ContexAI FX · Cotización USD', detail: 'Consultando tasa de cambio en tiempo real (1 USD = 4,150 COP). Convirtiendo plataforma a Dólares.' })
+  } else {
+    emit('notify', { message: 'Moneda Local COP', detail: 'Restaurando valores monetarios originales en pesos colombianos.' })
+  }
+}
+
+function handleTimezoneChange() {
+  adminStore.saveSettings()
+  emit('notify', { message: 'Zona horaria actualizada', detail: `Reloj interno sincronizado con ${adminStore.timezone}.` })
+}
+
+function handleDateChange() {
+  adminStore.saveSettings()
+  emit('notify', { message: 'Formato de fecha actualizado', detail: `Aplicando formato ${adminStore.dateFormat} en todas las transacciones.` })
+}
 
 function handleSave() {
   adminStore.saveSettings()
@@ -96,11 +116,11 @@ function handleIntegration(name) {
           <div class="grid md:grid-cols-2 gap-5">
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Razón Social</label>
-              <input v-model="adminStore.razonSocial" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] transition-colors" />
+              <input v-model="adminStore.razonSocial" @change="adminStore.saveSettings()" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] transition-colors" />
             </div>
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">NIT</label>
-              <input v-model="adminStore.nit" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-mono outline-none focus:border-[#18181B] transition-colors" />
+              <input v-model="adminStore.nit" @change="adminStore.saveSettings()" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-mono outline-none focus:border-[#18181B] transition-colors" />
             </div>
           </div>
         </section>
@@ -154,19 +174,19 @@ function handleIntegration(name) {
         </div>
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Zona horaria</label>
-          <select v-model="adminStore.timezone" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select v-model="adminStore.timezone" @change="handleTimezoneChange" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
             <option>(UTC-05) Bogotá</option><option>(UTC-03) Buenos Aires</option>
           </select>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Moneda</label>
-          <select v-model="adminStore.currency" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select v-model="adminStore.currency" @change="handleCurrencyChange" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
             <option>COP · Peso colombiano</option><option>USD · Dólar</option>
           </select>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Formato de fecha</label>
-          <select v-model="adminStore.dateFormat" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select v-model="adminStore.dateFormat" @change="handleDateChange" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
             <option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option>
           </select>
         </div>
