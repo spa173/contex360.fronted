@@ -52,8 +52,8 @@ function tenantInitials(name) {
     </button>
 
     <!-- Search -->
-    <div class="flex items-center gap-2 flex-1 min-w-0 max-w-sm">
-      <div class="flex items-center gap-2 w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2 bg-[#FAFAFA] focus-within:bg-white focus-within:border-[#18181B] transition-colors">
+    <div class="flex items-center gap-2 flex-1 min-w-0 max-w-[520px] mx-auto">
+      <div class="flex items-center gap-2 w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 bg-[#F9F9F9] focus-within:bg-white focus-within:border-[#18181B] transition-colors shadow-[inset_0_1px_2px_rgba(0,0,0,0.04)]">
         <span class="material-symbols-outlined text-[17px] text-[#A1A1AA] flex-shrink-0">search</span>
         <input
           placeholder="Buscar..."
