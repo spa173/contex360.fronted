@@ -219,18 +219,23 @@ function walkAndTranslate(node: Node, lang: string) {
   } else if (node.nodeType === Node.ELEMENT_NODE) {
     const el = node as HTMLElement
     if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return
-    if (el.placeholder) {
-      if (!el.dataset.origPlaceholder) el.dataset.origPlaceholder = el.placeholder
+    if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) {
+      if (!el.dataset.origPlaceholder && el.placeholder) {
+        el.dataset.origPlaceholder = el.placeholder
+      }
       const origP = el.dataset.origPlaceholder
-      if (lang === 'es') {
-        el.placeholder = origP
-      } else {
-        const dict = dictionaries[lang] || {}
-        if (dict[origP]) el.placeholder = dict[origP]
+      if (origP) {
+        if (lang === 'es') {
+          el.placeholder = origP
+        } else {
+          const dict = dictionaries[lang] || {}
+          if (dict[origP]) el.placeholder = dict[origP]
+        }
       }
     }
-    for (let child of el.childNodes) {
-      walkAndTranslate(child, lang)
+    const childNodes = Array.from(el.childNodes)
+    for (let i = 0; i < childNodes.length; i++) {
+      walkAndTranslate(childNodes[i], lang)
     }
   }
 }
@@ -258,9 +263,10 @@ export const useTranslationStore = defineStore('translation', {
 
         if (!observer) {
           observer = new MutationObserver((mutations) => {
-            for (let mut of mutations) {
-              for (let added of mut.addedNodes) {
-                walkAndTranslate(added, this.currentLanguage)
+            for (let i = 0; i < mutations.length; i++) {
+              const addedNodes = Array.from(mutations[i].addedNodes)
+              for (let j = 0; j < addedNodes.length; j++) {
+                walkAndTranslate(addedNodes[j], this.currentLanguage)
               }
             }
           })

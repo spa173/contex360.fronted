@@ -55,10 +55,7 @@
   --header-height: 64px;
   --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
-html.light {
-  /* Same as root for now as the user requested this specific premium theme */
-}
+/* Theme root */
 
 html.light body {
   background: var(--page-background);
