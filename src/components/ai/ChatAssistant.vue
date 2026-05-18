@@ -212,7 +212,10 @@ const sendMessage = async () => {
       parts: [{ text: msg.content }]
     }))
 
-    const response = await businessApi.chatWithAi(userMsg, mappedHistory, attachmentBase64).catch(() => null)
+    const response = await businessApi.chatWithAi(userMsg, mappedHistory, attachmentBase64).catch((err) => {
+      console.error('AI chat error:', err)
+      return { role: 'assistant', content: `Error del Cerebro IA: ${err.message || 'Error al procesar archivo'}.` }
+    })
     
     if (response && response.content) {
       chatHistory.value.push({
