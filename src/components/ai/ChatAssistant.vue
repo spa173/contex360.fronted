@@ -162,10 +162,26 @@ const sendSuggestedPrompt = async (promptText) => {
   await sendMessage()
 }
 
+const fileToBase64 = (file) => new Promise((resolve, reject) => {
+  const reader = new FileReader()
+  reader.readAsDataURL(file)
+  reader.onload = () => resolve(reader.result)
+  reader.onerror = error => reject(error)
+})
+
 const sendMessage = async () => {
   if ((!message.value.trim() && !attachedFile.value) || isLoading.value) return
 
   const fileData = attachedFile.value
+  let attachmentBase64 = null
+  if (fileData && fileData.raw) {
+    try {
+      attachmentBase64 = await fileToBase64(fileData.raw)
+    } catch (e) {
+      console.error('Error converting file to base64', e)
+    }
+  }
+
   let userMsg = message.value.trim()
   if (fileData) {
     userMsg = userMsg ? `[Archivo adjunto: ${fileData.name}] ${userMsg}` : `[Archivo adjunto: ${fileData.name}] Por favor analiza este documento o imagen.`
@@ -196,7 +212,7 @@ const sendMessage = async () => {
       parts: [{ text: msg.content }]
     }))
 
-    const response = await businessApi.chatWithAi(userMsg, mappedHistory).catch(() => null)
+    const response = await businessApi.chatWithAi(userMsg, mappedHistory, attachmentBase64).catch(() => null)
     
     if (response && response.content) {
       chatHistory.value.push({

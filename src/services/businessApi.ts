@@ -185,8 +185,8 @@ export const businessApi = {
   },
 
   // AI
-  async chatWithAi(message: string, history: any[] = []) {
-    return request<any>('/ai/chat', { method: 'POST', body: { message, history } })
+  async chatWithAi(message: string, history: any[] = [], attachment?: string | null) {
+    return request<any>('/ai/chat', { method: 'POST', body: { message, history, attachment } })
   },
   async getAiInsights() {
     return request<any>('/ai/insights')
