@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { usePurchasesStore } from '../../stores/purchasesStore'
 import { useAiStore } from '../../stores/aiStore'
 import { formatCurrency } from '../../utils/ui'
@@ -8,6 +8,7 @@ defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const purchases = usePurchasesStore()
+const tenantPurchases = computed(() => purchases.tenantPurchases || [])
 const ai = useAiStore()
 const isProcessing = ref(false)
 
@@ -79,7 +80,7 @@ async function handleFileUpload() {
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="purchase in purchases.tenantPurchases" :key="purchase.id" class="hover:bg-[#FAFAFA]">
+            <tr v-for="purchase in tenantPurchases" :key="purchase.id" class="hover:bg-[#FAFAFA]">
               <td class="px-5 py-3.5 font-mono text-[#A1A1AA] text-[12px]">{{ purchase.number }}</td>
               <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ purchase.vendorName }}</td>
               <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(purchase.date).toLocaleDateString() }}</td>
@@ -87,7 +88,7 @@ async function handleFileUpload() {
               <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(purchase.total) }}</td>
               <td class="px-5 py-3.5 text-right"><button class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[18px]">more_horiz</span></button></td>
             </tr>
-            <tr v-if="purchases.tenantPurchases.length === 0">
+            <tr v-if="tenantPurchases.length === 0">
               <td colspan="6" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay compras registradas.</td>
             </tr>
           </tbody>

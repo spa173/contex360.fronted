@@ -8,8 +8,10 @@ import { businessApi } from '../services/businessApi'
 export const useInventoryStore = defineStore('inventory', () => {
   const root = useStateStore()
 
-  // State initialization with robust safety
-  const products = ref<Product[]>([])
+  const products = ref<Product[]>([
+    { id: 'prod-1', tenantId: root.activeTenantId || 'tenant-a', sku: 'SKU-001', name: 'MacBook Pro 16"', price: 12500000, cost: 9800000, taxRate: 19, stock: 15, stockByLocation: { default: 15 }, minStock: 5, maxStock: 50, location: 'Bodega Norte', category: 'Electrónica', barcode: '7701234567890', isInventoriable: true, productType: 'standard', unit: 'unidad' },
+    { id: 'prod-2', tenantId: root.activeTenantId || 'tenant-a', sku: 'SKU-002', name: 'Monitor UltraSharp 27"', price: 2800000, cost: 2100000, taxRate: 19, stock: 3, stockByLocation: { default: 3 }, minStock: 5, maxStock: 20, location: 'Bodega Sur', category: 'Electrónica', barcode: '7709876543210', isInventoriable: true, productType: 'standard', unit: 'unidad' },
+  ])
 
   const inventoryMovements = ref<InventoryMovement[]>([])
 

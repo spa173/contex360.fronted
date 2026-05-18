@@ -10,6 +10,7 @@ const treasury = useTreasuryStore()
 const totalBalance = computed(() => treasury.totalBalance || 0)
 const pendingPayments = computed(() => treasury.pendingPaymentsCount || 0)
 const pendingCollections = computed(() => treasury.pendingCollectionsCount || 0)
+const programmedPayments = computed(() => treasury.programmedPayments || [])
 
 function handleApplyInsight() {
   emit('notify', { message: 'Insight aplicado', detail: 'La programación fue optimizada por ContexAI.' })
@@ -82,14 +83,14 @@ function priorityClass(p) {
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="item in treasury.programmedPayments" :key="item.id" class="hover:bg-[#FAFAFA]">
+              <tr v-for="item in programmedPayments" :key="item.id" class="hover:bg-[#FAFAFA]">
                 <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ item.vendorName }}</td>
                 <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(item.dueDate).toLocaleDateString() }}</td>
                 <td class="px-5 py-3.5"><span :class="['inline-flex px-2 py-0.5 rounded-md text-[11px] font-semibold uppercase', priorityClass(item.priority)]">{{ item.priority }}</span></td>
                 <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(item.amount) }}</td>
                 <td class="px-5 py-3.5"><span class="flex items-center gap-1.5 text-[12px]"><span class="w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>{{ item.status }}</span></td>
               </tr>
-              <tr v-if="treasury.programmedPayments.length === 0">
+              <tr v-if="programmedPayments.length === 0">
                 <td colspan="5" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay pagos programados.</td>
               </tr>
             </tbody>

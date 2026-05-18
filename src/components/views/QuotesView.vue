@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useQuotesStore } from '../../stores/quotesStore'
 import { formatCurrency } from '../../utils/ui'
 
@@ -7,6 +7,7 @@ defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const quotes = useQuotesStore()
+const tenantQuotes = computed(() => quotes.tenantQuotes || [])
 const selectedQuote = ref(null)
 
 function statusBadge(status) {
@@ -48,7 +49,7 @@ function handleConvertToInvoice(quote) {
           <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
           <input placeholder="Filtrar cotizaciones..." class="pl-8 pr-3 py-1.5 text-[12px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-56" />
         </div>
-        <span class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider">{{ quotes.tenantQuotes.length }} registros</span>
+        <span class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider">{{ tenantQuotes.length }} registros</span>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left">
@@ -63,7 +64,7 @@ function handleConvertToInvoice(quote) {
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="q in quotes.tenantQuotes" :key="q.id" @click="selectedQuote = q" class="hover:bg-[#FAFAFA] cursor-pointer">
+            <tr v-for="q in tenantQuotes" :key="q.id" @click="selectedQuote = q" class="hover:bg-[#FAFAFA] cursor-pointer">
               <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ q.number }}</td>
               <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ q.customerName }}</td>
               <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(q.dueDate).toLocaleDateString() }}</td>
@@ -76,7 +77,7 @@ function handleConvertToInvoice(quote) {
                 <button v-else class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
               </td>
             </tr>
-            <tr v-if="quotes.tenantQuotes.length === 0">
+            <tr v-if="tenantQuotes.length === 0">
               <td colspan="6" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay cotizaciones registradas.</td>
             </tr>
           </tbody>

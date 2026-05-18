@@ -7,11 +7,12 @@ defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const inventory = useInventoryStore()
+const tenantProducts = computed(() => inventory.tenantProducts || [])
 
-const totalValue = computed(() => (inventory.tenantProducts || []).reduce((s, p) => s + (p.price * p.stock || 0), 0))
-const totalItems = computed(() => (inventory.tenantProducts || []).reduce((s, p) => s + (p.stock || 0), 0))
-const lowStockCount = computed(() => (inventory.tenantProducts || []).filter(p => p.stock <= p.minStock && p.stock > 0).length)
-const criticalStockCount = computed(() => (inventory.tenantProducts || []).filter(p => p.stock === 0).length)
+const totalValue = computed(() => tenantProducts.value.reduce((s, p) => s + (p.price * p.stock || 0), 0))
+const totalItems = computed(() => tenantProducts.value.reduce((s, p) => s + (p.stock || 0), 0))
+const lowStockCount = computed(() => tenantProducts.value.filter(p => p.stock <= p.minStock && p.stock > 0).length)
+const criticalStockCount = computed(() => tenantProducts.value.filter(p => p.stock === 0).length)
 
 function statusBadge(product) {
   if (product.stock === 0) return { label: 'Crítico', class: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' }
@@ -104,7 +105,7 @@ function statusBadge(product) {
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="p in inventory.tenantProducts" :key="p.id" class="hover:bg-[#FAFAFA]">
+            <tr v-for="p in tenantProducts" :key="p.id" class="hover:bg-[#FAFAFA]">
               <td class="px-5 py-3.5 font-mono text-[#A1A1AA] text-[12px]">{{ p.sku || 'N/A' }}</td>
               <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ p.name }}</td>
               <td class="px-5 py-3.5 text-[#71717A]">{{ p.category || 'General' }}</td>
@@ -133,7 +134,7 @@ function statusBadge(product) {
                 </button>
               </td>
             </tr>
-            <tr v-if="inventory.tenantProducts.length === 0">
+            <tr v-if="tenantProducts.length === 0">
               <td colspan="7" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay productos registrados.</td>
             </tr>
           </tbody>

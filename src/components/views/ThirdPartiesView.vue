@@ -1,4 +1,5 @@
 <script setup>
+import { computed } from 'vue'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { formatCurrency } from '../../utils/ui'
 
@@ -6,6 +7,7 @@ defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const store = useThirdPartiesStore()
+const tenantThirdParties = computed(() => store.tenantThirdParties || [])
 
 function initials(name) {
   if (!name) return '—'
@@ -62,7 +64,7 @@ function handleAction(tp) {
                 </tr>
               </thead>
               <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-                <tr v-for="tp in store.tenantThirdParties" :key="tp.id" class="hover:bg-[#FAFAFA] group">
+                <tr v-for="tp in tenantThirdParties" :key="tp.id" class="hover:bg-[#FAFAFA] group">
                   <td class="px-5 py-3.5">
                     <div class="flex items-center gap-3">
                       <div class="w-7 h-7 rounded-md bg-[#18181B] text-white flex items-center justify-center font-semibold text-[10px]">{{ initials(tp.name) }}</div>
@@ -74,7 +76,7 @@ function handleAction(tp) {
                   <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(tp.balance || 0) }}</td>
                   <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 text-emerald-700 text-[11px] font-semibold"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Activo</span></td>
                 </tr>
-                <tr v-if="store.tenantThirdParties.length === 0">
+                <tr v-if="tenantThirdParties.length === 0">
                   <td colspan="5" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay terceros registrados.</td>
                 </tr>
               </tbody>

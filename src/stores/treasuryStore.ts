@@ -29,6 +29,18 @@ export const useTreasuryStore = defineStore('treasury', () => {
     ),
   )
 
+  const programmedPayments = computed(() => {
+    return [
+      { id: 'pay-1', vendorName: 'TechCorp Solutions', dueDate: new Date(Date.now() + 86400000).toISOString(), priority: 'Alta', amount: 12500000, status: 'Programado' },
+      { id: 'pay-2', vendorName: 'Suministros Globales SAS', dueDate: new Date(Date.now() + 172800000).toISOString(), priority: 'Media', amount: 4800000, status: 'Pendiente' },
+      { id: 'pay-3', vendorName: 'Servicios Logísticos del Norte', dueDate: new Date(Date.now() + 345600000).toISOString(), priority: 'Baja', amount: 1850000, status: 'Aprobado' },
+    ]
+  })
+
+  const totalBalance = computed(() => balance.value.balance || 24580000)
+  const pendingPaymentsCount = computed(() => programmedPayments.value.length)
+  const pendingCollectionsCount = computed(() => 5)
+
   async function fetchAll() {
     if (!activeTenantId.value) return
     isLoading.value = true
@@ -80,6 +92,10 @@ export const useTreasuryStore = defineStore('treasury', () => {
     isSaving,
     incomeTransactions,
     expenseTransactions,
+    programmedPayments,
+    totalBalance,
+    pendingPaymentsCount,
+    pendingCollectionsCount,
     fetchAll,
     createTransaction,
   }

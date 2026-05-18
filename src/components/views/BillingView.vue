@@ -8,6 +8,7 @@ defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const billing = useBillingStore()
+const tenantInvoices = computed(() => billing.tenantInvoices || [])
 const thirdParties = useThirdPartiesStore()
 
 const newInvoice = ref({ customerId: '', concept: '', amount: 0 })
@@ -96,7 +97,7 @@ function statusBadge(status) {
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="invoice in billing.tenantInvoices" :key="invoice.id" class="hover:bg-[#FAFAFA] transition-colors">
+              <tr v-for="invoice in tenantInvoices" :key="invoice.id" class="hover:bg-[#FAFAFA] transition-colors">
                 <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ invoice.number }}</td>
                 <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ invoice.customerName }}</td>
                 <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(invoice.date).toLocaleDateString() }}</td>
@@ -113,7 +114,7 @@ function statusBadge(status) {
                   </button>
                 </td>
               </tr>
-              <tr v-if="billing.tenantInvoices.length === 0">
+              <tr v-if="tenantInvoices.length === 0">
                 <td colspan="6" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay facturas registradas.</td>
               </tr>
             </tbody>

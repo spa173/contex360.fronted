@@ -29,6 +29,19 @@ export const useUsersStore = defineStore('users', () => {
   const currentClientIp = computed(() => root.currentClientIp || '127.0.0.1')
   const tenants = computed(() => root.tenants || [])
   const activeTenant = computed(() => root.activeTenant)
+  const tenantUsers = computed(() => {
+    const currentTenant = root.activeTenantId || (root.tenants[0]?.id || 'tenant-a')
+    return (root.users || [])
+      .filter(u => u.isSystemOwner || (root.memberships || []).some(m => m.userId === u.id && m.tenantId === currentTenant))
+      .map(u => {
+        const m = (root.memberships || []).find(mb => mb.userId === u.id && mb.tenantId === currentTenant) || (root.memberships || []).find(mb => mb.userId === u.id)
+        return {
+          ...u,
+          role: m ? m.role : (u.isSystemOwner ? 'Super Admin' : 'Usuario local'),
+          active: u.status === 'active'
+        }
+      })
+  })
 
   // Actions
   function toggleUserStatus(userId: string) {
@@ -230,6 +243,7 @@ export const useUsersStore = defineStore('users', () => {
 
   return {
     users,
+    tenantUsers,
     memberships,
     userSecurity,
     userSessions,

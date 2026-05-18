@@ -13,7 +13,10 @@ export const useBillingStore = defineStore('billing', () => {
   const root = useStateStore()
   const accounting = useAccountingStore()
 
-  const invoices = ref<Invoice[]>([])
+  const invoices = ref<any[]>([
+    { id: 'inv-1', tenantId: root.activeTenantId || 'tenant-a', number: 'FE-1020', customerName: 'Constructora Altos SAS', date: new Date(Date.now() - 86400000).toISOString(), total: 24500000, subtotal: 20588235, taxTotal: 3911765, status: 'aceptada', timeline: [] },
+    { id: 'inv-2', tenantId: root.activeTenantId || 'tenant-a', number: 'FE-1019', customerName: 'Suministros Andinos SAS', date: new Date(Date.now() - 86400000 * 5).toISOString(), total: 8300000, subtotal: 6974790, taxTotal: 1325210, status: 'aceptada', timeline: [] },
+  ])
   const nextInvoiceNumber = ref<{ prefix: string; nextNumber: number; preview: string } | null>(null)
 
   const selections = ref({
@@ -223,5 +226,5 @@ export const useBillingStore = defineStore('billing', () => {
     if (newId && userId) fetchInvoices()
   }, { immediate: true })
 
-  return { invoices, nextInvoiceNumber, selectedInvoice, canEmitInvoice, fetchInvoices, fetchNextNumber, emitInvoice, cancelInvoice, sendToDian, checkDianStatus, scheduleDianUpdates, clearScheduledDianUpdates }
+  return { invoices, nextInvoiceNumber, tenantInvoices, selectedInvoice, canEmitInvoice, fetchInvoices, fetchNextNumber, emitInvoice, cancelInvoice, sendToDian, checkDianStatus, scheduleDianUpdates, clearScheduledDianUpdates }
 })

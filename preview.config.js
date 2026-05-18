@@ -1,18 +1,16 @@
+import { fileURLToPath, URL } from 'node:url';
 import { defineConfig } from '@previewjs/config';
-import { createPinia } from 'pinia';
-import { createMemoryHistory, createRouter } from 'vue-router';
 
 export default defineConfig({
-  wrapper: {
-    vue: () => {
-      const pinia = createPinia();
-      const router = createRouter({
-        history: createMemoryHistory(),
-        routes: [],
-      });
-      return {
-        plugins: [pinia, router],
-      };
+  vite: {
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url)),
+      },
     },
+  },
+  wrapper: {
+    path: '__previewjs__/Wrapper.vue',
+    componentName: 'Wrapper',
   },
 });

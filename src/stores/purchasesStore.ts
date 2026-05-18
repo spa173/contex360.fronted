@@ -42,7 +42,10 @@ export const usePurchasesStore = defineStore('purchases', () => {
   const root = useStateStore()
   const accounting = useAccountingStore()
 
-  const purchases = ref<Purchase[]>([])
+  const purchases = ref<any[]>([
+    { id: 'p-1', tenantId: root.activeTenantId || 'tenant-a', number: 'FAC-9012', vendorName: 'Suministros Globales SAS', date: new Date(Date.now() - 86400000 * 2).toISOString(), total: 4800000, status: 'registered', createdAt: new Date().toISOString() },
+    { id: 'p-2', tenantId: root.activeTenantId || 'tenant-a', number: 'FAC-8834', vendorName: 'TechCorp Solutions', date: new Date(Date.now() - 86400000 * 10).toISOString(), total: 12500000, status: 'paid', createdAt: new Date(Date.now() - 3600000).toISOString() },
+  ])
 
   const selections = ref({
     purchaseId: null as string | null,

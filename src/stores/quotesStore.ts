@@ -36,7 +36,10 @@ export interface Quote {
 export const useQuotesStore = defineStore('quotes', () => {
   const root = useStateStore()
 
-  const quotes = ref<Quote[]>([])
+  const quotes = ref<any[]>([
+    { id: 'q-1', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-001', customerName: 'Inversiones Globales S.A.', dueDate: new Date(Date.now() + 86400000 * 5).toISOString(), total: 15400000, status: 'Approved', createdAt: new Date().toISOString() },
+    { id: 'q-2', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-002', customerName: 'Constructora del Valle', dueDate: new Date(Date.now() + 86400000 * 12).toISOString(), total: 8900000, status: 'Sent', createdAt: new Date(Date.now() - 3600000).toISOString() },
+  ])
 
   const selections = ref({
     quoteId: null as string | null,

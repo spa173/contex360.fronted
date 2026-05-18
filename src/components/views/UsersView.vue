@@ -1,11 +1,12 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useUsersStore } from '../../stores/usersStore'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const users = useUsersStore()
+const tenantUsers = computed(() => users.tenantUsers || [])
 const searchQuery = ref('')
 const selectedRole = ref('Todos')
 
@@ -47,7 +48,7 @@ function handleApplyInsight(action) {
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
         <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3"><span class="material-symbols-outlined text-[20px]">group</span></div>
         <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Usuarios activos</p>
-        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">{{ users.tenantUsers.length }}</p>
+        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">{{ tenantUsers.length }}</p>
       </div>
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
         <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3"><span class="material-symbols-outlined text-[20px]">badge</span></div>
@@ -88,7 +89,7 @@ function handleApplyInsight(action) {
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="user in users.tenantUsers" :key="user.id" class="hover:bg-[#FAFAFA] group">
+              <tr v-for="user in tenantUsers" :key="user.id" class="hover:bg-[#FAFAFA] group">
                 <td class="px-5 py-3.5">
                   <div class="flex items-center gap-3">
                     <div class="w-8 h-8 rounded-full bg-[#18181B] text-white flex items-center justify-center font-semibold text-[11px]">{{ initials(user.name) }}</div>
@@ -109,7 +110,7 @@ function handleApplyInsight(action) {
                   <button class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[18px]">edit</span></button>
                 </td>
               </tr>
-              <tr v-if="users.tenantUsers.length === 0">
+              <tr v-if="tenantUsers.length === 0">
                 <td colspan="4" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay usuarios registrados.</td>
               </tr>
             </tbody>
