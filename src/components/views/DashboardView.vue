@@ -7,6 +7,7 @@ import { useTranslationStore } from '../../stores/translationStore'
 import { businessApi } from '../../services/businessApi'
 
 const props = defineProps({ isActive: { type: Boolean, required: true } })
+const emit = defineEmits(['notify'])
 
 const auth = useAuthStore()
 const billing = useBillingStore()
@@ -38,15 +39,15 @@ function togglePeriod() {
   if (selectedPeriod.value === 'Este mes') dashboardData.value.totalSales = 8400000
   if (selectedPeriod.value === 'Este trimestre') dashboardData.value.totalSales = 26500000
   if (selectedPeriod.value === 'Este año') dashboardData.value.totalSales = 112400000
+  emit('notify', { message: 'Periodo actualizado', detail: `Mostrando métricas para: ${selectedPeriod.value.toLowerCase()}.` })
 }
 
 function handleExport() {
-  const emitObj = props.isActive ? props : null
-  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Exportación completada', detail: `Reporte financiero de ${selectedPeriod.value.toLowerCase()} generado en PDF.` } }))
+  emit('notify', { message: 'Exportación completada', detail: `Reporte financiero de ${selectedPeriod.value.toLowerCase()} generado en PDF.` })
 }
 
 function handleViewAlerts() {
-  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Centro de Alertas', detail: 'Abriendo panel de notificaciones avanzadas de ContexAI.' } }))
+  emit('notify', { message: 'Centro de Alertas', detail: 'Abriendo panel de notificaciones avanzadas de ContexAI.' })
 }
 
 async function fetchDashboardData() {

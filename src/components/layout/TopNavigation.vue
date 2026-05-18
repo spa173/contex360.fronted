@@ -4,7 +4,7 @@ import { useThemeStore } from '../../stores/themeStore'
 import { useTranslationStore } from '../../stores/translationStore'
 
 const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
-const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel'])
+const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel', 'notify'])
 
 const themeStore = useThemeStore()
 const showNotifications = ref(false)
@@ -53,11 +53,11 @@ function handleLanguageSelect(lang) {
     reports: 'Reportes',
     settings: 'Preferencias'
   })
-  window.dispatchEvent(new CustomEvent('notify', { detail: { message: 'Idioma actualizado', detail: `Cambiando idioma de la interfaz a ${lang}.` } }))
+  emit('notify', { message: 'Idioma actualizado', detail: `Cambiando idioma de la interfaz a ${lang}.` })
 }
 
 function handleHelpLink(title) {
-  window.dispatchEvent(new CustomEvent('notify', { detail: { message: title, detail: `Abriendo portal de asistencia para ${title.toLowerCase()}...` } }))
+  emit('notify', { message: title, detail: `Abriendo portal de asistencia para ${title.toLowerCase()}...` })
 }
 </script>
 

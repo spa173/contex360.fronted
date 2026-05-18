@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { useToasts } from '../composables/useToasts'
@@ -47,6 +47,17 @@ function handleNotify(payload) {
   pushToast(payload.message, payload.detail || '')
 }
 
+function onWindowNotify(e) {
+  if (e.detail) handleNotify(e.detail)
+}
+
+onMounted(() => {
+  window.addEventListener('notify', onWindowNotify)
+})
+onUnmounted(() => {
+  window.removeEventListener('notify', onWindowNotify)
+})
+
 function handleSpotlightAction(payload) {
   if (payload.type === 'navigate') handleNavigate(payload.view)
 }
@@ -82,10 +93,11 @@ function toggleSidebar() {
         @toggle-sidebar="toggleSidebar"
         @navigate="handleNavigate"
         @open-admin-panel="emit('open-admin-panel')"
+        @notify="handleNotify"
       />
 
       <main class="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
-        <DashboardView v-if="store.activeView === 'dashboard'" :is-active="true" />
+        <DashboardView v-if="store.activeView === 'dashboard'" :is-active="true" @notify="handleNotify" />
         <BillingView v-if="store.activeView === 'billing'" :is-active="true" @notify="handleNotify" />
         <PurchasesView v-if="store.activeView === 'purchases'" :is-active="true" @notify="handleNotify" />
         <TreasuryView v-if="store.activeView === 'treasury'" :is-active="true" @notify="handleNotify" />
@@ -95,8 +107,8 @@ function toggleSidebar() {
         <UsersView v-if="store.activeView === 'users'" :is-active="true" @notify="handleNotify" />
         <ReportsView v-if="store.activeView === 'reports'" :is-active="true" @notify="handleNotify" />
         <QuotesView v-if="store.activeView === 'quotes'" :is-active="true" @notify="handleNotify" />
-        <AdminConsoleView v-if="store.activeView === 'admin-console'" :is-active="true" />
-        <TwoFactorView v-if="store.activeView === 'two-factor'" />
+        <AdminConsoleView v-if="store.activeView === 'admin-console'" :is-active="true" @notify="handleNotify" />
+        <TwoFactorView v-if="store.activeView === 'two-factor'" @notify="handleNotify" />
         <ProfileView v-if="store.activeView === 'profile'" :is-active="true" @notify="handleNotify" />
         <AiView v-if="store.activeView === 'ai'" :is-active="true" @notify="handleNotify" />
       </main>
