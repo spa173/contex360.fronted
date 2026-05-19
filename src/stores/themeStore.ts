@@ -10,42 +10,7 @@ function getSystemTheme(): 'dark' | 'light' {
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
 }
 
-function applyTheme(mode: ThemeMode) {
-  if (typeof document === 'undefined') return
-  const root = document.documentElement
-  
-  // Clean up previous listeners if any
-  if (mediaQueryListener && typeof window !== 'undefined') {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-    mediaQuery.removeEventListener('change', mediaQueryListener)
-    mediaQueryListener = null
-  }
 
-  let resolvedMode: 'dark' | 'light' = 'dark'
-  if (mode === 'auto') {
-    resolvedMode = getSystemTheme()
-    
-    // Add real-time listener for system theme changes
-    if (typeof window !== 'undefined') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
-      mediaQueryListener = (e: MediaQueryListEvent) => {
-        const newResolved = e.matches ? 'dark' : 'light'
-        applyResolvedTheme(newResolved)
-      }
-      mediaQuery.addEventListener('change', mediaQueryListener)
-    }
-  } else {
-    resolvedMode = mode
-  }
-
-  applyResolvedTheme(resolvedMode)
-
-  root.dataset.theme = mode
-  if (document.body) document.body.dataset.theme = mode
-  if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
-    globalThis.localStorage.setItem(STORAGE_KEY, mode)
-  }
-}
 
 function applyResolvedTheme(mode: 'dark' | 'light') {
   const root = document.documentElement
@@ -71,14 +36,17 @@ export const useThemeStore = defineStore('theme', {
   state: () => ({
     theme: 'auto' as ThemeMode,
     initialized: false,
+    forceLightMode: false,
   }),
 
   getters: {
     isDark: (state) => {
+      if (state.forceLightMode) return false
       if (state.theme === 'auto') return getSystemTheme() === 'dark'
       return state.theme === 'dark'
     },
     isLight: (state) => {
+      if (state.forceLightMode) return true
       if (state.theme === 'auto') return getSystemTheme() === 'light'
       return state.theme === 'light'
     },
@@ -96,17 +64,63 @@ export const useThemeStore = defineStore('theme', {
     initializeTheme() {
       this.theme = getStoredTheme()
       this.initialized = true
-      applyTheme(this.theme)
+      this.applyCurrentTheme()
     },
 
     setTheme(mode: ThemeMode) {
       this.theme = mode
-      applyTheme(mode)
+      if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+        globalThis.localStorage.setItem(STORAGE_KEY, mode)
+      }
+      this.applyCurrentTheme()
+    },
+
+    setForceLightMode(force: boolean) {
+      this.forceLightMode = force
+      this.applyCurrentTheme()
     },
 
     toggleTheme() {
       const currentResolved = this.theme === 'auto' ? getSystemTheme() : this.theme
       this.setTheme(currentResolved === 'dark' ? 'light' : 'dark')
     },
+
+    applyCurrentTheme() {
+      if (typeof document === 'undefined') return
+      const root = document.documentElement
+      
+      // Clean up previous listeners if any
+      if (mediaQueryListener && typeof window !== 'undefined') {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+        mediaQuery.removeEventListener('change', mediaQueryListener)
+        mediaQueryListener = null
+      }
+
+      let resolvedMode: 'dark' | 'light' = 'dark'
+      if (this.forceLightMode) {
+        resolvedMode = 'light'
+      } else if (this.theme === 'auto') {
+        resolvedMode = getSystemTheme()
+        
+        // Add real-time listener for system theme changes
+        if (typeof window !== 'undefined') {
+          const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+          mediaQueryListener = (e: MediaQueryListEvent) => {
+            if (!this.forceLightMode) {
+              const newResolved = e.matches ? 'dark' : 'light'
+              applyResolvedTheme(newResolved)
+            }
+          }
+          mediaQuery.addEventListener('change', mediaQueryListener)
+        }
+      } else {
+        resolvedMode = this.theme
+      }
+
+      applyResolvedTheme(resolvedMode)
+      
+      root.dataset.theme = this.forceLightMode ? 'light' : this.theme
+      if (document.body) document.body.dataset.theme = this.forceLightMode ? 'light' : this.theme
+    }
   },
 })

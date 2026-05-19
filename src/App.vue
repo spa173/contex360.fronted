@@ -48,6 +48,7 @@ const syncUrlWithState = (path, replace = false) => {
 import { watch } from 'vue'
 
 watch(() => store.currentUser, (user) => {
+  themeStore.setForceLightMode(!user)
   if (user) {
     syncUrlWithState('/dashboard', true) // REPLACE al entrar a la app
   } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value) {
