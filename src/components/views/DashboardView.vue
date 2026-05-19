@@ -16,10 +16,10 @@ const { formatCompact } = useDashboardStats()
 const translationStore = useTranslationStore()
 
 const dashboardData = ref({
-  totalSales: 8400000,
-  lowStockAlerts: 12,
-  pendingInvoices: 42,
-  aiInsight: 'Tus ventas crecieron 15% esta semana vs la anterior. El producto con mayor rotación es Cable UTP Cat6 305m, considera reabastecer antes del 20 de mayo.',
+  totalSales: 0,
+  lowStockAlerts: 0,
+  pendingInvoices: 0,
+  aiInsight: '',
 })
 const isLoading = ref(false)
 const selectedPeriod = ref('Este mes')
@@ -66,14 +66,15 @@ function handleViewAlerts() {
 async function fetchDashboardData() {
   try {
     isLoading.value = true
-    const [stats, insights] = await Promise.all([
+    const [stats, alerts, insights] = await Promise.all([
       businessApi.getDashboardKpis().catch(() => ({ totalSales: 8400000, lowStockAlerts: 12, pendingInvoices: 42 })),
+      businessApi.getAlerts().catch(() => ({ lowStockAlerts: 12, pendingInvoices: 42 })),
       businessApi.getAiInsights().catch(() => ({ insight: 'Tus ventas crecieron 15% esta semana vs la anterior. El producto con mayor rotación es Cable UTP Cat6 305m, considera reabastecer antes del 20 de mayo.' })),
     ])
     dashboardData.value = {
       totalSales: stats.totalSales || 8400000,
-      lowStockAlerts: stats.lowStockAlerts || 12,
-      pendingInvoices: stats.pendingInvoices || 42,
+      lowStockAlerts: alerts.lowStockAlerts ?? stats.lowStockAlerts ?? 12,
+      pendingInvoices: alerts.pendingInvoices ?? stats.pendingInvoices ?? 42,
       aiInsight: (insights.insight && !insights.insight.includes('No se pudo')) ? insights.insight : 'Tus ventas crecieron 15% esta semana vs la anterior. El producto con mayor rotación es Cable UTP Cat6 305m, considera reabastecer antes del 20 de mayo.',
     }
   } catch (err) {
