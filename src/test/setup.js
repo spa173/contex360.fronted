@@ -14,9 +14,10 @@ beforeEach(() => {
   vi.useRealTimers()
 })
 
-afterEach(() => {
+afterEach(async () => {
   vi.clearAllTimers()
   vi.useRealTimers()
   clearToasts()
   globalThis.localStorage.clear()
+  await vi.dynamicImportSettled()
 })
