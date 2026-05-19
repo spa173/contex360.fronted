@@ -245,8 +245,12 @@ export const businessApi = {
   },
 
   // Analytics
-  async getDashboardKpis(tenantId?: string | null) {
-    return request<any>('/analytics/dashboard', { tenantId })
+  async getDashboardKpis(from?: string, to?: string, tenantId?: string | null) {
+    const queryParams = new URLSearchParams()
+    if (from) queryParams.append('from', from)
+    if (to) queryParams.append('to', to)
+    const queryString = queryParams.toString() ? `?${queryParams.toString()}` : ''
+    return request<any>(`/analytics/dashboard${queryString}`, { tenantId })
   },
   async getAlerts(tenantId?: string | null) {
     return request<{ lowStockAlerts: number; pendingInvoices: number }>('/analytics/alerts', { tenantId })
