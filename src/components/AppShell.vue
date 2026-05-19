@@ -99,6 +99,8 @@ function toggleSidebar() {
       <TopNavigation
         :user="store.currentUser"
         :active-tenant="store.activeTenant"
+        :active-membership="store.activeMembership"
+        :accessible-tenants="store.accessibleTenants"
         @logout="handleLogout"
         @toggle-sidebar="toggleSidebar"
         @navigate="handleNavigate"

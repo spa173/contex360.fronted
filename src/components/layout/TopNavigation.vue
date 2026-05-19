@@ -267,14 +267,14 @@ function handleViewAllAlerts() {
           </div>
           <div class="text-left hidden lg:block">
             <p class="text-[12px] font-bold text-[#18181B] leading-tight whitespace-nowrap">{{ (user?.name || 'Daniel Castro').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
-            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider">{{ user?.role || user?.title || 'Administrador' }}</p>
+            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider">{{ activeMembership?.role || user?.title || 'Administrador' }}</p>
           </div>
           <span class="material-symbols-outlined text-[15px] text-[#A1A1AA]">expand_more</span>
         </button>
 
         <div
           v-if="showAvatar"
-          class="fixed sm:absolute inset-x-4 top-16 sm:inset-auto sm:right-0 sm:top-full sm:mt-1.5 sm:w-[280px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50"
+          class="fixed sm:absolute inset-x-4 top-16 sm:inset-auto sm:right-0 sm:top-full sm:mt-1.5 sm:w-[280px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <!-- User info -->
           <div class="px-4 py-3.5 flex items-center gap-3">
@@ -284,7 +284,7 @@ function handleViewAllAlerts() {
             <div class="flex-1 min-w-0">
               <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate leading-tight">{{ user?.name || 'Daniel Castro' }}</p>
               <p class="text-[12px] text-[#71717A] truncate leading-snug">{{ user?.email || 'daniel.castro@contex360.com' }}</p>
-              <span class="inline-block mt-1 text-[10px] font-extrabold uppercase tracking-wider bg-[#2563EB]/10 text-[#2563EB] px-2 py-0.5 rounded-[6px]">{{ user?.role || 'Administrador' }}</span>
+              <span class="inline-block mt-1 text-[10px] font-extrabold uppercase tracking-wider bg-[#2563EB]/10 text-[#2563EB] px-2 py-0.5 rounded-[6px]">{{ activeMembership?.role || user?.title || 'Administrador' }}</span>
             </div>
           </div>
 
@@ -298,7 +298,9 @@ function handleViewAllAlerts() {
                 </div>
                 <div class="min-w-0">
                   <p class="text-[13px] font-bold text-[#18181B] truncate leading-none mb-1">{{ activeTenant?.name || 'Andina Cargo SAS' }}</p>
-                  <p class="text-[11px] text-[#71717A] leading-none">5 workspaces más</p>
+                  <p class="text-[11px] text-[#71717A] leading-none">
+                    {{ accessibleTenants?.length > 1 ? `${accessibleTenants.length - 1} workspaces más` : 'Único workspace' }}
+                  </p>
                 </div>
               </div>
               <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">unfold_more</span>
