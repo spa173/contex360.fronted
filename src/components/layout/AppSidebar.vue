@@ -1,4 +1,6 @@
 <script setup>
+import { usePlanAccess } from '../../composables/usePlanAccess'
+
 defineProps({
   isOpen: { type: Boolean, default: false },
   activeTenant: Object,
@@ -7,6 +9,8 @@ defineProps({
 })
 
 const emit = defineEmits(['navigate', 'tenant-change', 'close', 'open-ai-chat'])
+
+const { isFeatureLocked } = usePlanAccess()
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: 'dashboard' },
@@ -25,6 +29,11 @@ const menuItems = [
 function tenantInitials(name) {
   if (!name) return 'C3'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
+}
+
+function handleItemClick(itemId) {
+  if (isFeatureLocked(itemId)) return
+  emit('navigate', itemId)
 }
 </script>
 
@@ -71,16 +80,22 @@ function tenantInitials(name) {
       <button
         v-for="item in menuItems"
         :key="item.id"
-        @click="emit('navigate', item.id)"
+        @click="handleItemClick(item.id)"
+        :title="isFeatureLocked(item.id) ? 'Plan Enterprise requerido' : ''"
         :class="[
-          'w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] font-medium transition-colors text-left',
-          activeView === item.id
-            ? 'bg-[#18181B] text-white'
-            : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA]'
+          'w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[13px] font-medium transition-colors text-left',
+          isFeatureLocked(item.id)
+            ? 'opacity-50 cursor-not-allowed text-[#A1A1AA]'
+            : activeView === item.id
+              ? 'bg-[#18181B] text-white'
+              : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA]'
         ]"
       >
-        <span class="material-symbols-outlined text-[18px]">{{ item.icon }}</span>
-        <span>{{ item.label }}</span>
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-[18px]">{{ item.icon }}</span>
+          <span>{{ item.label }}</span>
+        </div>
+        <span v-if="isFeatureLocked(item.id)" class="material-symbols-outlined text-[16px] text-[#A1A1AA]">lock</span>
       </button>
     </nav>
 
@@ -94,11 +109,20 @@ function tenantInitials(name) {
         Asistente IA
       </button>
       <button
-        @click="emit('navigate', 'admin-console')"
-        class="w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] font-medium text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA] transition-colors"
+        @click="handleItemClick('admin-console')"
+        :title="isFeatureLocked('admin-console') ? 'Plan Enterprise requerido' : ''"
+        :class="[
+          'w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[13px] font-medium transition-colors text-left',
+          isFeatureLocked('admin-console')
+            ? 'opacity-50 cursor-not-allowed text-[#A1A1AA]'
+            : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA]'
+        ]"
       >
-        <span class="material-symbols-outlined text-[18px]">settings</span>
-        Configuración
+        <div class="flex items-center gap-3">
+          <span class="material-symbols-outlined text-[18px]">settings</span>
+          <span>Configuración</span>
+        </div>
+        <span v-if="isFeatureLocked('admin-console')" class="material-symbols-outlined text-[16px] text-[#A1A1AA]">lock</span>
       </button>
     </div>
   </aside>
