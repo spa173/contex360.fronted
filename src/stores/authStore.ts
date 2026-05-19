@@ -62,34 +62,17 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      try {
-        const response = await apiLoginWithBackend(credentials)
-        if (response.user) {
-          const exists = root.users.find(u => u.id === response.user.id)
-          if (!exists) root.users.push(response.user as any)
-          root.session.currentUserId = response.user.id
-          root.session.currentSessionId = response.session?.id || uid('sess')
-          root.activeTenantId = response.activeTenantId || activeTenantId
-          if (response.memberships) root.memberships = response.memberships as any
-          isSessionExpired.value = false
-          root.saveState()
-          return { ok: true, user: response.user }
-        }
-      } catch (backendError: any) {
-        // Fallback for demo accounts if backend fails or is not present
-        const user = root.users.find(u => u.email === credentials.email)
-        if (user && user.isDemoAccount) {
-          const isValid = await verifyPassword(user, credentials.password)
-          if (isValid) {
-            root.session.currentUserId = user.id
-            root.session.currentSessionId = uid('sess')
-            root.activeTenantId = activeTenantId
-            isSessionExpired.value = false
-            root.saveState()
-            return { ok: true, user }
-          }
-        }
-        return { ok: false, message: backendError.message || 'Usuario no encontrado.' }
+      const response = await apiLoginWithBackend(credentials)
+      if (response.user) {
+        const exists = root.users.find(u => u.id === response.user.id)
+        if (!exists) root.users.push(response.user as any)
+        root.session.currentUserId = response.user.id
+        root.session.currentSessionId = response.session?.id || uid('sess')
+        root.activeTenantId = response.activeTenantId || activeTenantId
+        if (response.memberships) root.memberships = response.memberships as any
+        isSessionExpired.value = false
+        root.saveState()
+        return { ok: true, user: response.user }
       }
       return { ok: false, message: 'Usuario no encontrado.' }
     } catch (error: any) {
