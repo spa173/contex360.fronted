@@ -172,7 +172,7 @@ function handleViewAllAlerts() {
 </script>
 
 <template>
-  <header class="h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 sticky top-0 z-30 gap-3">
+  <header class="topbar h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 sticky top-0 z-30 gap-3">
     <!-- Hamburger (mobile only) -->
     <button
       @click="emit('toggle-sidebar')"
