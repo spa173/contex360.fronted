@@ -1,29 +1,30 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, defineAsyncComponent } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { useTranslationStore } from '../stores/translationStore'
 import { useToasts } from '../composables/useToasts'
 import AppSidebar from './layout/AppSidebar.vue'
 import TopNavigation from './layout/TopNavigation.vue'
-import DashboardView from './views/DashboardView.vue'
-import BillingView from './views/BillingView.vue'
-import PurchasesView from './views/PurchasesView.vue'
-import TreasuryView from './views/TreasuryView.vue'
-import QuotesView from './views/QuotesView.vue'
-import ReportsView from './views/ReportsView.vue'
-import InventoryView from './views/InventoryView.vue'
-import ThirdPartiesView from './views/ThirdPartiesView.vue'
-import UsersView from './views/UsersView.vue'
-import AdminConsoleView from './views/AdminConsoleView.vue'
-import AccountingView from './views/AccountingView.vue'
-import TwoFactorView from './views/TwoFactorView.vue'
-import ProfileView from './views/ProfileView.vue'
-import AiView from './views/AiView.vue'
-import ChatAssistant from './ai/ChatAssistant.vue'
-import SpotlightCommand from './layout/SpotlightCommand.vue'
-import AlertsCenterModal from './common/AlertsCenterModal.vue'
-import HelpCenterView from './views/HelpCenterView.vue'
+
+const DashboardView     = defineAsyncComponent(() => import('./views/DashboardView.vue'))
+const BillingView       = defineAsyncComponent(() => import('./views/BillingView.vue'))
+const PurchasesView     = defineAsyncComponent(() => import('./views/PurchasesView.vue'))
+const TreasuryView      = defineAsyncComponent(() => import('./views/TreasuryView.vue'))
+const QuotesView        = defineAsyncComponent(() => import('./views/QuotesView.vue'))
+const ReportsView       = defineAsyncComponent(() => import('./views/ReportsView.vue'))
+const InventoryView     = defineAsyncComponent(() => import('./views/InventoryView.vue'))
+const ThirdPartiesView  = defineAsyncComponent(() => import('./views/ThirdPartiesView.vue'))
+const UsersView         = defineAsyncComponent(() => import('./views/UsersView.vue'))
+const AdminConsoleView  = defineAsyncComponent(() => import('./views/AdminConsoleView.vue'))
+const AccountingView    = defineAsyncComponent(() => import('./views/AccountingView.vue'))
+const TwoFactorView     = defineAsyncComponent(() => import('./views/TwoFactorView.vue'))
+const ProfileView       = defineAsyncComponent(() => import('./views/ProfileView.vue'))
+const AiView            = defineAsyncComponent(() => import('./views/AiView.vue'))
+const HelpCenterView    = defineAsyncComponent(() => import('./views/HelpCenterView.vue'))
+const ChatAssistant     = defineAsyncComponent(() => import('./ai/ChatAssistant.vue'))
+const SpotlightCommand  = defineAsyncComponent(() => import('./layout/SpotlightCommand.vue'))
+const AlertsCenterModal = defineAsyncComponent(() => import('./common/AlertsCenterModal.vue'))
 
 const store = useAuthStore()
 const themeStore = useThemeStore()
