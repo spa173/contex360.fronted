@@ -56,6 +56,25 @@ npm run start:dev
 - trazabilidad y eventos DIAN asincronos
 - OCR basico con extraccion de campos
 
+## Integracion Bancolombia En Produccion
+
+La integracion bancaria ya no debe vivir en `localStorage` ni exponer secretos en el navegador. El frontend ahora espera un backend que maneje el flujo por tenant y conserve las credenciales en servidor o vault.
+
+Contrato esperado:
+
+- `GET /integrations/bancolombia/config`
+- `POST /integrations/bancolombia/config`
+- `POST /integrations/bancolombia/connect`
+- `POST /integrations/bancolombia/disconnect`
+- `POST /integrations/bancolombia/sync`
+
+Reglas:
+
+- el `client secret` nunca se renderiza en la UI
+- la app solo envía `accountNumber`, `accountType`, `clientId`, `integrationMode`, `environment` y `statementFormat`
+- el backend debe responder con el estado real de conexión y la `lastSyncAt`
+- el OAuth / consentimiento debe abrirse desde el servidor, no desde el cliente
+
 ## Pruebas
 
 La suite cubre los flujos mas delicados del store principal y la integracion UI-store:

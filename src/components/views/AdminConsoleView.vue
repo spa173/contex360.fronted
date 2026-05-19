@@ -2,6 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminStore } from '../../stores/adminStore'
 import { useTranslationStore } from '../../stores/translationStore'
+import { useStateStore } from '../../stores/stateStore'
 import { businessApi } from '@/services/businessApi'
 
 defineProps({ isActive: { type: Boolean, required: true } })
@@ -9,6 +10,8 @@ const emit = defineEmits(['notify'])
 
 const adminStore = useAdminStore()
 const translationStore = useTranslationStore()
+const stateStore = useStateStore()
+const activeTenantId = computed(() => stateStore.activeTenantId)
 
 const activeTab = ref('empresa')
 const tabs = [
@@ -168,6 +171,80 @@ const dianValidating = ref(false)
 const dianValidationResult = ref(null)
 
 const showBancolombiaModal = ref(false)
+const bancolombiaConnectionModes = [
+  { value: 'open_finance', label: 'Open Finance / OAuth 2.0' },
+  { value: 'treasury_feed', label: 'Conexión empresarial / extractos' },
+]
+
+const bancolombiaStatementFormats = [
+  { value: 'MT940', label: 'MT940' },
+  { value: 'CAMT053', label: 'CAMT.053' },
+]
+
+function createDefaultBancolombiaConfig() {
+  return {
+    integrationMode: 'open_finance',
+    environment: 'sandbox',
+    accountNumber: '',
+    accountType: 'Ahorros',
+    clientId: '',
+    statementFormat: 'MT940',
+    authorizationStatus: 'draft',
+    lastSyncAt: null,
+  }
+}
+
+function normalizeBancolombiaConfig(raw = {}) {
+  return {
+    ...createDefaultBancolombiaConfig(),
+    integrationMode: raw.integrationMode || raw.connectionMethod || 'open_finance',
+    environment: raw.environment || raw.bancolombiaEnvironment || 'sandbox',
+    accountNumber: raw.accountNumber || '',
+    accountType: raw.accountType || 'Ahorros',
+    clientId: raw.clientId || '',
+    statementFormat: raw.statementFormat || 'MT940',
+    authorizationStatus: raw.authorizationStatus || raw.status || (raw.connected ? 'connected' : raw.active ? 'ready' : 'draft'),
+    lastSyncAt: raw.lastSyncAt || null,
+  }
+}
+
+const bancolombiaConfig = ref(createDefaultBancolombiaConfig())
+const bancolombiaLoading = ref(false)
+const bancolombiaSaving = ref(false)
+const bancolombiaConnecting = ref(false)
+const bancolombiaSyncing = ref(false)
+const bancolombiaStatus = computed(() => {
+  switch (bancolombiaConfig.value.authorizationStatus) {
+    case 'connected':
+      return {
+        label: 'Conectado',
+        wrapper: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        dot: 'bg-emerald-500 animate-pulse',
+      }
+    case 'ready':
+      return {
+        label: 'Listo para autorizar',
+        wrapper: 'bg-amber-50 text-amber-700 border-amber-200',
+        dot: 'bg-amber-500',
+      }
+    case 'paused':
+      return {
+        label: 'Pausado',
+        wrapper: 'bg-rose-50 text-rose-700 border-rose-200',
+        dot: 'bg-rose-500',
+      }
+    default:
+      return {
+        label: 'Sin configurar',
+        wrapper: 'bg-slate-50 text-slate-600 border-slate-200',
+        dot: 'bg-slate-400',
+      }
+  }
+})
+
+const bancolombiaModeLabel = computed(() => {
+  return bancolombiaConnectionModes.find(mode => mode.value === bancolombiaConfig.value.integrationMode)?.label || 'Open Finance / OAuth 2.0'
+})
 
 // Integrations catalog
 const showIntegrationsModal = ref(false)
@@ -186,6 +263,98 @@ function saveIntegrationState(id, enabled) {
   localStorage.setItem(INTEGRATIONS_KEY, JSON.stringify(states))
 }
 
+async function fetchBancolombiaConfig() {
+  if (!activeTenantId.value) {
+    bancolombiaConfig.value = createDefaultBancolombiaConfig()
+    return
+  }
+
+  bancolombiaLoading.value = true
+  try {
+    const data = await businessApi.getBancolombiaConfig(activeTenantId.value)
+    bancolombiaConfig.value = normalizeBancolombiaConfig(data)
+  } catch (e) {
+    bancolombiaConfig.value = createDefaultBancolombiaConfig()
+    console.warn('Bancolombia config load skipped:', e?.message || e)
+  } finally {
+    bancolombiaLoading.value = false
+  }
+}
+
+async function openBancolombiaConsent(url) {
+  if (!url || bancolombiaConnecting.value) return
+
+  bancolombiaConnecting.value = true
+  let poll = null
+
+  const cleanup = () => {
+    if (poll) clearInterval(poll)
+    window.removeEventListener('message', handler)
+    bancolombiaConnecting.value = false
+  }
+
+  const handler = async (event) => {
+    if (event.data?.type === 'bancolombia-connected') {
+      await fetchBancolombiaConfig()
+      emit('notify', {
+        message: 'Bancolombia conectado',
+        detail: event.data?.accountNumber
+          ? `Cuenta ${event.data.accountNumber} vinculada correctamente.`
+          : 'La autorización Bancolombia se completó correctamente.',
+      })
+      cleanup()
+    } else if (event.data?.type === 'bancolombia-error') {
+      emit('notify', { message: 'Error al conectar Bancolombia', detail: event.data.message || 'No se pudo completar la autorización.' })
+      cleanup()
+    }
+  }
+
+  const popup = window.open(url, 'bancolombia-oauth', 'width=540,height=720,scrollbars=yes')
+  if (!popup) {
+    cleanup()
+    throw new Error('No se pudo abrir la ventana de autorización de Bancolombia.')
+  }
+
+  window.addEventListener('message', handler)
+  poll = setInterval(() => {
+    if (popup.closed) {
+      cleanup()
+    }
+  }, 800)
+}
+
+async function syncBancolombiaNow() {
+  if (!activeTenantId.value || bancolombiaSyncing.value) return
+
+  bancolombiaSyncing.value = true
+  try {
+    const res = await businessApi.syncBancolombia(activeTenantId.value)
+    bancolombiaConfig.value.lastSyncAt = res.lastSyncAt || new Date().toISOString()
+    emit('notify', { message: 'Sincronización completada', detail: 'Los movimientos de Bancolombia se actualizaron correctamente.' })
+    await fetchBancolombiaConfig()
+  } catch (e) {
+    emit('notify', { message: 'Error al sincronizar', detail: e?.message || 'No se pudo actualizar la conciliación.' })
+  } finally {
+    bancolombiaSyncing.value = false
+  }
+}
+
+async function disconnectBancolombia() {
+  if (!activeTenantId.value || bancolombiaSaving.value) return
+
+  bancolombiaSaving.value = true
+  try {
+    await businessApi.disconnectBancolombia(activeTenantId.value)
+    bancolombiaConfig.value = createDefaultBancolombiaConfig()
+    await fetchBancolombiaConfig()
+    emit('notify', { message: 'Bancolombia desconectado', detail: 'La integración fue desactivada para esta empresa.' })
+  } catch (e) {
+    emit('notify', { message: 'Error al desconectar', detail: e?.message || 'No se pudo desactivar la integración.' })
+  } finally {
+    bancolombiaSaving.value = false
+  }
+}
+
 const integrationCatalog = ref([
   // Pagos
   { id: 'stripe', name: 'Stripe', desc: 'Pasarela de pagos internacional con soporte 135+ monedas', cat: 'pagos', icon: 'payments', color: '#635BFF', bg: '#635BFF15' },
@@ -195,7 +364,7 @@ const integrationCatalog = ref([
   { id: 'epayco', name: 'ePayco', desc: 'Pagos en línea para Colombia — débito, crédito y PSE', cat: 'pagos', icon: 'local_atm', color: '#1A73E8', bg: '#1A73E815' },
   { id: 'kushki', name: 'Kushki', desc: 'Fintech de pagos panlatino con antifraude propio', cat: 'pagos', icon: 'shield_lock', color: '#00BFA5', bg: '#00BFA515' },
   // Bancos
-  { id: 'bancolombia', name: 'Bancolombia', desc: 'Conciliación bancaria en tiempo real', cat: 'bancos', icon: 'account_balance', color: '#FFCD00', bg: '#FFCD0015' },
+  { id: 'bancolombia', name: 'Bancolombia', desc: 'Open Finance, extractos empresariales y conciliación automática', cat: 'bancos', icon: 'account_balance', color: '#FFCD00', bg: '#FFCD0015' },
   { id: 'bogota', name: 'Banco de Bogotá', desc: 'Open Banking — extractos y movimientos automáticos', cat: 'bancos', icon: 'account_balance', color: '#003087', bg: '#00308715' },
   { id: 'davivienda', name: 'Davivienda', desc: 'Extractos automáticos y alerta de saldos', cat: 'bancos', icon: 'account_balance', color: '#E31837', bg: '#E3183715' },
   { id: 'bbva', name: 'BBVA Colombia', desc: 'Conciliación y pagos masivos a proveedores', cat: 'bancos', icon: 'account_balance', color: '#004481', bg: '#00448115' },
@@ -329,14 +498,6 @@ async function disconnectGmail() {
   }
   emit('notify', { message: 'Gmail desconectado', detail: 'La cuenta de Gmail fue desvinculada del workspace.' })
 }
-const bancolombiaConfig = ref({
-  clientId: 'banco-contex-1021',
-  clientSecret: '••••••••••••',
-  accountNumber: '031-987654-21',
-  accountType: 'Ahorros',
-  active: true
-})
-
 onMounted(async () => {
   adminStore.loadSettings()
   if (activeTab.value === 'logs') {
@@ -350,11 +511,12 @@ onMounted(async () => {
   } catch (e) {
     console.warn('Initial DIAN config check skipped:', e.message)
   }
-  const saved = localStorage.getItem('contex_bancolombia_settings')
-  if (saved) {
-    bancolombiaConfig.value = JSON.parse(saved)
-  }
+  await fetchBancolombiaConfig()
   checkGmailStatus()
+})
+
+watch(activeTenantId, () => {
+  fetchBancolombiaConfig()
 })
 
 watch(() => adminStore.language, (newVal) => {
@@ -425,10 +587,7 @@ async function handleIntegration(name) {
       showDianModal.value = true
     }
   } else if (name === 'Bancolombia') {
-    const saved = localStorage.getItem('contex_bancolombia_settings')
-    if (saved) {
-      bancolombiaConfig.value = JSON.parse(saved)
-    }
+    fetchBancolombiaConfig()
     showBancolombiaModal.value = true
   }
 }
@@ -450,10 +609,53 @@ async function saveDianConfig() {
   }
 }
 
-function saveBancolombiaConfig() {
-  localStorage.setItem('contex_bancolombia_settings', JSON.stringify(bancolombiaConfig.value))
-  emit('notify', { message: 'Integración Bancolombia Activa', detail: 'La conciliación en tiempo real ha sido configurada y sincronizada.' })
-  showBancolombiaModal.value = false
+async function saveBancolombiaConfig() {
+  const next = normalizeBancolombiaConfig(bancolombiaConfig.value)
+  next.accountNumber = String(next.accountNumber || '').trim()
+  next.clientId = String(next.clientId || '').trim()
+
+  if (!next.accountNumber) {
+    emit('notify', { message: 'Cuenta requerida', detail: 'Ingresa el número de cuenta que vamos a conciliar.' })
+    return
+  }
+
+  if (next.integrationMode === 'open_finance' && !next.clientId) {
+    emit('notify', { message: 'Client ID requerido', detail: 'En Open Finance el Client ID debe venir de la app registrada en Bancolombia.' })
+    return
+  }
+
+  if (!activeTenantId.value) {
+    emit('notify', { message: 'Tenant no seleccionado', detail: 'Selecciona una empresa antes de configurar Bancolombia.' })
+    return
+  }
+
+  bancolombiaSaving.value = true
+  try {
+    const res = await businessApi.updateBancolombiaConfig(next, activeTenantId.value)
+    bancolombiaConfig.value = normalizeBancolombiaConfig(res.data || next)
+
+    if (res.connectUrl) {
+      showBancolombiaModal.value = false
+      await openBancolombiaConsent(res.connectUrl)
+    } else if (res.needsConsent || next.integrationMode === 'open_finance') {
+      const conn = await businessApi.startBancolombiaOAuth(activeTenantId.value)
+      showBancolombiaModal.value = false
+      await openBancolombiaConsent(conn.url)
+    } else {
+      emit('notify', {
+        message: 'Configuración Bancolombia guardada',
+        detail: next.integrationMode === 'open_finance'
+          ? 'La conexión quedó lista para completar el consentimiento OAuth desde el backend.'
+          : 'La cuenta quedó preparada para recibir extractos empresariales MT940 o CAMT.053.',
+      })
+      showBancolombiaModal.value = false
+    }
+    await fetchBancolombiaConfig()
+  } catch (e) {
+    emit('notify', { message: 'Error', detail: e?.message || 'No se pudo guardar la configuración Bancolombia.' })
+  } finally {
+    bancolombiaSaving.value = false
+  }
 }
 </script>
 
@@ -715,19 +917,22 @@ function saveBancolombiaConfig() {
             </div>
             <div>
               <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">Bancolombia</p>
-              <p class="text-[12px] text-[#71717A] mt-0.5">Conciliación bancaria en tiempo real</p>
+              <p class="text-[12px] text-[#71717A] mt-0.5">Open Finance y extractos empresariales</p>
             </div>
           </div>
-          <span v-if="bancolombiaConfig.active" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>Conectado
-          </span>
-          <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 text-[11px] font-extrabold border border-rose-200 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-rose-500"></span>Inactivo
+          <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold border shadow-sm', bancolombiaStatus.wrapper]">
+            <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]"></span>{{ bancolombiaStatus.label }}
           </span>
         </div>
         <button @click="handleIntegration('Bancolombia')" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
-          Configurar Cuentas Bancarias
+          Configurar conexión real
         </button>
+        <p v-if="bancolombiaConfig.lastSyncAt" class="mt-2 text-[11px] text-[#71717A]">
+          Última sincronización: {{ formatLogDate(bancolombiaConfig.lastSyncAt) }}
+        </p>
+        <p v-else class="mt-2 text-[11px] text-[#71717A]">
+          La autorización se completa en el backend antes de sincronizar movimientos.
+        </p>
       </div>
 
       <div @click="showIntegrationsModal = true" class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group">
@@ -833,15 +1038,15 @@ function saveBancolombiaConfig() {
 
     <!-- Modal Configuración Bancolombia -->
     <div v-if="showBancolombiaModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200">
-        <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-5">
+      <div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]">
+        <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-4">
           <div class="flex items-center gap-2.5">
             <div class="w-12 h-12 rounded-[12px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] font-extrabold text-[20px] shadow-sm border border-[#2563EB]/20">
               B
             </div>
             <div>
               <h3 class="text-[16px] font-bold text-[#18181B]">Conciliación Bancolombia</h3>
-              <p class="text-[12px] text-[#71717A]">Conexión por API segura (OAuth 2.0)</p>
+              <p class="text-[12px] text-[#71717A]">Conexión real gestionada por backend: OAuth 2.0 o extractos empresariales</p>
             </div>
           </div>
           <button @click="showBancolombiaModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
@@ -849,52 +1054,143 @@ function saveBancolombiaConfig() {
           </button>
         </div>
 
+        <div class="flex items-center justify-between gap-3 mb-4">
+          <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold border shadow-sm', bancolombiaStatus.wrapper]">
+            <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]"></span>
+            {{ bancolombiaStatus.label }}
+          </span>
+          <span class="text-[11px] font-semibold text-[#71717A]">{{ bancolombiaModeLabel }}</span>
+        </div>
+
+        <div v-if="bancolombiaLoading" class="mb-4 flex items-center gap-2 text-[11px] text-[#71717A]">
+          <span class="w-3.5 h-3.5 border-2 border-[#18181B]/20 border-t-[#18181B] rounded-full animate-spin"></span>
+          Cargando configuración segura desde el backend...
+        </div>
+
+        <div class="mb-4 rounded-[12px] border border-[#DBEAFE] bg-[#EFF6FF] px-3.5 py-3">
+          <p class="text-[11px] font-bold text-[#1D4ED8]">Implementación real</p>
+          <p class="mt-1 text-[11px] leading-[1.5] text-[#1E3A8A]">
+            El navegador no guarda el client secret. El backend maneja el consentimiento, intercambia el code por tokens y sincroniza movimientos o extractos.
+          </p>
+        </div>
+
         <form @submit.prevent="saveBancolombiaConfig" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Modo de conexión</label>
+              <select v-model="bancolombiaConfig.integrationMode" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option v-for="mode in bancolombiaConnectionModes" :key="mode.value" :value="mode.value">{{ mode.label }}</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Ambiente</label>
+              <select v-model="bancolombiaConfig.environment" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option value="sandbox">Sandbox / Pruebas</option>
+                <option value="production">Producción</option>
+              </select>
+            </div>
+          </div>
+
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Número de Cuenta Bancaria</label>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Número de cuenta bancaria</label>
             <input v-model="bancolombiaConfig.accountNumber" placeholder="Ej. 031-987654-21" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tipo de Cuenta</label>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tipo de cuenta</label>
               <select v-model="bancolombiaConfig.accountType" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
                 <option value="Ahorros">Ahorros</option>
                 <option value="Corriente">Corriente</option>
               </select>
             </div>
-            <div>
+            <div class="rounded-[10px] border border-[#E4E4E7] bg-[#FAFAFA] p-3.5">
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Estado</label>
-              <select v-model="bancolombiaConfig.active" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option :value="true">Conectado (En línea)</option>
-                <option :value="false">Inactivo / Pausado</option>
+              <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold border shadow-sm', bancolombiaStatus.wrapper]">
+                <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]"></span>
+                {{ bancolombiaStatus.label }}
+              </span>
+              <p class="mt-2 text-[11px] text-[#71717A] leading-[1.5]">
+                El backend valida la autorización, renueva tokens y confirma si la cuenta está realmente sincronizando.
+              </p>
+            </div>
+          </div>
+
+          <div v-if="bancolombiaConfig.integrationMode === 'open_finance'">
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Client ID (público)</label>
+            <input v-model="bancolombiaConfig.clientId" placeholder="ID de la app registrada" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+            <p class="mt-1 text-[11px] text-[#71717A] leading-[1.5]">
+              El Client Secret se administra en el backend o en un vault. Aquí solo capturamos el identificador público.
+            </p>
+          </div>
+
+          <div v-else class="rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] p-3.5 space-y-3">
+            <div class="flex items-start gap-2.5">
+              <span class="material-symbols-outlined text-[18px] text-[#2563EB] mt-0.5">receipt_long</span>
+              <div>
+                <p class="text-[11px] font-bold text-[#18181B]">Conexión empresarial</p>
+                <p class="text-[11px] text-[#71717A] leading-[1.5]">
+                  Normalmente recibe extractos MT940 o CAMT.053 y luego el backend los cruza contra la contabilidad.
+                </p>
+              </div>
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Formato de extracto</label>
+              <select v-model="bancolombiaConfig.statementFormat" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option v-for="format in bancolombiaStatementFormats" :key="format.value" :value="format.value">{{ format.label }}</option>
               </select>
             </div>
           </div>
 
-          <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Client ID (API Bancolombia)</label>
-            <input v-model="bancolombiaConfig.clientId" placeholder="API Client ID" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
-          </div>
-
-          <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Client Secret (API Bancolombia)</label>
-            <input v-model="bancolombiaConfig.clientSecret" type="password" placeholder="Contraseña de API" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
-          </div>
-
           <div class="flex gap-2.5 p-3.5 rounded-[10px] border border-[#E4E4E7] bg-white">
             <span class="material-symbols-outlined text-[20px] text-[#2563EB] flex-shrink-0">shield</span>
-            <p class="text-[11px] text-[#18181B] leading-[1.5]">
-              <strong class="font-semibold">Seguridad Bancaria:</strong> Tus credenciales viajan cifradas de extremo a extremo mediante el túnel seguro de ContexAI.
-            </p>
+            <div class="text-[11px] text-[#18181B] leading-[1.5]">
+              <p class="font-semibold">Seguridad bancaria</p>
+              <p>Los tokens viven cifrados en el backend. El navegador solo guarda metadatos y el estado de la conexión.</p>
+            </div>
+          </div>
+
+          <div v-if="bancolombiaConfig.lastSyncAt" class="text-[11px] text-[#71717A]">
+            Última sincronización: {{ formatLogDate(bancolombiaConfig.lastSyncAt) }}
+          </div>
+
+          <div v-if="bancolombiaConfig.authorizationStatus === 'connected'" class="flex flex-wrap gap-2">
+            <button
+              type="button"
+              @click="syncBancolombiaNow"
+              :disabled="bancolombiaSyncing || bancolombiaSaving || bancolombiaConnecting"
+              class="px-4 py-2 text-[13px] font-semibold border border-[#E4E4E7] text-[#18181B] rounded-[10px] hover:bg-[#FAFAFA] transition-colors disabled:opacity-50 flex items-center gap-2"
+            >
+              <span v-if="bancolombiaSyncing" class="w-4 h-4 border-2 border-[#18181B]/20 border-t-[#18181B] rounded-full animate-spin"></span>
+              {{ bancolombiaSyncing ? 'Sincronizando...' : 'Sincronizar ahora' }}
+            </button>
+            <button
+              type="button"
+              @click="disconnectBancolombia"
+              :disabled="bancolombiaSaving || bancolombiaConnecting || bancolombiaSyncing"
+              class="px-4 py-2 text-[13px] font-semibold border border-rose-200 text-rose-600 rounded-[10px] hover:bg-rose-50 transition-colors disabled:opacity-50"
+            >
+              Desconectar
+            </button>
+          </div>
+
+          <div class="rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] p-3.5">
+            <p class="text-[11px] font-bold text-[#18181B] mb-2">Flujo real en producción</p>
+            <ul class="space-y-1 text-[11px] text-[#71717A] leading-[1.5]">
+              <li>1. Registras la app en el portal de Bancolombia y defines los scopes.</li>
+              <li>2. El backend abre el consentimiento y recibe el callback autorizado.</li>
+              <li>3. Los tokens se guardan cifrados y nunca se exponen al navegador.</li>
+              <li>4. La conciliación consume movimientos o extractos y los cruza con la contabilidad.</li>
+            </ul>
           </div>
 
           <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
             <button type="button" @click="showBancolombiaModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
               Cancelar
             </button>
-            <button type="submit" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm">
-              Sincronizar y Guardar
+            <button type="submit" :disabled="bancolombiaSaving || bancolombiaLoading || bancolombiaConnecting" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm flex items-center gap-1.5 disabled:opacity-50">
+              <div v-if="bancolombiaSaving" class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+              {{ bancolombiaSaving ? 'Guardando...' : 'Guardar configuración segura' }}
             </button>
           </div>
         </form>
