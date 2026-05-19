@@ -19,8 +19,8 @@ export function normalizeState(source: any = {}): AppState {
     ...source,
     activeTenantId: source.activeTenantId || base.activeTenantId || 'tenant-a',
     session: { 
-      currentUserId: source.session?.currentUserId || base.session.currentUserId || 'user-admin',
-      currentSessionId: source.session?.currentSessionId || base.session.currentSessionId || 'sess-seed-1',
+      currentUserId: source.session && source.session.currentUserId !== undefined ? source.session.currentUserId : null,
+      currentSessionId: source.session && source.session.currentSessionId !== undefined ? source.session.currentSessionId : null,
     },
     selections: { ...base.selections, ...source.selections },
     tenants: normalizeTenants(source.tenants, base.tenants),
