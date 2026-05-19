@@ -30,17 +30,14 @@ export const useTreasuryStore = defineStore('treasury', () => {
     ),
   )
 
-  const programmedPayments = ref<ProgrammedPayment[]>([
-    { id: 'pay-1', vendorName: 'TechCorp Solutions', dueDate: new Date(Date.now() + 86400000).toISOString(), priority: 'Alta', amount: 12500000, status: 'Programado' },
-    { id: 'pay-2', vendorName: 'Suministros Globales SAS', dueDate: new Date(Date.now() + 172800000).toISOString(), priority: 'Media', amount: 4800000, status: 'Pendiente' },
-    { id: 'pay-3', vendorName: 'Servicios Logísticos del Norte', dueDate: new Date(Date.now() + 345600000).toISOString(), priority: 'Baja', amount: 1850000, status: 'Aprobado' },
-  ])
+  const programmedPayments = ref<ProgrammedPayment[]>([])
 
   function applyInsightOptimization() {
-    const techCorp = programmedPayments.value.find(p => p.vendorName === 'TechCorp Solutions')
-    if (techCorp) {
-      techCorp.dueDate = new Date(Date.now() + 86400000 * 9).toISOString() // Moved 9 days later
-      techCorp.priority = 'Optimizada'
+    // Optimizes the first programmed payment found in the list (if any)
+    const firstPayment = programmedPayments.value[0]
+    if (firstPayment) {
+      firstPayment.dueDate = new Date(Date.now() + 86400000 * 9).toISOString() // Moved 9 days later
+      firstPayment.priority = 'Optimizada'
     }
   }
 
@@ -55,20 +52,31 @@ export const useTreasuryStore = defineStore('treasury', () => {
     })
   }
 
-  const totalBalance = computed(() => balance.value.balance || 24580000)
+  const totalBalance = computed(() => balance.value.balance ?? 0)
   const pendingPaymentsCount = computed(() => programmedPayments.value.length)
-  const pendingCollectionsCount = computed(() => 5)
+  const pendingCollectionsCount = ref(0)
 
   async function fetchAll() {
     if (!activeTenantId.value) return
     isLoading.value = true
     try {
-      const [txs, bal] = await Promise.all([
+      const [txs, bal, alerts, purchases] = await Promise.all([
         businessApi.getTransactions(activeTenantId.value),
         businessApi.getTreasuryBalance(activeTenantId.value),
+        businessApi.getAlerts(activeTenantId.value).catch(() => ({ pendingInvoices: 0 })),
+        businessApi.getPurchases(activeTenantId.value).catch(() => []),
       ])
       transactions.value = Array.isArray(txs) ? txs : []
       balance.value = bal
+      pendingCollectionsCount.value = alerts?.pendingInvoices ?? 0
+      programmedPayments.value = (purchases || []).map((p: any) => ({
+        id: p.id,
+        vendorName: p.provider?.name || 'Proveedor General',
+        dueDate: p.dueAt || p.issuedAt || new Date().toISOString(),
+        priority: p.total > 10000000 ? 'Alta' : p.total > 2000000 ? 'Media' : 'Baja',
+        amount: Number(p.total),
+        status: p.status === 'registered' ? 'Programado' : p.status === 'paid' ? 'Aprobado' : 'Pendiente',
+      }))
     } catch (err) {
       console.error('[treasury] fetch failed:', err)
     } finally {

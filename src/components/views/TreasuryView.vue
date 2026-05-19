@@ -16,9 +16,10 @@ const programmedPayments = computed(() => treasury.programmedPayments || [])
 const showAiInsight = ref(true)
 
 function handleApplyInsight() {
+  const vendorName = programmedPayments.value[0]?.vendorName || 'proveedor'
   treasury.applyInsightOptimization()
   showAiInsight.value = false
-  emit('notify', { message: 'Insight de IA aplicado', detail: 'La fecha y prioridad del pago a TechCorp fueron optimizadas por ContexAI.' })
+  emit('notify', { message: 'Insight de IA aplicado', detail: `La fecha y prioridad del pago a ${vendorName} fueron optimizadas por ContexAI.` })
 }
 
 function handleIgnoreInsight() {
@@ -139,9 +140,9 @@ function priorityClass(p) {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Insights de IA</h3></div>
-        <div v-if="showAiInsight" class="bg-white border border-[#E4E4E7] rounded-[14px] p-4 transition-all">
+        <div v-if="showAiInsight && programmedPayments.length > 0" class="bg-white border border-[#E4E4E7] rounded-[14px] p-4 transition-all">
           <div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[16px] text-[#2563EB]">lightbulb</span><p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Optimización</p></div>
-          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Mover el pago a <strong>TechCorp</strong> al día 25 para evitar déficit temporal proyectado.</p>
+          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Mover el pago a <strong>{{ programmedPayments[0]?.vendorName }}</strong> al día 25 para evitar déficit temporal proyectado.</p>
           <div class="flex gap-2">
             <button @click="handleApplyInsight" class="flex-1 py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold hover:bg-[#1D4ED8] transition-colors">Aplicar</button>
             <button @click="handleIgnoreInsight" class="px-3 py-1.5 border border-[#E4E4E7] text-[#71717A] rounded-[8px] text-[11px] font-semibold hover:bg-[#FAFAFA] transition-colors">Ignorar</button>

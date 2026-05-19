@@ -40,7 +40,9 @@ const userName = computed(() => {
 })
 
 const formattedDate = computed(() => {
-  return 'Hoy, 16 may 2026'
+  const d = new Date()
+  const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+  return `Hoy, ${d.getDate()} ${months[d.getMonth()]} ${d.getFullYear()}`
 })
 
 const displayPeriod = computed(() => {
