@@ -23,6 +23,7 @@ import AiView from './views/AiView.vue'
 import ChatAssistant from './ai/ChatAssistant.vue'
 import SpotlightCommand from './layout/SpotlightCommand.vue'
 import AlertsCenterModal from './common/AlertsCenterModal.vue'
+import HelpCenterView from './views/HelpCenterView.vue'
 
 const store = useAuthStore()
 const themeStore = useThemeStore()
@@ -123,6 +124,7 @@ function toggleSidebar() {
         <TwoFactorView v-if="store.activeView === 'two-factor'" @notify="handleNotify" />
         <ProfileView v-if="store.activeView === 'profile'" :is-active="true" @notify="handleNotify" />
         <AiView v-if="store.activeView === 'ai'" :is-active="true" @notify="handleNotify" />
+        <HelpCenterView v-if="store.activeView === 'help-center'" :is-active="true" @notify="handleNotify" />
       </main>
 
       <ChatAssistant ref="chatRef" @navigate="handleNavigate" />

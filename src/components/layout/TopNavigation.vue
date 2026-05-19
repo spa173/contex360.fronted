@@ -365,7 +365,7 @@ function handleViewAllAlerts() {
 
           <!-- Help links -->
           <div class="py-1 border-t border-[#F4F4F5]">
-            <button @click="handleHelpLink('Centro de ayuda')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+            <button @click="emit('navigate', 'help-center'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">help</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Centro de ayuda</span>
               <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>

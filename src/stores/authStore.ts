@@ -30,17 +30,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   const visibleViews = computed(() => {
     if (isSystemOwner.value) {
-      return ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'profile', 'about']
+      return ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'help-center', 'profile', 'about']
     }
     const role = activeMembership.value?.role
-    if (!role) return ['dashboard', 'profile', 'about']
+    if (!role) return ['dashboard', 'help-center', 'profile', 'about']
     const definitions: any = {
-      'Administrador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'profile', 'about'],
-      'Contador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about'],
-      'Visor': ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'accounting', 'third-parties', 'reports', 'profile', 'about'],
-      'Operador': ['dashboard', 'billing', 'inventory', 'third-parties', 'profile', 'about']
+      'Administrador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'help-center', 'profile', 'about'],
+      'Contador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'reports', 'help-center', 'profile', 'about'],
+      'Visor': ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'accounting', 'third-parties', 'reports', 'help-center', 'profile', 'about'],
+      'Operador': ['dashboard', 'billing', 'inventory', 'third-parties', 'help-center', 'profile', 'about']
     }
-    return definitions[role] || ['dashboard', 'profile', 'about']
+    return definitions[role] || ['dashboard', 'help-center', 'profile', 'about']
   })
 
   async function loginWithBackend(credentials: { 
