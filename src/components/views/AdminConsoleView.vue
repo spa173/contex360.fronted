@@ -13,6 +13,10 @@ const translationStore = useTranslationStore()
 const stateStore = useStateStore()
 const activeTenantId = computed(() => stateStore.activeTenantId)
 
+function safeLogMessage(value) {
+  return String(value ?? '').replace(/[\r\n]+/g, ' ').trim().slice(0, 240)
+}
+
 const activeTab = ref('empresa')
 const tabs = [
   { id: 'empresa', label: 'Empresa' },
@@ -63,7 +67,7 @@ async function fetchComplianceData() {
     const alerts = await businessApi.getBreachAlerts()
     breachAlerts.value = alerts
   } catch (e) {
-    console.error('Error fetching compliance data:', e)
+    console.error('Error fetching compliance data:', safeLogMessage(e))
   } finally {
     complianceLoading.value = false
   }
@@ -286,7 +290,7 @@ async function fetchBancolombiaConfig() {
     bancolombiaConfig.value = normalizeBancolombiaConfig(data)
   } catch (e) {
     bancolombiaConfig.value = createDefaultBancolombiaConfig()
-    console.warn('Bancolombia config load skipped:', e?.message || e)
+    console.warn('Bancolombia config load skipped:', safeLogMessage(e?.message || e))
   } finally {
     bancolombiaLoading.value = false
   }
@@ -630,7 +634,7 @@ async function handleIntegration(name) {
       const validateRes = await businessApi.validateDianConfig()
       dianValidationResult.value = validateRes
     } catch (e) {
-      console.error(e)
+      console.error('Error validating DIAN config:', safeLogMessage(e))
     } finally {
       dianValidating.value = false
       showDianModal.value = true

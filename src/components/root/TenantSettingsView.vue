@@ -4,6 +4,10 @@ import axios from 'axios'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
+function safeLogMessage(value: unknown) {
+  return String(value ?? '').replace(/[\r\n]+/g, ' ').trim().slice(0, 240)
+}
+
 const props = defineProps<{ tenantId: string }>()
 const emit = defineEmits(['back'])
 
@@ -59,7 +63,7 @@ async function fetchTenant() {
         : '',
     }
   } catch (e: any) {
-    console.error(e)
+    console.error('Error fetching tenant settings:', safeLogMessage(e))
   } finally {
     loading.value = false
   }

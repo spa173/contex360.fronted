@@ -21,6 +21,7 @@ export const useAuthStore = defineStore('auth', () => {
   const activeTenant = computed(() => root.activeTenant)
   const accessibleTenants = computed(() => root.tenants || [])
   const activeView = computed(() => root.activeView)
+  const subscription = computed(() => root.subscription)
   const isSystemOwner = computed(() => !!currentUser.value?.isSystemOwner)
   const isAdmin = computed(() => isSystemOwner.value || activeMembership.value?.role === 'Administrador')
 
@@ -77,6 +78,7 @@ export const useAuthStore = defineStore('auth', () => {
         root.session.currentSessionId = response.session?.id || uid('sess')
         root.activeTenantId = response.activeTenantId || activeTenantId
         if (response.memberships) root.memberships = response.memberships as any
+        root.subscription = (response as any).subscription || null
         isSessionExpired.value = false
         root.saveState()
         return { ok: true, user: response.user }
@@ -148,6 +150,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAdmin,
     activeTenant,
     accessibleTenants,
+    subscription,
     checkCurrentSessionHealth: () => root.checkCurrentSessionHealth(),
     processScheduledDeactivations: () => root.processScheduledDeactivations(),
     setActiveView: (view: string) => root.setActiveView(view),

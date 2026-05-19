@@ -34,6 +34,7 @@ export const seedState = {
     invoiceId: 'inv-seed-1',
     ocrRunId: 'ocr-seed-1',
   },
+  subscription: null,
   tenants: [
     {
       id: 'tenant-a',

@@ -24,6 +24,7 @@ export function normalizeState(source: any = {}): AppState {
     },
     selections: { ...base.selections, ...source.selections },
     tenants: normalizeTenants(source.tenants, base.tenants),
+    subscription: source.subscription !== undefined ? source.subscription : (base.subscription || null),
     memberships: getArray('memberships'),
     thirdParties: getArray('thirdParties'),
     products: getArray('products'),

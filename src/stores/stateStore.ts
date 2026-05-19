@@ -22,6 +22,19 @@ export interface Tenant { id: string; name: string; prefix: string; [key: string
 export interface AuditEvent { id: string; tenantId: string; entity: string; action: string; description: string; at: string; actor: string; severity: string }
 export interface AuditPayload { tenantId?: string; entity: string; action: string; description: string; actor?: string; severity?: string; attachmentUrl?: string }
 export interface OcrRun { id: string; tenantId: string; source: string; fields: any; confidence: number; createdAt: string }
+export interface Subscription {
+  planType: string;
+  active: boolean;
+  trialEndsAt: string | null;
+  limits: {
+    name: string;
+    priceMonthly: number;
+    priceAnnual: number;
+    maxUsers: number | null;
+    maxInvoicesPerMonth: number | null;
+    modules: string[];
+  };
+}
 
 export interface AppState {
   users: User[]; tenants: Tenant[]; memberships: Membership[];
@@ -31,6 +44,7 @@ export interface AppState {
   userSecurity: any[]; userSessions: any[]; invitations: any[];
   auditEvents: AuditEvent[]; roleAccess: any; roleAccessHistory: RoleAccessHistoryEntry[];
   activeTenantId: string | null; activeView: string; 
+  subscription: Subscription | null;
   session: { currentUserId: string | null; currentSessionId: string | null };
   selections: { invoiceId: string | null; ocrRunId: string | null };
   [key: string]: any
@@ -120,6 +134,7 @@ export const useStateStore = defineStore('state', {
         this.activeTenantId = response.activeTenantId
         this.memberships = response.memberships
         this.tenants = response.accessibleTenants
+        this.subscription = response.subscription || null
         await this.fetchBusinessData()
         return true
       } catch {
@@ -138,6 +153,7 @@ export const useStateStore = defineStore('state', {
           this.activeTenantId = refreshed.activeTenantId
           this.memberships = refreshed.memberships as any
           this.tenants = refreshed.accessibleTenants as any
+          this.subscription = refreshed.subscription || null
           await this.fetchBusinessData()
           return true
         }
