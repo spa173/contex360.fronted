@@ -98,6 +98,15 @@ function closeCredentials() {
   createdCredentials.value = null
 }
 
+function getInitials(name: string): string {
+  if (!name) return '??'
+  const words = name.trim().split(/\s+/)
+  if (words.length >= 2) {
+    return (words[0][0] + words[1][0]).toUpperCase()
+  }
+  return name.slice(0, 2).toUpperCase()
+}
+
 onMounted(fetchCompanies)
 </script>
 
@@ -140,10 +149,10 @@ onMounted(fetchCompanies)
           <tr v-for="c in filteredCompanies" :key="c.id">
             <td>
               <div class="company-name-cell">
-                <span class="company-avatar">{{ c.prefix || (c.name ? c.name.slice(0, 2).toUpperCase() : '??') }}</span>
+                <span class="company-avatar">{{ getInitials(c.name) }}</span>
                 <div>
                   <div class="company-name">{{ c.name }}</div>
-                  <div class="company-id">{{ c.id }}</div>
+                  <div class="company-id">{{ c.prefix || c.id }}</div>
                 </div>
               </div>
             </td>
