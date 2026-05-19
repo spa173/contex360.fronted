@@ -79,6 +79,18 @@ const handlePopState = (event) => {
   else if (path === '/terminos') showTerms.value = true
 }
 
+const handleCustomBack = () => {
+  if (window.history.length > 1) {
+    window.history.back()
+  } else {
+    showPrivacy.value = false
+    showTerms.value = false
+    showDemo.value = false
+    showAbout.value = false
+    showAuth.value = false
+  }
+}
+
 themeStore.initializeTheme()
 
 async function initApp() {
@@ -140,14 +152,14 @@ onMounted(() => {
       <!-- Public states (unauthenticated) -->
       <template v-else>
         <DemoRequestView v-if="showDemo" @back="showDemo = false" />
-        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @show-privacy="showPrivacy = true" @back="showAuth = false" />
+        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @back="showAuth = false" />
         <AboutView
           v-else-if="showAbout"
           @back="showAbout = false"
           @request-demo="showDemo = true"
           @login="showAuth = true"
         />
-        <PrivacyPolicyView v-else-if="showPrivacy" @back="showPrivacy = false" />
+        <PrivacyPolicyView v-else-if="showPrivacy" @back="handleCustomBack" />
         <TermsOfUseView v-else-if="showTerms" @back="showTerms = false" />
         <LandingPage
           v-else
