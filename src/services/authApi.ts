@@ -55,6 +55,7 @@ export interface BackendAuthResponse {
   activeTenantId: string
   accessibleTenants: BackendTenantSnapshot[]
   memberships: BackendMembershipSnapshot[]
+  subscription?: any
 }
 
 export interface BackendMessageResponse {
