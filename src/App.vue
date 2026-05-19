@@ -140,7 +140,7 @@ onMounted(() => {
       <!-- Public states (unauthenticated) -->
       <template v-else>
         <DemoRequestView v-if="showDemo" @back="showDemo = false" />
-        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @back="showAuth = false" />
+        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true" @show-privacy="showPrivacy = true" @back="showAuth = false" />
         <AboutView
           v-else-if="showAbout"
           @back="showAbout = false"

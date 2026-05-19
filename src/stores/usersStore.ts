@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import { createPasswordCredentials } from './stateSecurity'
+import { businessApi } from '../services/businessApi'
 import { 
   ROLE_OPTIONS, 
   PERMISSION_MODULES, 
@@ -241,7 +242,27 @@ export const useUsersStore = defineStore('users', () => {
     return { ok: true, message: 'Usuario creado.', detail: 'Se requiere cambio de contraseña en el primer ingreso.' }
   }
 
+  async function anonymizeUser(userId: string) {
+    try {
+      const response = await businessApi.eraseUserData(userId)
+      if (response?.ok) {
+        const localUser = root.users.find(u => u.id === userId)
+        if (localUser) {
+          localUser.name = '[eliminado]'
+          localUser.title = '[eliminado]'
+          localUser.status = 'inactive'
+          localUser.email = `erased_${userId.slice(0, 8)}@erased.local`
+        }
+        return { ok: true, message: 'Usuario anonimizado correctamente.' }
+      }
+      return { ok: false, message: response?.message || 'Error al anonimizar usuario.' }
+    } catch (err: any) {
+      return { ok: false, message: err?.message || 'Error de red.' }
+    }
+  }
+
   return {
+    anonymizeUser,
     users,
     tenantUsers,
     memberships,

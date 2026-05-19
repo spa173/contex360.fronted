@@ -69,6 +69,24 @@ async function handleExport() {
 function handleApplyInsight(action) {
   emit('notify', { message: 'Insight aplicado', detail: `La acción de seguridad "${action}" fue ejecutada y registrada.` })
 }
+
+async function handleAnonymize(user) {
+  if (user.isSystemOwner) {
+    emit('notify', { message: 'Operación no permitida', detail: 'No se puede anonimizar al propietario del sistema.' })
+    return
+  }
+  const confirmed = confirm(`¿Está seguro que desea ejercer el "Derecho al Olvido" (Ley 1581) para ${user.name}? Esta acción anonimizará permanentemente su correo y datos personales, cancelando todas sus sesiones activas de forma irreversible.`)
+  if (!confirmed) return
+
+  emit('notify', { message: 'Procesando Derecho al Olvido', detail: `Anonimizando datos de ${user.name}...` })
+  
+  const result = await users.anonymizeUser(user.id)
+  if (result.ok) {
+    emit('notify', { message: 'Usuario Anonimizado', detail: 'Los datos personales han sido permanentemente eliminados cumpliendo con la Ley 1581.' })
+  } else {
+    emit('notify', { message: 'Error', detail: result.message })
+  }
+}
 </script>
 
 <template>
@@ -154,7 +172,12 @@ function handleApplyInsight(action) {
                   </label>
                 </td>
                 <td class="px-5 py-3.5 text-right opacity-0 group-hover:opacity-100">
-                  <button class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                  <div class="flex items-center justify-end gap-3.5">
+                    <button @click="handleAnonymize(user)" class="text-amber-500 hover:text-amber-700 transition-colors" title="Derecho al Olvido (Ley 1581 / GDPR)">
+                      <span class="material-symbols-outlined text-[18px]">shield_person</span>
+                    </button>
+                    <button class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                  </div>
                 </td>
               </tr>
               <tr v-if="filteredUsers.length === 0">
