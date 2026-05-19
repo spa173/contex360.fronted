@@ -1,4 +1,4 @@
-export const viewLabels: Record<string, string> = {
+const viewLabels: Record<string, string> = {
   dashboard: 'Dashboard',
   billing: 'Facturación',
   purchases: 'Compras',
@@ -15,7 +15,7 @@ export const viewLabels: Record<string, string> = {
   about: 'Acerca de',
 }
 
-export const moduleRows: Array<[string, string, string]> = [
+const moduleRows: Array<[string, string, string]> = [
   ['Facturación', 'Operativo', 'Emisión, DIAN y cartera listos'],
   ['Inventario', 'Operativo', 'Stock, movimientos y alertas activas'],
   ['Contabilidad', 'Operativo', 'Libro diario y balance rápido'],
@@ -41,15 +41,15 @@ export function formatCurrency(value: number | string) {
   return currencyFormatter.format(Number(value) || 0)
 }
 
-export function formatDate(value: string | number | Date) {
+function formatDate(value: string | number | Date) {
   return dateTimeFormatter.format(new Date(value))
 }
 
-export function formatDateOnly(value: string | number | Date) {
+function formatDateOnly(value: string | number | Date) {
   return dateFormatter.format(new Date(value))
 }
 
-export function mapKindLabel(kind: string) {
+function mapKindLabel(kind: string) {
   const labels: Record<string, string> = {
     client: 'Cliente',
     provider: 'Proveedor',

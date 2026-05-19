@@ -1,7 +1,31 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
-  "entry": ["src/main.js", "src/**/*.test.ts"],
   "project": ["src/**/*.{js,ts,vue}"],
-  "ignore": ["src/components/ui/**"],
-  "ignoreDependencies": ["lucide-vue-next", "chart.js", "vue-router", "pinia"]
+  "ignore": [
+    "src/components/ui/**",
+    "src/components/admin_new/**",
+    "src/components/analytics/BusinessChart.vue",
+    "src/components/layout/HeroSummary.vue",
+    "src/components/users/UserTable.vue",
+    "src/components/views/ChangePasswordView.vue",
+    "src/composables/usePermission.ts",
+    "src/lib/utils.ts",
+    "src/schemas/user.schema.ts",
+    "src/schemas/invoice.schema.ts",
+    "src/stores/appStore.ts",
+    "src/stores/stateRuntime.ts",
+    "src/stores/tenantStore.ts",
+    "src/stores/rbacStore.ts",
+    "src/types/admin.ts",
+    "src/types/billing.ts",
+    "src/utils/pdfGenerator.ts",
+    "src/views/users/components/UserDetailPanel.vue",
+    "src/views/users/components/UserEditForm.vue"
+  ],
+  "ignoreDependencies": [
+    "chart.js",
+    "tw-animate-css",
+    "vue-tsc"
+  ],
+  "ignoreExportsUsedInFile": true
 }

@@ -31,7 +31,7 @@ export async function createPasswordCredentials(secret: string) {
   }
 }
 
-export function serializeStateSnapshot(sourceState: any) {
+function serializeStateSnapshot(sourceState: any) {
   const snapshot = JSON.parse(JSON.stringify(sourceState))
   snapshot.users = snapshot.users.map((user: any) => {
     const sanitizedUser = { ...user }
@@ -46,7 +46,7 @@ export function serializeStateSnapshot(sourceState: any) {
   return snapshot
 }
 
-export async function upgradeLegacyUserSecrets(user: any) {
+async function upgradeLegacyUserSecrets(user: any) {
   if (!user?.password || user.passwordHash) {
     return false
   }

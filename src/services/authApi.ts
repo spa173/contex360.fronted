@@ -205,12 +205,12 @@ export async function loginWithBackend(credentials: {
   return response
 }
 
-export async function fetchCurrentAuthSession() {
+async function fetchCurrentAuthSession() {
   const token = getAuthToken()
   return requestJson<Omit<BackendAuthResponse, 'accessToken'>>('/auth/me', token ? { token } : {})
 }
 
-export async function revokeBackendSession() {
+async function revokeBackendSession() {
   const token = getAuthToken()
 
   try {
