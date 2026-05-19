@@ -373,4 +373,8 @@ export const businessApi = {
   async sendViaGmail(data: { to: string; subject: string; html: string }) {
     return request<{ ok: boolean; sentFrom: string }>('/integrations/gmail/send', { method: 'POST', body: data })
   },
+  // Subscriptions
+  async getSubscriptionUsage(tenantId?: string | null) {
+    return request<any>('/subscriptions/usage', { tenantId })
+  },
 }

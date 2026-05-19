@@ -4,6 +4,7 @@ import { useAdminStore } from '../../stores/adminStore'
 import { useTranslationStore } from '../../stores/translationStore'
 import { useStateStore } from '../../stores/stateStore'
 import { businessApi } from '@/services/businessApi'
+import SubscriptionView from './SubscriptionView.vue'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -23,6 +24,7 @@ const tabs = [
   { id: 'general', label: 'General' },
   { id: 'impuestos', label: 'Impuestos' },
   { id: 'integraciones', label: 'Integraciones' },
+  { id: 'suscripcion', label: 'Suscripción' },
   { id: 'logs', label: 'Logs' },
   { id: 'cumplimiento', label: 'Cumplimiento SOC 2' },
 ]
@@ -1344,6 +1346,12 @@ async function saveBancolombiaConfig() {
         </form>
       </div>
     </div>
+
+    <!-- Suscripción -->
+    <SubscriptionView 
+      v-if="activeTab === 'suscripcion'" 
+      @notify="emit('notify', $event)" 
+    />
 
     <!-- Logs -->
     <div v-if="activeTab === 'logs'" class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
