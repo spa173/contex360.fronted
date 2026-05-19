@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { businessApi } from '@/services/businessApi'
+import { useAuthStore } from '@/stores/authStore'
+
+const authStore = useAuthStore()
 
 type Step = 'idle' | 'setup' | 'confirm' | 'disable' | 'done'
 
@@ -29,6 +32,7 @@ async function confirmCode() {
   try {
     const res = await businessApi.totpConfirm(code.value.trim())
     message.value = res.message
+    await authStore.refreshSessionWithBackend()
     step.value = 'done'
   } catch (e: any) { error.value = e.message || 'Código incorrecto.' }
   finally { loading.value = false }
@@ -40,6 +44,7 @@ async function disableTotp() {
   try {
     const res = await businessApi.totpDisable(code.value.trim())
     message.value = res.message
+    await authStore.refreshSessionWithBackend()
     step.value = 'idle'
     code.value = ''
   } catch (e: any) { error.value = e.message || 'Código incorrecto.' }
@@ -76,20 +81,40 @@ function reset() {
 
     <!-- Idle -->
     <div v-else-if="step === 'idle'" class="bg-white border border-[#E4E4E7] rounded-[14px] p-6">
-      <div class="flex items-start gap-4 mb-5">
-        <div class="w-11 h-11 rounded-[10px] bg-amber-50 flex items-center justify-center text-amber-700 flex-shrink-0"><span class="material-symbols-outlined text-[22px]">shield_lock</span></div>
-        <div>
-          <p class="text-[15px] font-bold tracking-tight text-[#18181B] mb-0.5">2FA desactivado</p>
-          <p class="text-[13px] text-[#71717A]">Tu cuenta solo está protegida por contraseña.</p>
+      <template v-if="authStore.currentUser?.twoFactorEnabled">
+        <div class="flex items-start gap-4 mb-5">
+          <div class="w-11 h-11 rounded-[10px] bg-emerald-50 flex items-center justify-center text-emerald-700 flex-shrink-0">
+            <span class="material-symbols-outlined text-[22px]">verified_user</span>
+          </div>
+          <div>
+            <p class="text-[15px] font-bold tracking-tight text-[#18181B] mb-0.5">2FA activado</p>
+            <p class="text-[13px] text-[#71717A]">Tu cuenta está protegida por contraseña y verificación de dos factores (TOTP).</p>
+          </div>
         </div>
-      </div>
-      <div class="flex gap-2">
-        <button @click="startSetup" :disabled="loading" class="flex-1 py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] flex items-center justify-center gap-2 disabled:opacity-50">
-          <span class="material-symbols-outlined text-[18px]">add_moderator</span>
-          {{ loading ? 'Cargando...' : 'Activar 2FA' }}
-        </button>
-        <button @click="step = 'disable'" class="px-4 py-2.5 border border-[#E4E4E7] text-[#71717A] rounded-[10px] text-[13px] font-semibold hover:bg-[#FAFAFA]">Desactivar 2FA existente</button>
-      </div>
+        <div class="flex gap-2">
+          <button @click="step = 'disable'" class="w-full py-2.5 bg-rose-600 text-white rounded-[10px] text-[13px] font-semibold hover:bg-rose-700 flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">gpp_bad</span>
+            Desactivar 2FA existente
+          </button>
+        </div>
+      </template>
+      <template v-else>
+        <div class="flex items-start gap-4 mb-5">
+          <div class="w-11 h-11 rounded-[10px] bg-amber-50 flex items-center justify-center text-amber-700 flex-shrink-0">
+            <span class="material-symbols-outlined text-[22px]">shield_lock</span>
+          </div>
+          <div>
+            <p class="text-[15px] font-bold tracking-tight text-[#18181B] mb-0.5">2FA desactivado</p>
+            <p class="text-[13px] text-[#71717A]">Tu cuenta solo está protegida por contraseña.</p>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button @click="startSetup" :disabled="loading" class="flex-1 py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] flex items-center justify-center gap-2 disabled:opacity-50">
+            <span class="material-symbols-outlined text-[18px]">add_moderator</span>
+            {{ loading ? 'Cargando...' : 'Activar 2FA' }}
+          </button>
+        </div>
+      </template>
     </div>
 
     <!-- Setup -->

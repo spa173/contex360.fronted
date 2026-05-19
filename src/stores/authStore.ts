@@ -63,6 +63,13 @@ export const useAuthStore = defineStore('auth', () => {
 
     try {
       const response = await apiLoginWithBackend(credentials)
+      if ((response as any).requiresTotp) {
+        return { ok: false, requiresTotp: true, message: response.message }
+      }
+      if ((response as any).requiresPasswordChange) {
+        return { ok: false, requiresPasswordChange: true, message: response.message }
+      }
+
       if (response.user) {
         const exists = root.users.find(u => u.id === response.user.id)
         if (!exists) root.users.push(response.user as any)
@@ -74,7 +81,7 @@ export const useAuthStore = defineStore('auth', () => {
         root.saveState()
         return { ok: true, user: response.user }
       }
-      return { ok: false, message: 'Usuario no encontrado.' }
+      return { ok: false, message: response.message || 'Usuario no encontrado.' }
     } catch (error: any) {
       authError.value = error.message || 'Error de conexión con el servidor'
       return { ok: false, message: authError.value }
