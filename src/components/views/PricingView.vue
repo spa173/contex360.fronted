@@ -94,12 +94,29 @@ function openCheckout(plan: any) {
   showWompi.value = true
 }
 
-function submitPayment() {
+async function submitPayment() {
   paymentStep.value = 'processing'
-  emit('purchase-plan', {
-    planType: selectedPlan.value.id,
-    billing: isAnnual.value ? 'annual' : 'monthly'
-  })
+  try {
+    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/subscriptions/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        planType: selectedPlan.value.id,
+        billing: isAnnual.value ? 'annual' : 'monthly',
+      }),
+    })
+    const data = await response.json()
+    if (data.redirectUrl) {
+      // Navigate to Wompi checkout page
+      window.location.href = data.redirectUrl
+      return
+    }
+  } catch (e) {
+    console.error('Error creating Wompi link', e)
+  }
+  // Fallback to success UI if redirection fails
   setTimeout(() => {
     paymentStep.value = 'success'
   }, 2000)

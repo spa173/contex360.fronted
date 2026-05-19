@@ -14,6 +14,7 @@ import TermsOfUseView from './components/views/TermsOfUseView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import AppLoading from './components/layout/AppLoading.vue'
+import PaymentSuccess from './components/views/PaymentSuccess.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
 
@@ -26,6 +27,8 @@ const showPrivacy = ref(false)
 const showTerms = ref(false)
 const showAbout = ref(false)
 const showPricing = ref(false)
+const showPaymentSuccess = ref(false)
+const paymentSuccessPlan = ref('')
 const viewingAdminPanel = ref(false)
 const isLoading = ref(true)
 const loadError = ref(null)
@@ -53,7 +56,7 @@ watch(() => store.currentUser, (user) => {
   themeStore.setForceLightMode(!user)
   if (user) {
     syncUrlWithState('/dashboard', true) // REPLACE al entrar a la app
-  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value && !showPricing.value) {
+  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value && !showPricing.value && !showPaymentSuccess.value) {
     syncUrlWithState('/', true)
   }
 }, { immediate: true })
@@ -76,6 +79,7 @@ const handlePopState = (event) => {
   showTerms.value = false
   showAbout.value = false
   showPricing.value = false
+  showPaymentSuccess.value = false
 
   if (path === '/login') showAuth.value = true
   else if (path === '/demo') showDemo.value = true
@@ -83,6 +87,11 @@ const handlePopState = (event) => {
   else if (path === '/privacidad') showPrivacy.value = true
   else if (path === '/terminos') showTerms.value = true
   else if (path === '/precios') showPricing.value = true
+  else if (path.startsWith('/pago-exitoso')) {
+    showPaymentSuccess.value = true
+    const params = new URLSearchParams(window.location.search)
+    paymentSuccessPlan.value = params.get('planType') || ''
+  }
 }
 
 const handleCustomBack = () => {
@@ -95,6 +104,7 @@ const handleCustomBack = () => {
     showAbout.value = false
     showAuth.value = false
     showPricing.value = false
+    showPaymentSuccess.value = false
   }
 }
 
@@ -146,6 +156,11 @@ onMounted(() => {
   if (initialPath === '/login') showAuth.value = true
   else if (initialPath === '/demo') showDemo.value = true
   else if (initialPath === '/precios') showPricing.value = true
+  else if (initialPath.startsWith('/pago-exitoso')) {
+    showPaymentSuccess.value = true
+    const params = new URLSearchParams(window.location.search)
+    paymentSuccessPlan.value = params.get('planType') || ''
+  }
 })
 </script>
 
@@ -168,7 +183,8 @@ onMounted(() => {
 
       <!-- Public states (unauthenticated) -->
       <template v-else>
-        <DemoRequestView v-if="showDemo" @back="showDemo = false" />
+        <PaymentSuccess v-if="showPaymentSuccess" :plan-type="paymentSuccessPlan" @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)" />
+        <DemoRequestView v-else-if="showDemo" @back="showDemo = false" />
         <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" @purchase-plan="handlePurchasePlan" />
         <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @back="showAuth = false" />
         <AboutView
