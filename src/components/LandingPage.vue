@@ -7,6 +7,7 @@ const emit = defineEmits<{
   (e: 'show-privacy'): void
   (e: 'show-terms'): void
   (e: 'show-about'): void
+  (e: 'show-pricing'): void
 }>()
 
 const scrolled = ref(false)
@@ -52,7 +53,7 @@ onUnmounted(() => {
       <div class="hidden lg:flex items-center gap-10">
         <a class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer" href="#producto">Plataforma</a>
         <a class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer" href="#beneficios">Soluciones Enterprise</a>
-        <a class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer" href="#precios">Precios</a>
+        <a class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer" @click="emit('show-pricing')">Precios</a>
       </div>
 
       <div class="flex items-center gap-3">

@@ -6,6 +6,7 @@ import AppShell from './components/AppShell.vue'
 import RootShell from './components/RootShell.vue'
 import AuthScreen from './components/AuthScreen.vue'
 import DemoRequestView from './components/views/DemoRequestView.vue'
+import PricingView from './components/views/PricingView.vue'
 import LandingPage from './components/LandingPage.vue'
 import AboutView from './components/views/AboutView.vue'
 import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
@@ -24,6 +25,7 @@ const showAuth = ref(false)
 const showPrivacy = ref(false)
 const showTerms = ref(false)
 const showAbout = ref(false)
+const showPricing = ref(false)
 const viewingAdminPanel = ref(false)
 const isLoading = ref(true)
 const loadError = ref(null)
@@ -51,7 +53,7 @@ watch(() => store.currentUser, (user) => {
   themeStore.setForceLightMode(!user)
   if (user) {
     syncUrlWithState('/dashboard', true) // REPLACE al entrar a la app
-  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value) {
+  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value && !showPricing.value) {
     syncUrlWithState('/', true)
   }
 }, { immediate: true })
@@ -61,6 +63,7 @@ watch(showDemo, (val) => val && syncUrlWithState('/demo'))
 watch(showAbout, (val) => val && syncUrlWithState('/nosotros'))
 watch(showPrivacy, (val) => val && syncUrlWithState('/privacidad'))
 watch(showTerms, (val) => val && syncUrlWithState('/terminos'))
+watch(showPricing, (val) => val && syncUrlWithState('/precios'))
 
 // Manejador del botón "Atrás" del navegador
 const handlePopState = (event) => {
@@ -72,12 +75,14 @@ const handlePopState = (event) => {
   showPrivacy.value = false
   showTerms.value = false
   showAbout.value = false
+  showPricing.value = false
 
   if (path === '/login') showAuth.value = true
   else if (path === '/demo') showDemo.value = true
   else if (path === '/nosotros') showAbout.value = true
   else if (path === '/privacidad') showPrivacy.value = true
   else if (path === '/terminos') showTerms.value = true
+  else if (path === '/precios') showPricing.value = true
 }
 
 const handleCustomBack = () => {
@@ -89,6 +94,7 @@ const handleCustomBack = () => {
     showDemo.value = false
     showAbout.value = false
     showAuth.value = false
+    showPricing.value = false
   }
 }
 
@@ -130,6 +136,7 @@ onMounted(() => {
   const initialPath = window.location.pathname
   if (initialPath === '/login') showAuth.value = true
   else if (initialPath === '/demo') showDemo.value = true
+  else if (initialPath === '/precios') showPricing.value = true
 })
 </script>
 
@@ -153,6 +160,7 @@ onMounted(() => {
       <!-- Public states (unauthenticated) -->
       <template v-else>
         <DemoRequestView v-if="showDemo" @back="showDemo = false" />
+        <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" />
         <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @back="showAuth = false" />
         <AboutView
           v-else-if="showAbout"
@@ -169,6 +177,7 @@ onMounted(() => {
           @show-privacy="showPrivacy = true"
           @show-terms="showTerms = true"
           @show-about="showAbout = true"
+          @show-pricing="showPricing = true"
         />
       </template>
     </template>
