@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import { useThemeStore } from '../../stores/themeStore'
 import { useTranslationStore } from '../../stores/translationStore'
+import { businessApi } from '../../services/businessApi'
 
 const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
 const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel', 'notify'])
@@ -22,9 +23,119 @@ function onEsc(e) {
   if (e.key === 'Escape') closeAll()
 }
 
+const notifications = ref([])
+const unreadCount = ref(0)
+const isLoading = ref(false)
+
+async function fetchNotifications() {
+  try {
+    isLoading.value = true
+    const [alerts, insights] = await Promise.all([
+      businessApi.getAlerts().catch(() => ({ lowStockAlerts: 0, pendingInvoices: 0, ocrRunsCount: 0 })),
+      businessApi.getAiInsights().catch(() => ({ insight: '' })),
+    ])
+
+    const list = []
+
+    // 1. Facturas DIAN
+    if (alerts.pendingInvoices > 0) {
+      list.push({
+        id: 'pending-invoices',
+        title: 'Facturas pendientes',
+        description: `${alerts.pendingInvoices} documentos electrónicos pendientes de cobro.`,
+        time: 'hace 5 min',
+        icon: 'error',
+        colorClass: 'bg-rose-50 text-rose-700',
+      })
+    }
+
+    // 2. Stock crítico
+    if (alerts.lowStockAlerts > 0) {
+      list.push({
+        id: 'low-stock',
+        title: 'Stock crítico',
+        description: `${alerts.lowStockAlerts} productos llegaron al nivel de inventario mínimo.`,
+        time: 'hace 10 min',
+        icon: 'inventory_2',
+        colorClass: 'bg-amber-50 text-amber-700',
+      })
+    }
+
+    // 3. OCR Runs IA
+    if (alerts.ocrRunsCount > 0) {
+      list.push({
+        id: 'ocr-runs',
+        title: 'Tareas de OCR con IA',
+        description: `Tienes ${alerts.ocrRunsCount} facturas procesadas listas para revisar.`,
+        time: 'hace 1 hora',
+        icon: 'document_scanner',
+        colorClass: 'bg-indigo-50 text-indigo-700',
+      })
+    }
+
+    // 4. Insight de IA
+    if (insights.insight && !insights.insight.includes('No se pudo') && !insights.insight.includes('Bienvenido')) {
+      list.push({
+        id: 'ai-insight',
+        title: 'Insight de IA disponible',
+        description: insights.insight.length > 80 ? insights.insight.slice(0, 80) + '...' : insights.insight,
+        time: 'hace 2 horas',
+        icon: 'auto_awesome',
+        colorClass: 'bg-blue-50 text-blue-700',
+      })
+    }
+
+    // Si no hay notificaciones
+    if (list.length === 0) {
+      list.push({
+        id: 'welcome',
+        title: 'Todo al día',
+        description: 'No hay alertas ni tareas pendientes en este momento.',
+        time: 'Ahora',
+        icon: 'verified',
+        colorClass: 'bg-emerald-50 text-emerald-700',
+      })
+    }
+
+    notifications.value = list
+    unreadCount.value = list.filter(n => n.id !== 'welcome').length
+  } catch (err) {
+    console.error('Error fetching notifications:', err)
+  } finally {
+    isLoading.value = false
+  }
+}
+
+function handleNotificationClick(notif) {
+  showNotifications.value = false
+  if (notif.id === 'ocr-runs') {
+    emit('navigate', 'dashboard')
+    // Dispatch custom event to trigger opening OCR modal in DashboardView
+    setTimeout(() => {
+      window.dispatchEvent(new CustomEvent('open-ocr-runs-modal'))
+    }, 100)
+  } else if (notif.id === 'low-stock') {
+    emit('navigate', 'inventory')
+  } else if (notif.id === 'pending-invoices') {
+    emit('navigate', 'billing')
+  } else if (notif.id === 'ai-insight') {
+    emit('navigate', 'dashboard')
+  }
+}
+
+function markAllAsRead() {
+  unreadCount.value = 0
+  emit('notify', { message: 'Notificaciones leídas', detail: 'Se marcaron todas las alertas de la barra superior como leídas.' })
+}
+
+watch(() => props.activeTenant, () => {
+  fetchNotifications()
+}, { deep: true })
+
 onMounted(() => {
   document.addEventListener('click', onClickOutside)
   document.addEventListener('keydown', onEsc)
+  fetchNotifications()
 })
 onUnmounted(() => {
   document.removeEventListener('click', onClickOutside)
@@ -91,56 +202,46 @@ function handleViewAllAlerts() {
           class="w-8 h-8 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors relative"
         >
           <span class="material-symbols-outlined text-[20px]">notifications</span>
-          <span class="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#2563EB] border-2 border-white"></span>
+          <span v-if="unreadCount > 0" class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-[#2563EB] border-2 border-white"></span>
         </button>
         <div
           v-if="showNotifications"
-          class="fixed sm:absolute inset-x-4 top-16 sm:inset-auto sm:right-0 sm:top-full sm:mt-1.5 sm:w-[360px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50"
+          class="fixed sm:absolute inset-x-4 top-16 sm:inset-auto sm:right-0 sm:top-full sm:mt-1.5 sm:w-[360px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <div class="px-4 py-3 border-b border-[#F4F4F5] flex items-center justify-between">
             <div class="flex items-center gap-2">
               <h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Notificaciones</h3>
-              <span class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#2563EB] text-white text-[10px] font-bold">3</span>
+              <span v-if="unreadCount > 0" class="inline-flex items-center justify-center min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#2563EB] text-white text-[10px] font-bold">{{ unreadCount }}</span>
             </div>
-            <button class="text-[11px] font-semibold text-[#71717A] hover:text-[#18181B]">Marcar todo leído</button>
+            <button @click="markAllAsRead" class="text-[11px] font-semibold text-[#71717A] hover:text-[#18181B]">Marcar todo leído</button>
           </div>
           <div class="max-h-[380px] overflow-y-auto">
-            <a href="#" class="block px-4 py-3 hover:bg-[#FAFAFA] border-b border-[#F4F4F5]">
-              <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 rounded-[8px] bg-rose-50 flex items-center justify-center text-rose-700 flex-shrink-0">
-                  <span class="material-symbols-outlined text-[16px]">error</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-[12px] font-semibold text-[#18181B] mb-0.5">Factura rechazada por DIAN</p>
-                  <p class="text-[11px] text-[#71717A] leading-snug">Requiere corrección antes de reenvío.</p>
-                  <p class="text-[10px] text-[#A1A1AA] mt-1">hace 12 min</p>
-                </div>
-              </div>
-            </a>
-            <a href="#" class="block px-4 py-3 hover:bg-[#FAFAFA] border-b border-[#F4F4F5]">
-              <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 rounded-[8px] bg-amber-50 flex items-center justify-center text-amber-700 flex-shrink-0">
-                  <span class="material-symbols-outlined text-[16px]">inventory_2</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-[12px] font-semibold text-[#18181B] mb-0.5">Stock crítico</p>
-                  <p class="text-[11px] text-[#71717A] leading-snug">3 productos llegaron a 0 unidades.</p>
-                  <p class="text-[10px] text-[#A1A1AA] mt-1">hace 1 hora</p>
-                </div>
-              </div>
-            </a>
-            <a href="#" class="block px-4 py-3 hover:bg-[#FAFAFA]">
-              <div class="flex items-start gap-2.5">
-                <div class="w-7 h-7 rounded-[8px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0">
-                  <span class="material-symbols-outlined text-[16px]">auto_awesome</span>
-                </div>
-                <div class="flex-1 min-w-0">
-                  <p class="text-[12px] font-semibold text-[#18181B] mb-0.5">Insight de IA disponible</p>
-                  <p class="text-[11px] text-[#71717A] leading-snug">Tus ventas crecieron 15% esta semana.</p>
-                  <p class="text-[10px] text-[#A1A1AA] mt-1">hace 2 horas</p>
+            <div v-if="isLoading" class="flex flex-col items-center justify-center py-8 text-center">
+              <span class="animate-spin w-6 h-6 border-2 border-[#18181B] border-t-transparent rounded-full mb-2"></span>
+              <p class="text-[11px] font-medium text-[#71717A]">Cargando...</p>
+            </div>
+            <div v-else-if="notifications.length === 0" class="flex flex-col items-center justify-center py-8 text-center px-4">
+              <span class="material-symbols-outlined text-[28px] text-[#A1A1AA] mb-2">notifications_off</span>
+              <p class="text-[12px] font-bold text-[#18181B]">Sin alertas nuevas</p>
+              <p class="text-[11px] text-[#71717A]">Tu negocio está funcionando perfectamente.</p>
+            </div>
+            <div v-else>
+              <div v-for="notif in notifications" :key="notif.id" 
+                class="block px-4 py-3 hover:bg-[#FAFAFA] border-b border-[#F4F4F5] last:border-b-0 cursor-pointer"
+                @click="handleNotificationClick(notif)"
+              >
+                <div class="flex items-start gap-2.5">
+                  <div :class="['w-7 h-7 rounded-[8px] flex items-center justify-center flex-shrink-0', notif.colorClass]">
+                    <span class="material-symbols-outlined text-[16px]">{{ notif.icon }}</span>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <p class="text-[12px] font-semibold text-[#18181B] mb-0.5">{{ notif.title }}</p>
+                    <p class="text-[11px] text-[#71717A] leading-snug">{{ notif.description }}</p>
+                    <p class="text-[10px] text-[#A1A1AA] mt-1">{{ notif.time }}</p>
+                  </div>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
           <div class="px-4 py-2.5 border-t border-[#F4F4F5] bg-[#FAFAFA] text-right">
             <button @click="handleViewAllAlerts" class="text-[11px] font-semibold text-[#2563EB] hover:underline">Ver todas →</button>

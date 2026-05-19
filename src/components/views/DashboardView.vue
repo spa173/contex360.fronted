@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useBillingStore } from '../../stores/billingStore'
 import { useDashboardStats } from '../../composables/useDashboardStats'
@@ -268,7 +268,18 @@ async function fetchDashboardData() {
   }
 }
 
-onMounted(() => { if (props.isActive) fetchDashboardData() })
+function handleOpenOcrModalEvent() {
+  openOcrModal()
+}
+
+onMounted(() => {
+  if (props.isActive) fetchDashboardData()
+  window.addEventListener('open-ocr-runs-modal', handleOpenOcrModalEvent)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('open-ocr-runs-modal', handleOpenOcrModalEvent)
+})
 </script>
 
 <template>
