@@ -1,13 +1,9 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import {
-  getAuthToken,
-  storeAuthToken,
-  clearAuthToken,
-  refreshAccessToken,
-  loginWithBackend as apiLoginWithBackend
+  loginWithBackend as apiLoginWithBackend,
+  revokeBackendSession,
 } from '../services/authApi'
-import { businessApi } from '../services/businessApi'
 import { useStateStore } from './stateStore'
 import { verifyPassword } from './stateSecurity'
 import { uid } from '../utils/storeHelpers'
@@ -103,7 +99,6 @@ export const useAuthStore = defineStore('auth', () => {
         password
       })
       if (response.user) {
-        storeAuthToken(response.accessToken)
         isSessionExpired.value = false
         root.saveState()
         return { ok: true }
@@ -116,13 +111,18 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function logout() {
-    root.session.currentUserId = null
-    root.session.currentSessionId = null
-    clearAuthToken()
-    isSessionExpired.value = false
-    root.setActiveView('dashboard')
-    root.saveState()
+  async function logout() {
+    try {
+      await revokeBackendSession()
+    } catch {
+      // Best effort: still clear the local app state even if the backend call fails.
+    } finally {
+      root.session.currentUserId = null
+      root.session.currentSessionId = null
+      isSessionExpired.value = false
+      root.setActiveView('dashboard')
+      root.saveState()
+    }
   }
 
   async function refreshSessionWithBackend() {

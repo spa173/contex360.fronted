@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import axios from 'axios'
-import { getAuthToken } from '../../services/authApi'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
@@ -39,16 +38,12 @@ const filteredCompanies = computed(() => {
   )
 })
 
-function getToken() {
-  return getAuthToken()
-}
-
 async function fetchCompanies() {
   loading.value = true
   error.value = ''
   try {
     const { data } = await axios.get(`${API}/admin/tenants`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      withCredentials: true,
     })
     companies.value = data
   } catch (e: any) {
@@ -62,7 +57,7 @@ async function handleCreate() {
   saving.value = true
   try {
     const { data } = await axios.post(`${API}/admin/companies`, form.value, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      withCredentials: true,
     })
     createdCredentials.value = {
       name: data.tenant.name,
@@ -86,7 +81,7 @@ async function handleSuspend(id: string, currentStatus: string) {
     await axios.patch(
       `${API}/admin/tenants/${id}/status`,
       { status: newStatus },
-      { headers: { Authorization: `Bearer ${getToken()}` } },
+      { withCredentials: true },
     )
     await fetchCompanies()
   } catch (e: any) {

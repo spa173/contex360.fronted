@@ -1,14 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { getAuthToken } from './authApi'
 import { getApiBaseUrl } from './apiBase'
 
 async function request<T>(path: string, init: { method?: string; body?: unknown; tenantId?: string | null } = {}) {
-  const token = getAuthToken()
   const headers: Record<string, string> = {}
-
-  if (token) {
-    headers['authorization'] = `Bearer ${token}`
-  }
 
   if (init.tenantId) {
     headers['x-tenant-id'] = init.tenantId

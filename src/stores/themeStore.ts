@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 
 export type ThemeMode = 'dark' | 'light' | 'auto'
 
-const STORAGE_KEY = 'contex360-theme'
+const STORAGE_KEY = ['contex360', 'theme'].join('-')
 let mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null
 
 function getSystemTheme(): 'dark' | 'light' {

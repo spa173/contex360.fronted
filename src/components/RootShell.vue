@@ -35,7 +35,7 @@ const userInitials = computed(() => {
 })
 
 function handleLogout() {
-  store.logout()
+  void store.logout()
 }
 </script>
 

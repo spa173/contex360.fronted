@@ -2,7 +2,7 @@ import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
-import { createPasswordCredentials } from './stateSecurity'
+import { createPasswordCredentials, generateRecoveryCode, generateTemporaryPassword } from './stateSecurity'
 import { businessApi } from '../services/businessApi'
 import { 
   ROLE_OPTIONS, 
@@ -69,7 +69,7 @@ export const useUsersStore = defineStore('users', () => {
   async function generateTemporaryPasswordForUser(userId: string) {
     const user = root.users.find(u => u.id === userId)
     if (!user) return { ok: false, message: 'Usuario no encontrado.' }
-    const tempPass = Math.random().toString(36).slice(-8)
+    const tempPass = generateTemporaryPassword()
     const creds = await createPasswordCredentials(tempPass)
     const sec = root.userSecurity.find(s => s.userId === userId)
     if (sec) {
@@ -169,7 +169,7 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   function generateRecoveryCodes() {
-    const codes = Array.from({ length: 8 }, () => Math.random().toString(36).slice(-10).toUpperCase())
+    const codes = Array.from({ length: 8 }, () => generateRecoveryCode(10))
     root.saveState()
     return { ok: true, message: 'Nuevos códigos generados.', codes }
   }
@@ -206,6 +206,8 @@ export const useUsersStore = defineStore('users', () => {
 
   async function createUser(payload: any) {
     const id = uid('user')
+    const providedPassword = typeof payload.password === 'string' && payload.password.trim()
+    const tempPassword = providedPassword ? String(payload.password).trim() : generateTemporaryPassword()
     const user = {
       id,
       name: payload.name,
@@ -217,7 +219,7 @@ export const useUsersStore = defineStore('users', () => {
       lastLoginAt: null
     }
     
-    const creds = await createPasswordCredentials(payload.password || 'Contex123*')
+    const creds = await createPasswordCredentials(tempPassword)
     const security = {
       userId: id,
       passwordHash: creds.passwordHash,
@@ -239,7 +241,13 @@ export const useUsersStore = defineStore('users', () => {
     })
     
     root.saveState()
-    return { ok: true, message: 'Usuario creado.', detail: 'Se requiere cambio de contraseña en el primer ingreso.' }
+    const result = {
+      ok: true,
+      message: 'Usuario creado.',
+      detail: 'Se requiere cambio de contraseña en el primer ingreso.',
+      tempPassword: providedPassword ? null : tempPassword,
+    }
+    return result
   }
 
   async function anonymizeUser(userId: string) {

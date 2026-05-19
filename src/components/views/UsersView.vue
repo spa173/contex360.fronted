@@ -11,6 +11,17 @@ const tenantUsers = computed(() => users.tenantUsers || [])
 const searchQuery = ref('')
 const selectedRole = ref('Todos los roles')
 
+function generateRandomDigits(length = 3) {
+  const crypto = globalThis.crypto
+  if (crypto?.getRandomValues) {
+    const bytes = new Uint8Array(length)
+    crypto.getRandomValues(bytes)
+    return Array.from(bytes, byte => String(byte % 10)).join('')
+  }
+
+  return '0'.repeat(length)
+}
+
 const filteredUsers = computed(() => {
   let list = tenantUsers.value
   if (selectedRole.value !== 'Todos los roles') {
@@ -36,14 +47,19 @@ function handleStatusToggle(user) {
   emit('notify', { message: 'Estado actualizado', detail: `Acceso de ${user.name} cambiado exitosamente.` })
 }
 
-function handleNewUser() {
-  const num = Math.floor(100 + Math.random() * 900)
-  users.createUser({
+async function handleNewUser() {
+  const num = generateRandomDigits(3)
+  const result = await users.createUser({
     name: `Asesor Comercial ${num}`,
     email: `asesor.${num}@empresa.com`,
-    password: 'Password123*'
+    title: 'Asesor Comercial',
   })
-  emit('notify', { message: 'Usuario registrado', detail: `Se ha creado una nueva cuenta de usuario en el sistema.` })
+  emit('notify', {
+    message: 'Usuario registrado',
+    detail: result.tempPassword
+      ? `Se ha creado una nueva cuenta de usuario. Clave temporal segura: ${result.tempPassword}`
+      : 'Se ha creado una nueva cuenta de usuario en el sistema.',
+  })
 }
 
 async function handleExport() {

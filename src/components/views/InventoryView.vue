@@ -18,6 +18,17 @@ const totalItems = computed(() => tenantProducts.value.reduce((s, p) => s + (p.s
 const lowStockCount = computed(() => tenantProducts.value.filter(p => p.stock <= p.minStock && p.stock > 0).length)
 const criticalStockCount = computed(() => tenantProducts.value.filter(p => p.stock === 0).length)
 
+function generateRandomDigits(length = 4) {
+  const crypto = globalThis.crypto
+  if (crypto?.getRandomValues) {
+    const bytes = new Uint8Array(length)
+    crypto.getRandomValues(bytes)
+    return Array.from(bytes, byte => String(byte % 10)).join('')
+  }
+
+  return '0'.repeat(length)
+}
+
 const filteredProducts = computed(() => {
   let list = tenantProducts.value
   if (stockFilter.value === 'bajo') {
@@ -37,7 +48,7 @@ const filteredProducts = computed(() => {
 })
 
 function handleNewProduct() {
-  const num = Math.floor(1000 + Math.random() * 9000)
+  const num = generateRandomDigits(4)
   const res = inventory.createProduct({
     sku: `SKU-${num}`,
     name: `Teclado Mecánico K${num}`,

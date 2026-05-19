@@ -9,6 +9,22 @@ import { invoiceSchema } from '../schemas/invoice.schema'
 
 const scheduledDianTimers = new Map<string, any[]>()
 
+function safeLogMessage(value: unknown) {
+  let message = ''
+
+  if (value instanceof Error) {
+    message = value.message || value.name
+  } else if (typeof value === 'string') {
+    message = value
+  } else if (value && typeof value === 'object' && 'message' in value && typeof (value as { message?: unknown }).message === 'string') {
+    message = (value as { message: string }).message
+  } else {
+    message = String(value ?? '')
+  }
+
+  return message.replace(/[\r\n]+/g, ' ').trim().slice(0, 240)
+}
+
 export const useBillingStore = defineStore('billing', () => {
   const root = useStateStore()
   const accounting = useAccountingStore()
@@ -43,7 +59,7 @@ export const useBillingStore = defineStore('billing', () => {
       const data = await businessApi.getInvoices(activeTenantId.value)
       invoices.value = Array.isArray(data) ? data : []
     } catch (error) { 
-      console.error('Error fetching invoices:', error)
+      console.error('Error fetching invoices:', safeLogMessage(error))
       invoices.value = []
     }
   }
@@ -54,7 +70,7 @@ export const useBillingStore = defineStore('billing', () => {
       const data = await businessApi.getNextInvoiceNumber(activeTenantId.value)
       nextInvoiceNumber.value = data
     } catch (error) {
-      console.error('Error fetching next invoice number:', error)
+      console.error('Error fetching next invoice number:', safeLogMessage(error))
       nextInvoiceNumber.value = null
     }
   }
@@ -86,7 +102,7 @@ export const useBillingStore = defineStore('billing', () => {
           })),
         },
         invoice.tenantId,
-      ).catch((err) => console.warn('[ledger] sync failed (non-blocking):', err.message))
+      ).catch((err) => console.warn('[ledger] sync failed (non-blocking):', safeLogMessage(err)))
       appendAuditEvent(root.$state, { tenantId: invoice.tenantId, entity: 'factura', action: 'Emitir', description: `Se emitió la factura ${invoice.number} por ${invoice.total}.`, actor: root.currentUser?.name || 'Sistema', severity: 'info' })
       scheduleDianUpdates(invoice.id, invoice.tenantId)
       return { ok: true, message: 'Factura emitida correctamente.', invoice }

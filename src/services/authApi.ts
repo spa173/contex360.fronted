@@ -1,8 +1,4 @@
 import { getApiBaseUrl } from './apiBase'
-import { encryptData, decryptData } from '../utils/security'
-
-const AUTH_TOKEN_KEY = 'contex360-auth-token-v2'
-const REFRESH_TOKEN_KEY = 'contex360-refresh-token-v2'
 
 export interface BackendAuthUser {
   id: string
@@ -66,62 +62,12 @@ export interface BackendMessageResponse {
   message: string
 }
 
-export function getAuthToken() {
-  if (typeof globalThis === 'undefined') {
-    return ''
-  }
-
-  const raw = globalThis.localStorage.getItem(AUTH_TOKEN_KEY) || ''
-  if (!raw) return ''
-  
-  // Try to decrypt. If it fails or is not encrypted, it might be legacy or wrong.
-  const decrypted = decryptData(raw)
-  return decrypted || raw
-}
-
-export function storeAuthToken(token: string) {
-  if (typeof globalThis === 'undefined' || !token) {
-    return
-  }
-
-  globalThis.localStorage.setItem(AUTH_TOKEN_KEY, encryptData(token))
-}
-
-export function clearAuthToken() {
-  if (typeof globalThis === 'undefined') {
-    return
-  }
-
-  globalThis.localStorage.removeItem(AUTH_TOKEN_KEY)
-  globalThis.localStorage.removeItem(REFRESH_TOKEN_KEY)
-}
-
-export function getRefreshToken() {
-  if (typeof globalThis === 'undefined') return ''
-  const raw = globalThis.localStorage.getItem(REFRESH_TOKEN_KEY) || ''
-  if (!raw) return ''
-  return decryptData(raw) || raw
-}
-
-export function storeRefreshToken(token: string) {
-  if (typeof globalThis === 'undefined' || !token) return
-  globalThis.localStorage.setItem(REFRESH_TOKEN_KEY, encryptData(token))
-}
-
 export async function refreshAccessToken(): Promise<BackendAuthResponse | null> {
-  const refreshToken = getRefreshToken()
-  if (!refreshToken) return null
-
   try {
-    const response = await requestJson<BackendAuthResponse>('/auth/refresh', {
+    return await requestJson<BackendAuthResponse>('/auth/refresh', {
       method: 'POST',
-      body: { refreshToken },
     })
-    storeAuthToken(response.accessToken)
-    storeRefreshToken(response.refreshToken)
-    return response
   } catch {
-    clearAuthToken()
     return null
   }
 }
@@ -156,15 +102,11 @@ function extractErrorMessage(body: unknown, fallback: string) {
   return fallback
 }
 
-async function requestJson<T>(path: string, init: { method?: string; body?: unknown; token?: string } = {}) {
+async function requestJson<T>(path: string, init: { method?: string; body?: unknown } = {}) {
   const headers: Record<string, string> = {}
 
   if (init.body !== undefined) {
     headers['content-type'] = 'application/json'
-  }
-
-  if (init.token) {
-    headers.authorization = `Bearer ${init.token}`
   }
 
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
@@ -195,38 +137,21 @@ export async function loginWithBackend(credentials: {
     body: credentials,
   })
 
-  if ('accessToken' in response && response.accessToken) {
-    storeAuthToken(response.accessToken)
-    storeRefreshToken(response.refreshToken)
-  } else {
-    clearAuthToken()
-  }
-
   return response
 }
 
 async function fetchCurrentAuthSession() {
-  const token = getAuthToken()
-  return requestJson<Omit<BackendAuthResponse, 'accessToken'>>('/auth/me', token ? { token } : {})
+  return requestJson<Omit<BackendAuthResponse, 'accessToken'>>('/auth/me')
 }
 
-async function revokeBackendSession() {
-  const token = getAuthToken()
-
+export async function revokeBackendSession() {
   try {
-    try {
-      await requestJson<BackendMessageResponse>('/auth/logout', {
-        method: 'POST',
-        token: token || undefined,
-      })
-    } catch {
-      if (token) {
-        throw new Error('No fue posible cerrar la sesion en el backend.')
-      }
-    }
-
-    return { ok: true, message: 'Sesion cerrada.' } as BackendMessageResponse
-  } finally {
-    clearAuthToken()
+    await requestJson<BackendMessageResponse>('/auth/logout', {
+      method: 'POST',
+    })
+  } catch {
+    // Best effort: the UI will clear local session state even if the backend request fails.
   }
+
+  return { ok: true, message: 'Sesion cerrada.' } as BackendMessageResponse
 }

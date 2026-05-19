@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
-import { getAuthToken } from '../../services/authApi'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
@@ -38,15 +37,11 @@ const trialDaysLeft = computed(() => {
   return diff
 })
 
-function getToken() {
-  return getAuthToken()
-}
-
 async function fetchTenant() {
   loading.value = true
   try {
     const { data } = await axios.get(`${API}/admin/tenants/${props.tenantId}`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      withCredentials: true,
     })
     tenant.value = data
     generalForm.value = {
@@ -74,7 +69,7 @@ async function saveGeneral() {
   saving.value = true
   try {
     const { data } = await axios.patch(`${API}/admin/tenants/${props.tenantId}`, generalForm.value, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      withCredentials: true,
     })
     tenant.value = { ...tenant.value, ...data }
     alert('✅ Información actualizada')
@@ -92,7 +87,7 @@ async function savePlan() {
       planType: planForm.value.planType,
       active: planForm.value.active,
       trialEndsAt: planForm.value.trialEndsAt || null,
-    }, { headers: { Authorization: `Bearer ${getToken()}` } })
+    }, { withCredentials: true })
     await fetchTenant()
     alert('✅ Plan actualizado')
   } catch (e: any) {
@@ -107,7 +102,7 @@ async function setStatus(status: 'active' | 'suspended') {
   if (!confirm(`¿Confirmas ${label} esta empresa?`)) return
   try {
     await axios.patch(`${API}/admin/tenants/${props.tenantId}/status`, { status }, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      withCredentials: true,
     })
     await fetchTenant()
   } catch (e: any) {
@@ -137,7 +132,7 @@ async function handleDeleteTenant() {
     await axios.post(`${API}/admin/tenants/${props.tenantId}/delete`, {
       password: password.trim()
     }, {
-      headers: { Authorization: `Bearer ${getToken()}` }
+      withCredentials: true,
     })
     alert('✅ Empresa eliminada correctamente.')
     emit('back')

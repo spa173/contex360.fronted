@@ -45,7 +45,7 @@ function handleTenantChange(tenantId) {
 }
 
 function handleLogout() {
-  store.logout()
+  void store.logout()
 }
 
 function handleNotify(payload) {

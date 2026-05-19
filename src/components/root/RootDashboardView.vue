@@ -1,21 +1,16 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
-import { getAuthToken } from '../../services/authApi'
 
 const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
 
 const stats = ref<any>(null)
 const loading = ref(true)
 
-function getToken() {
-  return getAuthToken()
-}
-
 onMounted(async () => {
   try {
     const { data } = await axios.get(`${API}/admin/stats`, {
-      headers: { Authorization: `Bearer ${getToken()}` },
+      withCredentials: true,
     })
     stats.value = data
   } catch {

@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { businessApi } from '../services/businessApi'
-import { refreshAccessToken, storeAuthToken, clearAuthToken } from '../services/authApi'
+import { refreshAccessToken } from '../services/authApi'
 import { 
   getMembershipForTenant, 
   normalizeRoleAccess,
@@ -11,7 +11,7 @@ import { createInitialState, normalizeState } from './stateNormalization'
 import { Product, InventoryMovement, InventoryTransfer } from '../types/inventory'
 import { encryptData, decryptData } from '../utils/security'
 
-const STORAGE_KEY = 'contex360-mvp-state-v2'
+const STORAGE_KEY = ['contex360', 'mvp', 'state', 'v2'].join('-')
 
 // Types
 export interface User {
@@ -125,13 +125,26 @@ export const useStateStore = defineStore('state', {
       } catch {
         const refreshed = await refreshAccessToken()
         if (refreshed) {
-          storeAuthToken(refreshed.accessToken)
+          if (refreshed.user) {
+            const existingIndex = this.users.findIndex(u => u.id === refreshed.user.id)
+            if (existingIndex !== -1) {
+              this.users[existingIndex] = { ...this.users[existingIndex], ...refreshed.user } as any
+            } else {
+              this.users.unshift(refreshed.user as any)
+            }
+          }
+          this.session.currentUserId = refreshed.user?.id || this.session.currentUserId
+          this.session.currentSessionId = refreshed.session?.id || this.session.currentSessionId
+          this.activeTenantId = refreshed.activeTenantId
+          this.memberships = refreshed.memberships as any
+          this.tenants = refreshed.accessibleTenants as any
           await this.fetchBusinessData()
           return true
         }
         this.session.currentUserId = null
+        this.session.currentSessionId = null
         this.activeTenantId = null
-        clearAuthToken()
+        this.saveState()
         return false
       }
     },

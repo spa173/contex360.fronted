@@ -1,8 +1,20 @@
 
 import { AppState, AuditPayload } from '@/stores/stateStore'
 
+function randomSegment(length: number) {
+  const alphabet = 'abcdefghijklmnopqrstuvwxyz0123456789'
+  const crypto = globalThis.crypto
+  if (crypto?.getRandomValues) {
+    const bytes = new Uint8Array(length)
+    crypto.getRandomValues(bytes)
+    return Array.from(bytes, (byte) => alphabet[byte % alphabet.length]).join('')
+  }
+
+  return alphabet.slice(0, length)
+}
+
 export function uid(prefix: string) {
-  return `${prefix}-${Math.random().toString(36).substring(2, 9)}`
+  return `${prefix}-${randomSegment(7)}`
 }
 
 export function appendAuditEvent(targetState: any, payload: any) {
