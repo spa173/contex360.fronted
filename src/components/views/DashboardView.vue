@@ -340,22 +340,8 @@ async function fetchDashboardData() {
       businessApi.getCashFlowTrend().catch(() => ({ historical: [], projected: [] })),
     ])
 
-    let displaySales = stats.totalSales ?? 0
-    if (displaySales === 0) {
-      if (selectedPeriod.value === 'Este mes') displaySales = 8400000
-      else if (selectedPeriod.value === 'Este trimestre') displaySales = 26500000
-      else if (selectedPeriod.value === 'Este año') displaySales = 112400000
-      else if (selectedPeriod.value === 'custom') {
-        const d1 = from ? new Date(from) : new Date()
-        const d2 = to ? new Date(to) : new Date()
-        const diffTime = Math.abs(d2 - d1)
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) || 1
-        displaySales = diffDays * 280000
-      }
-    }
-
     dashboardData.value = {
-      totalSales: displaySales,
+      totalSales: stats.totalSales ?? 0,
       lowStockAlerts: alerts.lowStockAlerts ?? stats.lowStockAlerts ?? 0,
       pendingInvoices: alerts.pendingInvoices ?? stats.pendingInvoices ?? 0,
       ocrRunsCount: alerts.ocrRunsCount ?? 0,
