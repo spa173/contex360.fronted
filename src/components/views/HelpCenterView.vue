@@ -275,4 +275,3 @@ function closeArticle() { selectedArticle.value = null }
     </div>
   </div>
 </template>
-</script>
