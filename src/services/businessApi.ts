@@ -189,6 +189,9 @@ export const businessApi = {
   async validateDianConfig(tenantId?: string | null) {
     return request<{ valid: boolean; errors: string[]; warnings: string[] }>('/dian/config/validate', { tenantId })
   },
+  async getDianConfig(tenantId?: string | null) {
+    return request<any>('/dian/config', { tenantId })
+  },
   async updateDianConfig(config: any, tenantId?: string | null) {
     return request<any>('/dian/config', { method: 'POST', body: config, tenantId })
   },

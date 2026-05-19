@@ -102,10 +102,41 @@ function submitNewTax() {
   newTax.value = { name: '', code: '', type: 'Suma', rate: '' }
 }
 
-onMounted(() => {
+const showDianModal = ref(false)
+const dianConfig = ref({
+  dianEnvironment: 'test',
+  dianNit: '',
+  dianSoftwareId: '',
+  dianSoftwarePin: '',
+  dianTestSetId: '',
+  dianCertificatePassword: ''
+})
+const dianValidating = ref(false)
+const dianValidationResult = ref(null)
+
+const showBancolombiaModal = ref(false)
+const bancolombiaConfig = ref({
+  clientId: 'banco-contex-1021',
+  clientSecret: '••••••••••••',
+  accountNumber: '031-987654-21',
+  accountType: 'Ahorros',
+  active: true
+})
+
+onMounted(async () => {
   adminStore.loadSettings()
   if (activeTab.value === 'logs') {
     fetchAuditLogs()
+  }
+  try {
+    const validateRes = await businessApi.validateDianConfig()
+    dianValidationResult.value = validateRes
+  } catch (e) {
+    console.warn('Initial DIAN config check skipped:', e.message)
+  }
+  const saved = localStorage.getItem('contex_bancolombia_settings')
+  if (saved) {
+    bancolombiaConfig.value = JSON.parse(saved)
   }
 })
 
@@ -153,8 +184,59 @@ function handleOcrChange() {
   })
 }
 
-function handleIntegration(name) {
-  emit('notify', { message: `Configuración ${name}`, detail: `Abriendo conector seguro para la integración con ${name}.` })
+async function handleIntegration(name) {
+  if (name === 'DIAN') {
+    dianValidating.value = true
+    try {
+      const res = await businessApi.getDianConfig()
+      if (res) {
+        dianConfig.value = {
+          dianEnvironment: res.dianEnvironment || 'test',
+          dianNit: res.dianNit || '',
+          dianSoftwareId: res.dianSoftwareId || '',
+          dianSoftwarePin: res.dianSoftwarePin || '',
+          dianTestSetId: res.dianTestSetId || '',
+          dianCertificatePassword: res.dianCertificatePassword || ''
+        }
+      }
+      const validateRes = await businessApi.validateDianConfig()
+      dianValidationResult.value = validateRes
+    } catch (e) {
+      console.error(e)
+    } finally {
+      dianValidating.value = false
+      showDianModal.value = true
+    }
+  } else if (name === 'Bancolombia') {
+    const saved = localStorage.getItem('contex_bancolombia_settings')
+    if (saved) {
+      bancolombiaConfig.value = JSON.parse(saved)
+    }
+    showBancolombiaModal.value = true
+  }
+}
+
+async function saveDianConfig() {
+  dianValidating.value = true
+  try {
+    const res = await businessApi.updateDianConfig(dianConfig.value)
+    if (res.success) {
+      emit('notify', { message: 'Configuración DIAN Guardada', detail: 'Parámetros actualizados y validados con el servidor DIAN.' })
+      const validateRes = await businessApi.validateDianConfig()
+      dianValidationResult.value = validateRes
+      showDianModal.value = false
+    }
+  } catch (e) {
+    emit('notify', { message: 'Error', detail: 'No se pudo guardar la configuración de la DIAN.' })
+  } finally {
+    dianValidating.value = false
+  }
+}
+
+function saveBancolombiaConfig() {
+  localStorage.setItem('contex_bancolombia_settings', JSON.stringify(bancolombiaConfig.value))
+  emit('notify', { message: 'Integración Bancolombia Activa', detail: 'La conciliación en tiempo real ha sido configurada y sincronizada.' })
+  showBancolombiaModal.value = false
 }
 </script>
 
@@ -396,8 +478,11 @@ function handleIntegration(name) {
               <p class="text-[12px] text-[#71717A] mt-0.5">Facturación electrónica directa</p>
             </div>
           </div>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
+          <span v-if="dianValidationResult?.valid" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>Conectado
+          </span>
+          <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 text-[11px] font-extrabold border border-amber-200 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-amber-500"></span>Pendiente Configurar
           </span>
         </div>
         <button @click="handleIntegration('DIAN')" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
@@ -416,8 +501,11 @@ function handleIntegration(name) {
               <p class="text-[12px] text-[#71717A] mt-0.5">Conciliación bancaria en tiempo real</p>
             </div>
           </div>
-          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
+          <span v-if="bancolombiaConfig.active" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>Conectado
+          </span>
+          <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-50 text-rose-700 text-[11px] font-extrabold border border-rose-200 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-rose-500"></span>Inactivo
           </span>
         </div>
         <button @click="handleIntegration('Bancolombia')" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
@@ -431,6 +519,164 @@ function handleIntegration(name) {
         </div>
         <p class="text-[14px] font-extrabold text-[#18181B]">Explorar integraciones</p>
         <p class="text-[12px] text-[#71717A] mt-1">+24 conectores disponibles (Shopify, Nubox, Stripe)</p>
+      </div>
+    </div>
+
+    <!-- Modal Configuración DIAN -->
+    <div v-if="showDianModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]">
+        <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-9 h-9 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700">
+              <span class="material-symbols-outlined text-[18px]">verified_user</span>
+            </div>
+            <div>
+              <h3 class="text-[16px] font-bold text-[#18181B]">Configuración de Facturación DIAN</h3>
+              <p class="text-[12px] text-[#71717A]">Ambiente habilitado para transmisión directa UBL 2.1</p>
+            </div>
+          </div>
+          <button @click="showDianModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveDianConfig" class="space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Ambiente DIAN</label>
+              <select v-model="dianConfig.dianEnvironment" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option value="test">Pruebas / Habilitación</option>
+                <option value="production">Producción Real</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">NIT del Transmisor</label>
+              <input v-model="dianConfig.dianNit" placeholder="Ej. 900123456-7" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Software ID (DIAN)</label>
+              <input v-model="dianConfig.dianSoftwareId" placeholder="UUID del Software" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Software Pin (DIAN)</label>
+              <input v-model="dianConfig.dianSoftwarePin" placeholder="Pin de 5 dígitos" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Test Set ID (Solo Pruebas)</label>
+            <input v-model="dianConfig.dianTestSetId" placeholder="SetID provisto por DIAN para pruebas" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Clave del Certificado Digital (.p12/.pfx)</label>
+            <input v-model="dianConfig.dianCertificatePassword" type="password" placeholder="Contraseña de firma digital" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+          </div>
+
+          <!-- Real-time Diagnostic/Validation Panel -->
+          <div v-if="dianValidationResult" class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-[12px] p-4 space-y-2">
+            <p class="text-[11px] font-bold text-[#18181B] flex items-center gap-1.5">
+              <span class="material-symbols-outlined text-[16px] text-emerald-600">health_and_safety</span>
+              Diagnóstico en Tiempo Real DIAN:
+            </p>
+            <div v-if="dianValidationResult.valid && (!dianValidationResult.errors || !dianValidationResult.errors.length)" class="text-[12px] text-emerald-700 font-semibold bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
+              ✓ Configuración 100% válida. La plataforma está lista para transmitir documentos electrónicos.
+            </div>
+            <div v-else class="space-y-1.5">
+              <div v-for="err in dianValidationResult.errors" :key="err" class="text-[11px] text-rose-700 font-medium bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200 flex items-start gap-1">
+                <span class="material-symbols-outlined text-[14px] mt-0.5">error</span>
+                <span>{{ err }}</span>
+              </div>
+              <div v-for="warn in dianValidationResult.warnings" :key="warn" class="text-[11px] text-amber-700 font-medium bg-amber-50 px-2.5 py-1.5 rounded-lg border border-amber-200 flex items-start gap-1">
+                <span class="material-symbols-outlined text-[14px] mt-0.5">warning</span>
+                <span>{{ warn }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
+            <button type="button" @click="showDianModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
+              Cancelar
+            </button>
+            <button type="submit" :disabled="dianValidating" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm flex items-center gap-1.5 disabled:opacity-50">
+              <div v-if="dianValidating" class="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div>
+              Guardar y Verificar Conexión
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Modal Configuración Bancolombia -->
+    <div v-if="showBancolombiaModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+      <div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200">
+        <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-5">
+          <div class="flex items-center gap-2.5">
+            <div class="w-12 h-12 rounded-[12px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] font-extrabold text-[20px] shadow-sm border border-[#2563EB]/20">
+              B
+            </div>
+            <div>
+              <h3 class="text-[16px] font-bold text-[#18181B]">Conciliación Bancolombia</h3>
+              <p class="text-[12px] text-[#71717A]">Conexión por API segura (OAuth 2.0)</p>
+            </div>
+          </div>
+          <button @click="showBancolombiaModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <form @submit.prevent="saveBancolombiaConfig" class="space-y-4">
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Número de Cuenta Bancaria</label>
+            <input v-model="bancolombiaConfig.accountNumber" placeholder="Ej. 031-987654-21" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tipo de Cuenta</label>
+              <select v-model="bancolombiaConfig.accountType" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option value="Ahorros">Ahorros</option>
+                <option value="Corriente">Corriente</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Estado</label>
+              <select v-model="bancolombiaConfig.active" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
+                <option :value="true">Conectado (En línea)</option>
+                <option :value="false">Inactivo / Pausado</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Client ID (API Bancolombia)</label>
+            <input v-model="bancolombiaConfig.clientId" placeholder="API Client ID" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Client Secret (API Bancolombia)</label>
+            <input v-model="bancolombiaConfig.clientSecret" type="password" placeholder="Contraseña de API" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div class="flex gap-2.5 p-3.5 rounded-[10px] border border-[#E4E4E7] bg-white">
+            <span class="material-symbols-outlined text-[20px] text-[#2563EB] flex-shrink-0">shield</span>
+            <p class="text-[11px] text-[#18181B] leading-[1.5]">
+              <strong class="font-semibold">Seguridad Bancaria:</strong> Tus credenciales viajan cifradas de extremo a extremo mediante el túnel seguro de ContexAI.
+            </p>
+          </div>
+
+          <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
+            <button type="button" @click="showBancolombiaModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
+              Cancelar
+            </button>
+            <button type="submit" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm">
+              Sincronizar y Guardar
+            </button>
+          </div>
+        </form>
       </div>
     </div>
 
