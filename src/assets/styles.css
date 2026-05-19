@@ -122,44 +122,44 @@ html.light .status-borrador {
 
 /* === REDESIGN DARK THEME === */
 .dark {
-  --page-background: #09090b;
-  --text: #fafafa;
+  --page-background: #0b0f19;
+  --text: #f4f4f5;
   
-  --color-background-primary: #09090b;
-  --color-background-secondary: #18181b;
+  --color-background-primary: #0b0f19;
+  --color-background-secondary: #111827;
   --color-background-info: rgba(37, 99, 235, 0.2);
   --color-background-warning: rgba(234, 179, 8, 0.2);
-  --color-text-primary: #fafafa;
-  --color-text-secondary: #a1a1aa;
-  --color-text-tertiary: #71717a;
+  --color-text-primary: #f4f4f5;
+  --color-text-secondary: #94a3b8;
+  --color-text-tertiary: #64748b;
   --color-text-info: #60a5fa;
   --color-text-success: #4ade80;
   --color-text-warning: #facc15;
   --color-text-danger: #f87171;
   
-  --color-border-primary: #27272a;
-  --color-border-secondary: #27272a;
-  --color-border-tertiary: #18181b;
+  --color-border-primary: rgba(55, 65, 81, 0.5);
+  --color-border-secondary: rgba(55, 65, 81, 0.5);
+  --color-border-tertiary: #182235;
 
-  --background: #09090b;
-  --foreground: #fafafa;
+  --background: #0b0f19;
+  --foreground: #f4f4f5;
   --primary: #3b82f6;
   --primary-foreground: #ffffff;
-  --secondary: #18181b;
-  --secondary-foreground: #fafafa;
+  --secondary: #111827;
+  --secondary-foreground: #f4f4f5;
   --accent: #3b82f6;
   --accent-foreground: #ffffff;
-  --muted: #a1a1aa;
-  --muted-foreground: #a1a1aa;
-  --border: #27272a;
-  --input: #27272a;
+  --muted: #94a3b8;
+  --muted-foreground: #94a3b8;
+  --border: rgba(55, 65, 81, 0.5);
+  --input: rgba(55, 65, 81, 0.5);
   --ring: #3b82f6;
-  --surface: #09090b;
-  --surface-alt: #18181b;
-  --surface-border: #27272a;
-  --sidebar-bg: #09090b;
-  --sidebar-foreground: #fafafa;
-  --sidebar-border: #27272a;
+  --surface: #182235;
+  --surface-alt: #111827;
+  --surface-border: rgba(55, 65, 81, 0.5);
+  --sidebar-bg: #111827;
+  --sidebar-foreground: #f4f4f5;
+  --sidebar-border: rgba(55, 65, 81, 0.5);
 }
 
 html.dark body {
@@ -168,22 +168,25 @@ html.dark body {
 }
 
 html.dark .app .sidebar {
-  background: rgba(9, 9, 11, 0.98);
+  background: rgba(17, 24, 39, 0.98);
   border-right: 1px solid var(--border);
-  box-shadow: 4px 0 24px rgba(0, 0, 0, 0.2);
+  box-shadow: none;
 }
 
 html.dark .main.main-panel {
-  background: #09090b;
+  background: #0b0f19;
 }
 
 html.dark .topbar {
-  background: rgba(9, 9, 11, 0.98);
+  background: rgba(17, 24, 39, 0.98);
   border-bottom: 1px solid var(--border);
+  box-shadow: none;
 }
 
 html.dark .metric-card {
-  background: linear-gradient(180deg, #18181b 0%, #09090b 100%);
+  background: #182235;
+  box-shadow: none;
+  border: 1px solid var(--border);
 }
 
 html.dark .field input,
@@ -200,7 +203,8 @@ html.dark .alert-row,
 html.dark .table-row,
 html.dark .card-subsection,
 html.dark .invoice-line {
-  background: #09090b;
+  background: #182235;
+  border-color: var(--border);
 }
 
 html.dark .toast {
@@ -227,6 +231,32 @@ html.dark .status-borrador {
 
 html.dark .bg-white {
   background-color: var(--surface) !important;
+}
+html.dark .bg-blue-50 {
+  background-color: rgba(59, 130, 246, 0.1) !important;
+}
+html.dark .bg-blue-500, html.dark .bg-blue-600 {
+  background-color: #2563eb !important;
+}
+/* Flujo de caja y contenedores de gráficos transparentes */
+html.dark .recharts-wrapper .bg-white,
+html.dark [class*="chart"] .bg-white {
+  background-color: transparent !important;
+}
+/* Menús desplegables / Dropdowns */
+html.dark .shadow-\[0_8px_30px_rgb\(0\,0\,0\,0\.12\)\] {
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5) !important;
+  background-color: #182235 !important;
+  border: 1px solid var(--border) !important;
+}
+/* Búsqueda en TopNav */
+html.dark .search-container {
+  background-color: rgba(17, 24, 39, 0.5) !important;
+  border-color: rgba(55, 65, 81, 0.8) !important;
+  box-shadow: none !important;
+}
+html.dark .search-container:focus-within {
+  border-color: #3b82f6 !important;
 }
 html.dark .text-\[\#18181B\] {
   color: var(--foreground) !important;
