@@ -19,6 +19,7 @@ const dashboardData = ref({
   totalSales: 0,
   lowStockAlerts: 0,
   pendingInvoices: 0,
+  ocrRunsCount: 0,
   aiInsight: '',
 })
 const isLoading = ref(false)
@@ -175,6 +176,71 @@ const dateLabels = computed(() => {
   }
 })
 
+const showOcrModal = ref(false)
+const ocrRuns = ref([])
+const isOcrLoading = ref(false)
+const selectedOcrRun = ref(null)
+
+async function openOcrModal() {
+  showOcrModal.value = true
+  await loadOcrRuns()
+}
+
+async function loadOcrRuns() {
+  try {
+    isOcrLoading.value = true
+    const list = await businessApi.getOcrRuns()
+    ocrRuns.value = list
+  } catch (err) {
+    console.error('Error cargando tareas OCR:', err)
+  } finally {
+    isOcrLoading.value = false
+  }
+}
+
+async function simulateOcr() {
+  try {
+    emit('notify', { message: 'Iniciando OCR de IA', detail: 'Analizando estructura del documento de compras...' })
+    await businessApi.simulateOcrRun()
+    await Promise.all([
+      loadOcrRuns(),
+      fetchDashboardData()
+    ])
+    emit('notify', { message: 'OCR Completado', detail: 'Se ha procesado y extraído la información de la factura con éxito.' })
+  } catch (err) {
+    console.error('Error simulando OCR:', err)
+  }
+}
+
+async function approveOcr(run) {
+  try {
+    emit('notify', { message: 'Registrando compra...', detail: 'Sincronizando factura con cuentas por pagar y libro diario...' })
+    await businessApi.approveOcrRun(run.id)
+    await Promise.all([
+      loadOcrRuns(),
+      fetchDashboardData()
+    ])
+    selectedOcrRun.value = null
+    emit('notify', { message: 'Compra Registrada', detail: `La factura de ${run.fields?.vendor || 'proveedor'} se guardó como gasto/compra.` })
+  } catch (err) {
+    console.error('Error aprobando OCR:', err)
+  }
+}
+
+async function deleteOcr(run) {
+  try {
+    await businessApi.deleteOcrRun(run.id)
+    await Promise.all([
+      loadOcrRuns(),
+      fetchDashboardData()
+    ])
+    selectedOcrRun.value = null
+    emit('notify', { message: 'Tarea eliminada', detail: 'Se ha descartado el documento del flujo de revisión.' })
+  } catch (err) {
+    console.error('Error descartando OCR:', err)
+  }
+}
+
 async function fetchDashboardData() {
   try {
     isLoading.value = true
@@ -188,6 +254,7 @@ async function fetchDashboardData() {
       totalSales: stats.totalSales ?? 0,
       lowStockAlerts: alerts.lowStockAlerts ?? stats.lowStockAlerts ?? 0,
       pendingInvoices: alerts.pendingInvoices ?? stats.pendingInvoices ?? 0,
+      ocrRunsCount: alerts.ocrRunsCount ?? 0,
       aiInsight: (insights.insight && !insights.insight.includes('No se pudo')) ? insights.insight : 'Bienvenido a Contex360. El sistema está listo para operar.',
     }
     cashFlowData.value = {
@@ -298,17 +365,17 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
       </div>
 
       <!-- AI Tasks -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+      <div @click="openOcrModal" class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors cursor-pointer group">
         <div class="flex items-start justify-between mb-6">
-          <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
+          <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] group-hover:bg-[#18181B] group-hover:text-white transition-colors">
             <span class="material-symbols-outlined text-[22px]">document_scanner</span>
           </div>
           <span class="inline-flex px-2 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[11px] font-bold tracking-tight">OCR listo</span>
         </div>
         <div>
           <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Tareas de IA</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">8</p>
-          <p class="text-[12px] font-medium text-[#71717A]">listas para revisar</p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">{{ dashboardData.ocrRunsCount }}</p>
+          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.ocrRunsCount > 0 ? 'listas para revisar' : 'sin documentos pendientes' }}</p>
         </div>
       </div>
     </div>
@@ -395,6 +462,151 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
           <button @click="handleViewAlerts" class="text-[13px] font-bold text-[#18181B] hover:text-[#2563EB] transition-colors flex items-center gap-1.5 group">
             Ver todas las alertas <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
           </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI OCR Runs Modal -->
+    <div v-if="showOcrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <!-- Backdrop -->
+      <div @click="showOcrModal = false" class="absolute inset-0 bg-[#09090B]/40 backdrop-blur-sm transition-opacity"></div>
+
+      <!-- Modal Card -->
+      <div class="relative bg-white border border-[#E4E4E7] rounded-[18px] shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-5 border-b border-[#F4F4F5]">
+          <div>
+            <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight">Tareas de OCR con IA</h3>
+            <p class="text-[12px] text-[#71717A] font-medium">Revisa, edita y aprueba las facturas extraídas automáticamente por la inteligencia artificial</p>
+          </div>
+          <div class="flex items-center gap-3">
+            <button @click="simulateOcr" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#18181B] text-white hover:bg-[#27272A] rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm">
+              <span class="material-symbols-outlined text-[16px]">add_circle</span> Simular Recibo / Factura
+            </button>
+            <button @click="showOcrModal = false" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#F4F4F5] text-[#71717A] transition-colors">
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-6 min-h-0">
+          <!-- Left side: List of runs -->
+          <div class="flex-1 flex flex-col min-w-0">
+            <div v-if="isOcrLoading" class="flex flex-col items-center justify-center py-12">
+              <span class="animate-spin w-8 h-8 border-2 border-[#18181B] border-t-transparent rounded-full mb-3"></span>
+              <p class="text-[13px] font-medium text-[#71717A]">Procesando documentos...</p>
+            </div>
+            <div v-else-if="ocrRuns.length === 0" class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-[#E4E4E7] rounded-xl px-4">
+              <span class="material-symbols-outlined text-[42px] text-[#A1A1AA] mb-3">folder_open</span>
+              <h4 class="text-[14px] font-bold text-[#18181B]">Bandeja de Entrada Limpia</h4>
+              <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1 mb-5">No tienes facturas ni recibos pendientes de revisión por parte de la IA.</p>
+              <button @click="simulateOcr" class="inline-flex items-center gap-1.5 px-4 py-2 border border-[#E4E4E7] rounded-lg text-[12px] font-extrabold text-[#18181B] hover:bg-[#F4F4F5] transition-all">
+                <span class="material-symbols-outlined text-[16px]">bolt</span> Generar Demo de Factura
+              </button>
+            </div>
+            <div v-else class="space-y-3.5">
+              <div v-for="run in ocrRuns" :key="run.id" 
+                @click="selectedOcrRun = run"
+                :class="['border rounded-xl p-4 cursor-pointer transition-all hover:border-[#18181B] hover:shadow-sm flex items-start gap-4', selectedOcrRun?.id === run.id ? 'border-[#18181B] bg-[#F8F8F8]' : 'border-[#E4E4E7] bg-white']"
+              >
+                <div class="w-10 h-10 rounded-[8px] bg-[#F4F4F5] flex items-center justify-center text-[#71717A] flex-shrink-0">
+                  <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-start justify-between gap-2 mb-1">
+                    <h5 class="text-[14px] font-bold text-[#18181B] truncate">{{ run.fields?.vendor || 'Factura Sin Nombre' }}</h5>
+                    <span :class="['inline-flex px-1.5 py-0.5 rounded text-[10px] font-extrabold tracking-tight flex-shrink-0', run.confidence > 0.95 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700']">
+                      {{ Math.round(run.confidence * 100) }}% precisión
+                    </span>
+                  </div>
+                  <p class="text-[12px] text-[#71717A] font-semibold truncate">{{ run.source }}</p>
+                  <div class="flex items-center justify-between mt-3 text-[12px] font-bold">
+                    <span class="text-[#71717A]">Total Extraído:</span>
+                    <span class="text-[#18181B]">$ {{ Number(run.fields?.total || 0).toLocaleString('es-CO') }} COP</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right side: Detail view -->
+          <div class="w-full lg:w-[380px] border-t lg:border-t-0 lg:border-l border-[#F4F4F5] pt-6 lg:pt-0 lg:pl-6 flex flex-col flex-shrink-0 min-w-0">
+            <div v-if="selectedOcrRun" class="flex flex-col h-full justify-between min-h-0">
+              <div>
+                <div class="flex items-center gap-3 mb-5">
+                  <div class="w-12 h-12 rounded-[10px] bg-[#2563EB]/5 border border-[#2563EB]/10 flex items-center justify-center text-[#2563EB]">
+                    <span class="material-symbols-outlined text-[24px]">receipt_long</span>
+                  </div>
+                  <div class="min-w-0">
+                    <h4 class="text-[15px] font-extrabold text-[#18181B] leading-none mb-1 truncate">{{ selectedOcrRun.fields?.vendor }}</h4>
+                    <p class="text-[11px] text-[#71717A] font-semibold">NIT: {{ selectedOcrRun.fields?.nit }}</p>
+                  </div>
+                </div>
+
+                <!-- Extracted fields list -->
+                <div class="space-y-4 max-h-[300px] overflow-y-auto pr-1">
+                  <div class="grid grid-cols-2 gap-4 border-b border-[#F4F4F5] pb-3">
+                    <div>
+                      <span class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider block mb-0.5">Fecha Documento</span>
+                      <span class="text-[13px] font-bold text-[#18181B]">{{ selectedOcrRun.fields?.date || 'N/A' }}</span>
+                    </div>
+                    <div>
+                      <span class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider block mb-0.5">Precisión de Extracción</span>
+                      <span class="text-[13px] font-bold text-emerald-600 flex items-center gap-0.5">
+                        <span class="material-symbols-outlined text-[14px]">verified</span> {{ Math.round(selectedOcrRun.confidence * 100) }}%
+                      </span>
+                    </div>
+                  </div>
+
+                  <!-- Table of extracted items -->
+                  <div>
+                    <span class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider block mb-2">Items Extraídos ({{ selectedOcrRun.fields?.items?.length || 0 }})</span>
+                    <div class="space-y-2 max-h-[140px] overflow-y-auto pr-1">
+                      <div v-for="(item, idx) in selectedOcrRun.fields?.items" :key="idx" class="bg-[#F9F9F9] rounded-lg p-2 flex items-center justify-between text-[11px] font-semibold text-[#1E293B]">
+                        <div class="min-w-0 flex-1">
+                          <p class="truncate font-bold text-[#18181B]">{{ item.description }}</p>
+                          <p class="text-[10px] text-[#71717A]">{{ item.qty }} x $ {{ Number(item.price).toLocaleString('es-CO') }}</p>
+                        </div>
+                        <span class="font-extrabold text-[#18181B] ml-2">$ {{ Number(item.total).toLocaleString('es-CO') }}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Financial totals -->
+                  <div class="bg-[#F8FAFC] border border-[#E2E8F0] rounded-xl p-3.5 space-y-2 text-[12px] font-bold">
+                    <div class="flex justify-between text-[#475569]">
+                      <span>Subtotal:</span>
+                      <span>$ {{ Number(selectedOcrRun.fields?.subtotal || 0).toLocaleString('es-CO') }} COP</span>
+                    </div>
+                    <div class="flex justify-between text-[#475569]">
+                      <span>IVA (19%):</span>
+                      <span>$ {{ Number(selectedOcrRun.fields?.tax || 0).toLocaleString('es-CO') }} COP</span>
+                    </div>
+                    <div class="flex justify-between text-[#1E293B] text-[13px] border-t border-[#E2E8F0] pt-2 mt-1">
+                      <span>Total Factura:</span>
+                      <span class="text-[#2563EB]">$ {{ Number(selectedOcrRun.fields?.total || 0).toLocaleString('es-CO') }} COP</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Action buttons -->
+              <div class="flex items-center gap-3 pt-6 mt-6 border-t border-[#F4F4F5]">
+                <button @click="deleteOcr(selectedOcrRun)" class="flex-1 py-2 px-3 border border-[#E4E4E7] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg text-[12px] font-extrabold text-[#71717A] transition-all">
+                  Descartar
+                </button>
+                <button @click="approveOcr(selectedOcrRun)" class="flex-[1.5] py-2 px-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm flex items-center justify-center gap-1.5">
+                  <span class="material-symbols-outlined text-[16px]">done</span> Aprobar e Ingresar
+                </button>
+              </div>
+            </div>
+            <div v-else class="flex-1 flex flex-col items-center justify-center py-12 text-center text-[#A1A1AA]">
+              <span class="material-symbols-outlined text-[36px] mb-2">touch_app</span>
+              <p class="text-[13px] font-bold text-[#18181B]">Ninguna tarea seleccionada</p>
+              <p class="text-[11px] text-[#71717A] max-w-[200px] mt-0.5">Selecciona una factura de la lista de la izquierda para ver su análisis.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>

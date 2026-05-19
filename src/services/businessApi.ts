@@ -203,6 +203,18 @@ export const businessApi = {
   async getAiHealth() {
     return request<any>('/ai/health')
   },
+  async getOcrRuns(tenantId?: string | null) {
+    return request<any[]>('/analytics/ocr-runs', { tenantId })
+  },
+  async simulateOcrRun(tenantId?: string | null) {
+    return request<any>('/analytics/ocr-runs/simulate', { method: 'POST', tenantId })
+  },
+  async approveOcrRun(id: string, tenantId?: string | null) {
+    return request<any>(`/analytics/ocr-runs/${id}/approve`, { method: 'POST', tenantId })
+  },
+  async deleteOcrRun(id: string, tenantId?: string | null) {
+    return request<any>(`/analytics/ocr-runs/${id}`, { method: 'DELETE', tenantId })
+  },
   
   // 2FA / TOTP
   async totpSetup() {
