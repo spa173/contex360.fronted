@@ -53,6 +53,24 @@ export interface BancolombiaIntegrationUpdateResponse {
   message?: string
 }
 
+export interface BancolombiaStatementFileInput {
+  fileName: string
+  contentType: string
+  text: string
+  format?: 'MT940' | 'CAMT053'
+}
+
+export interface BancolombiaSyncRequest {
+  statementFile?: BancolombiaStatementFileInput
+  entries?: Array<{
+    date?: string
+    description?: string
+    amount?: number | string
+    type?: 'INCOME' | 'EXPENSE' | 'credit' | 'debit' | 'income' | 'expense'
+    reference?: string
+  }>
+}
+
 export const businessApi = {
   // Auth
   async login(credentials: any) {
@@ -228,8 +246,8 @@ export const businessApi = {
   async disconnectBancolombia(tenantId?: string | null) {
     return request<{ ok: boolean }>('/integrations/bancolombia/disconnect', { method: 'DELETE', tenantId })
   },
-  async syncBancolombia(tenantId?: string | null) {
-    return request<{ ok: boolean; lastSyncAt: string }>('/integrations/bancolombia/sync', { method: 'POST', tenantId })
+  async syncBancolombia(tenantId?: string | null, body?: BancolombiaSyncRequest) {
+    return request<{ ok: boolean; lastSyncAt: string; message: string; imported: number; skipped: number }>('/integrations/bancolombia/sync', { method: 'POST', body, tenantId })
   },
 
   // AI

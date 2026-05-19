@@ -213,6 +213,7 @@ const bancolombiaLoading = ref(false)
 const bancolombiaSaving = ref(false)
 const bancolombiaConnecting = ref(false)
 const bancolombiaSyncing = ref(false)
+const bancolombiaStatementFile = ref(null)
 const bancolombiaStatus = computed(() => {
   switch (bancolombiaConfig.value.authorizationStatus) {
     case 'connected':
@@ -245,6 +246,8 @@ const bancolombiaStatus = computed(() => {
 const bancolombiaModeLabel = computed(() => {
   return bancolombiaConnectionModes.find(mode => mode.value === bancolombiaConfig.value.integrationMode)?.label || 'Open Finance / OAuth 2.0'
 })
+
+const bancolombiaStatementFileLabel = computed(() => bancolombiaStatementFile.value?.fileName || 'No has cargado ningún extracto todavía')
 
 // Integrations catalog
 const showIntegrationsModal = ref(false)
@@ -328,15 +331,46 @@ async function syncBancolombiaNow() {
 
   bancolombiaSyncing.value = true
   try {
-    const res = await businessApi.syncBancolombia(activeTenantId.value)
+    const res = await businessApi.syncBancolombia(activeTenantId.value, bancolombiaStatementFile.value ? {
+      statementFile: bancolombiaStatementFile.value,
+    } : undefined)
     bancolombiaConfig.value.lastSyncAt = res.lastSyncAt || new Date().toISOString()
-    emit('notify', { message: 'Sincronización completada', detail: 'Los movimientos de Bancolombia se actualizaron correctamente.' })
+    emit('notify', {
+      message: 'Sincronización completada',
+      detail: res.message || (bancolombiaStatementFile.value
+        ? `Se importaron ${res.imported} movimientos desde el extracto cargado.`
+        : 'La revisión Bancolombia se actualizó correctamente.'),
+    })
+    bancolombiaStatementFile.value = null
     await fetchBancolombiaConfig()
   } catch (e) {
     emit('notify', { message: 'Error al sincronizar', detail: e?.message || 'No se pudo actualizar la conciliación.' })
   } finally {
     bancolombiaSyncing.value = false
   }
+}
+
+async function handleBancolombiaStatementFileChange(event) {
+  const input = event.target
+  const file = input?.files?.[0]
+  if (!file) {
+    bancolombiaStatementFile.value = null
+    return
+  }
+
+  const text = await file.text()
+  const lower = file.name.toLowerCase()
+  const inferredFormat = lower.endsWith('.xml') || text.includes('<BkToCstmrStmt') || text.includes('<BkToCstmrAcctRpt') ? 'CAMT053' : 'MT940'
+  bancolombiaStatementFile.value = {
+    fileName: file.name,
+    contentType: file.type || 'text/plain',
+    text,
+    format: inferredFormat,
+  }
+}
+
+function clearBancolombiaStatementFile() {
+  bancolombiaStatementFile.value = null
 }
 
 async function disconnectBancolombia() {
@@ -364,7 +398,7 @@ const integrationCatalog = ref([
   { id: 'epayco', name: 'ePayco', desc: 'Pagos en línea para Colombia — débito, crédito y PSE', cat: 'pagos', icon: 'local_atm', color: '#1A73E8', bg: '#1A73E815' },
   { id: 'kushki', name: 'Kushki', desc: 'Fintech de pagos panlatino con antifraude propio', cat: 'pagos', icon: 'shield_lock', color: '#00BFA5', bg: '#00BFA515' },
   // Bancos
-  { id: 'bancolombia', name: 'Bancolombia', desc: 'Open Finance, extractos empresariales y conciliación automática', cat: 'bancos', icon: 'account_balance', color: '#FFCD00', bg: '#FFCD0015' },
+  { id: 'bancolombia', name: 'Bancolombia', desc: 'Open Finance, titularidad y extractos empresariales', cat: 'bancos', icon: 'account_balance', color: '#FFCD00', bg: '#FFCD0015' },
   { id: 'bogota', name: 'Banco de Bogotá', desc: 'Open Banking — extractos y movimientos automáticos', cat: 'bancos', icon: 'account_balance', color: '#003087', bg: '#00308715' },
   { id: 'davivienda', name: 'Davivienda', desc: 'Extractos automáticos y alerta de saldos', cat: 'bancos', icon: 'account_balance', color: '#E31837', bg: '#E3183715' },
   { id: 'bbva', name: 'BBVA Colombia', desc: 'Conciliación y pagos masivos a proveedores', cat: 'bancos', icon: 'account_balance', color: '#004481', bg: '#00448115' },
@@ -1046,7 +1080,7 @@ async function saveBancolombiaConfig() {
             </div>
             <div>
               <h3 class="text-[16px] font-bold text-[#18181B]">Conciliación Bancolombia</h3>
-              <p class="text-[12px] text-[#71717A]">Conexión real gestionada por backend: OAuth 2.0 o extractos empresariales</p>
+              <p class="text-[12px] text-[#71717A]">Open Finance valida consentimiento y titularidad; la conciliación real entra por extractos empresariales.</p>
             </div>
           </div>
           <button @click="showBancolombiaModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
@@ -1070,7 +1104,7 @@ async function saveBancolombiaConfig() {
         <div class="mb-4 rounded-[12px] border border-[#DBEAFE] bg-[#EFF6FF] px-3.5 py-3">
           <p class="text-[11px] font-bold text-[#1D4ED8]">Implementación real</p>
           <p class="mt-1 text-[11px] leading-[1.5] text-[#1E3A8A]">
-            El navegador no guarda el client secret. El backend maneja el consentimiento, intercambia el code por tokens y sincroniza movimientos o extractos.
+            El navegador no guarda el client secret. El backend maneja el consentimiento y guarda tokens cifrados; los movimientos llegan desde extractos empresariales o una fuente de transacciones.
           </p>
         </div>
 
@@ -1140,6 +1174,33 @@ async function saveBancolombiaConfig() {
                 <option v-for="format in bancolombiaStatementFormats" :key="format.value" :value="format.value">{{ format.label }}</option>
               </select>
             </div>
+            <div class="rounded-[10px] border border-[#E4E4E7] bg-white p-3 space-y-2">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-[11px] font-bold text-[#18181B]">Subir extracto bancario</p>
+                  <p class="text-[11px] text-[#71717A] leading-[1.4]">
+                    Sube un archivo MT940 o CAMT.053 para importar movimientos reales a tesorería.
+                  </p>
+                </div>
+                <button
+                  v-if="bancolombiaStatementFile"
+                  type="button"
+                  @click="clearBancolombiaStatementFile"
+                  class="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
+                >
+                  Limpiar
+                </button>
+              </div>
+              <input
+                type="file"
+                accept=".mt940,.sta,.txt,.xml,text/plain,application/xml"
+                @change="handleBancolombiaStatementFileChange"
+                class="block w-full text-[12px] text-[#71717A] file:mr-3 file:rounded-[8px] file:border-0 file:bg-[#18181B] file:px-3 file:py-1.5 file:text-[11px] file:font-semibold file:text-white hover:file:bg-[#27272A]"
+              />
+              <p class="text-[11px] text-[#71717A] leading-[1.4]">
+                Archivo cargado: <span class="font-semibold text-[#18181B]">{{ bancolombiaStatementFileLabel }}</span>
+              </p>
+            </div>
           </div>
 
           <div class="flex gap-2.5 p-3.5 rounded-[10px] border border-[#E4E4E7] bg-white">
@@ -1162,7 +1223,7 @@ async function saveBancolombiaConfig() {
               class="px-4 py-2 text-[13px] font-semibold border border-[#E4E4E7] text-[#18181B] rounded-[10px] hover:bg-[#FAFAFA] transition-colors disabled:opacity-50 flex items-center gap-2"
             >
               <span v-if="bancolombiaSyncing" class="w-4 h-4 border-2 border-[#18181B]/20 border-t-[#18181B] rounded-full animate-spin"></span>
-              {{ bancolombiaSyncing ? 'Sincronizando...' : 'Sincronizar ahora' }}
+              {{ bancolombiaSyncing ? 'Sincronizando...' : (bancolombiaStatementFile ? 'Importar extracto' : 'Sincronizar ahora') }}
             </button>
             <button
               type="button"
@@ -1180,7 +1241,7 @@ async function saveBancolombiaConfig() {
               <li>1. Registras la app en el portal de Bancolombia y defines los scopes.</li>
               <li>2. El backend abre el consentimiento y recibe el callback autorizado.</li>
               <li>3. Los tokens se guardan cifrados y nunca se exponen al navegador.</li>
-              <li>4. La conciliación consume movimientos o extractos y los cruza con la contabilidad.</li>
+              <li>4. Open Finance valida titularidad; la conciliación consume extractos MT940 o CAMT.053 y los cruza con la contabilidad.</li>
             </ul>
           </div>
 
