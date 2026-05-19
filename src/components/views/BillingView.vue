@@ -1,7 +1,8 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useBillingStore } from '../../stores/billingStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
+import { useAdminStore } from '../../stores/adminStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
 
@@ -11,16 +12,72 @@ const emit = defineEmits(['notify'])
 const billing = useBillingStore()
 const tenantInvoices = computed(() => billing.tenantInvoices || [])
 const thirdParties = useThirdPartiesStore()
+const adminStore = useAdminStore()
 
 const newInvoice = ref({ customerId: '', concept: '', amount: 0 })
 const statusFilter = ref('todas')
 const searchQuery = ref('')
 
+onMounted(() => {
+  adminStore.loadSettings()
+})
+
+function parseRate(rateStr) {
+  const clean = String(rateStr || '').trim()
+  const isPerMille = clean.includes('‰')
+  const num = parseFloat(clean.replace(/[^0-9.]/g, ''))
+  if (isNaN(num)) return 0
+  if (isPerMille) {
+    return num / 1000
+  }
+  return num / 100
+}
+
 const subtotal = computed(() => Number(newInvoice.value.amount) || 0)
-const iva = computed(() => subtotal.value * 0.19)
-const retefuente = computed(() => subtotal.value * 0.025)
-const reteica = computed(() => subtotal.value * 0.00966)
-const totalNeto = computed(() => subtotal.value + iva.value - retefuente.value - reteica.value)
+
+const activeTaxes = computed(() => {
+  return (adminStore.taxes || []).filter(t => t.active)
+})
+
+const taxBreakdown = computed(() => {
+  const base = subtotal.value
+  return activeTaxes.value.map(t => {
+    const rate = parseRate(t.rate)
+    const amount = base * rate
+    return {
+      id: t.id,
+      name: t.name,
+      rateStr: t.rate,
+      type: t.type, // 'Suma' or 'Resta'
+      amount: amount
+    }
+  })
+})
+
+const effectiveTaxRate = computed(() => {
+  let rateSum = 0
+  for (const t of activeTaxes.value) {
+    const rateVal = parseRate(t.rate) * 100
+    if (t.type === 'Suma') {
+      rateSum += rateVal
+    } else {
+      rateSum -= rateVal
+    }
+  }
+  return Math.max(0, rateSum)
+})
+
+const totalNeto = computed(() => {
+  let total = subtotal.value
+  for (const item of taxBreakdown.value) {
+    if (item.type === 'Suma') {
+      total += item.amount
+    } else {
+      total -= item.amount
+    }
+  }
+  return total
+})
 
 const filteredInvoices = computed(() => {
   let list = tenantInvoices.value
@@ -42,6 +99,9 @@ async function handleCreateInvoice() {
     emit('notify', { message: 'Faltan datos', detail: 'Selecciona un cliente y asigna un valor.' })
     return
   }
+  
+  const dynamicTaxAmount = subtotal.value * (effectiveTaxRate.value / 100)
+  
   const res = await billing.emitInvoice({
     clientId: newInvoice.value.customerId,
     paymentTermDays: 30,
@@ -51,10 +111,10 @@ async function handleCreateInvoice() {
         productName: newInvoice.value.concept || 'Servicios y Consultoría',
         quantity: 1,
         unitPrice: Number(newInvoice.value.amount),
-        taxRate: 19,
+        taxRate: effectiveTaxRate.value,
         subtotal: subtotal.value,
-        taxAmount: iva.value,
-        total: subtotal.value + iva.value
+        taxAmount: dynamicTaxAmount,
+        total: subtotal.value + dynamicTaxAmount
       }
     ]
   })
@@ -206,9 +266,10 @@ function statusBadge(status) {
             <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-3">Cálculo automático</p>
             <div class="space-y-2 text-[12px] font-mono">
               <div class="flex justify-between text-[#18181B]"><span>Subtotal</span><span class="font-semibold">{{ formatCurrency(subtotal) }}</span></div>
-              <div class="flex justify-between text-[#71717A]"><span>IVA (19%)</span><span>{{ formatCurrency(iva) }}</span></div>
-              <div class="flex justify-between text-rose-600"><span>Retefuente (2.5%)</span><span>-{{ formatCurrency(retefuente) }}</span></div>
-              <div class="flex justify-between text-rose-600"><span>ReteICA (9.66‰)</span><span>-{{ formatCurrency(reteica) }}</span></div>
+              <div v-for="t in taxBreakdown" :key="t.id" :class="['flex justify-between', t.type === 'Suma' ? 'text-[#71717A]' : 'text-rose-600']">
+                <span>{{ t.name }} ({{ t.rateStr }})</span>
+                <span>{{ t.type === 'Suma' ? '' : '-' }}{{ formatCurrency(t.amount) }}</span>
+              </div>
               <div class="h-px bg-[#E4E4E7] my-2"></div>
               <div class="flex justify-between text-[13px] font-bold text-[#18181B]"><span>Total neto</span><span class="text-[#2563EB]">{{ formatCurrency(totalNeto) }}</span></div>
             </div>
