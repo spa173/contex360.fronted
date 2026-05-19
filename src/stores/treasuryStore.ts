@@ -2,12 +2,13 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
+import type { Transaction, TreasuryBalance, CreateTransactionPayload, ProgrammedPayment } from '../types/treasury'
 
 export const useTreasuryStore = defineStore('treasury', () => {
   const root = useStateStore()
 
-  const transactions = ref<any[]>([])
-  const balance = ref<{ balance: number; incomeMonth: number; expenseMonth: number }>({
+  const transactions = ref<Transaction[]>([])
+  const balance = ref<TreasuryBalance>({
     balance: 0,
     incomeMonth: 0,
     expenseMonth: 0,
@@ -29,7 +30,7 @@ export const useTreasuryStore = defineStore('treasury', () => {
     ),
   )
 
-  const programmedPayments = ref<any[]>([
+  const programmedPayments = ref<ProgrammedPayment[]>([
     { id: 'pay-1', vendorName: 'TechCorp Solutions', dueDate: new Date(Date.now() + 86400000).toISOString(), priority: 'Alta', amount: 12500000, status: 'Programado' },
     { id: 'pay-2', vendorName: 'Suministros Globales SAS', dueDate: new Date(Date.now() + 172800000).toISOString(), priority: 'Media', amount: 4800000, status: 'Pendiente' },
     { id: 'pay-3', vendorName: 'Servicios Logísticos del Norte', dueDate: new Date(Date.now() + 345600000).toISOString(), priority: 'Baja', amount: 1850000, status: 'Aprobado' },
@@ -75,16 +76,7 @@ export const useTreasuryStore = defineStore('treasury', () => {
     }
   }
 
-  async function createTransaction(payload: {
-    type: 'INCOME' | 'EXPENSE'
-    amount: number
-    description: string
-    category: 'CAJA' | 'BANCO' | 'PETTY_CASH'
-    date?: string
-    reference?: string
-    invoiceId?: string
-    purchaseId?: string
-  }) {
+  async function createTransaction(payload: CreateTransactionPayload) {
     isSaving.value = true
     try {
       const created = await businessApi.createTransaction(payload, activeTenantId.value)

@@ -3,42 +3,14 @@ import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
-
-export interface QuoteItem {
-  id?: string
-  quoteId?: string
-  lineNumber?: number
-  productId: string | null
-  productName: string
-  quantity: number
-  unitPrice: number
-  taxRate: number
-  subtotal: number
-  taxAmount: number
-}
-
-export interface Quote {
-  id: string
-  tenantId: string
-  number: string
-  clientId: string | null
-  status: 'draft' | 'sent' | 'accepted' | 'expired' | 'converted'
-  subtotal: number
-  taxTotal: number
-  total: number
-  validUntil: string | null
-  items: QuoteItem[]
-  client?: { id: string; name: string }
-  createdAt: string
-  updatedAt?: string
-}
+import type { Quote, CreateQuotePayload, QuoteStatus } from '../types/quotes'
 
 export const useQuotesStore = defineStore('quotes', () => {
   const root = useStateStore()
 
-  const quotes = ref<any[]>([
-    { id: 'q-1', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-001', customerName: 'Inversiones Globales S.A.', dueDate: new Date(Date.now() + 86400000 * 5).toISOString(), total: 15400000, status: 'Approved', createdAt: new Date().toISOString() },
-    { id: 'q-2', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-002', customerName: 'Constructora del Valle', dueDate: new Date(Date.now() + 86400000 * 12).toISOString(), total: 8900000, status: 'Sent', createdAt: new Date(Date.now() - 3600000).toISOString() },
+  const quotes = ref<Quote[]>([
+    { id: 'q-1', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-001', clientId: null, validUntil: new Date(Date.now() + 86400000 * 5).toISOString(), total: 15400000, subtotal: 15400000, taxTotal: 0, status: 'accepted' as QuoteStatus, items: [], createdAt: new Date().toISOString() },
+    { id: 'q-2', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-002', clientId: null, validUntil: new Date(Date.now() + 86400000 * 12).toISOString(), total: 8900000, subtotal: 8900000, taxTotal: 0, status: 'sent' as QuoteStatus, items: [], createdAt: new Date(Date.now() - 3600000).toISOString() },
   ])
 
   const selections = ref({
@@ -79,7 +51,7 @@ export const useQuotesStore = defineStore('quotes', () => {
     }
   }
 
-  async function createQuote(payload: Record<string, any>) {
+  async function createQuote(payload: CreateQuotePayload) {
     if (!canManageQuotes.value) {
       return { ok: false, message: 'Tu rol actual no permite crear cotizaciones.' }
     }

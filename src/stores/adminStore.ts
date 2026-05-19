@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import type { AdminSettings, TaxConfig } from '../types/admin'
 
 const regionalRegistry = new WeakMap<Text, string>()
 let regionalObserver: MutationObserver | null = null
@@ -68,7 +69,7 @@ export const useAdminStore = defineStore('admin', () => {
   const currency = ref('COP · Peso colombiano')
   const dateFormat = ref('DD/MM/YYYY')
   
-  const taxes = ref([
+  const taxes = ref<TaxConfig[]>([
     { id: 'iva', name: 'IVA', code: '01', type: 'Suma', rate: '19.00%', active: true },
     { id: 'retefuente', name: 'Retefuente', code: '06', type: 'Resta', rate: '2.50%', active: true },
     { id: 'reteica', name: 'ReteICA', code: '07', type: 'Resta', rate: '9.66‰', active: true },
@@ -96,7 +97,7 @@ export const useAdminStore = defineStore('admin', () => {
     const saved = localStorage.getItem('contex_admin_settings')
     if (saved) {
       try {
-        const parsed = JSON.parse(saved)
+        const parsed = JSON.parse(saved) as AdminSettings
         ocrEnabled.value = parsed.ocrEnabled ?? true
         razonSocial.value = parsed.razonSocial ?? 'Andina Cargo SAS'
         nit.value = parsed.nit ?? '900.123.456-7'
@@ -133,7 +134,7 @@ export const useAdminStore = defineStore('admin', () => {
     return ocrEnabled.value
   }
 
-  function addTax(tax: { name: string; code: string; type: string; rate: string }) {
+  function addTax(tax: Omit<TaxConfig, 'id' | 'active'>) {
     taxes.value.push({
       id: tax.name.toLowerCase().replace(/\s+/g, '-'),
       name: tax.name,
