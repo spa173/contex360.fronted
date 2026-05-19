@@ -156,6 +156,12 @@ export const businessApi = {
   async getAlerts(tenantId?: string | null) {
     return request<{ lowStockAlerts: number; pendingInvoices: number }>('/analytics/alerts', { tenantId })
   },
+  async getCashFlowTrend(tenantId?: string | null) {
+    return request<{
+      historical: { date: string; balance: number }[]
+      projected: { date: string; balance: number }[]
+    }>('/analytics/cash-flow-trend', { tenantId })
+  },
   async getSalesByMonth(tenantId?: string | null) {
     return request<any[]>('/analytics/sales-by-month', { tenantId })
   },

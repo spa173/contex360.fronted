@@ -88,19 +88,111 @@ const alertsList = computed(() => {
   return list
 })
 
+const cashFlowData = ref({
+  historical: [],
+  projected: [],
+})
+
+const maxBalance = computed(() => {
+  const allBalances = [
+    ...cashFlowData.value.historical.map(p => p.balance),
+    ...cashFlowData.value.projected.map(p => p.balance)
+  ]
+  const max = Math.max(...allBalances, 0)
+  return max > 0 ? max : 1000000
+})
+
+const svgPaths = computed(() => {
+  const hist = cashFlowData.value.historical
+  const proj = cashFlowData.value.projected
+
+  if (hist.length === 0) {
+    return {
+      area: 'M 0 170 L 420 170 L 420 220 L 0 220 Z',
+      line: 'M 0 170 L 420 170',
+      projection: 'M 420 170 L 700 170',
+      todayY: 170,
+    }
+  }
+
+  const maxVal = maxBalance.value
+
+  const histPoints = hist.map((p, index) => {
+    const x = (index / (hist.length - 1)) * 420
+    const y = 200 - (p.balance / maxVal) * 160
+    return { x, y }
+  })
+
+  const lastHistPoint = histPoints[histPoints.length - 1]
+
+  const projPoints = proj.map((p, index) => {
+    const x = 420 + ((index + 1) / proj.length) * 280
+    const y = 200 - (p.balance / maxVal) * 160
+    return { x, y }
+  })
+
+  const linePath = histPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ')
+  const areaPath = `${linePath} L 420 220 L 0 220 Z`
+
+  const projPath = `M ${lastHistPoint.x.toFixed(1)} ${lastHistPoint.y.toFixed(1)} ` +
+    projPoints.map(p => `L ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ')
+
+  return {
+    area: areaPath,
+    line: linePath,
+    projection: projPath,
+    todayY: lastHistPoint.y,
+  }
+})
+
+const dateLabels = computed(() => {
+  const hist = cashFlowData.value.historical
+  const proj = cashFlowData.value.projected
+
+  if (hist.length === 0) {
+    return {
+      start: 'Hace 30d',
+      midPast: 'Hace 15d',
+      today: 'Hoy',
+      midFuture: 'En 7d',
+      end: 'En 15d'
+    }
+  }
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return ''
+    const d = new Date(dateStr + 'T00:00:00')
+    const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic']
+    return `${d.getDate()} ${months[d.getMonth()]}`
+  }
+
+  return {
+    start: formatDate(hist[0]?.date),
+    midPast: formatDate(hist[Math.floor(hist.length / 2)]?.date),
+    today: formatDate(hist[hist.length - 1]?.date),
+    midFuture: formatDate(proj[Math.floor(proj.length / 2)]?.date),
+    end: formatDate(proj[proj.length - 1]?.date),
+  }
+})
+
 async function fetchDashboardData() {
   try {
     isLoading.value = true
-    const [stats, alerts, insights] = await Promise.all([
+    const [stats, alerts, insights, trend] = await Promise.all([
       businessApi.getDashboardKpis().catch(() => ({ totalSales: 0, lowStockAlerts: 0, pendingInvoices: 0 })),
       businessApi.getAlerts().catch(() => ({ lowStockAlerts: 0, pendingInvoices: 0 })),
       businessApi.getAiInsights().catch(() => ({ insight: 'Bienvenido a Contex360. El sistema está listo para operar.' })),
+      businessApi.getCashFlowTrend().catch(() => ({ historical: [], projected: [] })),
     ])
     dashboardData.value = {
       totalSales: stats.totalSales ?? 0,
       lowStockAlerts: alerts.lowStockAlerts ?? stats.lowStockAlerts ?? 0,
       pendingInvoices: alerts.pendingInvoices ?? stats.pendingInvoices ?? 0,
       aiInsight: (insights.insight && !insights.insight.includes('No se pudo')) ? insights.insight : 'Bienvenido a Contex360. El sistema está listo para operar.',
+    }
+    cashFlowData.value = {
+      historical: trend.historical ?? [],
+      projected: trend.projected ?? [],
     }
   } catch (err) {
     console.error('Error fetching dashboard data:', err)
@@ -252,15 +344,15 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
               </linearGradient>
             </defs>
             <!-- Area path -->
-            <path d="M 0 170 L 70 160 L 140 165 L 210 130 L 280 140 L 350 115 L 420 135 L 420 220 L 0 220 Z" fill="url(#chartGrad)" />
+            <path :d="svgPaths.area" fill="url(#chartGrad)" />
             <!-- Line path -->
-            <path d="M 0 170 L 70 160 L 140 165 L 210 130 L 280 140 L 350 115 L 420 135" fill="none" stroke="#18181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <path :d="svgPaths.line" fill="none" stroke="#18181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
             <!-- Prediction dashed line -->
-            <path d="M 420 135 L 490 100 L 560 118 L 630 75 L 700 70" fill="none" stroke="#2563EB" stroke-width="3" stroke-dasharray="7,5" stroke-linecap="round" stroke-linejoin="round" />
+            <path :d="svgPaths.projection" fill="none" stroke="#2563EB" stroke-width="3" stroke-dasharray="7,5" stroke-linecap="round" stroke-linejoin="round" />
             <!-- Today vertical line -->
             <line x1="420" y1="10" x2="420" y2="220" stroke="#D4D4D8" stroke-dasharray="4" stroke-width="1.5" />
             <!-- Today dot -->
-            <circle cx="420" cy="135" r="6" fill="#18181B" stroke="#ffffff" stroke-width="2.5" />
+            <circle cx="420" :cy="svgPaths.todayY" r="6" fill="#18181B" stroke="#ffffff" stroke-width="2.5" />
           </svg>
 
           <!-- Today badge -->
@@ -270,13 +362,11 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
 
           <!-- X axis dates -->
           <div class="flex justify-between text-[12px] font-semibold text-[#A1A1AA] mt-4">
-            <span>16 abr</span>
-            <span>23 abr</span>
-            <span>30 abr</span>
-            <span>7 may</span>
-            <span class="font-extrabold text-[#18181B]">16 may</span>
-            <span>23 may</span>
-            <span>30 may</span>
+            <span>{{ dateLabels.start }}</span>
+            <span>{{ dateLabels.midPast }}</span>
+            <span class="font-extrabold text-[#18181B]">{{ dateLabels.today }}</span>
+            <span>{{ dateLabels.midFuture }}</span>
+            <span>{{ dateLabels.end }}</span>
           </div>
         </div>
       </div>
