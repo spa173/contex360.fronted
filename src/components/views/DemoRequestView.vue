@@ -146,7 +146,7 @@ const handleSubmit = async () => {
             <p class="text-[13px] text-[#71717A] mb-7">Un experto lo contactará en menos de 24 horas laborables.</p>
 
             <form @submit.prevent="handleSubmit" class="space-y-5">
-              <div class="grid grid-cols-2 gap-5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="nombre">Nombre Completo *</label>
                   <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
@@ -196,7 +196,7 @@ const handleSubmit = async () => {
                 </div>
               </div>
 
-              <div class="grid grid-cols-2 gap-5">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="telefono">Teléfono</label>
                   <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
