@@ -336,10 +336,10 @@ function handleViewAllAlerts() {
               <button
                 v-for="t in ['light', 'dark', 'auto']"
                 :key="t"
-                @click="t !== 'auto' && themeStore.setTheme(t)"
+                @click="themeStore.setTheme(t)"
                 :class="[
                   'flex-1 py-1 text-[11px] font-semibold rounded-[6px] transition-colors capitalize',
-                  (t === 'auto' ? false : themeStore.theme === t) ? 'bg-white text-[#18181B] shadow-sm' : 'text-[#71717A] hover:text-[#18181B]'
+                  themeStore.theme === t ? 'bg-white text-[#18181B] shadow-sm' : 'text-[#71717A] hover:text-[#18181B]'
                 ]"
               >{{ t === 'light' ? 'Claro' : t === 'dark' ? 'Oscuro' : 'Auto' }}</button>
             </div>

@@ -1,11 +1,53 @@
 import { defineStore } from 'pinia'
 
-export type ThemeMode = 'dark' | 'light'
+export type ThemeMode = 'dark' | 'light' | 'auto'
 
 const STORAGE_KEY = 'contex360-theme'
+let mediaQueryListener: ((e: MediaQueryListEvent) => void) | null = null
+
+function getSystemTheme(): 'dark' | 'light' {
+  if (typeof window === 'undefined') return 'dark'
+  return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
 
 function applyTheme(mode: ThemeMode) {
   if (typeof document === 'undefined') return
+  const root = document.documentElement
+  
+  // Clean up previous listeners if any
+  if (mediaQueryListener && typeof window !== 'undefined') {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+    mediaQuery.removeEventListener('change', mediaQueryListener)
+    mediaQueryListener = null
+  }
+
+  let resolvedMode: 'dark' | 'light' = 'dark'
+  if (mode === 'auto') {
+    resolvedMode = getSystemTheme()
+    
+    // Add real-time listener for system theme changes
+    if (typeof window !== 'undefined') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)')
+      mediaQueryListener = (e: MediaQueryListEvent) => {
+        const newResolved = e.matches ? 'dark' : 'light'
+        applyResolvedTheme(newResolved)
+      }
+      mediaQuery.addEventListener('change', mediaQueryListener)
+    }
+  } else {
+    resolvedMode = mode
+  }
+
+  applyResolvedTheme(resolvedMode)
+
+  root.dataset.theme = mode
+  if (document.body) document.body.dataset.theme = mode
+  if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
+    globalThis.localStorage.setItem(STORAGE_KEY, mode)
+  }
+}
+
+function applyResolvedTheme(mode: 'dark' | 'light') {
   const root = document.documentElement
   if (mode === 'dark') {
     root.classList.add('dark')
@@ -16,31 +58,38 @@ function applyTheme(mode: ThemeMode) {
     root.classList.remove('dark')
     root.style.colorScheme = 'light'
   }
-  root.dataset.theme = mode
-  if (document.body) document.body.dataset.theme = mode
-  if (typeof globalThis !== 'undefined' && globalThis.localStorage) {
-    globalThis.localStorage.setItem(STORAGE_KEY, mode)
-  }
 }
 
 function getStoredTheme(): ThemeMode {
-  if (typeof globalThis === 'undefined' || !globalThis.localStorage) return 'dark'
+  if (typeof globalThis === 'undefined' || !globalThis.localStorage) return 'auto'
   const stored = globalThis.localStorage.getItem(STORAGE_KEY)
-  if (stored === 'light' || stored === 'dark') return stored
-  return globalThis.matchMedia?.('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
+  if (stored === 'light' || stored === 'dark' || stored === 'auto') return stored
+  return 'auto'
 }
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    theme: 'light' as ThemeMode,
+    theme: 'auto' as ThemeMode,
     initialized: false,
   }),
 
   getters: {
-    isDark: (state) => state.theme === 'dark',
-    isLight: (state) => state.theme === 'light',
-    nextThemeLabel: (state) => state.theme === 'dark' ? 'Tema claro' : 'Tema oscuro',
-    nextThemeIcon: (state) => state.theme === 'dark' ? 'light_mode' : 'dark_mode',
+    isDark: (state) => {
+      if (state.theme === 'auto') return getSystemTheme() === 'dark'
+      return state.theme === 'dark'
+    },
+    isLight: (state) => {
+      if (state.theme === 'auto') return getSystemTheme() === 'light'
+      return state.theme === 'light'
+    },
+    nextThemeLabel: (state) => {
+      const darkActive = state.theme === 'auto' ? getSystemTheme() === 'dark' : state.theme === 'dark'
+      return darkActive ? 'Tema claro' : 'Tema oscuro'
+    },
+    nextThemeIcon: (state) => {
+      const darkActive = state.theme === 'auto' ? getSystemTheme() === 'dark' : state.theme === 'dark'
+      return darkActive ? 'light_mode' : 'dark_mode'
+    },
   },
 
   actions: {
@@ -56,7 +105,8 @@ export const useThemeStore = defineStore('theme', {
     },
 
     toggleTheme() {
-      this.setTheme(this.theme === 'dark' ? 'light' : 'dark')
+      const currentResolved = this.theme === 'auto' ? getSystemTheme() : this.theme
+      this.setTheme(currentResolved === 'dark' ? 'light' : 'dark')
     },
   },
 })
