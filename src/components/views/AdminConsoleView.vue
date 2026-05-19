@@ -2,6 +2,7 @@
 import { ref, onMounted, watch } from 'vue'
 import { useAdminStore } from '../../stores/adminStore'
 import { useTranslationStore } from '../../stores/translationStore'
+import { businessApi } from '@/services/businessApi'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -26,6 +27,65 @@ const newTax = ref({
   rate: ''
 })
 
+const auditLogs = ref([])
+const logsLoading = ref(false)
+const logsError = ref('')
+
+async function fetchAuditLogs() {
+  logsLoading.value = true
+  logsError.value = ''
+  try {
+    const data = await businessApi.getAdminLogs()
+    auditLogs.value = data
+  } catch (e) {
+    logsError.value = e.message || 'Error al cargar los logs de auditoría.'
+  } finally {
+    logsLoading.value = false
+  }
+}
+
+watch(activeTab, (newTab) => {
+  if (newTab === 'logs') {
+    fetchAuditLogs()
+  }
+})
+
+function formatLogDate(dateStr) {
+  if (!dateStr) return ''
+  const date = new Date(dateStr)
+  const now = new Date()
+  
+  const hours = String(date.getHours()).padStart(2, '0')
+  const minutes = String(date.getMinutes()).padStart(2, '0')
+  const timeStr = `${hours}:${minutes}`
+  
+  if (date.toDateString() === now.toDateString()) {
+    return `${timeStr} hoy`
+  }
+  
+  const yesterday = new Date(now)
+  yesterday.setDate(now.getDate() - 1)
+  if (date.toDateString() === yesterday.toDateString()) {
+    return `${timeStr} ayer`
+  }
+  
+  const dd = String(date.getDate()).padStart(2, '0')
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const yyyy = date.getFullYear()
+  return `${dd}/${mm}/${yyyy} ${timeStr}`
+}
+
+function getActionClass(action) {
+  const norm = String(action || '').toUpperCase()
+  if (norm.includes('CREATE') || norm.includes('ADD') || norm.includes('SYNC')) {
+    return 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+  }
+  if (norm.includes('DELETE') || norm.includes('REMOVE') || norm.includes('DISABLE')) {
+    return 'bg-rose-50 text-rose-700 border border-rose-200'
+  }
+  return 'bg-[#2563EB]/10 text-[#2563EB] border border-[#2563EB]/20'
+}
+
 function submitNewTax() {
   if (!newTax.value.name || !newTax.value.rate) {
     emit('notify', { message: 'Campos incompletos', detail: 'Por favor ingresa un nombre y una tasa para el nuevo impuesto.' })
@@ -44,6 +104,9 @@ function submitNewTax() {
 
 onMounted(() => {
   adminStore.loadSettings()
+  if (activeTab.value === 'logs') {
+    fetchAuditLogs()
+  }
 })
 
 watch(() => adminStore.language, (newVal) => {
@@ -373,30 +436,71 @@ function handleIntegration(name) {
 
     <!-- Logs -->
     <div v-if="activeTab === 'logs'" class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
-      <div class="px-6 py-4 border-b border-[#F4F4F5]">
+      <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
         <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">Auditoría del Sistema y Cambios Globales</h3>
+        <button v-if="!logsLoading" @click="fetchAuditLogs" class="text-[#71717A] hover:text-[#18181B] flex items-center gap-1 text-[12px] font-semibold">
+          <span class="material-symbols-outlined text-[16px]">refresh</span>Actualizar
+        </button>
       </div>
-      <table class="w-full text-left">
-        <thead>
-          <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-            <th class="px-6 py-3.5">Usuario</th><th class="px-6 py-3.5">Acción</th><th class="px-6 py-3.5">Entidad</th><th class="px-6 py-3.5 text-right">Fecha</th>
-          </tr>
-        </thead>
-        <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-          <tr class="hover:bg-[#FAFAFA]/50 transition-colors">
-            <td class="px-6 py-4 font-bold text-[#18181B]">Daniel C.</td>
-            <td class="px-6 py-4"><span class="inline-flex px-2 py-1 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[11px] font-extrabold uppercase">UPDATE</span></td>
-            <td class="px-6 py-4 text-[#52525B] font-medium">Tasa IVA Global</td>
-            <td class="px-6 py-4 font-mono text-[#A1A1AA] text-right">10:42 hoy</td>
-          </tr>
-          <tr class="hover:bg-[#FAFAFA]/50 transition-colors">
-            <td class="px-6 py-4 font-bold text-[#18181B]">Sistema ContexAI</td>
-            <td class="px-6 py-4"><span class="inline-flex px-2 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold uppercase">SYNC</span></td>
-            <td class="px-6 py-4 text-[#52525B] font-medium">Sincronización DIAN Connect</td>
-            <td class="px-6 py-4 font-mono text-[#A1A1AA] text-right">08:00 hoy</td>
-          </tr>
-        </tbody>
-      </table>
+
+      <!-- Loading State -->
+      <div v-if="logsLoading" class="py-12 text-center text-[#71717A]">
+        <div class="animate-spin w-6 h-6 border-2 border-black/10 border-t-black rounded-full mx-auto mb-3"></div>
+        <p class="text-[13px] font-medium">Cargando logs de auditoría...</p>
+      </div>
+
+      <!-- Error State -->
+      <div v-else-if="logsError" class="p-6 text-center text-rose-600 bg-rose-50 border-t border-rose-100 text-[13px] font-medium">
+        {{ logsError }}
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="!auditLogs.length" class="py-12 text-center text-[#71717A]">
+        <span class="material-symbols-outlined text-[36px] text-[#A1A1AA] mb-2">assignment_late</span>
+        <p class="text-[13px] font-medium">No se encontraron eventos de auditoría registrados.</p>
+      </div>
+
+      <!-- Table View -->
+      <div v-else class="overflow-x-auto">
+        <table class="w-full text-left min-w-[600px]">
+          <thead>
+            <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
+              <th class="px-6 py-3.5">Usuario</th>
+              <th class="px-6 py-3.5">Acción</th>
+              <th class="px-6 py-3.5">Entidad / Detalle</th>
+              <th class="px-6 py-3.5">Empresa</th>
+              <th class="px-6 py-3.5 text-right">Fecha</th>
+            </tr>
+          </thead>
+          <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
+            <tr v-for="log in auditLogs" :key="log.id" class="hover:bg-[#FAFAFA]/50 transition-colors">
+              <td class="px-6 py-4 font-bold text-[#18181B]">
+                <div class="flex flex-col">
+                  <span>{{ log.actorUser?.name || log.actor }}</span>
+                  <span v-if="log.actorUser?.email" class="text-[11px] font-normal text-[#A1A1AA] mt-0.5">{{ log.actorUser.email }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span :class="['inline-flex px-2 py-1 rounded-md text-[11px] font-extrabold uppercase', getActionClass(log.action)]">
+                  {{ log.action }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex flex-col">
+                  <span class="text-[#18181B] font-semibold">{{ log.entity }}</span>
+                  <span class="text-[12px] text-[#71717A] mt-0.5">{{ log.description }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-[#71717A] font-semibold">
+                {{ log.tenant?.name || 'Sistema Global' }}
+              </td>
+              <td class="px-6 py-4 font-mono text-[#A1A1AA] text-right whitespace-nowrap">
+                {{ formatLogDate(log.at) }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 </template>
