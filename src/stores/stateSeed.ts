@@ -19,13 +19,7 @@ export const DEFAULT_TENANT_SECURITY_SETTINGS = {
 }
 
 async function buildSeedUsers() {
-  return [
-    { id: 'user-admin', name: 'Administrador Root', email: 'root@contex360.com', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: false, isSystemOwner: true, role: 'Administrador' },
-    { id: 'user-accountant', name: 'Contador General', email: 'contador@contex360.local', status: 'active', title: 'Contador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
-    { id: 'user-visor', name: 'Visor Negocio', email: 'visor@contex360.local', status: 'active', title: 'Consultor', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
-    { id: 'user-retail-admin', name: 'Admin Tienda', email: 'admin.retail@contex360.local', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
-    { id: 'user-payroll', name: 'Nomina User', email: 'nomina@contex360.local', status: 'active', title: 'Auxiliar', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
-  ]
+  return []
 }
 
 export const seedState = {
@@ -73,13 +67,7 @@ export const seedState = {
     },
   ],
   users: await buildSeedUsers(),
-  memberships: [
-    { userId: 'user-admin', tenantId: 'tenant-a', role: 'Administrador' },
-    { userId: 'user-accountant', tenantId: 'tenant-a', role: 'Contador' },
-    { userId: 'user-visor', tenantId: 'tenant-b', role: 'Visor' },
-    { userId: 'user-retail-admin', tenantId: 'tenant-b', role: 'Administrador' },
-    { userId: 'user-payroll', tenantId: 'tenant-a', role: 'Usuario nomina' },
-  ],
+  memberships: [],
   roleAccess: {}, // Will be populated by rbacStore
   roleAccessHistory: [],
   userOnboardingTasks: [],
