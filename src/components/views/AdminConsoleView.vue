@@ -165,10 +165,18 @@ const dianConfig = ref({
   dianSoftwareId: '',
   dianSoftwarePin: '',
   dianTestSetId: '',
-  dianCertificatePassword: ''
+  invoiceResolution: '',
+  resolutionFrom: '',
+  resolutionTo: '',
+  dianOperationCode: '10',
+  dianCertificatePassword: '',
+  dianCertificate: ''
 })
 const dianValidating = ref(false)
 const dianValidationResult = ref(null)
+const dianCertificateFileName = ref('')
+const dianHasCertificate = ref(false)
+const dianCertificateInput = ref(null)
 
 const showBancolombiaModal = ref(false)
 const bancolombiaConnectionModes = [
@@ -609,8 +617,15 @@ async function handleIntegration(name) {
           dianSoftwareId: res.dianSoftwareId || '',
           dianSoftwarePin: res.dianSoftwarePin || '',
           dianTestSetId: res.dianTestSetId || '',
-          dianCertificatePassword: res.dianCertificatePassword || ''
+          invoiceResolution: res.invoiceResolution || '',
+          resolutionFrom: res.resolutionFrom ? String(res.resolutionFrom).slice(0, 10) : '',
+          resolutionTo: res.resolutionTo ? String(res.resolutionTo).slice(0, 10) : '',
+          dianOperationCode: res.dianOperationCode || '10',
+          dianCertificatePassword: res.dianCertificatePassword || '',
+          dianCertificate: ''
         }
+        dianHasCertificate.value = Boolean(res.hasCertificate)
+        dianCertificateFileName.value = res.hasCertificate ? 'Certificado ya cargado en el backend' : ''
       }
       const validateRes = await businessApi.validateDianConfig()
       dianValidationResult.value = validateRes
@@ -629,7 +644,27 @@ async function handleIntegration(name) {
 async function saveDianConfig() {
   dianValidating.value = true
   try {
-    const res = await businessApi.updateDianConfig(dianConfig.value)
+    const payload = {
+      dianEnvironment: dianConfig.value.dianEnvironment,
+      dianNit: dianConfig.value.dianNit,
+      dianSoftwareId: dianConfig.value.dianSoftwareId,
+      dianSoftwarePin: dianConfig.value.dianSoftwarePin,
+      dianTestSetId: dianConfig.value.dianTestSetId,
+      invoiceResolution: dianConfig.value.invoiceResolution,
+      resolutionFrom: dianConfig.value.resolutionFrom || undefined,
+      resolutionTo: dianConfig.value.resolutionTo || undefined,
+      dianOperationCode: dianConfig.value.dianOperationCode,
+    }
+
+    if (dianConfig.value.dianCertificate) {
+      payload.dianCertificate = dianConfig.value.dianCertificate
+    }
+
+    if (dianConfig.value.dianCertificatePassword) {
+      payload.dianCertificatePassword = dianConfig.value.dianCertificatePassword
+    }
+
+    const res = await businessApi.updateDianConfig(payload)
     if (res.success) {
       emit('notify', { message: 'Configuración DIAN Guardada', detail: 'Parámetros actualizados y validados con el servidor DIAN.' })
       const validateRes = await businessApi.validateDianConfig()
@@ -640,6 +675,35 @@ async function saveDianConfig() {
     emit('notify', { message: 'Error', detail: 'No se pudo guardar la configuración de la DIAN.' })
   } finally {
     dianValidating.value = false
+  }
+}
+
+function handleDianCertificateChange(event) {
+  const file = event?.target?.files?.[0]
+  if (!file) {
+    return
+  }
+
+  const reader = new FileReader()
+  reader.onload = () => {
+    const raw = String(reader.result || '')
+    const base64 = raw.includes(',') ? raw.split(',')[1] : raw
+    dianConfig.value.dianCertificate = base64.trim()
+    dianHasCertificate.value = true
+    dianCertificateFileName.value = file.name
+  }
+  reader.onerror = () => {
+    emit('notify', { message: 'Error', detail: 'No se pudo leer el certificado seleccionado.' })
+  }
+  reader.readAsDataURL(file)
+}
+
+function clearDianCertificate() {
+  dianConfig.value.dianCertificate = ''
+  dianHasCertificate.value = false
+  dianCertificateFileName.value = ''
+  if (dianCertificateInput.value) {
+    dianCertificateInput.value.value = ''
   }
 }
 
@@ -1030,10 +1094,29 @@ async function saveBancolombiaConfig() {
             <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Test Set ID (Solo Pruebas)</label>
             <input v-model="dianConfig.dianTestSetId" placeholder="SetID provisto por DIAN para pruebas" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
           </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Vigencia desde</label>
+              <input v-model="dianConfig.resolutionFrom" type="date" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+            </div>
+            <div>
+              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Vigencia hasta</label>
+              <input v-model="dianConfig.resolutionTo" type="date" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+            </div>
+          </div>
 
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Clave del Certificado Digital (.p12/.pfx)</label>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Contraseña del certificado</label>
             <input v-model="dianConfig.dianCertificatePassword" type="password" placeholder="Contraseña de firma digital" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div>
+            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Certificado digital (.p12/.pfx)</label>
+            <input ref="dianCertificateInput" type="file" accept=".p12,.pfx,application/x-pkcs12" @change="handleDianCertificateChange" class="w-full border border-dashed border-[#D4D4D8] rounded-[10px] px-3.5 py-2.5 text-[13px] bg-[#FAFAFA] file:mr-3 file:rounded-md file:border-0 file:bg-[#18181B] file:px-3 file:py-2 file:text-white file:font-semibold" />
+            <div class="mt-2 flex items-center justify-between gap-3 text-[11px]">
+              <span class="text-[#71717A]">{{ dianHasCertificate ? `Cargado: ${dianCertificateFileName}` : 'No hay certificado cargado en esta sesión.' }}</span>
+              <button v-if="dianHasCertificate" type="button" @click="clearDianCertificate" class="text-[#2563EB] font-semibold hover:underline">Limpiar</button>
+            </div>
           </div>
 
           <!-- Real-time Diagnostic/Validation Panel -->
