@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useAdminStore } from '../../stores/adminStore'
 import { useTranslationStore } from '../../stores/translationStore'
 import { businessApi } from '@/services/businessApi'
@@ -168,6 +168,96 @@ const dianValidating = ref(false)
 const dianValidationResult = ref(null)
 
 const showBancolombiaModal = ref(false)
+
+// Integrations catalog
+const showIntegrationsModal = ref(false)
+const integrationSearch = ref('')
+const integrationCategory = ref('todas')
+
+const INTEGRATIONS_KEY = 'contex_integrations_enabled'
+
+function loadIntegrationStates() {
+  try { return JSON.parse(localStorage.getItem(INTEGRATIONS_KEY) || '{}') } catch { return {} }
+}
+
+function saveIntegrationState(id, enabled) {
+  const states = loadIntegrationStates()
+  states[id] = enabled
+  localStorage.setItem(INTEGRATIONS_KEY, JSON.stringify(states))
+}
+
+const integrationCatalog = ref([
+  // Pagos
+  { id: 'stripe', name: 'Stripe', desc: 'Pasarela de pagos internacional con soporte 135+ monedas', cat: 'pagos', icon: 'payments', color: '#635BFF', bg: '#635BFF15' },
+  { id: 'payu', name: 'PayU', desc: 'Pasarela líder en Latinoamérica con PSE y tarjetas', cat: 'pagos', icon: 'credit_card', color: '#FF6B00', bg: '#FF6B0015' },
+  { id: 'mercadopago', name: 'MercadoPago', desc: 'Cobros en línea, QR y links de pago', cat: 'pagos', icon: 'qr_code_2', color: '#00B1EA', bg: '#00B1EA15' },
+  { id: 'wompi', name: 'Wompi', desc: 'Pasarela colombiana de Bancolombia, PSE y Nequi', cat: 'pagos', icon: 'account_balance', color: '#FFCD00', bg: '#FFCD0015' },
+  { id: 'epayco', name: 'ePayco', desc: 'Pagos en línea para Colombia — débito, crédito y PSE', cat: 'pagos', icon: 'local_atm', color: '#1A73E8', bg: '#1A73E815' },
+  { id: 'kushki', name: 'Kushki', desc: 'Fintech de pagos panlatino con antifraude propio', cat: 'pagos', icon: 'shield_lock', color: '#00BFA5', bg: '#00BFA515' },
+  // Bancos
+  { id: 'bancolombia', name: 'Bancolombia', desc: 'Conciliación bancaria en tiempo real', cat: 'bancos', icon: 'account_balance', color: '#FFCD00', bg: '#FFCD0015' },
+  { id: 'bogota', name: 'Banco de Bogotá', desc: 'Open Banking — extractos y movimientos automáticos', cat: 'bancos', icon: 'account_balance', color: '#003087', bg: '#00308715' },
+  { id: 'davivienda', name: 'Davivienda', desc: 'Extractos automáticos y alerta de saldos', cat: 'bancos', icon: 'account_balance', color: '#E31837', bg: '#E3183715' },
+  { id: 'bbva', name: 'BBVA Colombia', desc: 'Conciliación y pagos masivos a proveedores', cat: 'bancos', icon: 'account_balance', color: '#004481', bg: '#00448115' },
+  // ERP / Contabilidad
+  { id: 'siigo', name: 'Siigo', desc: 'Sincronización de asientos contables y NIIF', cat: 'erp', icon: 'menu_book', color: '#1A9E5C', bg: '#1A9E5C15' },
+  { id: 'nubox', name: 'Nubox', desc: 'Exportar facturas y libro mayor automáticamente', cat: 'erp', icon: 'library_books', color: '#F5A623', bg: '#F5A62315' },
+  { id: 'worldoffice', name: 'World Office', desc: 'ERP empresarial colombiano full integrado', cat: 'erp', icon: 'business_center', color: '#0066CC', bg: '#0066CC15' },
+  { id: 'sap', name: 'SAP Business One', desc: 'ERP enterprise — sincroniza inventario y finanzas', cat: 'erp', icon: 'hub', color: '#0070D2', bg: '#0070D215' },
+  { id: 'quickbooks', name: 'QuickBooks', desc: 'Contabilidad para PYMEs — exportar transacciones', cat: 'erp', icon: 'calculate', color: '#2CA01C', bg: '#2CA01C15' },
+  // E-commerce
+  { id: 'shopify', name: 'Shopify', desc: 'Sincroniza órdenes, clientes e inventario', cat: 'ecommerce', icon: 'storefront', color: '#96BF48', bg: '#96BF4815' },
+  { id: 'woocommerce', name: 'WooCommerce', desc: 'Importa pedidos de WordPress automáticamente', cat: 'ecommerce', icon: 'shopping_cart', color: '#7F54B3', bg: '#7F54B315' },
+  { id: 'vtex', name: 'VTEX', desc: 'Plataforma enterprise — factura desde el pedido', cat: 'ecommerce', icon: 'inventory_2', color: '#F71963', bg: '#F7196315' },
+  { id: 'meli', name: 'Mercado Libre', desc: 'Factura ventas del marketplace automáticamente', cat: 'ecommerce', icon: 'sell', color: '#FFE600', bg: '#FFE60015' },
+  // Logística
+  { id: 'servientrega', name: 'Servientrega', desc: 'Guías de envío y tracking nacional', cat: 'logistica', icon: 'local_shipping', color: '#E30613', bg: '#E3061315' },
+  { id: 'coordinadora', name: 'Coordinadora', desc: 'Transporte de carga y mensajería empresarial', cat: 'logistica', icon: 'package_2', color: '#FF6600', bg: '#FF660015' },
+  { id: 'dhl', name: 'DHL Express', desc: 'Envíos internacionales con tracking en tiempo real', cat: 'logistica', icon: 'flight_takeoff', color: '#FFCC00', bg: '#FFCC0015' },
+  // Comunicaciones
+  { id: 'whatsapp', name: 'WhatsApp Business', desc: 'Envía facturas y alertas a clientes por WhatsApp', cat: 'comunicaciones', icon: 'chat', color: '#25D366', bg: '#25D36615' },
+  { id: 'slack', name: 'Slack', desc: 'Notificaciones del equipo — facturas, alertas y más', cat: 'comunicaciones', icon: 'forum', color: '#4A154B', bg: '#4A154B15' },
+  { id: 'gmail', name: 'Gmail', desc: 'Envía facturas PDF directamente desde tu cuenta', cat: 'comunicaciones', icon: 'mail', color: '#EA4335', bg: '#EA433515' },
+  { id: 'twilio', name: 'Twilio', desc: 'SMS y llamadas automáticas a clientes y proveedores', cat: 'comunicaciones', icon: 'sms', color: '#F22F46', bg: '#F22F4615' },
+].map(i => ({ ...i, enabled: loadIntegrationStates()[i.id] ?? false })))
+
+const integrationCategories = [
+  { id: 'todas', label: 'Todas' },
+  { id: 'pagos', label: 'Pagos' },
+  { id: 'bancos', label: 'Bancos' },
+  { id: 'erp', label: 'ERP / Contabilidad' },
+  { id: 'ecommerce', label: 'E-commerce' },
+  { id: 'logistica', label: 'Logística' },
+  { id: 'comunicaciones', label: 'Comunicaciones' },
+]
+
+const filteredIntegrations = computed(() => {
+  let list = integrationCatalog.value
+  if (integrationCategory.value !== 'todas') list = list.filter(i => i.cat === integrationCategory.value)
+  if (integrationSearch.value.trim()) {
+    const q = integrationSearch.value.toLowerCase()
+    list = list.filter(i => i.name.toLowerCase().includes(q) || i.desc.toLowerCase().includes(q))
+  }
+  return list
+})
+
+function toggleIntegration(integration) {
+  integration.enabled = !integration.enabled
+  saveIntegrationState(integration.id, integration.enabled)
+  emit('notify', {
+    message: integration.enabled ? `${integration.name} activado` : `${integration.name} desactivado`,
+    detail: integration.enabled
+      ? `La integración con ${integration.name} está habilitada. Configura las credenciales para comenzar.`
+      : `La integración con ${integration.name} ha sido desactivada.`,
+  })
+}
+
+function configureIntegration(integration) {
+  emit('notify', {
+    message: `Configurar ${integration.name}`,
+    detail: `Abre el panel de credenciales para conectar ${integration.name} con Contex360.`,
+  })
+}
 const bancolombiaConfig = ref({
   clientId: 'banco-contex-1021',
   clientSecret: '••••••••••••',
@@ -568,12 +658,16 @@ function saveBancolombiaConfig() {
         </button>
       </div>
 
-      <div @click="emit('notify', { message: 'Explorar Conectores', detail: 'Abriendo catálogo con más de 24 pasarelas e integraciones ERP.' })" class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group">
+      <div @click="showIntegrationsModal = true" class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group">
         <div class="w-12 h-12 rounded-[12px] bg-[#FAFAFA] group-hover:bg-[#2563EB]/10 group-hover:text-[#2563EB] flex items-center justify-center text-[#A1A1AA] mb-3 transition-colors">
           <span class="material-symbols-outlined text-[24px]">add</span>
         </div>
         <p class="text-[14px] font-extrabold text-[#18181B]">Explorar integraciones</p>
-        <p class="text-[12px] text-[#71717A] mt-1">+24 conectores disponibles (Shopify, Nubox, Stripe)</p>
+        <div class="flex items-center gap-1.5 mt-1 justify-center flex-wrap">
+          <span class="text-[12px] text-[#71717A]">{{ integrationCatalog.filter(i => i.enabled).length }} activas</span>
+          <span class="text-[#D4D4D8]">·</span>
+          <span class="text-[12px] text-[#71717A]">{{ integrationCatalog.length }} disponibles</span>
+        </div>
       </div>
     </div>
 
@@ -930,6 +1024,121 @@ function saveBancolombiaConfig() {
       </div>
     </div>
   </section>
+
+  <!-- Integrations Catalog Modal -->
+  <Teleport to="body">
+    <div v-if="showIntegrationsModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4" @click.self="showIntegrationsModal = false">
+      <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="showIntegrationsModal = false"></div>
+      <div class="relative bg-white rounded-[20px] shadow-[0_8px_80px_rgba(0,0,0,0.22)] w-full max-w-[860px] max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5] flex-shrink-0">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-[10px] bg-[#2563EB]/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px] text-[#2563EB]">hub</span>
+            </div>
+            <div>
+              <h2 class="text-[16px] font-extrabold tracking-tight text-[#18181B]">Catálogo de Integraciones</h2>
+              <p class="text-[11px] text-[#A1A1AA] font-medium">{{ integrationCatalog.filter(i => i.enabled).length }} activas de {{ integrationCatalog.length }} disponibles</p>
+            </div>
+          </div>
+          <button @click="showIntegrationsModal = false" class="w-8 h-8 rounded-[8px] hover:bg-[#F4F4F5] flex items-center justify-center text-[#A1A1AA] hover:text-[#18181B] transition-colors">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <!-- Search + categories -->
+        <div class="px-6 pt-4 pb-3 border-b border-[#F4F4F5] flex-shrink-0 space-y-3">
+          <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 bg-[#FAFAFA] focus-within:border-[#2563EB] focus-within:bg-white transition-all">
+            <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">search</span>
+            <input v-model="integrationSearch" type="text" placeholder="Buscar integración..." class="flex-1 bg-transparent outline-none text-[13px] text-[#18181B] placeholder:text-[#A1A1AA]" />
+          </div>
+          <div class="flex gap-1.5 flex-wrap">
+            <button
+              v-for="cat in integrationCategories" :key="cat.id"
+              @click="integrationCategory = cat.id"
+              :class="[
+                'px-3 py-1.5 rounded-[8px] text-[11px] font-bold transition-all border',
+                integrationCategory === cat.id
+                  ? 'bg-[#18181B] text-white border-[#18181B]'
+                  : 'bg-white text-[#71717A] border-[#E4E4E7] hover:border-[#D4D4D8] hover:text-[#18181B]'
+              ]"
+            >{{ cat.label }}</button>
+          </div>
+        </div>
+
+        <!-- Grid -->
+        <div class="overflow-y-auto flex-1 px-6 py-4">
+          <div v-if="filteredIntegrations.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+            <span class="material-symbols-outlined text-[36px] text-[#D4D4D8] mb-2">search_off</span>
+            <p class="text-[13px] font-bold text-[#18181B]">Sin resultados</p>
+            <p class="text-[12px] text-[#71717A]">Prueba con otro término o categoría.</p>
+          </div>
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div
+              v-for="intg in filteredIntegrations" :key="intg.id"
+              class="border border-[#E4E4E7] rounded-[14px] p-4 bg-white hover:shadow-md transition-all flex flex-col gap-3"
+              :class="{ 'border-[#2563EB]/30 bg-[#2563EB]/[0.02]': intg.enabled }"
+            >
+              <!-- Logo + toggle -->
+              <div class="flex items-start justify-between">
+                <div class="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0" :style="{ background: intg.bg }">
+                  <span class="material-symbols-outlined text-[20px]" :style="{ color: intg.color }">{{ intg.icon }}</span>
+                </div>
+                <!-- Toggle switch -->
+                <button
+                  @click="toggleIntegration(intg)"
+                  :class="[
+                    'relative w-10 h-5 rounded-full transition-colors flex-shrink-0',
+                    intg.enabled ? 'bg-[#2563EB]' : 'bg-[#E4E4E7]'
+                  ]"
+                >
+                  <span
+                    :class="[
+                      'absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform',
+                      intg.enabled ? 'translate-x-5' : 'translate-x-0.5'
+                    ]"
+                  ></span>
+                </button>
+              </div>
+
+              <!-- Info -->
+              <div class="flex-1">
+                <div class="flex items-center gap-2 mb-0.5">
+                  <p class="text-[13px] font-extrabold text-[#18181B]">{{ intg.name }}</p>
+                  <span v-if="intg.enabled" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-[5px]">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Activa
+                  </span>
+                </div>
+                <p class="text-[11px] text-[#71717A] leading-snug">{{ intg.desc }}</p>
+              </div>
+
+              <!-- Configure button -->
+              <button
+                v-if="intg.enabled"
+                @click="configureIntegration(intg)"
+                class="w-full py-2 border border-[#2563EB]/30 rounded-[8px] text-[11px] font-bold text-[#2563EB] hover:bg-[#2563EB]/5 transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span class="material-symbols-outlined text-[14px]">settings</span>
+                Configurar credenciales
+              </button>
+              <div v-else class="w-full py-2 rounded-[8px] text-[11px] font-medium text-[#A1A1AA] text-center">
+                Activa para configurar
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-3 border-t border-[#F4F4F5] bg-[#FAFAFA] flex items-center justify-between flex-shrink-0">
+          <p class="text-[11px] text-[#A1A1AA]">Los cambios se guardan automáticamente en este dispositivo.</p>
+          <button @click="showIntegrationsModal = false" class="px-4 py-2 bg-[#18181B] text-white rounded-[8px] text-[12px] font-bold hover:bg-[#27272A] transition-colors">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
