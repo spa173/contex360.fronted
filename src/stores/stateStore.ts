@@ -26,6 +26,7 @@ export interface Subscription {
   planType: string;
   active: boolean;
   trialEndsAt: string | null;
+  invoicesThisMonth: number;
   limits: {
     name: string;
     priceMonthly: number;
