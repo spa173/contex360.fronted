@@ -2,6 +2,8 @@
 import { ref, computed } from 'vue'
 import { useStateStore } from '../../stores/stateStore'
 import { formatCurrency } from '../../utils/ui'
+import { businessApi } from '../../services/businessApi'
+import { toast } from 'vue-sonner'
 
 defineProps({
   isActive: { type: Boolean, required: true }
@@ -10,6 +12,7 @@ defineProps({
 const emit = defineEmits(['notify'])
 const store = useStateStore()
 const isAnnual = ref(false)
+const isCheckoutLoading = ref(false)
 
 const currentPlan = computed(() => store.subscription?.planType || 'starter')
 
@@ -95,6 +98,34 @@ function handleUpgrade(planId: string) {
     detail: `Tu solicitud de cambio al plan ${planId.toUpperCase()} ha sido registrada. Nuestro equipo comercial se comunicará contigo.`
   })
 }
+async function handleUpgradeReal(planId: string) {
+  const tenantId = store.activeTenantId
+  if (!tenantId) {
+    emit('notify', {
+      message: 'Selecciona un workspace',
+      detail: 'Necesitamos un workspace activo para iniciar el checkout.'
+    })
+    return
+  }
+
+  isCheckoutLoading.value = true
+  try {
+    const { redirectUrl } = await businessApi.createSubscriptionCheckout(
+      { planType: planId as 'starter' | 'pyme' | 'enterprise', billing: isAnnual.value ? 'annual' : 'monthly' },
+      tenantId,
+    )
+    if (!redirectUrl) throw new Error('No se recibió el enlace de pago.')
+    toast.info('Redirigiendo a Wompi...', { description: 'Completa el pago para activar tu plan.' })
+    window.location.href = redirectUrl
+  } catch (error: any) {
+    emit('notify', {
+      message: 'No fue posible iniciar el pago',
+      detail: error?.message || 'Intenta de nuevo en unos segundos.'
+    })
+  } finally {
+    isCheckoutLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -127,7 +158,7 @@ function handleUpgrade(planId: string) {
         <span :class="['text-[13px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">
           Anual
           <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-extrabold px-1.5 py-0.5 rounded-md uppercase tracking-wide">
-            Ahorra 10%
+            Ahorra 25%
           </span>
         </span>
       </div>
@@ -225,14 +256,16 @@ function handleUpgrade(planId: string) {
         </button>
         <button 
           v-else
-          @click="handleUpgrade(plan.id)"
+          @click="handleUpgradeReal(plan.id)"
           :class="[
             'w-full py-3 rounded-[10px] text-[13px] font-semibold transition-colors text-center shadow-sm',
             plan.popular 
               ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]' 
               : 'bg-[#18181B] text-white hover:bg-[#27272A]'
           ]"
+          :disabled="isCheckoutLoading"
         >
+          <span v-if="isCheckoutLoading" class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
           Solicitar Upgrade
         </button>
       </div>

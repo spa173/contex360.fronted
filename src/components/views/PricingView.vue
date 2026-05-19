@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
 import { useStateStore } from '../../stores/stateStore'
+import { businessApi } from '../../services/businessApi'
+import { toast } from 'vue-sonner'
 
 const emit = defineEmits<{
   (e: 'back'): void
   (e: 'request-demo'): void
+  (e: 'login'): void
   (e: 'purchase-plan', payload: { planType: string; billing: 'monthly' | 'annual' }): void
 }>()
 
@@ -114,6 +117,40 @@ async function submitPayment() {
     setTimeout(() => {
       paymentStep.value = 'success'
     }, 2000)
+  }
+}
+
+async function submitPaymentReal() {
+  paymentStep.value = 'processing'
+  try {
+    const store = useStateStore()
+    const tenantId = store.activeTenantId || store.currentUser?.tenantId || null
+
+    if (!tenantId) {
+      paymentStep.value = 'details'
+      toast.info('Inicia sesión para continuar con la compra.')
+      emit('login')
+      return
+    }
+
+    const billing = isAnnual.value ? 'annual' : 'monthly'
+    const { redirectUrl } = await businessApi.createSubscriptionCheckout(
+      { planType: selectedPlan.value.id, billing },
+      tenantId,
+    )
+
+    if (!redirectUrl) {
+      throw new Error('No se recibió el enlace de pago.')
+    }
+
+    toast.info('Redirigiendo a Wompi...', { description: 'Completa el pago para activar tu plan.' })
+    window.location.href = redirectUrl
+  } catch (e: any) {
+    paymentStep.value = 'details'
+    console.error('Error creating Wompi link', e)
+    toast.error('No se pudo iniciar el checkout', {
+      description: e?.message || 'Intenta nuevamente en unos segundos.',
+    })
   }
 }
 
@@ -339,7 +376,7 @@ function closeWompi() {
             </div>
 
             <!-- Payment process step 1: details -->
-            <form v-if="paymentStep === 'details'" @submit.prevent="submitPayment" class="space-y-4">
+            <form v-if="paymentStep === 'details'" @submit.prevent="submitPaymentReal" class="space-y-4">
               <!-- Payment method selection -->
               <div class="grid grid-cols-2 gap-2.5 p-1 bg-[#F4F4F5] rounded-lg mb-4">
                 <button

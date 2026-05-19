@@ -93,6 +93,42 @@ export interface DianIntegrationUpdateRequest {
   dianCertificatePassword?: string
 }
 
+export interface SubscriptionCurrentResponse {
+  planType: string
+  active: boolean
+  trialDaysRemaining: number
+  trialEndsAt: string | null
+  renewsAt: string | null
+  invoicesThisMonth: number
+  limits: {
+    name: string
+    priceMonthly: number
+    priceAnnual: number
+    maxUsers: number | null
+    maxInvoicesPerMonth: number | null
+    modules: string[]
+  }
+}
+
+export interface SubscriptionUsageResponse {
+  planType: string
+  invoicesThisMonth: number
+  usersCount: number
+  renewsAt: string | null
+  limits: {
+    name: string
+    priceMonthly: number
+    priceAnnual: number
+    maxUsers: number | null
+    maxInvoicesPerMonth: number | null
+    modules: string[]
+  }
+}
+
+export interface SubscriptionCheckoutResponse {
+  redirectUrl: string
+}
+
 export const businessApi = {
   // Auth
   async login(credentials: any) {
@@ -375,6 +411,25 @@ export const businessApi = {
   },
   // Subscriptions
   async getSubscriptionUsage(tenantId?: string | null) {
-    return request<any>('/subscriptions/usage', { tenantId })
+    return request<SubscriptionUsageResponse>('/subscriptions/usage', { tenantId })
+  },
+  async getSubscriptionCurrent(tenantId?: string | null) {
+    return request<SubscriptionCurrentResponse>('/subscriptions/current', { tenantId })
+  },
+  async createSubscriptionCheckout(
+    data: { planType: 'starter' | 'pyme' | 'enterprise'; billing: 'monthly' | 'annual' },
+    tenantId?: string | null,
+  ) {
+    return request<SubscriptionCheckoutResponse>('/subscriptions/checkout', {
+      method: 'POST',
+      body: data,
+      tenantId,
+    })
+  },
+  async cancelSubscription(tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>('/subscriptions/cancel', {
+      method: 'POST',
+      tenantId,
+    })
   },
 }

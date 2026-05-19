@@ -11,6 +11,8 @@ import LandingPage from './components/LandingPage.vue'
 import AboutView from './components/views/AboutView.vue'
 import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
 import TermsOfUseView from './components/views/TermsOfUseView.vue'
+import ForgotPasswordView from './components/views/ForgotPasswordView.vue'
+import ResetPasswordView from './components/views/ResetPasswordView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import AppLoading from './components/layout/AppLoading.vue'
@@ -28,6 +30,8 @@ const showTerms = ref(false)
 const showAbout = ref(false)
 const showPricing = ref(false)
 const showPaymentSuccess = ref(false)
+const showForgotPassword = ref(false)
+const showResetPassword = ref(false)
 const paymentSuccessPlan = ref('')
 const viewingAdminPanel = ref(false)
 const isLoading = ref(true)
@@ -56,7 +60,7 @@ watch(() => store.currentUser, (user) => {
   themeStore.setForceLightMode(!user)
   if (user) {
     syncUrlWithState('/dashboard', true) // REPLACE al entrar a la app
-  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value && !showPricing.value && !showPaymentSuccess.value) {
+  } else if (!showAuth.value && !showDemo.value && !showPrivacy.value && !showTerms.value && !showAbout.value && !showPricing.value && !showPaymentSuccess.value && !showForgotPassword.value && !showResetPassword.value) {
     syncUrlWithState('/', true)
   }
 }, { immediate: true })
@@ -67,6 +71,8 @@ watch(showAbout, (val) => val && syncUrlWithState('/nosotros'))
 watch(showPrivacy, (val) => val && syncUrlWithState('/privacidad'))
 watch(showTerms, (val) => val && syncUrlWithState('/terminos'))
 watch(showPricing, (val) => val && syncUrlWithState('/precios'))
+watch(showForgotPassword, (val) => val && syncUrlWithState('/forgot-password'))
+watch(showResetPassword, (val) => val && syncUrlWithState('/reset-password'))
 
 // Manejador del botón "Atrás" del navegador
 const handlePopState = (event) => {
@@ -80,6 +86,8 @@ const handlePopState = (event) => {
   showAbout.value = false
   showPricing.value = false
   showPaymentSuccess.value = false
+  showForgotPassword.value = false
+  showResetPassword.value = false
 
   if (path === '/login') showAuth.value = true
   else if (path === '/demo') showDemo.value = true
@@ -87,6 +95,8 @@ const handlePopState = (event) => {
   else if (path === '/privacidad') showPrivacy.value = true
   else if (path === '/terminos') showTerms.value = true
   else if (path === '/precios') showPricing.value = true
+  else if (path === '/forgot-password') showForgotPassword.value = true
+  else if (path.startsWith('/reset-password')) showResetPassword.value = true
   else if (path.startsWith('/pago-exitoso')) {
     showPaymentSuccess.value = true
     const params = new URLSearchParams(window.location.search)
@@ -105,6 +115,8 @@ const handleCustomBack = () => {
     showAuth.value = false
     showPricing.value = false
     showPaymentSuccess.value = false
+    showForgotPassword.value = false
+    showResetPassword.value = false
   }
 }
 
@@ -156,6 +168,8 @@ onMounted(() => {
   if (initialPath === '/login') showAuth.value = true
   else if (initialPath === '/demo') showDemo.value = true
   else if (initialPath === '/precios') showPricing.value = true
+  else if (initialPath === '/forgot-password') showForgotPassword.value = true
+  else if (initialPath.startsWith('/reset-password')) showResetPassword.value = true
   else if (initialPath.startsWith('/pago-exitoso')) {
     showPaymentSuccess.value = true
     const params = new URLSearchParams(window.location.search)
@@ -185,8 +199,10 @@ onMounted(() => {
       <template v-else>
         <PaymentSuccess v-if="showPaymentSuccess" :plan-type="paymentSuccessPlan" @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)" />
         <DemoRequestView v-else-if="showDemo" @back="showDemo = false" />
-        <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" @purchase-plan="handlePurchasePlan" />
-        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @back="showAuth = false" />
+        <ForgotPasswordView v-else-if="showForgotPassword" @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)" />
+        <ResetPasswordView v-else-if="showResetPassword" @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)" />
+        <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" @login="showAuth = true; showPricing = false" @purchase-plan="handlePurchasePlan" />
+        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @forgot-password="showForgotPassword = true; showAuth = false" @back="showAuth = false" />
         <AboutView
           v-else-if="showAbout"
           @back="showAbout = false"

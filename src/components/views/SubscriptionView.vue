@@ -2,10 +2,13 @@
 import { ref, onMounted, computed } from 'vue'
 import { businessApi } from '@/services/businessApi'
 import { useStateStore } from '@/stores/stateStore'
+import { useAuthStore } from '@/stores/authStore'
+import { toast } from 'vue-sonner'
 
 const emit = defineEmits(['notify'])
 
 const store = useStateStore()
+const authStore = useAuthStore()
 const usage = ref<any>(null)
 const loading = ref(true)
 const error = ref('')
@@ -30,28 +33,39 @@ async function fetchUsage() {
 }
 
 function handleChangePlan() {
-  // Emit event or use router to go to pricing
   window.dispatchEvent(new CustomEvent('navigate', { detail: 'plans' }))
 }
 
 async function confirmCancel() {
-  // Ideally this would hit a DELETE /subscriptions/cancel endpoint
-  showCancelModal.value = false
-  emit('notify', { message: 'Operación no soportada', detail: 'Por favor contacta a soporte para cancelar tu cuenta.' })
+  try {
+    await businessApi.cancelSubscription(store.activeTenantId)
+    await authStore.refreshSessionWithBackend()
+    await fetchUsage()
+    toast.success('Suscripción cancelada', {
+      description: 'Tu plan seguirá activo hasta el final del ciclo actual.',
+    })
+  } catch (error: any) {
+    emit('notify', {
+      message: 'No se pudo cancelar la suscripción',
+      detail: error?.message || 'Intenta nuevamente en unos minutos.',
+    })
+  } finally {
+    showCancelModal.value = false
+  }
 }
 
 const invoicePercentage = computed(() => {
   if (!usage.value || !usage.value.limits) return 0
-  const limit = usage.value.limits.invoices
-  if (limit === Infinity) return 0 // Unlimited
+  const limit = usage.value.limits.maxInvoicesPerMonth
+  if (limit === null || limit === undefined) return 0
   const p = (usage.value.invoicesThisMonth / limit) * 100
   return Math.min(p, 100)
 })
 
 const userPercentage = computed(() => {
   if (!usage.value || !usage.value.limits) return 0
-  const limit = usage.value.limits.users
-  if (limit === Infinity) return 0 // Unlimited
+  const limit = usage.value.limits.maxUsers
+  if (limit === null || limit === undefined) return 0
   const p = (usage.value.usersCount / limit) * 100
   return Math.min(p, 100)
 })
@@ -131,7 +145,7 @@ const userPercentage = computed(() => {
                 <span class="text-[13px] font-semibold text-[#18181B]">Facturas Emitidas</span>
               </div>
               <span class="text-[13px] font-bold text-[#18181B]">
-                {{ usage.invoicesThisMonth }} / {{ usage.limits.invoices === Infinity ? 'Ilimitado' : usage.limits.invoices }}
+              {{ usage.invoicesThisMonth }} / {{ usage.limits.maxInvoicesPerMonth === null ? 'Ilimitado' : usage.limits.maxInvoicesPerMonth }}
               </span>
             </div>
             <div class="h-2 w-full bg-[#F4F4F5] rounded-full overflow-hidden">
@@ -141,7 +155,7 @@ const userPercentage = computed(() => {
                 :style="{ width: invoicePercentage + '%' }"
               ></div>
             </div>
-            <p class="text-[12px] text-[#A1A1AA] mt-2" v-if="invoicePercentage >= 90 && usage.limits.invoices !== Infinity">
+            <p class="text-[12px] text-[#A1A1AA] mt-2" v-if="invoicePercentage >= 90 && usage.limits.maxInvoicesPerMonth !== null">
               Te estás acercando al límite de facturas mensuales.
             </p>
           </div>
@@ -154,7 +168,7 @@ const userPercentage = computed(() => {
                 <span class="text-[13px] font-semibold text-[#18181B]">Usuarios del Equipo</span>
               </div>
               <span class="text-[13px] font-bold text-[#18181B]">
-                {{ usage.usersCount }} / {{ usage.limits.users === Infinity ? 'Ilimitado' : usage.limits.users }}
+              {{ usage.usersCount }} / {{ usage.limits.maxUsers === null ? 'Ilimitado' : usage.limits.maxUsers }}
               </span>
             </div>
             <div class="h-2 w-full bg-[#F4F4F5] rounded-full overflow-hidden">
