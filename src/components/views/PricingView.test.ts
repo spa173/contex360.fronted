@@ -59,5 +59,17 @@ describe('PricingView.vue', () => {
     // Verify PSE and Card selection is available
     expect(checkoutTitle).toContain('Tarjeta de Crédito')
     expect(checkoutTitle).toContain('Débito PSE')
+
+    // Submit payment
+    const form = document.querySelector('form')
+    expect(form).toBeTruthy()
+    form!.dispatchEvent(new Event('submit'))
+
+    // Verify event emission
+    expect(wrapper.emitted('purchase-plan')).toBeTruthy()
+    expect(wrapper.emitted('purchase-plan')![0][0]).toEqual({
+      planType: 'starter',
+      billing: 'monthly'
+    })
   })
 })

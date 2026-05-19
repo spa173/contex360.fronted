@@ -50,5 +50,17 @@ describe('LandingPage.vue - Pricing Section', () => {
     const bodyHtml = document.body.innerHTML
     expect(bodyHtml).toContain('Checkout Seguro')
     expect(bodyHtml).toContain('Pasarela de pagos enlazada')
+
+    // Submit payment
+    const form = document.querySelector('form')
+    expect(form).toBeTruthy()
+    form!.dispatchEvent(new Event('submit'))
+
+    // Verify event emission
+    expect(wrapper.emitted('purchase-plan')).toBeTruthy()
+    expect(wrapper.emitted('purchase-plan')![0][0]).toEqual({
+      planType: 'starter',
+      billing: 'monthly'
+    })
   })
 })

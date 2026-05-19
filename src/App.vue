@@ -98,6 +98,15 @@ const handleCustomBack = () => {
   }
 }
 
+const handlePurchasePlan = (payload) => {
+  toasts.value.push({
+    id: Date.now(),
+    type: 'success',
+    title: 'Compra Exitosa',
+    message: `Has comprado el plan ${payload.planType.toUpperCase()} (${payload.billing === 'annual' ? 'Anual' : 'Mensual'})`
+  })
+}
+
 themeStore.initializeTheme()
 
 async function initApp() {
@@ -160,7 +169,7 @@ onMounted(() => {
       <!-- Public states (unauthenticated) -->
       <template v-else>
         <DemoRequestView v-if="showDemo" @back="showDemo = false" />
-        <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" />
+        <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" @purchase-plan="handlePurchasePlan" />
         <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @back="showAuth = false" />
         <AboutView
           v-else-if="showAbout"
@@ -178,6 +187,7 @@ onMounted(() => {
           @show-terms="showTerms = true"
           @show-about="showAbout = true"
           @show-pricing="showPricing = true"
+          @purchase-plan="handlePurchasePlan"
         />
       </template>
     </template>

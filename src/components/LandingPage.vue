@@ -8,6 +8,7 @@ const emit = defineEmits<{
   (e: 'show-terms'): void
   (e: 'show-about'): void
   (e: 'show-pricing'): void
+  (e: 'purchase-plan', payload: { planType: string; billing: 'monthly' | 'annual' }): void
 }>()
 
 const scrolled = ref(false)
@@ -122,6 +123,10 @@ function openCheckout(plan: any) {
 
 function submitPayment() {
   paymentStep.value = 'processing'
+  emit('purchase-plan', {
+    planType: selectedPlan.value.id,
+    billing: isAnnual.value ? 'annual' : 'monthly'
+  })
   setTimeout(() => {
     paymentStep.value = 'success'
   }, 2000)
