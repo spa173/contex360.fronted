@@ -52,13 +52,13 @@ describe('AppSidebar.vue - Module Gating', () => {
     expect(dashboardButton?.html()).not.toContain('lock')
     expect(dashboardButton?.classes()).not.toContain('cursor-not-allowed')
 
-    // Click on inventory button should not emit navigate event
+    // Click on inventory button should emit navigate event so the shell can gate/redirect
     await inventoryButton?.trigger('click')
-    expect(wrapper.emitted('navigate')).toBeFalsy()
-
-    // Click on dashboard button should emit navigate event
-    await dashboardButton?.trigger('click')
     expect(wrapper.emitted('navigate')).toBeTruthy()
-    expect(wrapper.emitted('navigate')?.[0]).toEqual(['dashboard'])
+    expect(wrapper.emitted('navigate')?.[0]).toEqual(['inventory'])
+
+    // Click on dashboard button should also emit navigate event
+    await dashboardButton?.trigger('click')
+    expect(wrapper.emitted('navigate')?.[1]).toEqual(['dashboard'])
   })
 })

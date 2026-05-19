@@ -32,7 +32,6 @@ function tenantInitials(name) {
 }
 
 function handleItemClick(itemId) {
-  if (isFeatureLocked(itemId)) return
   emit('navigate', itemId)
 }
 </script>

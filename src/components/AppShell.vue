@@ -4,6 +4,7 @@ import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { useTranslationStore } from '../stores/translationStore'
 import { useToasts } from '../composables/useToasts'
+import { usePlanAccess } from '../composables/usePlanAccess'
 import AppSidebar from './layout/AppSidebar.vue'
 import TopNavigation from './layout/TopNavigation.vue'
 
@@ -22,6 +23,7 @@ const TwoFactorView     = defineAsyncComponent(() => import('./views/TwoFactorVi
 const ProfileView       = defineAsyncComponent(() => import('./views/ProfileView.vue'))
 const AiView            = defineAsyncComponent(() => import('./views/AiView.vue'))
 const HelpCenterView    = defineAsyncComponent(() => import('./views/HelpCenterView.vue'))
+const PlansView         = defineAsyncComponent(() => import('./views/PlansView.vue'))
 const ChatAssistant     = defineAsyncComponent(() => import('./ai/ChatAssistant.vue'))
 const SpotlightCommand  = defineAsyncComponent(() => import('./layout/SpotlightCommand.vue'))
 const AlertsCenterModal = defineAsyncComponent(() => import('./common/AlertsCenterModal.vue'))
@@ -30,10 +32,16 @@ const store = useAuthStore()
 const themeStore = useThemeStore()
 const translationStore = useTranslationStore()
 const { pushToast } = useToasts()
+const { isFeatureLocked } = usePlanAccess()
 const isSidebarOpen = ref(false)
 const emit = defineEmits(['open-admin-panel', 'exit-erp'])
 
 function handleNavigate(viewId) {
+  if (isFeatureLocked(viewId)) {
+    store.setActiveView('plans')
+    isSidebarOpen.value = false
+    return
+  }
   const result = store.setActiveView(viewId)
   if (!result.ok) pushToast(result.message, result.detail || '')
   isSidebarOpen.value = false
@@ -126,6 +134,7 @@ function toggleSidebar() {
         <ProfileView v-if="store.activeView === 'profile'" :is-active="true" @notify="handleNotify" />
         <AiView v-if="store.activeView === 'ai'" :is-active="true" @notify="handleNotify" />
         <HelpCenterView v-if="store.activeView === 'help-center'" :is-active="true" @notify="handleNotify" />
+        <PlansView v-if="store.activeView === 'plans'" :is-active="true" @notify="handleNotify" />
       </main>
 
       <ChatAssistant ref="chatRef" @navigate="handleNavigate" />
