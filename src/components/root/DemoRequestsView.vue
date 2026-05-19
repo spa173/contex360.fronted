@@ -147,7 +147,7 @@ onMounted(fetchRequests)
   color: var(--text); padding: 8px 16px; font-size: 0.85rem; cursor: pointer;
 }
 
-.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
+.table-wrap { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow-x: auto; max-width: 100%; }
 .data-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
 .data-table th { background: rgba(255,255,255,0.02); padding: 12px 16px; text-align: left; color: var(--muted); font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
 .data-table td { padding: 16px; border-top: 1px solid var(--border); color: var(--text); }

@@ -9,6 +9,7 @@ import DemoRequestsView from './root/DemoRequestsView.vue'
 const store = useStateStore()
 const activeSection = ref('dashboard')
 const selectedTenantId = ref<string | null>(null)
+const mobileSidebarOpen = ref(false)
 
 function handleConfigure(tenantId: string) {
   selectedTenantId.value = tenantId
@@ -40,10 +41,22 @@ function handleLogout() {
 
 <template>
   <div class="root-shell">
+    <!-- Backdrop overlay for mobile sidebar -->
+    <div 
+      v-if="mobileSidebarOpen" 
+      class="sidebar-backdrop" 
+      @click="mobileSidebarOpen = false"
+    ></div>
+
     <!-- Sidebar -->
-    <aside class="root-sidebar">
+    <aside :class="['root-sidebar', { 'mobile-open': mobileSidebarOpen }]">
       <div class="root-logo">
-        <div class="root-logo-mark">Contex360</div>
+        <div class="logo-flex-header">
+          <div class="root-logo-mark">Contex360</div>
+          <button class="btn-close-sidebar" @click="mobileSidebarOpen = false" title="Cerrar menú">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
         <div class="root-logo-sub">Panel Administrador</div>
       </div>
 
@@ -53,7 +66,7 @@ function handleLogout() {
           v-for="s in sections"
           :key="s.id"
           :class="['root-nav-item', { active: activeSection === s.id }]"
-          @click="activeSection = s.id"
+          @click="activeSection = s.id; mobileSidebarOpen = false"
         >
           <span class="nav-icon-emoji">{{ s.icon }}</span>
           {{ s.label }}
@@ -62,7 +75,7 @@ function handleLogout() {
 
       <div class="root-sidebar-footer">
         <div class="erp-switch-area">
-          <button class="btn-enter-erp" @click="emit('enter-erp')">
+          <button class="btn-enter-erp" @click="emit('enter-erp'); mobileSidebarOpen = false">
             ← Volver al ERP
           </button>
           <div class="erp-hint">Regresar a la vista operativa</div>
@@ -81,6 +94,9 @@ function handleLogout() {
     <!-- Main content -->
     <main class="root-main">
       <header class="root-topbar">
+        <button class="btn-menu-trigger" @click="mobileSidebarOpen = true" title="Abrir menú">
+          <span class="material-symbols-outlined">menu</span>
+        </button>
         <div class="root-topbar-title">
           <div class="topbar-page-title">
             {{ sections.find(s => s.id === activeSection)?.label || 'Dashboard' }}
@@ -207,4 +223,84 @@ function handleLogout() {
 .coming-soon h3 { font-size: 1.2rem; color: var(--text); margin: 0 0 8px; }
 .coming-soon p { margin: 4px 0; font-size: 0.9rem; }
 .coming-hint { font-size: 0.8rem; color: var(--muted); margin-top: 12px; }
+
+/* ─── Responsive Styles ─── */
+.logo-flex-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.btn-menu-trigger {
+  display: none;
+  background: none;
+  border: none;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 4px;
+  margin-right: 12px;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-close-sidebar {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1023px) {
+  .root-shell {
+    position: relative;
+  }
+  
+  .btn-menu-trigger {
+    display: flex;
+  }
+  
+  .btn-close-sidebar {
+    display: flex;
+  }
+  
+  .root-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    height: 100vh;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.3);
+  }
+  
+  .root-sidebar.mobile-open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(4px);
+    z-index: 40;
+  }
+  
+  .root-topbar {
+    padding: 12px 16px;
+  }
+  
+  .root-content {
+    padding: 16px;
+  }
+  
+  .root-topbar-right {
+    display: none; /* Hide badges on mobile to prevent overflow */
+  }
+}
 </style>

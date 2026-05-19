@@ -385,4 +385,10 @@ onMounted(fetchCompanies)
 .cred-row span { font-size: 0.82rem; color: var(--muted); }
 .cred-row code { font-family: monospace; color: #10b981; font-size: 0.95rem; font-weight: 600; }
 .cred-warning { font-size: 0.8rem; color: #f59e0b; margin-top: 12px; }
+
+@media (max-width: 639px) {
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+}
 </style>

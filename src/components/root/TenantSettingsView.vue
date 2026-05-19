@@ -231,36 +231,38 @@ onMounted(fetchTenant)
       <!-- ── USUARIOS ── -->
       <div v-else-if="activeTab === 'users'" class="tab-panel">
         <h3 class="panel-title">Usuarios del tenant <span class="count-badge">{{ tenant.memberships?.length ?? 0 }}</span></h3>
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th>Usuario</th>
-              <th>Email</th>
-              <th>Rol</th>
-              <th>Estado</th>
-              <th>Creado</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="!tenant.memberships?.length">
-              <td colspan="5" class="empty-row">Sin usuarios</td>
-            </tr>
-            <tr v-for="m in tenant.memberships" :key="m.id">
-              <td>
-                <div class="user-cell">
-                  <div class="user-mini-avatar">{{ m.user?.name?.slice(0,1)?.toUpperCase() }}</div>
-                  {{ m.user?.name }}
-                </div>
-              </td>
-              <td class="mono">{{ m.user?.email }}</td>
-              <td><span class="role-pill">{{ m.role }}</span></td>
-              <td>
-                <span :class="['status-dot', m.user?.status]">{{ m.user?.status }}</span>
-              </td>
-              <td>{{ m.user?.createdAt ? new Date(m.user.createdAt).toLocaleDateString('es-CO') : '—' }}</td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="table-scroll-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Usuario</th>
+                <th>Email</th>
+                <th>Rol</th>
+                <th>Estado</th>
+                <th>Creado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-if="!tenant.memberships?.length">
+                <td colspan="5" class="empty-row">Sin usuarios</td>
+              </tr>
+              <tr v-for="m in tenant.memberships" :key="m.id">
+                <td>
+                  <div class="user-cell">
+                    <div class="user-mini-avatar">{{ m.user?.name?.slice(0,1)?.toUpperCase() }}</div>
+                    {{ m.user?.name }}
+                  </div>
+                </td>
+                <td class="mono">{{ m.user?.email }}</td>
+                <td><span class="role-pill">{{ m.role }}</span></td>
+                <td>
+                  <span :class="['status-dot', m.user?.status]">{{ m.user?.status }}</span>
+                </td>
+                <td>{{ m.user?.createdAt ? new Date(m.user.createdAt).toLocaleDateString('es-CO') : '—' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
       <!-- ── PLAN ── -->
@@ -448,7 +450,8 @@ onMounted(fetchTenant)
 .info-item code { font-family: monospace; font-size: 0.85rem; color: var(--text); }
 
 /* Table */
-.data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); }
+.table-scroll-wrap { overflow-x: auto; max-width: 100%; border-radius: 12px; border: 1px solid var(--border); }
+.data-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
 .data-table th { background: var(--surface-alt); color: var(--muted); font-weight: 600; padding: 10px 14px; text-align: left; font-size: 0.75rem; text-transform: uppercase; }
 .data-table td { padding: 12px 14px; border-top: 1px solid var(--border); color: var(--text); }
 .user-cell { display: flex; align-items: center; gap: 8px; }
@@ -536,4 +539,13 @@ onMounted(fetchTenant)
 .danger-action-desc { font-size: 0.8rem; color: var(--muted); margin-top: 3px; }
 
 .state-loading { color: var(--muted); font-size: 0.9rem; padding: 40px 0; }
+
+@media (max-width: 639px) {
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+  .info-grid {
+    grid-template-columns: 1fr;
+  }
+}
 </style>
