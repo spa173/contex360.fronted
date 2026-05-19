@@ -10,10 +10,12 @@ const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-pa
 const themeStore = useThemeStore()
 const showNotifications = ref(false)
 const showAvatar = ref(false)
+const showShortcuts = ref(false)
 
 function closeAll() {
   showNotifications.value = false
   showAvatar.value = false
+  showShortcuts.value = false
 }
 
 function onClickOutside(e) {
@@ -161,9 +163,25 @@ function handleLanguageSelect(lang) {
   emit('notify', { message: 'Idioma actualizado', detail: `La interfaz ha sido traducida a ${langNames[code]}.` })
 }
 
-function handleHelpLink(title) {
-  emit('notify', { message: title, detail: `Abriendo portal de asistencia para ${title.toLowerCase()}...` })
-}
+const shortcuts = [
+  { group: 'Navegación', items: [
+    { keys: ['⌘', 'K'], label: 'Búsqueda rápida' },
+    { keys: ['⌘', 'J'], label: 'Abrir Asistente IA' },
+    { keys: ['Esc'], label: 'Cerrar panel / modal' },
+    { keys: ['?'], label: 'Ver atajos de teclado' },
+  ]},
+  { group: 'Facturación', items: [
+    { keys: ['⌘', 'N'], label: 'Nueva factura' },
+    { keys: ['⌘', 'F'], label: 'Buscar cliente o producto' },
+    { keys: ['⌘', 'Enter'], label: 'Guardar y emitir' },
+  ]},
+  { group: 'General', items: [
+    { keys: ['⌘', 'S'], label: 'Guardar cambios' },
+    { keys: ['⌘', 'Z'], label: 'Deshacer' },
+    { keys: ['⌘', 'Shift', 'Z'], label: 'Rehacer' },
+    { keys: ['⌘', 'P'], label: 'Imprimir / exportar PDF' },
+  ]},
+]
 
 function handleViewAllAlerts() {
   showNotifications.value = false
@@ -370,12 +388,12 @@ function handleViewAllAlerts() {
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Centro de ayuda</span>
               <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>
             </button>
-            <button @click="handleHelpLink('Contactar soporte')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+            <button @click="emit('navigate', 'help-center'); showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">headset_mic</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Contactar soporte</span>
               <span class="material-symbols-outlined text-[14px] text-[#A1A1AA]">chevron_right</span>
             </button>
-            <button @click="handleHelpLink('Atajos de teclado')" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
+            <button @click="showShortcuts = true; showAvatar = false" class="w-full flex items-center gap-3 px-4 py-2 hover:bg-[#FAFAFA] text-left">
               <span class="material-symbols-outlined text-[17px] text-[#71717A]">keyboard</span>
               <span class="flex-1 text-[12px] font-medium text-[#18181B]">Atajos de teclado</span>
               <kbd class="text-[9px] font-mono text-[#A1A1AA] border border-[#E4E4E7] rounded px-1 py-0.5 bg-white">?</kbd>
@@ -393,6 +411,50 @@ function handleViewAllAlerts() {
       </div>
     </div>
   </header>
+
+  <!-- Keyboard Shortcuts Modal -->
+  <Teleport to="body">
+    <div
+      v-if="showShortcuts"
+      class="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      @click.self="showShortcuts = false"
+    >
+      <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="showShortcuts = false"></div>
+      <div class="relative bg-white rounded-[18px] shadow-[0_8px_60px_rgba(0,0,0,0.18)] w-full max-w-[480px] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5]">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-[22px] text-[#2563EB]">keyboard</span>
+            <h2 class="text-[16px] font-extrabold tracking-tight text-[#18181B]">Atajos de teclado</h2>
+          </div>
+          <button @click="showShortcuts = false" class="w-7 h-7 rounded-[8px] hover:bg-[#F4F4F5] flex items-center justify-center text-[#A1A1AA] hover:text-[#18181B] transition-colors">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+        <!-- Shortcuts list -->
+        <div class="overflow-y-auto max-h-[70vh] px-6 py-4 space-y-5">
+          <div v-for="group in shortcuts" :key="group.group">
+            <p class="text-[10px] font-extrabold uppercase tracking-widest text-[#A1A1AA] mb-2.5">{{ group.group }}</p>
+            <div class="space-y-1">
+              <div v-for="s in group.items" :key="s.label" class="flex items-center justify-between py-1.5">
+                <span class="text-[13px] font-medium text-[#18181B]">{{ s.label }}</span>
+                <div class="flex items-center gap-1">
+                  <kbd
+                    v-for="(k, i) in s.keys"
+                    :key="i"
+                    class="inline-flex items-center justify-center min-w-[26px] h-[22px] px-1.5 text-[11px] font-mono font-semibold text-[#18181B] bg-[#F4F4F5] border border-[#E4E4E7] rounded-[5px] shadow-[0_1px_0_#D4D4D8]"
+                  >{{ k }}</kbd>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="px-6 py-3 border-t border-[#F4F4F5] bg-[#FAFAFA] text-center">
+          <p class="text-[11px] text-[#A1A1AA] font-medium">En Mac usa <kbd class="inline-flex items-center px-1 text-[10px] font-mono bg-white border border-[#E4E4E7] rounded">⌘</kbd> · En Windows/Linux usa <kbd class="inline-flex items-center px-1 text-[10px] font-mono bg-white border border-[#E4E4E7] rounded">Ctrl</kbd></p>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
