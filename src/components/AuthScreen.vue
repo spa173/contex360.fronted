@@ -8,7 +8,7 @@ import { toast } from 'vue-sonner'
 const authStore = useAuthStore()
 const themeStore = useThemeStore()
 
-const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy', 'back'])
+const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy', 'forgot-password', 'back'])
 
 const email = ref('')
 const password = ref('')
@@ -303,7 +303,7 @@ const togglePassword = () => {
               <div>
                 <div class="flex justify-between items-baseline mb-2">
                   <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider" for="password">Contraseña</label>
-                  <button type="button" @click="forgotAccessOpen = !forgotAccessOpen" class="text-[11px] font-semibold text-[#2563EB] hover:underline">
+                  <button type="button" @click="$emit('forgot-password')" class="text-[11px] font-semibold text-[#2563EB] hover:underline">
                     ¿Olvidó su acceso?
                   </button>
                 </div>
@@ -327,9 +327,6 @@ const togglePassword = () => {
                     <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                   </button>
                 </div>
-                <p v-if="forgotAccessOpen" class="text-[11px] text-amber-600 font-medium mt-2">
-                  Por favor contacte al administrador de su organización para restablecer su acceso.
-                </p>
               </div>
 
               <!-- 2FA Block -->

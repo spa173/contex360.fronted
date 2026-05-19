@@ -156,3 +156,17 @@ export async function revokeBackendSession() {
 
   return { ok: true, message: 'Sesion cerrada.' } as BackendMessageResponse
 }
+
+export async function requestPasswordReset(email: string) {
+  return requestJson<BackendMessageResponse>('/auth/forgot-password', {
+    method: 'POST',
+    body: { email }
+  })
+}
+
+export async function resetPassword(token: string, newPassword: string) {
+  return requestJson<BackendMessageResponse>('/auth/reset-password', {
+    method: 'POST',
+    body: { token, newPassword }
+  })
+}
