@@ -28,7 +28,7 @@ describe('TopNavigation.vue - Trial Warning Banner', () => {
       planType: 'starter',
       active: true,
       trialEndsAt: threeDaysFromNow.toISOString(),
-      limits: { maxUsers: 1, maxInvoicesPerMonth: 50 },
+      limits: { name: 'Starter', priceMonthly: 89000, priceAnnual: 801000, maxUsers: 1, maxInvoicesPerMonth: 50, modules: ['dashboard', 'billing'] },
       invoicesThisMonth: 0
     }
 
@@ -65,7 +65,7 @@ describe('TopNavigation.vue - Trial Warning Banner', () => {
       planType: 'starter',
       active: true,
       trialEndsAt: sixDaysFromNow.toISOString(),
-      limits: { maxUsers: 1, maxInvoicesPerMonth: 50 },
+      limits: { name: 'Starter', priceMonthly: 89000, priceAnnual: 801000, maxUsers: 1, maxInvoicesPerMonth: 50, modules: ['dashboard', 'billing'] },
       invoicesThisMonth: 0
     }
 
@@ -87,7 +87,7 @@ describe('TopNavigation.vue - Trial Warning Banner', () => {
       planType: 'starter',
       active: true,
       trialEndsAt: null,
-      limits: { maxUsers: 1, maxInvoicesPerMonth: 50 },
+      limits: { name: 'Starter', priceMonthly: 89000, priceAnnual: 801000, maxUsers: 1, maxInvoicesPerMonth: 50, modules: ['dashboard', 'billing'] },
       invoicesThisMonth: 0
     }
 

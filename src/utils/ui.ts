@@ -41,11 +41,11 @@ export function formatCurrency(value: number | string) {
   return currencyFormatter.format(Number(value) || 0)
 }
 
-function formatDate(value: string | number | Date) {
+export function formatDate(value: string | number | Date) {
   return dateTimeFormatter.format(new Date(value))
 }
 
-function formatDateOnly(value: string | number | Date) {
+export function formatDateOnly(value: string | number | Date) {
   return dateFormatter.format(new Date(value))
 }
 
