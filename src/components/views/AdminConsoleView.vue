@@ -253,10 +253,81 @@ function toggleIntegration(integration) {
 }
 
 function configureIntegration(integration) {
+  if (integration.id === 'gmail') {
+    openGmailOAuth()
+    return
+  }
   emit('notify', {
     message: `Configurar ${integration.name}`,
     detail: `Abre el panel de credenciales para conectar ${integration.name} con Contex360.`,
   })
+}
+
+// Gmail OAuth
+const gmailConnectedEmail = ref(null)
+const gmailConnecting = ref(false)
+
+async function checkGmailStatus() {
+  try {
+    const status = await businessApi.getGmailStatus()
+    gmailConnectedEmail.value = status.email ?? null
+    const gmailIntg = integrationCatalog.value.find(i => i.id === 'gmail')
+    if (gmailIntg) {
+      gmailIntg.enabled = status.connected
+      saveIntegrationState('gmail', status.connected)
+    }
+  } catch { /* not critical */ }
+}
+
+async function openGmailOAuth() {
+  if (gmailConnecting.value) return
+  gmailConnecting.value = true
+  try {
+    const { url } = await businessApi.getGmailConnectUrl()
+    const popup = window.open(url, 'gmail-oauth', 'width=520,height=620,scrollbars=yes')
+
+    const handler = (event) => {
+      if (event.data?.type === 'gmail-connected') {
+        gmailConnectedEmail.value = event.data.email
+        const gmailIntg = integrationCatalog.value.find(i => i.id === 'gmail')
+        if (gmailIntg) {
+          gmailIntg.enabled = true
+          saveIntegrationState('gmail', true)
+        }
+        emit('notify', { message: 'Gmail conectado', detail: `Cuenta ${event.data.email} vinculada correctamente.` })
+        window.removeEventListener('message', handler)
+        gmailConnecting.value = false
+      } else if (event.data?.type === 'gmail-error') {
+        emit('notify', { message: 'Error al conectar Gmail', detail: event.data.message })
+        window.removeEventListener('message', handler)
+        gmailConnecting.value = false
+      }
+    }
+    window.addEventListener('message', handler)
+
+    // Fallback: if popup closes without message
+    const poll = setInterval(() => {
+      if (popup?.closed) {
+        clearInterval(poll)
+        window.removeEventListener('message', handler)
+        gmailConnecting.value = false
+      }
+    }, 800)
+  } catch (e) {
+    emit('notify', { message: 'Error', detail: e.message })
+    gmailConnecting.value = false
+  }
+}
+
+async function disconnectGmail() {
+  await businessApi.disconnectGmail()
+  gmailConnectedEmail.value = null
+  const gmailIntg = integrationCatalog.value.find(i => i.id === 'gmail')
+  if (gmailIntg) {
+    gmailIntg.enabled = false
+    saveIntegrationState('gmail', false)
+  }
+  emit('notify', { message: 'Gmail desconectado', detail: 'La cuenta de Gmail fue desvinculada del workspace.' })
 }
 const bancolombiaConfig = ref({
   clientId: 'banco-contex-1021',
@@ -283,6 +354,7 @@ onMounted(async () => {
   if (saved) {
     bancolombiaConfig.value = JSON.parse(saved)
   }
+  checkGmailStatus()
 })
 
 watch(() => adminStore.language, (newVal) => {
@@ -1113,18 +1185,39 @@ function saveBancolombiaConfig() {
                 <p class="text-[11px] text-[#71717A] leading-snug">{{ intg.desc }}</p>
               </div>
 
-              <!-- Configure button -->
-              <button
-                v-if="intg.enabled"
-                @click="configureIntegration(intg)"
-                class="w-full py-2 border border-[#2563EB]/30 rounded-[8px] text-[11px] font-bold text-[#2563EB] hover:bg-[#2563EB]/5 transition-colors flex items-center justify-center gap-1.5"
-              >
-                <span class="material-symbols-outlined text-[14px]">settings</span>
-                Configurar credenciales
-              </button>
-              <div v-else class="w-full py-2 rounded-[8px] text-[11px] font-medium text-[#A1A1AA] text-center">
-                Activa para configurar
-              </div>
+              <!-- Gmail: special OAuth card -->
+              <template v-if="intg.id === 'gmail'">
+                <div v-if="gmailConnectedEmail" class="space-y-2">
+                  <div class="flex items-center gap-1.5 px-2.5 py-2 bg-emerald-50 border border-emerald-200 rounded-[8px]">
+                    <span class="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
+                    <span class="text-[11px] font-semibold text-emerald-700 truncate">{{ gmailConnectedEmail }}</span>
+                  </div>
+                  <button @click="disconnectGmail" class="w-full py-2 border border-rose-200 rounded-[8px] text-[11px] font-bold text-rose-600 hover:bg-rose-50 transition-colors flex items-center justify-center gap-1.5">
+                    <span class="material-symbols-outlined text-[14px]">link_off</span>
+                    Desconectar cuenta
+                  </button>
+                </div>
+                <button v-else @click="openGmailOAuth" :disabled="gmailConnecting" class="w-full py-2 border border-[#E4E4E7] rounded-[8px] text-[11px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50">
+                  <span v-if="gmailConnecting" class="w-3.5 h-3.5 border-2 border-[#18181B] border-t-transparent rounded-full animate-spin"></span>
+                  <span v-else class="material-symbols-outlined text-[14px]">login</span>
+                  {{ gmailConnecting ? 'Conectando...' : 'Conectar con Google' }}
+                </button>
+              </template>
+
+              <!-- Generic configure button -->
+              <template v-else>
+                <button
+                  v-if="intg.enabled"
+                  @click="configureIntegration(intg)"
+                  class="w-full py-2 border border-[#2563EB]/30 rounded-[8px] text-[11px] font-bold text-[#2563EB] hover:bg-[#2563EB]/5 transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <span class="material-symbols-outlined text-[14px]">settings</span>
+                  Configurar credenciales
+                </button>
+                <div v-else class="w-full py-2 rounded-[8px] text-[11px] font-medium text-[#A1A1AA] text-center">
+                  Activa para configurar
+                </div>
+              </template>
             </div>
           </div>
         </div>

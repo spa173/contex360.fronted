@@ -285,4 +285,16 @@ export const businessApi = {
   async updateSupportTicketStatus(id: string, status: string) {
     return request<any>(`/support/tickets/${id}/status`, { method: 'PUT', body: { status } })
   },
+  async getGmailConnectUrl() {
+    return request<{ ok: boolean; url: string }>('/integrations/gmail/connect')
+  },
+  async getGmailStatus() {
+    return request<{ connected: boolean; email: string | null }>('/integrations/gmail/status')
+  },
+  async disconnectGmail() {
+    return request<{ ok: boolean }>('/integrations/gmail/disconnect', { method: 'DELETE' })
+  },
+  async sendViaGmail(data: { to: string; subject: string; html: string }) {
+    return request<{ ok: boolean; sentFrom: string }>('/integrations/gmail/send', { method: 'POST', body: data })
+  },
 }
