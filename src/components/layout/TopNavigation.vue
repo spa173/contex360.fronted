@@ -1,11 +1,31 @@
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import { useThemeStore } from '../../stores/themeStore'
 import { useTranslationStore } from '../../stores/translationStore'
 import { businessApi } from '../../services/businessApi'
+import { useStateStore } from '../../stores/stateStore'
 
 const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
 const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel', 'notify'])
+
+const store = useStateStore()
+
+const trialDaysLeft = computed(() => {
+  const sub = store.subscription
+  if (!sub || !sub.trialEndsAt) return null
+  
+  const end = new Date(sub.trialEndsAt)
+  const now = new Date()
+  
+  const diffTime = end.getTime() - now.getTime()
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+  return diffDays
+})
+
+const showTrialBanner = computed(() => {
+  const days = trialDaysLeft.value
+  return days !== null && days >= 0 && days < 5
+})
 
 const themeStore = useThemeStore()
 const showNotifications = ref(false)
@@ -190,7 +210,25 @@ function handleViewAllAlerts() {
 </script>
 
 <template>
-  <header class="topbar h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 sticky top-0 z-30 gap-3">
+  <div class="sticky top-0 z-30 w-full flex flex-col">
+    <!-- Trial Banner -->
+    <div
+      v-if="showTrialBanner"
+      class="bg-amber-50 border-b border-amber-200 text-amber-800 text-[13px] font-medium py-2.5 px-4 text-center flex items-center justify-center gap-2 transition-all duration-300"
+    >
+      <span class="material-symbols-outlined text-[16px] text-amber-600">warning</span>
+      <span>
+        Tu trial vence en {{ trialDaysLeft }} {{ trialDaysLeft === 1 ? 'día' : 'días' }} —
+        <button 
+          @click="emit('navigate', 'plans')" 
+          class="underline font-extrabold hover:text-amber-950 focus:outline-none"
+        >
+          Ver planes
+        </button>
+      </span>
+    </div>
+
+    <header class="topbar h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 gap-3">
     <!-- Hamburger (mobile only) -->
     <button
       @click="emit('toggle-sidebar')"
@@ -411,6 +449,7 @@ function handleViewAllAlerts() {
       </div>
     </div>
   </header>
+  </div>
 
   <!-- Keyboard Shortcuts Modal -->
   <Teleport to="body">
