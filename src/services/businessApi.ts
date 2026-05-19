@@ -153,6 +153,9 @@ export const businessApi = {
   async getDashboardKpis(tenantId?: string | null) {
     return request<any>('/analytics/dashboard', { tenantId })
   },
+  async getAlerts(tenantId?: string | null) {
+    return request<{ lowStockAlerts: number; pendingInvoices: number }>('/analytics/alerts', { tenantId })
+  },
   async getSalesByMonth(tenantId?: string | null) {
     return request<any[]>('/analytics/sales-by-month', { tenantId })
   },

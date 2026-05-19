@@ -63,19 +63,44 @@ function handleViewAlerts() {
   window.dispatchEvent(new CustomEvent('open-alerts-modal'))
 }
 
+const alertsList = computed(() => {
+  const list = []
+  if (dashboardData.value.lowStockAlerts > 0) {
+    list.push({
+      id: 'low-stock',
+      type: 'error',
+      color: 'bg-rose-500',
+      title: `Stock bajo · ${dashboardData.value.lowStockAlerts} productos`,
+      description: 'Productos con stock por debajo del mínimo establecido.',
+      time: 'Ahora mismo',
+    })
+  }
+  if (dashboardData.value.pendingInvoices > 0) {
+    list.push({
+      id: 'pending-invoices',
+      type: 'warning',
+      color: 'bg-amber-500',
+      title: `Facturación · ${dashboardData.value.pendingInvoices} pendientes`,
+      description: 'Facturas emitidas pendientes de pago.',
+      time: 'Ahora mismo',
+    })
+  }
+  return list
+})
+
 async function fetchDashboardData() {
   try {
     isLoading.value = true
     const [stats, alerts, insights] = await Promise.all([
-      businessApi.getDashboardKpis().catch(() => ({ totalSales: 8400000, lowStockAlerts: 12, pendingInvoices: 42 })),
-      businessApi.getAlerts().catch(() => ({ lowStockAlerts: 12, pendingInvoices: 42 })),
-      businessApi.getAiInsights().catch(() => ({ insight: 'Tus ventas crecieron 15% esta semana vs la anterior. El producto con mayor rotación es Cable UTP Cat6 305m, considera reabastecer antes del 20 de mayo.' })),
+      businessApi.getDashboardKpis().catch(() => ({ totalSales: 0, lowStockAlerts: 0, pendingInvoices: 0 })),
+      businessApi.getAlerts().catch(() => ({ lowStockAlerts: 0, pendingInvoices: 0 })),
+      businessApi.getAiInsights().catch(() => ({ insight: 'Bienvenido a Contex360. El sistema está listo para operar.' })),
     ])
     dashboardData.value = {
-      totalSales: stats.totalSales || 8400000,
-      lowStockAlerts: alerts.lowStockAlerts ?? stats.lowStockAlerts ?? 12,
-      pendingInvoices: alerts.pendingInvoices ?? stats.pendingInvoices ?? 42,
-      aiInsight: (insights.insight && !insights.insight.includes('No se pudo')) ? insights.insight : 'Tus ventas crecieron 15% esta semana vs la anterior. El producto con mayor rotación es Cable UTP Cat6 305m, considera reabastecer antes del 20 de mayo.',
+      totalSales: stats.totalSales ?? 0,
+      lowStockAlerts: alerts.lowStockAlerts ?? stats.lowStockAlerts ?? 0,
+      pendingInvoices: alerts.pendingInvoices ?? stats.pendingInvoices ?? 0,
+      aiInsight: (insights.insight && !insights.insight.includes('No se pudo')) ? insights.insight : 'Bienvenido a Contex360. El sistema está listo para operar.',
     }
   } catch (err) {
     console.error('Error fetching dashboard data:', err)
@@ -137,14 +162,14 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">payments</span>
           </div>
-          <span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-tight">
+          <span v-if="dashboardData.totalSales > 0" class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-tight">
             <span class="material-symbols-outlined text-[12px]">arrow_upward</span>15%
           </span>
         </div>
         <div>
           <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Ventas del día</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">$ 8.4M</p>
-          <p class="text-[12px] font-medium text-[#71717A]">vs $ 7.3M ayer</p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">$ {{ formatCompact(dashboardData.totalSales) }}</p>
+          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.totalSales > 0 ? 'Operación activa' : 'Sin ventas registradas' }}</p>
         </div>
       </div>
 
@@ -154,12 +179,12 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">receipt_long</span>
           </div>
-          <span class="inline-flex px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold tracking-tight">15 vencidas</span>
+          <span v-if="dashboardData.pendingInvoices > 0" class="inline-flex px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold tracking-tight">Por cobrar</span>
         </div>
         <div>
           <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Facturas pendientes</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">42</p>
-          <p class="text-[12px] font-medium text-[#71717A]">$ 12.5M por cobrar</p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">{{ dashboardData.pendingInvoices }}</p>
+          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.pendingInvoices > 0 ? 'Documentos pendientes' : 'Al día con las cuentas' }}</p>
         </div>
       </div>
 
@@ -169,14 +194,14 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">inventory_2</span>
           </div>
-          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold tracking-tight">
-            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>3 críticas
+          <span v-if="dashboardData.lowStockAlerts > 0" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold tracking-tight">
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Stock bajo
           </span>
         </div>
         <div>
           <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Stock bajo</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">12 SKUs</p>
-          <p class="text-[12px] font-medium text-[#71717A]">requieren reabastecer</p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">{{ dashboardData.lowStockAlerts }} SKUs</p>
+          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.lowStockAlerts > 0 ? 'Requieren reabastecer' : 'Nivel de inventario óptimo' }}</p>
         </div>
       </div>
 
@@ -260,31 +285,19 @@ onMounted(() => { if (props.isActive) fetchDashboardData() })
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 shadow-sm flex flex-col justify-between self-start w-full">
         <div>
           <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight mb-6">Alertas</h3>
-          <div class="space-y-4 divide-y divide-[#F4F4F5]">
-            <!-- Alert 1 -->
-            <div class="pt-4 first:pt-0">
+          <div v-if="alertsList.length > 0" class="space-y-4 divide-y divide-[#F4F4F5]">
+            <div v-for="alert in alertsList" :key="alert.id" class="pt-4 first:pt-0">
               <div class="flex items-center gap-2.5 mb-1">
-                <span class="w-2 h-2 rounded-full bg-rose-500 flex-shrink-0"></span>
-                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">Inconsistencia factura F-203</p>
+                <span :class="['w-2 h-2 rounded-full flex-shrink-0', alert.color]"></span>
+                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">{{ alert.title }}</p>
               </div>
-              <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">Diferencia de $ 450.000 detectada. <span class="text-[#A1A1AA] ml-1 font-normal">hace 12 min</span></p>
+              <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">{{ alert.description }} <span class="text-[#A1A1AA] ml-1 font-normal">{{ alert.time }}</span></p>
             </div>
-            <!-- Alert 2 -->
-            <div class="pt-4">
-              <div class="flex items-center gap-2.5 mb-1">
-                <span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span>
-                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">Stock crítico · 3 productos</p>
-              </div>
-              <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">Cable UTP, Router TP-Link, RJ45. <span class="text-[#A1A1AA] ml-1 font-normal">hace 1 h</span></p>
-            </div>
-            <!-- Alert 3 -->
-            <div class="pt-4">
-              <div class="flex items-center gap-2.5 mb-1">
-                <span class="w-2 h-2 rounded-full bg-[#2563EB] flex-shrink-0"></span>
-                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">DIAN: 8 facturas aceptadas</p>
-              </div>
-              <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">Lote del 16-may procesado. <span class="text-[#A1A1AA] ml-1 font-normal">hace 2 h</span></p>
-            </div>
+          </div>
+          <div v-else class="flex flex-col items-center justify-center py-8 text-center">
+            <span class="material-symbols-outlined text-[36px] text-emerald-500 mb-2">check_circle</span>
+            <p class="text-[14px] font-bold text-[#18181B]">Sin alertas pendientes</p>
+            <p class="text-[12px] text-[#71717A]">Tu negocio está funcionando perfectamente.</p>
           </div>
         </div>
 
