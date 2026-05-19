@@ -90,7 +90,7 @@ const dictionaries: Record<string, Record<string, string>> = {
     'No hay notificaciones para mostrar': 'No notifications to display',
     'Ver todas las alertas': 'View all alerts',
     'Andina Cargo SAS': 'Andina Cargo SAS',
-    'Daniel Castro': 'Daniel Castro',
+    'Daniel Castro': 'Administrador Root',
     'Administrador': 'Administrator'
   },
   pt: {
@@ -181,7 +181,7 @@ const dictionaries: Record<string, Record<string, string>> = {
     'No hay notificaciones para mostrar': 'Nenhuma notificação para exibir',
     'Ver todas las alertas': 'Ver todas as alertas',
     'Andina Cargo SAS': 'Andina Cargo SAS',
-    'Daniel Castro': 'Daniel Castro',
+    'Daniel Castro': 'Administrador Root',
     'Administrador': 'Administrador'
   }
 }

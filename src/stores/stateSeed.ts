@@ -20,7 +20,7 @@ export const DEFAULT_TENANT_SECURITY_SETTINGS = {
 
 async function buildSeedUsers() {
   return [
-    { id: 'user-admin', name: 'Daniel Castro', email: 'daniel.castro@contex360.com', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: true, role: 'Administrador' },
+    { id: 'user-admin', name: 'Administrador Root', email: 'root@contex360.com', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: false, isSystemOwner: true, role: 'Administrador' },
     { id: 'user-accountant', name: 'Contador General', email: 'contador@contex360.local', status: 'active', title: 'Contador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
     { id: 'user-visor', name: 'Visor Negocio', email: 'visor@contex360.local', status: 'active', title: 'Consultor', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },
     { id: 'user-retail-admin', name: 'Admin Tienda', email: 'admin.retail@contex360.local', status: 'active', title: 'Administrador', lastLoginAt: null, isDemoAccount: true, isSystemOwner: false },

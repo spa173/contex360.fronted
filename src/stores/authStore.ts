@@ -71,8 +71,12 @@ export const useAuthStore = defineStore('auth', () => {
       }
 
       if (response.user) {
-        const exists = root.users.find(u => u.id === response.user.id)
-        if (!exists) root.users.push(response.user as any)
+        const existingIndex = root.users.findIndex(u => u.id === response.user.id)
+        if (existingIndex !== -1) {
+          root.users[existingIndex] = { ...root.users[existingIndex], ...response.user } as any
+        } else {
+          root.users.push(response.user as any)
+        }
         root.session.currentUserId = response.user.id
         root.session.currentSessionId = response.session?.id || uid('sess')
         root.activeTenantId = response.activeTenantId || activeTenantId
