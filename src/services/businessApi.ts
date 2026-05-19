@@ -235,7 +235,7 @@ export const businessApi = {
     return request<any>(`/admin/breach-alerts/${eventId}/notify`, { method: 'POST' })
   },
   async getDemoRequests() {
-    return request<any[]>('/demo')
+    return request<{ ok: boolean; data: any[] }>('/demo')
   },
   async createDemoRequest(data: any) {
     return request<any>('/demo', { method: 'POST', body: data })
