@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
+import { businessApi } from '../../services/businessApi'
 
 const auth = useAuthStore()
 const emit = defineEmits(['notify', 'navigate'])
@@ -92,6 +93,35 @@ function toggleFaq(id) {
 const selectedArticle = ref(null)
 function openArticle(article) { selectedArticle.value = article }
 function closeArticle() { selectedArticle.value = null }
+
+// Support ticket modal
+const showTicketModal = ref(false)
+const ticketForm = ref({ subject: '', description: '', priority: 'media' })
+const ticketSubmitting = ref(false)
+
+function openTicketModal() { showTicketModal.value = true }
+function closeTicketModal() {
+  showTicketModal.value = false
+  ticketForm.value = { subject: '', description: '', priority: 'media' }
+}
+
+async function submitTicket() {
+  if (!ticketForm.value.subject.trim() || !ticketForm.value.description.trim()) return
+  ticketSubmitting.value = true
+  try {
+    await businessApi.createSupportTicket({
+      subject: ticketForm.value.subject,
+      description: ticketForm.value.description,
+      priority: ticketForm.value.priority,
+    })
+    closeTicketModal()
+    emit('notify', { message: 'Ticket enviado', detail: 'Tu solicitud fue registrada. Nuestro equipo te contactará en menos de 4 horas hábiles.' })
+  } catch {
+    emit('notify', { message: 'Error al enviar', detail: 'No se pudo crear el ticket. Intenta de nuevo.' })
+  } finally {
+    ticketSubmitting.value = false
+  }
+}
 </script>
 
 <template>
@@ -264,7 +294,7 @@ function closeArticle() { selectedArticle.value = null }
             <p class="text-[13px] font-medium text-blue-100 leading-relaxed">Nuestro equipo de soporte está disponible de lunes a viernes de 8:00 a.m. a 6:00 p.m. (COT). Tiempo de respuesta promedio: 2 horas.</p>
           </div>
           <button
-            @click="emit('notify', { message: 'Ticket de soporte', detail: 'Tu solicitud ha sido registrada. Nuestro equipo te contactará pronto.' })"
+            @click="openTicketModal"
             class="px-5 py-2.5 bg-white text-[#2563EB] rounded-[10px] text-[13px] font-bold hover:bg-blue-50 transition-colors shadow-sm flex-shrink-0 flex items-center gap-2"
           >
             <span class="material-symbols-outlined text-[18px]">mail</span>
@@ -274,4 +304,85 @@ function closeArticle() { selectedArticle.value = null }
       </div>
     </div>
   </div>
+
+  <!-- Support Ticket Modal -->
+  <Teleport to="body">
+    <div v-if="showTicketModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4" @click.self="closeTicketModal">
+      <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="closeTicketModal"></div>
+      <div class="relative bg-white rounded-[18px] shadow-[0_8px_60px_rgba(0,0,0,0.18)] w-full max-w-[500px] overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        <!-- Header -->
+        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5]">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-[22px] text-[#2563EB]">support_agent</span>
+            <h2 class="text-[16px] font-extrabold tracking-tight text-[#18181B]">Nuevo ticket de soporte</h2>
+          </div>
+          <button @click="closeTicketModal" class="w-7 h-7 rounded-[8px] hover:bg-[#F4F4F5] flex items-center justify-center text-[#A1A1AA] hover:text-[#18181B] transition-colors">
+            <span class="material-symbols-outlined text-[18px]">close</span>
+          </button>
+        </div>
+
+        <!-- Form -->
+        <div class="px-6 py-5 space-y-4">
+          <!-- Subject -->
+          <div>
+            <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Asunto</label>
+            <input
+              v-model="ticketForm.subject"
+              type="text"
+              placeholder="Describe brevemente el problema..."
+              class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#2563EB] focus:shadow-[0_0_0_3px_rgba(37,99,235,0.1)] transition-all"
+            />
+          </div>
+
+          <!-- Priority -->
+          <div>
+            <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Prioridad</label>
+            <div class="flex gap-2">
+              <button
+                v-for="p in [{ value: 'baja', label: 'Baja', color: 'emerald' }, { value: 'media', label: 'Media', color: 'amber' }, { value: 'alta', label: 'Alta', color: 'orange' }, { value: 'critica', label: 'Crítica', color: 'rose' }]"
+                :key="p.value"
+                @click="ticketForm.priority = p.value"
+                :class="[
+                  'flex-1 py-2 rounded-[8px] text-[12px] font-bold border transition-all',
+                  ticketForm.priority === p.value
+                    ? 'bg-[#18181B] text-white border-[#18181B]'
+                    : 'bg-white text-[#71717A] border-[#E4E4E7] hover:border-[#D4D4D8]'
+                ]"
+              >{{ p.label }}</button>
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div>
+            <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Descripción</label>
+            <textarea
+              v-model="ticketForm.description"
+              rows="4"
+              placeholder="Explica con detalle qué ocurre, qué pasos seguiste y qué resultado esperabas..."
+              class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#2563EB] focus:shadow-[0_0_0_3px_rgba(37,99,235,0.1)] transition-all resize-none"
+            ></textarea>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 border-t border-[#F4F4F5] bg-[#FAFAFA] flex items-center justify-between gap-3">
+          <p class="text-[11px] text-[#A1A1AA]">Tiempo de respuesta: <span class="font-semibold text-[#18181B]">≤ 4 horas hábiles</span></p>
+          <div class="flex gap-2">
+            <button @click="closeTicketModal" class="px-4 py-2 rounded-[8px] border border-[#E4E4E7] text-[12px] font-semibold text-[#71717A] hover:bg-white transition-colors">
+              Cancelar
+            </button>
+            <button
+              @click="submitTicket"
+              :disabled="!ticketForm.subject.trim() || !ticketForm.description.trim() || ticketSubmitting"
+              class="px-4 py-2 rounded-[8px] bg-[#2563EB] text-white text-[12px] font-bold hover:bg-[#1d4ed8] transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+            >
+              <span v-if="ticketSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+              <span class="material-symbols-outlined text-[15px]" v-else>send</span>
+              {{ ticketSubmitting ? 'Enviando...' : 'Enviar ticket' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </Teleport>
 </template>

@@ -276,4 +276,13 @@ export const businessApi = {
   async updateProfile(data: { name?: string; title?: string }) {
     return request<any>('/auth/profile', { method: 'PATCH', body: data })
   },
+  async createSupportTicket(data: { subject: string; description: string; priority?: 'baja' | 'media' | 'alta' | 'critica' }) {
+    return request<{ ok: boolean; message: string; data: any }>('/support/tickets', { method: 'POST', body: data })
+  },
+  async getSupportTickets() {
+    return request<{ ok: boolean; data: any[] }>('/support/tickets')
+  },
+  async updateSupportTicketStatus(id: string, status: string) {
+    return request<any>(`/support/tickets/${id}/status`, { method: 'PUT', body: { status } })
+  },
 }
