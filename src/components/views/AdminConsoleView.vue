@@ -621,7 +621,7 @@ async function handleIntegration(name) {
           resolutionFrom: res.resolutionFrom ? String(res.resolutionFrom).slice(0, 10) : '',
           resolutionTo: res.resolutionTo ? String(res.resolutionTo).slice(0, 10) : '',
           dianOperationCode: res.dianOperationCode || '10',
-          dianCertificatePassword: res.dianCertificatePassword || '',
+          dianCertificatePassword: '',
           dianCertificate: ''
         }
         dianHasCertificate.value = Boolean(res.hasCertificate)

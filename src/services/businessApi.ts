@@ -71,6 +71,33 @@ export interface BancolombiaSyncRequest {
   }>
 }
 
+export interface DianIntegrationConfig {
+  dianEnvironment: 'test' | 'production'
+  dianSoftwareId: string | null
+  dianSoftwarePin: string | null
+  dianNit: string | null
+  dianTestSetId: string | null
+  invoiceResolution: string | null
+  resolutionFrom: string | null
+  resolutionTo: string | null
+  dianOperationCode: string | null
+  hasCertificate?: boolean
+}
+
+export interface DianIntegrationUpdateRequest {
+  dianEnvironment?: 'test' | 'production'
+  dianSoftwareId?: string
+  dianSoftwarePin?: string
+  dianNit?: string
+  dianTestSetId?: string
+  invoiceResolution?: string
+  resolutionFrom?: string
+  resolutionTo?: string
+  dianOperationCode?: string
+  dianCertificate?: string
+  dianCertificatePassword?: string
+}
+
 export const businessApi = {
   // Auth
   async login(credentials: any) {
@@ -227,9 +254,9 @@ export const businessApi = {
     return request<{ valid: boolean; errors: string[]; warnings: string[] }>('/dian/config/validate', { tenantId })
   },
   async getDianConfig(tenantId?: string | null) {
-    return request<any>('/dian/config', { tenantId })
+    return request<DianIntegrationConfig>('/dian/config', { tenantId })
   },
-  async updateDianConfig(config: any, tenantId?: string | null) {
+  async updateDianConfig(config: DianIntegrationUpdateRequest, tenantId?: string | null) {
     return request<any>('/dian/config', { method: 'POST', body: config, tenantId })
   },
 
