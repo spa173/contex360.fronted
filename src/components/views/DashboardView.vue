@@ -27,7 +27,7 @@ const selectedPeriod = ref('Este mes')
 const periods = ['Este mes', 'Este trimestre', 'Este año']
 
 const userName = computed(() => {
-  const name = auth.currentUser?.name || 'Daniel Castro'
+  const name = auth.currentUser?.name || 'Usuario'
   return name.split(' ')[0]
 })
 

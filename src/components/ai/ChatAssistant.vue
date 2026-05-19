@@ -27,14 +27,19 @@ const proactiveSuggestions = ref(true)
 const saveHistory = ref(true)
 
 const userInitials = computed(() => {
-  const name = auth.currentUser?.name || 'Daniel Castro'
+  const name = auth.currentUser?.name || 'Usuario'
   return name.split(' ').slice(0, 2).map(w => w[0]).join('').toUpperCase()
+})
+
+const userName = computed(() => {
+  const name = auth.currentUser?.name || 'Usuario'
+  return name.split(' ')[0]
 })
 
 const chatHistory = ref([
   { 
     role: 'assistant', 
-    content: '¡Hola Daniel! Soy ContexAI. Puedo ayudarte con facturación, reportes, conciliación bancaria o análisis de tus datos.',
+    content: `¡Hola ${userName.value}! Soy ContexAI. Puedo ayudarte con facturación, reportes, conciliación bancaria o análisis de tus datos.`,
     time: 'Hace 2 min',
     showSuggestions: true
   }
@@ -100,7 +105,7 @@ const clearHistory = () => {
   chatHistory.value = [
     { 
       role: 'assistant', 
-      content: '¡Hola Daniel! El historial ha sido limpiado. ¿En qué te puedo colaborar hoy?',
+      content: `¡Hola ${userName.value}! El historial ha sido limpiado. ¿En qué te puedo colaborar hoy?`,
       time: 'Ahora',
       showSuggestions: true
     }

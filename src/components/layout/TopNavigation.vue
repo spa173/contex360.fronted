@@ -143,7 +143,7 @@ onUnmounted(() => {
 })
 
 function userInitials() {
-  const name = props.user?.name || 'Daniel Castro'
+  const name = props.user?.name || 'Usuario'
   return name.split(' ').filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
 }
 
@@ -266,7 +266,7 @@ function handleViewAllAlerts() {
             {{ userInitials() }}
           </div>
           <div class="text-left hidden lg:block">
-            <p class="text-[12px] font-bold text-[#18181B] leading-tight whitespace-nowrap">{{ (user?.name || 'Daniel Castro').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
+            <p class="text-[12px] font-bold text-[#18181B] leading-tight whitespace-nowrap">{{ (user?.name || 'Usuario').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
             <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider">{{ activeMembership?.role || user?.title || 'Administrador' }}</p>
           </div>
           <span class="material-symbols-outlined text-[15px] text-[#A1A1AA]">expand_more</span>
@@ -282,8 +282,8 @@ function handleViewAllAlerts() {
               {{ userInitials() }}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate leading-tight">{{ user?.name || 'Daniel Castro' }}</p>
-              <p class="text-[12px] text-[#71717A] truncate leading-snug">{{ user?.email || 'daniel.castro@contex360.com' }}</p>
+              <p class="text-[14px] font-bold text-[#18181B] tracking-tight truncate leading-tight">{{ user?.name || 'Usuario' }}</p>
+              <p class="text-[12px] text-[#71717A] truncate leading-snug">{{ user?.email || 'usuario@empresa.com' }}</p>
               <span class="inline-block mt-1 text-[10px] font-extrabold uppercase tracking-wider bg-[#2563EB]/10 text-[#2563EB] px-2 py-0.5 rounded-[6px]">{{ activeMembership?.role || user?.title || 'Administrador' }}</span>
             </div>
           </div>
