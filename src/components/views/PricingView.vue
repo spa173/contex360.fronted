@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import { useStateStore } from '../../stores/stateStore'
 
 const emit = defineEmits<{
   (e: 'back'): void
@@ -97,29 +98,23 @@ function openCheckout(plan: any) {
 async function submitPayment() {
   paymentStep.value = 'processing'
   try {
-    const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001'}/subscriptions/checkout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        planType: selectedPlan.value.id,
-        billing: isAnnual.value ? 'annual' : 'monthly',
-      }),
-    })
-    const data = await response.json()
-    if (data.redirectUrl) {
-      // Navigate to Wompi checkout page
-      window.location.href = data.redirectUrl
-      return
-    }
+    const store = useStateStore()
+    const tenantId = store.currentUser?.tenantId || 'demo-tenant-id'
+    const billing = isAnnual.value ? 'annual' : 'monthly'
+    const reference = `${selectedPlan.value.id}_${billing}_${tenantId}`
+    
+    const redirectUrl = encodeURIComponent(`${window.location.origin}/pago-exitoso?planType=${selectedPlan.value.id}`)
+    const wompiLink = `https://checkout.wompi.co/l/test_VPOS_Np7UCJ?reference=${reference}&redirect-url=${redirectUrl}`
+    
+    // Redirigir a Wompi
+    window.location.href = wompiLink
   } catch (e) {
     console.error('Error creating Wompi link', e)
+    // Fallback to success UI si hay algún error
+    setTimeout(() => {
+      paymentStep.value = 'success'
+    }, 2000)
   }
-  // Fallback to success UI if redirection fails
-  setTimeout(() => {
-    paymentStep.value = 'success'
-  }, 2000)
 }
 
 function closeWompi() {
