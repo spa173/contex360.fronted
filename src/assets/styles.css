@@ -157,9 +157,9 @@ html.light .status-borrador {
   --surface: #182235;
   --surface-alt: #111827;
   --surface-border: rgba(55, 65, 81, 0.5);
-  --sidebar-bg: #111827;
+  --sidebar-bg: #0b0f19;
   --sidebar-foreground: #f4f4f5;
-  --sidebar-border: rgba(55, 65, 81, 0.5);
+  --sidebar-border: rgba(55, 65, 81, 0.35);
 }
 
 html.dark body {
@@ -168,8 +168,8 @@ html.dark body {
 }
 
 html.dark .app .sidebar {
-  background: rgba(17, 24, 39, 0.98);
-  border-right: 1px solid var(--border);
+  background: #0b0f19;
+  border-right: 1px solid rgba(55, 65, 81, 0.35);
   box-shadow: none;
 }
 
@@ -178,8 +178,8 @@ html.dark .main.main-panel {
 }
 
 html.dark .topbar {
-  background: rgba(17, 24, 39, 0.98);
-  border-bottom: 1px solid var(--border);
+  background: #0b0f19;
+  border-bottom: 1px solid rgba(55, 65, 81, 0.35);
   box-shadow: none;
 }
 
@@ -192,9 +192,9 @@ html.dark .metric-card {
 html.dark .field input,
 html.dark .field select,
 html.dark .field textarea {
-  background: #09090b;
-  border-color: rgba(59, 130, 246, 0.4);
-  color: #fafafa;
+  background: #111827;
+  border-color: rgba(55, 65, 81, 0.6);
+  color: #f4f4f5;
 }
 
 html.dark .invoice-card,
@@ -208,9 +208,9 @@ html.dark .invoice-line {
 }
 
 html.dark .toast {
-  background: #18181b;
+  background: #182235;
   border-color: #F97316;
-  color: #fafafa;
+  color: #f4f4f5;
 }
 
 html.dark .ghost-button,
@@ -233,7 +233,7 @@ html.dark .bg-white {
   background-color: var(--surface) !important;
 }
 html.dark .bg-blue-50 {
-  background-color: rgba(59, 130, 246, 0.1) !important;
+  background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(14, 24, 50, 0.95) 100%) !important;
 }
 html.dark .bg-blue-500, html.dark .bg-blue-600 {
   background-color: #2563eb !important;
@@ -275,6 +275,48 @@ html.dark .text-\[\#71717A\] {
 }
 html.dark .text-\[\#A1A1AA\] {
   color: var(--muted-foreground) !important;
+}
+
+/* --- Additional Tailwind hardcoded color overrides for dark mode --- */
+html.dark .bg-\[\#18181B\] {
+  background-color: #182235 !important;
+}
+html.dark .bg-\[\#27272A\] {
+  background-color: #1e293b !important;
+}
+html.dark .border-\[\#D4D4D8\] {
+  border-color: rgba(55, 65, 81, 0.6) !important;
+}
+html.dark .hover\:bg-\[\#FAFAFA\]:hover {
+  background-color: rgba(24, 35, 53, 0.6) !important;
+}
+html.dark .hover\:bg-\[\#F4F4F5\]:hover {
+  background-color: rgba(24, 35, 53, 0.6) !important;
+}
+html.dark .hover\:text-\[\#18181B\]:hover {
+  color: #f4f4f5 !important;
+}
+html.dark .bg-emerald-50 {
+  background-color: rgba(16, 185, 129, 0.1) !important;
+}
+html.dark .border-emerald-200 {
+  border-color: rgba(16, 185, 129, 0.25) !important;
+}
+html.dark .text-emerald-700 {
+  color: #34d399 !important;
+}
+html.dark .bg-\[\#2563EB\]\/10 {
+  background-color: rgba(37, 99, 235, 0.2) !important;
+}
+/* Notification dot border matches dark background instead of white */
+html.dark .border-white {
+  border-color: #0b0f19 !important;
+}
+/* Kbd shortcut badges */
+html.dark kbd {
+  background-color: #111827 !important;
+  border-color: rgba(55, 65, 81, 0.5) !important;
+  color: #64748b !important;
 }
 
 * {
