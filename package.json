@@ -11,7 +11,8 @@
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
     "lint": "eslint . --ext .vue,.js,.ts",
-    "lint:fix": "eslint . --ext .vue,.js,.ts --fix"
+    "lint:fix": "eslint . --ext .vue,.js,.ts --fix",
+    "postinstall": "node scripts/patch-lockfile.cjs"
   },
   "dependencies": {
     "axios": "^1.8.4",
