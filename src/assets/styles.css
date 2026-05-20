@@ -550,7 +550,6 @@ textarea {
   overflow-y: auto;
 }
 
-.topbar,
 .hero,
 .panel-card {
   border-radius: var(--radius-xl);

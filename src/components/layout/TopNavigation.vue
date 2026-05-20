@@ -262,7 +262,7 @@ function handleViewAllAlerts() {
         </button>
         <div
           v-if="showNotifications"
-          class="fixed sm:absolute inset-x-4 top-16 sm:inset-auto sm:right-0 sm:top-full sm:mt-1.5 sm:w-[360px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          class="absolute right-0 top-full mt-1.5 w-[320px] sm:w-[360px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <div class="px-4 py-3 border-b border-[#F4F4F5] flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -330,7 +330,7 @@ function handleViewAllAlerts() {
 
         <div
           v-if="showAvatar"
-          class="fixed sm:absolute inset-x-4 top-16 sm:inset-auto sm:right-0 sm:top-full sm:mt-1.5 sm:w-[280px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          class="absolute right-0 top-full mt-1.5 w-[280px] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <!-- User info -->
           <div class="px-4 py-3.5 flex items-center gap-3">
