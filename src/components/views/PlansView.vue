@@ -135,7 +135,7 @@ async function handleUpgradeReal(planId: string) {
       <div class="flex items-center justify-center gap-2 mb-3">
         <span class="text-[11px] uppercase tracking-[0.15em] font-bold text-[#2563EB] bg-[#2563EB]/10 px-2.5 py-1 rounded-full">Suscripción</span>
       </div>
-      <h1 class="text-[32px] sm:text-[40px] font-extrabold tracking-[-0.03em] text-[#18181B] mb-3">
+      <h1 class="text-[26px] sm:text-[40px] font-extrabold tracking-[-0.03em] text-[#18181B] mb-3">
         Planes y Límites del Sistema
       </h1>
       <p class="text-[15px] sm:text-[16px] text-[#71717A] leading-[1.6]">
