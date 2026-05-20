@@ -1,5 +1,5 @@
 const LOCAL_API_BASE_URL = 'http://localhost:3001'
-const PRODUCTION_API_BASE_URL = 'https://contex360-backend-production-2b1d.up.railway.app'
+const PRODUCTION_API_BASE_URL = 'https://spartan173-contex.hf.space'
 
 function normalizeApiBaseUrl(value: string) {
   return value.endsWith('/') ? value.slice(0, -1) : value
@@ -21,8 +21,8 @@ function resolveDefaultApiBaseUrl() {
 export function getApiBaseUrl() {
   let raw = String(import.meta.env.VITE_API_BASE_URL || resolveDefaultApiBaseUrl())
   
-  // Auto-fix: if the URL still points to Render or a stale Railway domain, force the correct one
-  if (raw.includes('onrender.com') || (raw.includes('railway.app') && !raw.includes('-2b1d'))) {
+  // Auto-fix: si la URL aún apunta a Render o a un dominio antiguo de Railway, forzar el correcto
+  if (raw.includes('onrender.com') || raw.includes('railway.app')) {
     raw = PRODUCTION_API_BASE_URL
   }
   
