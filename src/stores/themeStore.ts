@@ -26,15 +26,15 @@ function applyResolvedTheme(mode: 'dark' | 'light') {
 }
 
 function getStoredTheme(): ThemeMode {
-  if (typeof globalThis === 'undefined' || !globalThis.localStorage) return 'auto'
+  if (typeof globalThis === 'undefined' || !globalThis.localStorage) return 'light'
   const stored = globalThis.localStorage.getItem(STORAGE_KEY)
   if (stored === 'light' || stored === 'dark' || stored === 'auto') return stored
-  return 'auto'
+  return 'light'
 }
 
 export const useThemeStore = defineStore('theme', {
   state: () => ({
-    theme: 'auto' as ThemeMode,
+    theme: 'light' as ThemeMode,
     initialized: false,
     forceLightMode: false,
   }),

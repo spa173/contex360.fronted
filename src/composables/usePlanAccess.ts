@@ -9,15 +9,26 @@ const PLAN_MODULES: Record<string, string[]> = {
 
 export function usePlanAccess() {
   const store = useStateStore()
-  const plan = computed(() => store.subscription?.planType ?? 'starter')
+  
+  const isBypassed = computed(() => {
+    const user = store.currentUser
+    return user?.isSystemOwner === true || user?.email === 'root@contex360.local'
+  })
+
+  const plan = computed(() => {
+    if (isBypassed.value) return 'enterprise'
+    return store.subscription?.planType ?? 'starter'
+  })
   
   function canAccessModule(moduleId: string): boolean {
+    if (isBypassed.value) return true
     const modules = store.subscription?.limits?.modules || PLAN_MODULES[plan.value] || []
     if (modules.includes('*')) return true
     return modules.includes(moduleId)
   }
   
   function canCreateInvoice(): boolean {
+    if (isBypassed.value) return true
     const limit = store.subscription?.limits?.maxInvoicesPerMonth
     if (limit === null || limit === undefined) return true
     const current = store.subscription?.invoicesThisMonth ?? 0
@@ -25,6 +36,7 @@ export function usePlanAccess() {
   }
   
   function canAddUser(): boolean {
+    if (isBypassed.value) return true
     const limit = store.subscription?.limits?.maxUsers
     if (limit === null || limit === undefined) return true
     
@@ -35,6 +47,7 @@ export function usePlanAccess() {
   }
   
   function isFeatureLocked(feature: string): boolean {
+    if (isBypassed.value) return false
     return !canAccessModule(feature)
   }
   
