@@ -4,16 +4,19 @@ on:
   push:
     branches:
       - main
-      - master
+      - staging
       - 'codex/**'
   pull_request:
+    branches:
+      - main
+      - staging
 
 concurrency:
   group: frontend-ci-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
 
     steps:
@@ -29,5 +32,15 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Static Analysis (Type Checking)
+        run: npx vue-tsc --noEmit
+
+      - name: Linter (Reporting only)
+        run: npm run lint || echo "Linter checks completed with warnings"
+
       - name: Build
         run: npm run build
+
+      - name: Run Unit Tests
+        run: npm test
+
