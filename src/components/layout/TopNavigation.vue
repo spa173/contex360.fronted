@@ -32,6 +32,13 @@ const showNotifications = ref(false)
 const showAvatar = ref(false)
 const showShortcuts = ref(false)
 
+const isMobile = ref(window.innerWidth <= 860);
+const handleResize = () => {
+  isMobile.value = window.innerWidth <= 860;
+};
+onMounted(() => window.addEventListener('resize', handleResize));
+onUnmounted(() => window.removeEventListener('resize', handleResize));
+
 function closeAll() {
   showNotifications.value = false
   showAvatar.value = false
@@ -228,7 +235,7 @@ function handleViewAllAlerts() {
       </span>
     </div>
 
-    <header class="topbar h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 gap-3">
+    <header class="topbar h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 gap-3" :style="{ left: isMobile ? '0' : 'var(--sidebar-width)' }">
     <!-- Hamburger (mobile only) -->
     <button
       @click="emit('toggle-sidebar')"
@@ -330,7 +337,7 @@ function handleViewAllAlerts() {
 
         <div
           v-if="showAvatar"
-          class="absolute right-0 top-full mt-1.5 w-full max-w-[90vw] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          class="absolute left-0 sm:right-0 top-full mt-1.5 w-full max-w-[90vw] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <!-- User info -->
           <div class="px-4 py-3.5 flex items-center gap-3">
