@@ -233,7 +233,7 @@ function statusBadge(status: string | undefined): BadgeStyle {
                 <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ invoice.number || 'FE-1021' }}</td>
                 <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ invoice.customerName || invoice.client?.name || 'Cliente' }}</td>
                 <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(invoice.date || invoice.createdAt || Date.now()).toLocaleDateString() }}</td>
-                <td class="px-5 py-3.5 text-right font-mono font-semibold text-[#18181B]">{{ formatCurrency(invoice.total) }}</td>
+                <td class="px-5 py-3.5 text-right font-mono font-semibold text-[#18181B]">{{ formatCurrency(Number(invoice.total) || 0) }}</td>
                 <td class="px-5 py-3.5">
                   <span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', statusBadge(invoice.status).class]">
                     <span class="material-symbols-outlined text-[12px]">{{ statusBadge(invoice.status).icon }}</span>
