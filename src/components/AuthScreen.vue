@@ -1,13 +1,11 @@
-<script setup>
+<script setup lang="ts">
 import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
-import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
-import { encryptData, decryptData } from '../utils/security'
+import { decryptData } from '../utils/security'
 import { toast } from 'vue-sonner'
 
 const authStore = useAuthStore()
-const themeStore = useThemeStore()
 
 const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy', 'forgot-password', 'back'])
 
@@ -19,7 +17,6 @@ const isLoading = ref(false)
 const rememberMe = ref(false)
 const errorMessage = ref('')
 const statusMessage = ref('')
-const forgotAccessOpen = ref(false)
 const requiresTotp = ref(false)
 const totpCode = ref('')
 const requiresPasswordChange = ref(false)
@@ -29,7 +26,7 @@ const changePasswordLoading = ref(false)
 const hasAcceptedPrivacy = ref(false)
 
 // ── Validación de email (RFC 5322 simplificado) ──────────────────────────────
-const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/
+const EMAIL_RE = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 const isEmailValid = computed(() => EMAIL_RE.test(email.value.trim()))
 
 // ── Política de contraseña para app financiera ────────────────────────────────
@@ -37,7 +34,7 @@ const PASSWORD_RULES = [
   { id: 'length',    label: 'Mínimo 12 caracteres',          test: (p: string) => p.length >= 12 },
   { id: 'upper',     label: 'Al menos una mayúscula',         test: (p: string) => /[A-Z]/.test(p) },
   { id: 'lower',     label: 'Al menos una minúscula',         test: (p: string) => /[a-z]/.test(p) },
-  { id: 'digit',     label: 'Al menos un número',             test: (p: string) => /[0-9]/.test(p) },
+  { id: 'digit',     label: 'Al menos un número',             test: (p: string) => /\d/.test(p) },
   { id: 'special',   label: 'Al menos un símbolo (!@#$...)',  test: (p: string) => /[^a-zA-Z0-9]/.test(p) },
 ]
 
@@ -83,12 +80,9 @@ const handleSubmit = async () => {
     const credentials = {
       email: email.value,
       password: password.value,
-      totpCode: undefined,
+      totpCode: requiresTotp.value && totpCode.value ? totpCode.value : undefined,
       privacyAccepted: hasAcceptedPrivacy.value,
       rememberMe: rememberMe.value,
-    }
-    if (requiresTotp.value && totpCode.value) {
-      credentials.totpCode = totpCode.value
     }
 
     const result = await authStore.loginWithBackend(credentials)
@@ -112,7 +106,7 @@ const handleSubmit = async () => {
 
     statusMessage.value = result.message || 'Sesión iniciada.'
   } catch (error) {
-    errorMessage.value = error?.message || 'Error de conexión. Intenta de nuevo.'
+    errorMessage.value = (error instanceof Error ? error.message : String(error)) || 'Error de conexión. Intenta de nuevo.'
   } finally {
     isLoading.value = false
   }
@@ -138,7 +132,7 @@ const handleChangePassword = async () => {
       await handleSubmit()
     }
   } catch (err) {
-    errorMessage.value = err?.message || 'Error al cambiar la contraseña.'
+    errorMessage.value = (err instanceof Error ? err.message : String(err)) || 'Error al cambiar la contraseña.'
   } finally {
     changePasswordLoading.value = false
   }
