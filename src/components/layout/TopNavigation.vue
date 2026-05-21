@@ -269,7 +269,7 @@ function handleViewAllAlerts() {
         </button>
         <div
           v-if="showNotifications"
-          class="absolute left-0 sm:right-0 top-full mt-1.5 w-full max-w-[90vw] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
+          class="absolute right-0 top-full mt-1.5 w-[300px] max-w-[calc(100vw-1rem)] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200"
         >
           <div class="px-4 py-3 border-b border-[#F4F4F5] flex items-center justify-between">
             <div class="flex items-center gap-2">
@@ -337,7 +337,7 @@ function handleViewAllAlerts() {
 
         <div
           v-if="showAvatar"
-          :class="{ 'absolute left-0 sm:right-0 top-full mt-1.5 w-full bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] z-50 animate-in fade-in slide-in-from-top-2 duration-200 transform transition-transform ease-out origin-top': true, 'max-w-[90vw] overflow-hidden': !isMobile, 'max-w-[100vw] overflow-x-auto': isMobile }"
+          class="absolute right-0 top-full mt-1.5 w-[280px] max-w-[calc(100vw-1rem)] bg-white border border-[#E4E4E7] rounded-[14px] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.18)] overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200 transform transition-transform ease-out origin-top"
         >
           <!-- User info -->
           <div class="px-4 py-3.5 flex items-center gap-3">

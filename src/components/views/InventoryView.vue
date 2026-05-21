@@ -153,7 +153,7 @@ function statusBadge(product) {
           <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
           <input v-model="searchQuery" placeholder="Buscar SKU o nombre..." class="pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-full" />
         </div>
-        <div class="flex gap-2">
+        <div class="flex flex-wrap gap-2">
           <button @click="stockFilter = 'todos'" :class="stockFilter === 'todos' ? 'bg-[#18181B] text-white' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-semibold transition-colors">Todos</button>
           <button @click="stockFilter = 'bajo'" :class="stockFilter === 'bajo' ? 'bg-amber-50 border-amber-200 text-amber-800 font-semibold' : 'bg-white border border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFA]'" class="px-3 py-1.5 rounded-[8px] text-[12px] font-medium flex items-center gap-1.5 transition-colors">
             <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Bajo
@@ -165,7 +165,7 @@ function statusBadge(product) {
       </div>
 
       <div class="overflow-x-auto">
-        <table class="w-full text-left">
+        <table class="w-full text-left min-w-[640px]">
           <thead>
             <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
               <th class="px-5 py-3">SKU</th>
