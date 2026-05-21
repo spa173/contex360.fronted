@@ -4,6 +4,7 @@ import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
 import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import type { Quote, CreateQuotePayload, QuoteStatus } from '../types/quotes'
+import { quoteSchema } from '../schemas/quote.schema'
 
 export const useQuotesStore = defineStore('quotes', () => {
   const root = useStateStore()
@@ -57,6 +58,8 @@ export const useQuotesStore = defineStore('quotes', () => {
     }
 
     try {
+      quoteSchema.parse(payload)
+
       const response = await businessApi.createQuote(
         payload,
         activeTenantId.value,
@@ -75,6 +78,9 @@ export const useQuotesStore = defineStore('quotes', () => {
 
       return { ok: true, message: 'Cotización creada correctamente.', quote }
     } catch (error) {
+      if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
+        return { ok: false, message: 'Datos de cotización inválidos. Revisa los campos obligatorios.' }
+      }
       return {
         ok: false,
         message:
