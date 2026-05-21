@@ -22,11 +22,11 @@ onMounted(() => {
   adminStore.loadSettings()
 })
 
-function parseRate(rateStr) {
+function parseRate(rateStr: string | number | undefined): number {
   const clean = String(rateStr || '').trim()
   const isPerMille = clean.includes('‰')
-  const num = parseFloat(clean.replace(/[^0-9.]/g, ''))
-  if (isNaN(num)) return 0
+  const num = Number.parseFloat(clean.replace(/[^0-9.]/g, ''))
+  if (Number.isNaN(num)) return 0
   if (isPerMille) {
     return num / 1000
   }
@@ -147,7 +147,13 @@ async function handleExport() {
   emit('notify', { message: 'PDF Descargado', detail: 'El reporte de facturación electrónica DIAN ha sido guardado exitosamente.' })
 }
 
-function statusBadge(status) {
+interface BadgeStyle {
+  class: string
+  icon: string
+  label: string
+}
+
+function statusBadge(status: string | undefined): BadgeStyle {
   const s = (status || '').toLowerCase()
   if (s === 'aceptada' || s === 'accepted') return { class: 'bg-emerald-50 text-emerald-700', icon: 'check_circle', label: 'Aceptada' }
   if (s === 'rechazada' || s === 'rejected') return { class: 'bg-rose-50 text-rose-700', icon: 'error', label: 'Rechazada' }
