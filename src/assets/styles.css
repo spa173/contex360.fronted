@@ -557,11 +557,6 @@ textarea {
 }
 
 .topbar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: var(--sidebar-width);
-  height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
