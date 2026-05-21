@@ -379,8 +379,8 @@ function handleViewAllAlerts() {
             {{ userInitials() }}
           </div>
           <div class="text-left hidden lg:block min-w-0">
-            <p class="text-[12px] font-bold text-[#18181B] leading-tight truncate max-w-[120px]">{{ (user?.name || 'Usuario').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
-            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider truncate max-w-[120px]">{{ activeMembership?.role || user?.title || 'Administrador' }}</p>
+            <p class="text-[12px] font-bold text-[#18181B] leading-tight">{{ (user?.name || 'Usuario').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
+            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider">{{ activeMembership?.role || user?.title || 'Administrador' }}</p>
           </div>
           <span class="material-symbols-outlined text-[15px] text-[#A1A1AA]">expand_more</span>
         </button>
