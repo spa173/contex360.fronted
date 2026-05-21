@@ -363,7 +363,7 @@ function handleViewAllAlerts() {
       </div>
 
       <!-- Help -->
-      <button class="w-8 h-8 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors">
+      <button @click="emit('navigate', 'help-center')" class="w-8 h-8 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] hover:text-[#18181B] transition-colors">
         <span class="material-symbols-outlined text-[20px]">help</span>
       </button>
 
