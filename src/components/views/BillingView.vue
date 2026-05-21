@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useBillingStore } from '../../stores/billingStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
@@ -177,7 +177,7 @@ function statusBadge(status) {
     </div>
 
     <!-- Split: table + new invoice -->
-    <div class="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-6">
       <!-- Table -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
@@ -234,31 +234,31 @@ function statusBadge(status) {
       </div>
 
       <!-- New invoice form -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 self-start">
-        <h3 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h3>
-        <p class="text-[12px] text-[#71717A] mb-5">Se enviará automáticamente a la DIAN.</p>
+      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 h-fit sticky top-6">
+        <h3 class="text-[18px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h3>
+        <p class="text-[13px] text-[#71717A] mb-6">Se enviará automáticamente a la DIAN.</p>
 
-        <form @submit.prevent="handleCreateInvoice" class="space-y-4">
+        <form @submit.prevent="handleCreateInvoice" class="space-y-5">
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Cliente</label>
-            <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
-              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">person</span>
-              <select v-model="newInvoice.customerId" class="flex-1 py-2.5 bg-transparent outline-none text-[13px] text-[#18181B] appearance-none">
+            <label for="invoice-customer" class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2.5 block">Cliente</label>
+            <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">person</span>
+              <select id="invoice-customer" v-model="newInvoice.customerId" class="flex-1 py-3 bg-transparent outline-none text-[13px] font-medium text-[#18181B] appearance-none cursor-pointer">
                 <option value="">Seleccionar cliente...</option>
                 <option v-for="tp in thirdParties.tenantThirdParties" :key="tp.id" :value="tp.id">{{ tp.name }}</option>
               </select>
-              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">expand_more</span>
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA] pointer-events-none">expand_more</span>
             </div>
           </div>
 
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Concepto</label>
-            <input v-model="newInvoice.concept" placeholder="Ej. Servicios de consultoría" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" />
+            <label for="invoice-concept" class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2.5 block">Concepto</label>
+            <input id="invoice-concept" v-model="newInvoice.concept" placeholder="Ej. Servicios de consultoría" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-3 text-[13px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all" />
           </div>
 
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Valor (COP)</label>
-            <input v-model="newInvoice.amount" type="number" placeholder="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[14px] text-[#18181B] font-mono font-semibold outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" />
+            <label for="invoice-amount" class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2.5 block">Valor (COP)</label>
+            <input id="invoice-amount" v-model="newInvoice.amount" type="number" placeholder="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-3 text-[14px] font-mono font-semibold text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all" />
           </div>
 
           <!-- Tax breakdown -->
