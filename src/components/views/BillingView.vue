@@ -141,10 +141,10 @@ async function handleCreateInvoice() {
   }
 }
 
-async function handleExport() {
+async function handleExport(): Promise<void> {
   emit('notify', { message: 'Generando PDF DIAN', detail: 'ContexAI está analizando los comprobantes electrónicos emitidos...' })
   const totalInvoices = filteredInvoices.value.length
-  const totalAmount = filteredInvoices.value.reduce((s, i) => s + (Number(i.total) || 0), 0)
+  const totalAmount = filteredInvoices.value.reduce((s, i) => s + (i.total ?? 0), 0)
   const accepted = filteredInvoices.value.filter(i => (i.status || '').toLowerCase() === 'aceptada').length
 
   await generatePdfReport({
