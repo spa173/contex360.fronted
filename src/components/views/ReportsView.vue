@@ -52,7 +52,8 @@ function handleExport() {
 
     <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
       <div class="px-5 py-4 border-b border-[#F4F4F5]"><h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Reportes generados</h3></div>
-      <table class="w-full text-left">
+      <div class="overflow-x-auto">
+      <table class="w-full text-left min-w-[500px]">
         <thead>
           <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
             <th class="px-5 py-3">Nombre</th>
@@ -79,6 +80,7 @@ function handleExport() {
           </tr>
         </tbody>
       </table>
+      </div>
     </div>
   </section>
 </template>

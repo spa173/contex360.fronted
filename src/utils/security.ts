@@ -8,11 +8,15 @@ function bytesToHex(bytes: Uint8Array) {
 }
 
 function getEncryptionKey() {
-  if (typeof globalThis === 'undefined' || !globalThis.localStorage || !globalThis.crypto?.getRandomValues) {
+  if (typeof globalThis === 'undefined' || !globalThis.sessionStorage || !globalThis.crypto?.getRandomValues) {
     return ''
   }
 
-  const storedKey = globalThis.localStorage.getItem(ENCRYPTION_KEY_STORAGE)?.trim()
+  // ⚠️ Llave en sessionStorage (no localStorage):
+  // — Separada de los datos cifrados que viven en localStorage
+  // — Se borra al cerrar la pestaña → los datos cifrados quedan ilegibles sin ella
+  // — No accesible desde otras pestañas/ventanas, reduciendo la superficie de ataque XSS
+  const storedKey = globalThis.sessionStorage.getItem(ENCRYPTION_KEY_STORAGE)?.trim()
   if (storedKey) {
     return storedKey
   }
@@ -20,9 +24,10 @@ function getEncryptionKey() {
   const keyBytes = new Uint8Array(32)
   globalThis.crypto.getRandomValues(keyBytes)
   const generatedKey = bytesToHex(keyBytes)
-  globalThis.localStorage.setItem(ENCRYPTION_KEY_STORAGE, generatedKey)
+  globalThis.sessionStorage.setItem(ENCRYPTION_KEY_STORAGE, generatedKey)
   return generatedKey
 }
+
 
 /**
  * Encrypts a string using AES

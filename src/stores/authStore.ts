@@ -4,8 +4,8 @@ import {
   loginWithBackend as apiLoginWithBackend,
   revokeBackendSession,
 } from '../services/authApi'
+import { encryptData } from '../utils/security'
 import { useStateStore } from './stateStore'
-import { verifyPassword } from './stateSecurity'
 import { uid } from '../utils/storeHelpers'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -51,9 +51,14 @@ export const useAuthStore = defineStore('auth', () => {
     authError.value = null
     const activeTenantId = root.activeTenantId || 'tenant-a'
 
-    // Handle "Remember Me" persistence logic
+    // Handle "Remember Me" persistence logic (encrypted for security)
     if (credentials.rememberMe) {
-      localStorage.setItem('contex360-remember-email', credentials.email)
+      try {
+        const encrypted = encryptData(credentials.email)
+        localStorage.setItem('contex360-remember-email', encrypted)
+      } catch {
+        localStorage.removeItem('contex360-remember-email')
+      }
     } else {
       localStorage.removeItem('contex360-remember-email')
     }

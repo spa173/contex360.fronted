@@ -1,6 +1,13 @@
 <script setup lang="ts">
+import DOMPurify from 'dompurify'
+
 const lastUpdated = '12 de mayo de 2026'
 const emit = defineEmits<{ (e: 'back'): void }>()
+
+const sanitizeHtml = (html: string) => DOMPurify.sanitize(html, {
+  ALLOWED_TAGS: ['strong', 'em', 'a'],
+  ALLOWED_ATTR: ['href', 'title']
+})
 
 const sections = [
   {
@@ -138,7 +145,7 @@ const finalSections = [
             <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
             <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
           </div>
-          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="s.body"></p>
+          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="sanitizeHtml(s.body)"></p>
           <ul v-if="s.list" class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
             <li v-for="item in s.list" :key="item" class="relative pl-5">
               <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
@@ -181,7 +188,7 @@ const finalSections = [
         <ul class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
           <li v-for="r in rights" :key="r" class="relative pl-5">
             <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
-            <span v-html="r"></span>
+            <span v-html="sanitizeHtml(r)"></span>
           </li>
         </ul>
       </div>
@@ -195,7 +202,7 @@ const finalSections = [
             <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
             <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
           </div>
-          <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="s.body"></p>
+          <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="sanitizeHtml(s.body)"></p>
         </article>
       </div>
     </section>

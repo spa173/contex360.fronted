@@ -391,7 +391,7 @@ onUnmounted(() => {
         </h1>
         <p class="text-[14px] text-[#71717A]">Aquí están los movimientos importantes de las últimas 24 horas.</p>
       </div>
-      <div class="flex gap-2">
+      <div class="flex flex-wrap gap-2">
         <div class="relative inline-block text-left" @click.stop>
           <button @click="toggleDropdown" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors shadow-sm">
             <span class="material-symbols-outlined text-[18px]">calendar_today</span>
@@ -400,7 +400,7 @@ onUnmounted(() => {
           </button>
 
           <!-- Dropdown Menu -->
-          <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-72 bg-white border border-[#E4E4E7] rounded-xl shadow-lg z-50 p-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150">
+          <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white border border-[#E4E4E7] rounded-xl shadow-lg z-50 p-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150">
             <div class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider px-2 mb-1">Periodo</div>
             
             <button v-for="p in presets" :key="p.value" @click="selectPreset(p)"

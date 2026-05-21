@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getApiBaseUrl } from './apiBase'
+import { getCsrfToken } from './csrf'
 
 async function request<T>(path: string, init: { method?: string; body?: unknown; tenantId?: string | null } = {}) {
+  const method = init.method || 'GET'
   const headers: Record<string, string> = {}
 
   if (init.tenantId) {
@@ -12,10 +14,17 @@ async function request<T>(path: string, init: { method?: string; body?: unknown;
     headers['Content-Type'] = 'application/json'
   }
 
+  // Adjuntar CSRF token en requests mutantes (Double Submit Cookie)
+  const SAFE = new Set(['GET', 'HEAD', 'OPTIONS'])
+  if (!SAFE.has(method.toUpperCase())) {
+    const csrf = getCsrfToken()
+    if (csrf) headers['X-CSRF-Token'] = csrf
+  }
+
   const bodyJson = init.body === undefined ? undefined : JSON.stringify(init.body)
 
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
-    method: init.method || 'GET',
+    method,
     headers,
     body: bodyJson,
     credentials: 'include',
@@ -395,6 +404,19 @@ export const businessApi = {
   async createSupportTicket(data: { subject: string; description: string; priority?: 'baja' | 'media' | 'alta' | 'critica' }) {
     return request<{ ok: boolean; message: string; data: any }>('/support/tickets', { method: 'POST', body: data })
   },
+
+  async getHelpCategories() {
+    return request<any[]>('/help-center/categories')
+  },
+
+  async getHelpArticles() {
+    return request<any[]>('/help-center/articles')
+  },
+
+  async getHelpFaqs() {
+    return request<any[]>('/help-center/faqs')
+  },
+
   async getSupportTickets() {
     return request<{ ok: boolean; data: any[] }>('/support/tickets')
   },

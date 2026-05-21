@@ -112,7 +112,7 @@ function priorityClass(p) {
           <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Programación de pagos</h3>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full text-left min-w-[540px]">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
                 <th class="px-5 py-3">Proveedor</th>

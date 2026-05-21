@@ -2,6 +2,7 @@
 import { ref, nextTick, computed, onMounted, onUnmounted } from 'vue'
 import { businessApi } from '../../services/businessApi'
 import { useAuthStore } from '../../stores/authStore'
+import DOMPurify from 'dompurify'
 
 const auth = useAuthStore()
 const emit = defineEmits(['navigate'])
@@ -157,9 +158,23 @@ const removeFile = () => {
 
 const formatMessageContent = (text) => {
   if (!text) return ''
-  let formatted = text.replace(/(\+\d+%\b)/g, '<span class="inline-block px-1.5 py-0.5 rounded-[6px] bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold mx-0.5">$1</span>')
+  // 1. Escapar el texto plano primero para neutralizar cualquier HTML crudo de la API
+  const escaped = text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#x27;')
+
+  // 2. Aplicar solo los patrones de formato controlados sobre texto ya escapado
+  let formatted = escaped.replace(/(\+\d+%\b)/g, '<span class="inline-block px-1.5 py-0.5 rounded-[6px] bg-emerald-50 border border-emerald-200 text-emerald-700 font-extrabold mx-0.5">$1</span>')
   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="font-extrabold text-[#18181B]">$1</strong>')
-  return formatted
+
+  // 3. Sanitizar con DOMPurify: solo permitir las etiquetas y atributos que nosotros mismos generamos
+  return DOMPurify.sanitize(formatted, {
+    ALLOWED_TAGS: ['strong', 'span'],
+    ALLOWED_ATTR: ['class']
+  })
 }
 
 const sendSuggestedPrompt = async (promptText) => {

@@ -1,4 +1,5 @@
 import { getApiBaseUrl } from './apiBase'
+import { getCsrfToken } from './csrf'
 
 export interface BackendAuthUser {
   id: string
@@ -104,14 +105,22 @@ function extractErrorMessage(body: unknown, fallback: string) {
 }
 
 async function requestJson<T>(path: string, init: { method?: string; body?: unknown } = {}) {
+  const method = init.method || 'GET'
   const headers: Record<string, string> = {}
 
   if (init.body !== undefined) {
     headers['content-type'] = 'application/json'
   }
 
+  // Adjuntar CSRF token en requests mutantes (Double Submit Cookie)
+  const SAFE = new Set(['GET', 'HEAD', 'OPTIONS'])
+  if (!SAFE.has(method.toUpperCase())) {
+    const csrf = getCsrfToken()
+    if (csrf) headers['x-csrf-token'] = csrf
+  }
+
   const response = await fetch(`${getApiBaseUrl()}${path}`, {
-    method: init.method || 'GET',
+    method,
     headers,
     body: init.body === undefined ? undefined : JSON.stringify(init.body),
     credentials: 'include',

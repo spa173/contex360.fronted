@@ -9,28 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
     <title>Contex360</title>
-    <script>
-      // --- THEME ---
-      (function() {
-        var stored = localStorage.getItem('contex360-theme');
-        var theme = (stored === 'light' || stored === 'dark') ? stored : 'light';
-        document.documentElement.classList.add(theme);
-        document.documentElement.classList.remove(theme === 'dark' ? 'light' : 'dark');
-        document.documentElement.dataset.theme = theme;
-        document.documentElement.style.colorScheme = theme;
-      })();
-
-      // --- VERSION CHECK ---
-      (function() {
-        var SCHEMA_VERSION = 'v2';
-        var CURRENT_VERSION = localStorage.getItem('contex360_schema_version');
-        if (CURRENT_VERSION !== SCHEMA_VERSION) {
-          localStorage.clear();
-          localStorage.setItem('contex360_schema_version', SCHEMA_VERSION);
-          window.location.reload();
-        }
-      })();
-    </script>
+    <script src="/src/init.js"></script>
   </head>
   <body>
     <div id="app"></div>

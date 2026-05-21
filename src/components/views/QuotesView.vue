@@ -77,7 +77,7 @@ function handleNewQuote() {
         <span class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider">{{ filteredQuotes.length }} registros</span>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left">
+        <table class="w-full text-left min-w-[600px]">
           <thead>
             <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
               <th class="px-5 py-3">ID</th>

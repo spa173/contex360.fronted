@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useBillingStore } from '../../stores/billingStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
@@ -6,11 +6,30 @@ import { useAdminStore } from '../../stores/adminStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
 
+interface Tax {
+  id: string
+  name: string
+  rate: string | number
+  type: 'Suma' | 'Resta'
+  active: boolean
+}
+
+interface Invoice {
+  id: string
+  number: string
+  date?: string
+  createdAt?: string
+  customerName?: string
+  client?: { name: string }
+  status?: string
+  total?: number
+}
+
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const billing = useBillingStore()
-const tenantInvoices = computed(() => billing.tenantInvoices || [])
+const tenantInvoices = computed(() => (billing.tenantInvoices || []) as Invoice[])
 const thirdParties = useThirdPartiesStore()
 const adminStore = useAdminStore()
 
@@ -22,11 +41,11 @@ onMounted(() => {
   adminStore.loadSettings()
 })
 
-function parseRate(rateStr) {
+function parseRate(rateStr: string | number | undefined): number {
   const clean = String(rateStr || '').trim()
   const isPerMille = clean.includes('‰')
-  const num = parseFloat(clean.replace(/[^0-9.]/g, ''))
-  if (isNaN(num)) return 0
+  const num = Number.parseFloat(clean.replace(/[^0-9.]/g, ''))
+  if (Number.isNaN(num)) return 0
   if (isPerMille) {
     return num / 1000
   }
@@ -35,23 +54,19 @@ function parseRate(rateStr) {
 
 const subtotal = computed(() => Number(newInvoice.value.amount) || 0)
 
-const activeTaxes = computed(() => {
-  return (adminStore.taxes || []).filter(t => t.active)
+const activeTaxes = computed((): Tax[] => {
+  return ((adminStore.taxes as Tax[]) || []).filter(t => t.active)
 })
 
 const taxBreakdown = computed(() => {
   const base = subtotal.value
-  return activeTaxes.value.map(t => {
-    const rate = parseRate(t.rate)
-    const amount = base * rate
-    return {
-      id: t.id,
-      name: t.name,
-      rateStr: t.rate,
-      type: t.type, // 'Suma' or 'Resta'
-      amount: amount
-    }
-  })
+  return activeTaxes.value.map(t => ({
+    id: t.id,
+    name: t.name,
+    rateStr: t.rate,
+    type: t.type as 'Suma' | 'Resta',
+    amount: base * parseRate(t.rate)
+  }))
 })
 
 const effectiveTaxRate = computed(() => {
@@ -126,10 +141,10 @@ async function handleCreateInvoice() {
   }
 }
 
-async function handleExport() {
+async function handleExport(): Promise<void> {
   emit('notify', { message: 'Generando PDF DIAN', detail: 'ContexAI está analizando los comprobantes electrónicos emitidos...' })
   const totalInvoices = filteredInvoices.value.length
-  const totalAmount = filteredInvoices.value.reduce((s, i) => s + (Number(i.total) || 0), 0)
+  const totalAmount = filteredInvoices.value.reduce((s, i) => s + (i.total ?? 0), 0)
   const accepted = filteredInvoices.value.filter(i => (i.status || '').toLowerCase() === 'aceptada').length
 
   await generatePdfReport({
@@ -147,7 +162,13 @@ async function handleExport() {
   emit('notify', { message: 'PDF Descargado', detail: 'El reporte de facturación electrónica DIAN ha sido guardado exitosamente.' })
 }
 
-function statusBadge(status) {
+interface BadgeStyle {
+  class: string
+  icon: string
+  label: string
+}
+
+function statusBadge(status: string | undefined): BadgeStyle {
   const s = (status || '').toLowerCase()
   if (s === 'aceptada' || s === 'accepted') return { class: 'bg-emerald-50 text-emerald-700', icon: 'check_circle', label: 'Aceptada' }
   if (s === 'rechazada' || s === 'rejected') return { class: 'bg-rose-50 text-rose-700', icon: 'error', label: 'Rechazada' }
@@ -177,7 +198,7 @@ function statusBadge(status) {
     </div>
 
     <!-- Split: table + new invoice -->
-    <div class="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-4">
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_460px] gap-6">
       <!-- Table -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex flex-col sm:flex-row gap-3 sm:items-center sm:justify-between">
@@ -196,7 +217,7 @@ function statusBadge(status) {
           </div>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full text-left min-w-[640px]">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
                 <th class="px-5 py-3">Factura</th>
@@ -212,7 +233,7 @@ function statusBadge(status) {
                 <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ invoice.number || 'FE-1021' }}</td>
                 <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ invoice.customerName || invoice.client?.name || 'Cliente' }}</td>
                 <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(invoice.date || invoice.createdAt || Date.now()).toLocaleDateString() }}</td>
-                <td class="px-5 py-3.5 text-right font-mono font-semibold text-[#18181B]">{{ formatCurrency(invoice.total) }}</td>
+                <td class="px-5 py-3.5 text-right font-mono font-semibold text-[#18181B]">{{ formatCurrency(Number(invoice.total) || 0) }}</td>
                 <td class="px-5 py-3.5">
                   <span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', statusBadge(invoice.status).class]">
                     <span class="material-symbols-outlined text-[12px]">{{ statusBadge(invoice.status).icon }}</span>
@@ -234,31 +255,31 @@ function statusBadge(status) {
       </div>
 
       <!-- New invoice form -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 self-start">
-        <h3 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h3>
-        <p class="text-[12px] text-[#71717A] mb-5">Se enviará automáticamente a la DIAN.</p>
+      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 h-fit sticky top-6">
+        <h3 class="text-[18px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h3>
+        <p class="text-[13px] text-[#71717A] mb-6">Se enviará automáticamente a la DIAN.</p>
 
-        <form @submit.prevent="handleCreateInvoice" class="space-y-4">
+        <form @submit.prevent="handleCreateInvoice" class="space-y-5">
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Cliente</label>
-            <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04]">
-              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">person</span>
-              <select v-model="newInvoice.customerId" class="flex-1 py-2.5 bg-transparent outline-none text-[13px] text-[#18181B] appearance-none">
+            <label for="invoice-customer" class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2.5 block">Cliente</label>
+            <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">person</span>
+              <select id="invoice-customer" v-model="newInvoice.customerId" class="flex-1 py-3 bg-transparent outline-none text-[13px] font-medium text-[#18181B] appearance-none cursor-pointer">
                 <option value="">Seleccionar cliente...</option>
                 <option v-for="tp in thirdParties.tenantThirdParties" :key="tp.id" :value="tp.id">{{ tp.name }}</option>
               </select>
-              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">expand_more</span>
+              <span class="material-symbols-outlined text-[18px] text-[#A1A1AA] pointer-events-none">expand_more</span>
             </div>
           </div>
 
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Concepto</label>
-            <input v-model="newInvoice.concept" placeholder="Ej. Servicios de consultoría" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] text-[#18181B] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" />
+            <label for="invoice-concept" class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2.5 block">Concepto</label>
+            <input id="invoice-concept" v-model="newInvoice.concept" placeholder="Ej. Servicios de consultoría" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-3 text-[13px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all" />
           </div>
 
           <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Valor (COP)</label>
-            <input v-model="newInvoice.amount" type="number" placeholder="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[14px] text-[#18181B] font-mono font-semibold outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04]" />
+            <label for="invoice-amount" class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2.5 block">Valor (COP)</label>
+            <input id="invoice-amount" v-model="newInvoice.amount" type="number" placeholder="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-3 text-[14px] font-mono font-semibold text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all" />
           </div>
 
           <!-- Tax breakdown -->

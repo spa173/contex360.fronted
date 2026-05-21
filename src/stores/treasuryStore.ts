@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
 import type { Transaction, TreasuryBalance, CreateTransactionPayload, ProgrammedPayment } from '../types/treasury'
+import { transactionSchema } from '../schemas/transaction.schema'
 
 export const useTreasuryStore = defineStore('treasury', () => {
   const root = useStateStore()
@@ -87,6 +88,8 @@ export const useTreasuryStore = defineStore('treasury', () => {
   async function createTransaction(payload: CreateTransactionPayload) {
     isSaving.value = true
     try {
+      transactionSchema.parse(payload)
+
       const created = await businessApi.createTransaction(payload, activeTenantId.value)
       transactions.value.unshift(created)
       // Refresh balance from backend
@@ -94,6 +97,9 @@ export const useTreasuryStore = defineStore('treasury', () => {
       balance.value = bal
       return { ok: true, message: 'Movimiento registrado y asiento contable creado.' }
     } catch (err) {
+      if (err && typeof err === 'object' && 'name' in err && err.name === 'ZodError') {
+        return { ok: false, message: 'Datos del movimiento inválidos. Revisa los campos obligatorios.' }
+      }
       return { ok: false, message: err instanceof Error ? err.message : 'Error al registrar movimiento.' }
     } finally {
       isSaving.value = false

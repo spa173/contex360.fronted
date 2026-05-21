@@ -550,7 +550,6 @@ textarea {
   overflow-y: auto;
 }
 
-.topbar,
 .hero,
 .panel-card {
   border-radius: var(--radius-xl);
@@ -558,11 +557,6 @@ textarea {
 }
 
 .topbar {
-  position: fixed;
-  top: 0;
-  right: 0;
-  left: var(--sidebar-width);
-  height: var(--header-height);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1096,7 +1090,6 @@ textarea {
 }
 
 @media (max-width: 860px) {
-  .topbar,
   .hero,
   .dashboard-grid,
   .two-column,
@@ -1109,13 +1102,8 @@ textarea {
     grid-template-columns: 1fr;
   }
 
-  .topbar,
   .hero {
     display: grid;
-  }
-
-  .topbar-actions {
-    justify-content: stretch;
   }
 
   .metrics-grid {
@@ -2215,16 +2203,8 @@ fieldset:disabled {
     min-height: 100vh;
   }
 
-  .topbar {
-    align-items: flex-start;
-    display: grid;
-    padding: 10px 14px;
-  }
-
-  .topbar-right,
-  .topbar-actions {
-    justify-content: stretch;
-  }
+  /* .topbar eliminada para evitar conflicto con la navegación flex de Tailwind en móviles */
+  /* .topbar-right, .topbar-actions eliminadas para evitar conflicto con flex */
 
   .content {
     padding: 14px;
