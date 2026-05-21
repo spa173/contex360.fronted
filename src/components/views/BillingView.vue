@@ -6,11 +6,30 @@ import { useAdminStore } from '../../stores/adminStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
 
+interface Tax {
+  id: string
+  name: string
+  rate: string | number
+  type: 'Suma' | 'Resta'
+  active: boolean
+}
+
+interface Invoice {
+  id: string
+  number: string
+  date?: string
+  createdAt?: string
+  customerName?: string
+  client?: { name: string }
+  status?: string
+  total?: number
+}
+
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const billing = useBillingStore()
-const tenantInvoices = computed(() => billing.tenantInvoices || [])
+const tenantInvoices = computed(() => (billing.tenantInvoices || []) as Invoice[])
 const thirdParties = useThirdPartiesStore()
 const adminStore = useAdminStore()
 
@@ -35,23 +54,19 @@ function parseRate(rateStr: string | number | undefined): number {
 
 const subtotal = computed(() => Number(newInvoice.value.amount) || 0)
 
-const activeTaxes = computed(() => {
-  return (adminStore.taxes || []).filter(t => t.active)
+const activeTaxes = computed((): Tax[] => {
+  return ((adminStore.taxes as Tax[]) || []).filter(t => t.active)
 })
 
 const taxBreakdown = computed(() => {
   const base = subtotal.value
-  return activeTaxes.value.map(t => {
-    const rate = parseRate(t.rate)
-    const amount = base * rate
-    return {
-      id: t.id,
-      name: t.name,
-      rateStr: t.rate,
-      type: t.type, // 'Suma' or 'Resta'
-      amount: amount
-    }
-  })
+  return activeTaxes.value.map(t => ({
+    id: t.id,
+    name: t.name,
+    rateStr: t.rate,
+    type: t.type as 'Suma' | 'Resta',
+    amount: base * parseRate(t.rate)
+  }))
 })
 
 const effectiveTaxRate = computed(() => {
