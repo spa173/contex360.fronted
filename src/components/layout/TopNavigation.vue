@@ -245,7 +245,7 @@ function handleViewAllAlerts() {
     </button>
 
     <!-- Search -->
-    <div class="hidden sm:flex items-center gap-2 flex-1 min-w-0 max-w-[520px] mx-auto">
+    <div class="hidden sm:flex items-center gap-2 flex-1 min-w-0 max-w-[520px]">
       <div class="search-container flex items-center gap-2 w-full border border-[#D4D4D8] rounded-[10px] px-3.5 py-2.5 bg-white focus-within:border-[#18181B] transition-colors shadow-sm">
         <span class="material-symbols-outlined text-[17px] text-[#A1A1AA] flex-shrink-0">search</span>
         <input
@@ -257,7 +257,7 @@ function handleViewAllAlerts() {
     </div>
 
     <!-- Right cluster -->
-    <div class="flex items-center gap-1.5 ml-auto">
+    <div class="flex items-center gap-1.5 ml-auto flex-shrink-0">
       <!-- Notifications -->
       <div class="relative" data-dropdown>
         <button
@@ -378,9 +378,9 @@ function handleViewAllAlerts() {
           <div class="w-7 h-7 rounded-full bg-[#18181B] flex items-center justify-center text-white font-semibold text-[11px] flex-shrink-0">
             {{ userInitials() }}
           </div>
-          <div class="text-left hidden lg:block">
-            <p class="text-[12px] font-bold text-[#18181B] leading-tight whitespace-nowrap">{{ (user?.name || 'Usuario').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
-            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider">{{ activeMembership?.role || user?.title || 'Administrador' }}</p>
+          <div class="text-left hidden lg:block min-w-0">
+            <p class="text-[12px] font-bold text-[#18181B] leading-tight truncate max-w-[120px]">{{ (user?.name || 'Usuario').split(' ').slice(0,2).map((w,i)=>i===1?w[0]+'.':w).join(' ') }}</p>
+            <p class="text-[10px] font-semibold text-[#A1A1AA] leading-tight uppercase tracking-wider truncate max-w-[120px]">{{ activeMembership?.role || user?.title || 'Administrador' }}</p>
           </div>
           <span class="material-symbols-outlined text-[15px] text-[#A1A1AA]">expand_more</span>
         </button>
