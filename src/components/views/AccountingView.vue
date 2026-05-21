@@ -72,7 +72,7 @@ function handleReconcileAi() {
           <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Transacciones recientes</h3>
         </div>
         <div class="overflow-x-auto">
-          <table class="w-full text-left">
+          <table class="w-full text-left min-w-[580px]">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
                 <th class="px-4 py-3 w-8">IA</th>
