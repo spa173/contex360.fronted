@@ -36,7 +36,10 @@ const isMobile = ref(window.innerWidth <= 860);
 const handleResize = () => {
   isMobile.value = window.innerWidth <= 860;
 };
-onMounted(() => window.addEventListener('resize', handleResize));
+onMounted(() => {
+  handleResize();
+  window.addEventListener('resize', handleResize);
+});
 onUnmounted(() => window.removeEventListener('resize', handleResize));
 
 function closeAll() {
