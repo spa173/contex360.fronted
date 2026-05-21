@@ -52,6 +52,13 @@ export interface AppState {
 }
 
 function loadState() {
+  // Migración: eliminar la llave AES que versiones anteriores guardaban en localStorage
+  // junto a los datos cifrados (mismo storage = sin protección real)
+  const OLD_KEY = ['contex360', 'crypto', 'key', 'v2'].join('-')
+  if (localStorage.getItem(OLD_KEY)) {
+    localStorage.removeItem(OLD_KEY)
+  }
+
   const raw = localStorage.getItem(STORAGE_KEY)
   if (!raw) return createInitialState()
   
@@ -63,6 +70,7 @@ function loadState() {
     return createInitialState()
   }
 }
+
 
 export const useStateStore = defineStore('state', {
   state: (): AppState => loadState(),

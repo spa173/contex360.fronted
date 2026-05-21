@@ -80,17 +80,6 @@ function serializeStateSnapshot(sourceState: any) {
   return snapshot
 }
 
-async function upgradeLegacyUserSecrets(user: any) {
-  if (!user?.password || user.passwordHash) {
-    return false
-  }
-
-  const credentials = await createPasswordCredentials(user.password)
-  user.passwordSalt = credentials.passwordSalt
-  user.passwordHash = credentials.passwordHash
-  delete user.password
-  return true
-}
 
 export function generateTemporaryPassword(length = 16) {
   const targetLength = Math.max(length, TEMP_PASSWORD_GROUPS.length)
@@ -109,23 +98,6 @@ export function generateRecoveryCode(length = 10) {
   return generateSecureToken(length, RECOVERY_CODE_ALPHABET)
 }
 
-export async function verifyPassword(user: any, secret: string) {
-  if (user.passwordHash && user.passwordSalt) {
-    return constantTimeEquals(await hashPassword(secret, user.passwordSalt), user.passwordHash)
-  }
-
-  return constantTimeEquals(String(user?.password || ''), secret)
-}
-
-function constantTimeEquals(left: string, right: string) {
-  const a = String(left || '')
-  const b = String(right || '')
-  const maxLength = Math.max(a.length, b.length)
-
-  let mismatch = a.length ^ b.length
-  for (let i = 0; i < maxLength; i += 1) {
-    mismatch |= (a.charCodeAt(i) || 0) ^ (b.charCodeAt(i) || 0)
-  }
-
-  return mismatch === 0
-}
+// La verificación de contraseñas siempre se realiza en el backend (POST /auth/login).
+// No existe verificación client-side para evitar exponer hashes o texto plano
+// al contexto de ejecución del navegador.

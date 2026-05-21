@@ -3,6 +3,7 @@ import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useThemeStore } from '../stores/themeStore'
 import { businessApi } from '../services/businessApi'
+import { encryptData, decryptData } from '../utils/security'
 import { toast } from 'vue-sonner'
 
 const authStore = useAuthStore()
@@ -27,12 +28,38 @@ const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
 const hasAcceptedPrivacy = ref(false)
 
-const isFormValid = computed(() => email.value.includes('@') && password.value.length >= 6)
+// ── Validación de email (RFC 5322 simplificado) ──────────────────────────────
+const EMAIL_RE = /^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/
+const isEmailValid = computed(() => EMAIL_RE.test(email.value.trim()))
+
+// ── Política de contraseña para app financiera ────────────────────────────────
+const PASSWORD_RULES = [
+  { id: 'length',    label: 'Mínimo 12 caracteres',          test: (p: string) => p.length >= 12 },
+  { id: 'upper',     label: 'Al menos una mayúscula',         test: (p: string) => /[A-Z]/.test(p) },
+  { id: 'lower',     label: 'Al menos una minúscula',         test: (p: string) => /[a-z]/.test(p) },
+  { id: 'digit',     label: 'Al menos un número',             test: (p: string) => /[0-9]/.test(p) },
+  { id: 'special',   label: 'Al menos un símbolo (!@#$...)',  test: (p: string) => /[^a-zA-Z0-9]/.test(p) },
+]
+
+const passwordStrength = computed(() =>
+  PASSWORD_RULES.map(r => ({ ...r, passed: r.test(password.value) }))
+)
+const newPasswordStrength = computed(() =>
+  PASSWORD_RULES.map(r => ({ ...r, passed: r.test(newPassword.value) }))
+)
+
+const isPasswordStrong = (pw: string) => PASSWORD_RULES.every(r => r.test(pw))
+
+const isFormValid = computed(() => isEmailValid.value && isPasswordStrong(password.value))
 
 onMounted(() => {
   const savedEmail = localStorage.getItem('contex360-remember-email')
   if (savedEmail) {
-    email.value = savedEmail
+    try {
+      email.value = decryptData(savedEmail)
+    } catch {
+      email.value = savedEmail
+    }
     rememberMe.value = true
   }
 })
@@ -92,8 +119,8 @@ const handleSubmit = async () => {
 }
 
 const handleChangePassword = async () => {
-  if (newPassword.value.length < 8) {
-    errorMessage.value = 'La nueva contraseña debe tener al menos 8 caracteres.'
+  if (!isPasswordStrong(newPassword.value)) {
+    errorMessage.value = 'La contraseña debe tener mínimo 12 caracteres, mayúsculas, minúsculas, números y símbolos.'
     return
   }
   if (newPassword.value !== newPasswordConfirm.value) {
@@ -237,6 +264,21 @@ const togglePassword = () => {
                   class="w-full px-4 py-3 bg-white border border-[#E4E4E7] rounded-[10px] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all text-[14px] font-medium text-[#18181B]"
                 />
               </div>
+
+              <!-- New password strength checklist -->
+              <div v-if="newPassword.length > 0" class="mt-2 space-y-1 animate-in fade-in duration-200">
+                <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1.5">Requisitos de seguridad</p>
+                <div
+                  v-for="rule in newPasswordStrength"
+                  :key="rule.id"
+                  class="flex items-center gap-2 text-[11px] font-medium"
+                  :class="rule.passed ? 'text-emerald-600' : 'text-[#A1A1AA]'"
+                >
+                  <span class="material-symbols-outlined text-[13px]">{{ rule.passed ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                  {{ rule.label }}
+                </div>
+              </div>
+
               <div>
                 <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="newPasswordConfirm">Confirmar Contraseña</label>
                 <input
@@ -326,6 +368,20 @@ const togglePassword = () => {
                   >
                     <span class="material-symbols-outlined text-[18px]">{{ showPassword ? 'visibility_off' : 'visibility' }}</span>
                   </button>
+                </div>
+              </div>
+
+              <!-- Password strength checklist -->
+              <div v-if="password.length > 0" class="mt-2 space-y-1 animate-in fade-in duration-200">
+                <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1.5">Requisitos de seguridad</p>
+                <div
+                  v-for="rule in passwordStrength"
+                  :key="rule.id"
+                  class="flex items-center gap-2 text-[11px] font-medium"
+                  :class="rule.passed ? 'text-emerald-600' : 'text-[#A1A1AA]'"
+                >
+                  <span class="material-symbols-outlined text-[13px]">{{ rule.passed ? 'check_circle' : 'radio_button_unchecked' }}</span>
+                  {{ rule.label }}
                 </div>
               </div>
 
