@@ -404,6 +404,19 @@ export const businessApi = {
   async createSupportTicket(data: { subject: string; description: string; priority?: 'baja' | 'media' | 'alta' | 'critica' }) {
     return request<{ ok: boolean; message: string; data: any }>('/support/tickets', { method: 'POST', body: data })
   },
+
+  async getHelpCategories() {
+    return request<any[]>('/help-center/categories')
+  },
+
+  async getHelpArticles() {
+    return request<any[]>('/help-center/articles')
+  },
+
+  async getHelpFaqs() {
+    return request<any[]>('/help-center/faqs')
+  },
+
   async getSupportTickets() {
     return request<{ ok: boolean; data: any[] }>('/support/tickets')
   },
