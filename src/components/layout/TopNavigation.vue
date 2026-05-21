@@ -257,7 +257,7 @@ function handleViewAllAlerts() {
     </div>
 
     <!-- Right cluster -->
-    <div class="flex items-center gap-1.5">
+    <div class="flex items-center gap-1.5 ml-auto">
       <!-- Notifications -->
       <div class="relative" data-dropdown>
         <button
