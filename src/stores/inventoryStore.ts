@@ -248,5 +248,5 @@ export const useInventoryStore = defineStore('inventory', () => {
     if (newId && userId) fetchProducts()
   }, { immediate: true })
 
-  return { products, inventoryMovements, inventoryTransfers, tenantProducts, tenantInventoryMovements, activeTenantTransfers, tenantLocations, deadInventory, reorderSuggestions, abcAnalysis, createProduct, transferStock, receiveTransfer, auditInventory, receiveInventory, importProductsCSV, canManageInventory }
+  return { products, inventoryMovements, inventoryTransfers, tenantProducts, tenantInventoryMovements, activeTenantTransfers, tenantLocations, deadInventory, reorderSuggestions, abcAnalysis, createProduct, transferStock, receiveTransfer, auditInventory, receiveInventory, importProductsCSV, canManageInventory, fetchProducts }
 })
