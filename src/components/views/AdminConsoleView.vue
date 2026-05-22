@@ -459,6 +459,10 @@ const filteredIntegrations = computed(() => {
   return list
 })
 
+const activeCatalogIntegrations = computed(() => {
+  return integrationCatalog.value.filter(i => i.enabled && i.id !== 'bancolombia')
+})
+
 function toggleIntegration(integration) {
   integration.enabled = !integration.enabled
   saveIntegrationState(integration.id, integration.enabled)
@@ -1072,6 +1076,26 @@ async function saveBancolombiaConfig() {
         <p v-else class="mt-2 text-[11px] text-[#71717A]">
           La autorización se completa en el backend antes de sincronizar movimientos.
         </p>
+      </div>
+
+      <div v-for="intg in activeCatalogIntegrations" :key="intg.id" class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm">
+        <div class="flex items-start justify-between mb-5">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-[12px] flex items-center justify-center text-[24px] shadow-sm border" :style="{ backgroundColor: intg.bg, color: intg.color, borderColor: `${intg.color}30` }">
+              <span class="material-symbols-outlined">{{ intg.icon }}</span>
+            </div>
+            <div>
+              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">{{ intg.name }}</p>
+              <p class="text-[12px] text-[#71717A] mt-0.5">{{ intg.desc }}</p>
+            </div>
+          </div>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Activa
+          </span>
+        </div>
+        <button @click="configureIntegration(intg)" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
+          Configurar credenciales
+        </button>
       </div>
 
       <div @click="showIntegrationsModal = true" class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group">
@@ -1737,6 +1761,20 @@ async function saveBancolombiaConfig() {
         </div>
 
         <div class="p-6 space-y-5">
+          <!-- Tutorial -->
+          <div class="bg-[#2563EB]/5 border border-[#2563EB]/20 rounded-[12px] p-4 text-[#18181B]">
+            <h4 class="text-[13px] font-bold mb-2 flex items-center gap-1.5 text-[#2563EB]">
+              <span class="material-symbols-outlined text-[16px]">help</span>
+              ¿Cómo configurar mi correo corporativo?
+            </h4>
+            <ol class="text-[12px] space-y-1.5 ml-5 list-decimal marker:text-[#2563EB] marker:font-bold text-[#71717A]">
+              <li>Ingresa a la configuración de seguridad de tu proveedor (Workspace, Office365).</li>
+              <li>Activa la verificación en dos pasos (2FA).</li>
+              <li>Genera una <strong>Contraseña de Aplicación</strong> específica para Contex360.</li>
+              <li>Usa esa contraseña generada en lugar de tu clave habitual.</li>
+            </ol>
+          </div>
+
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
               <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Servidor SMTP (Host)</label>
