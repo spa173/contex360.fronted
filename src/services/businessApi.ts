@@ -464,4 +464,14 @@ export const businessApi = {
       tenantId,
     })
   },
+  async getProducts(tenantId: string) {
+    return request<any[]>('/products', { tenantId })
+  },
+  async createProduct(data: any, tenantId: string) {
+    return request<any>('/products', {
+      method: 'POST',
+      body: data,
+      tenantId,
+    })
+  },
 }
