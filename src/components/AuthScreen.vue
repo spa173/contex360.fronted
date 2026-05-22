@@ -398,8 +398,8 @@ const togglePassword = () => {
               <div class="space-y-3 pt-1">
                 <label class="flex items-start gap-3 cursor-pointer group" for="hasAcceptedPrivacy">
                   <input id="hasAcceptedPrivacy" name="hasAcceptedPrivacy" autocomplete="off" v-model="hasAcceptedPrivacy" type="checkbox" class="mt-0.5 w-4 h-4 flex-shrink-0 rounded border-[#E4E4E7] text-[#2563EB] focus:ring-[#2563EB]/20 transition-all" />
-                  <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors leading-snug whitespace-nowrap">
-                    Acepto la <button type="button" @click.stop="$emit('show-privacy')" class="text-[#2563EB] hover:underline font-semibold bg-transparent border-0 p-0 inline">Política de Tratamiento de Datos Personales</button>.
+                  <span class="text-[12px] text-[#71717A] font-medium group-hover:text-[#18181B] transition-colors leading-snug">
+                    Acepto los <button type="button" @click.stop="$emit('show-privacy')" class="text-[#2563EB] hover:underline font-semibold bg-transparent border-0 p-0 inline">términos y condiciones</button>.
                   </span>
                 </label>
                 <label class="flex items-center gap-3 cursor-pointer group" for="rememberMe">
