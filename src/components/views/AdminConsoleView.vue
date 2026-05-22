@@ -1719,7 +1719,7 @@ async function saveBancolombiaConfig() {
       </div>
     </div>
     <!-- Modal SMTP -->
-    <div v-if="showSmtpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div v-if="showSmtpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
       <div class="bg-white rounded-[20px] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div class="px-6 py-5 border-b border-[#E4E4E7] flex justify-between items-center bg-[#FAFAFA]">
           <div class="flex items-center gap-3">
