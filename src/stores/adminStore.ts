@@ -1,6 +1,8 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import type { AdminSettings, TaxConfig } from '../types/admin'
+import { useStateStore } from './stateStore'
+import { businessApi } from '../services/businessApi'
 
 const regionalRegistry = new WeakMap<Text, string>()
 let regionalObserver: MutationObserver | null = null
@@ -93,38 +95,47 @@ export const useAdminStore = defineStore('admin', () => {
     }
   }
 
-  function loadSettings() {
-    const saved = localStorage.getItem('contex_admin_settings')
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as AdminSettings
-        ocrEnabled.value = parsed.ocrEnabled ?? true
-        razonSocial.value = parsed.razonSocial ?? 'Andina Cargo SAS'
-        nit.value = parsed.nit ?? '900.123.456-7'
-        language.value = parsed.language ?? 'Español (Colombia)'
-        timezone.value = parsed.timezone ?? '(UTC-05) Bogotá'
-        currency.value = parsed.currency ?? 'COP · Peso colombiano'
-        dateFormat.value = parsed.dateFormat ?? 'DD/MM/YYYY'
-        if (parsed.taxes) taxes.value = parsed.taxes
-      } catch (e) {
-        console.error('Error loading admin settings', e)
-      }
+  async function loadSettings() {
+    const stateStore = useStateStore()
+    if (!stateStore.activeTenantId) return
+    try {
+      const tenant = await businessApi.getTenantDetails(stateStore.activeTenantId)
+      razonSocial.value = tenant.name || 'Andina Cargo SAS'
+      nit.value = tenant.nit || '900.123.456-7'
+      
+      const parsed = tenant.adminSettings || {}
+      ocrEnabled.value = parsed.ocrEnabled ?? true
+      language.value = parsed.language ?? 'Español (Colombia)'
+      timezone.value = parsed.timezone ?? '(UTC-05) Bogotá'
+      currency.value = parsed.currency ?? 'COP · Peso colombiano'
+      dateFormat.value = parsed.dateFormat ?? 'DD/MM/YYYY'
+      if (parsed.taxes) taxes.value = parsed.taxes
+    } catch (e) {
+      console.error('Error loading admin settings', e)
     }
     applyRegionalFormatting()
   }
 
-  function saveSettings() {
+  async function saveSettings() {
+    const stateStore = useStateStore()
+    if (!stateStore.activeTenantId) return
     const payload = {
       ocrEnabled: ocrEnabled.value,
-      razonSocial: razonSocial.value,
-      nit: nit.value,
       language: language.value,
       timezone: timezone.value,
       currency: currency.value,
       dateFormat: dateFormat.value,
       taxes: taxes.value
     }
-    localStorage.setItem('contex_admin_settings', JSON.stringify(payload))
+    try {
+      await businessApi.updateTenant(stateStore.activeTenantId, {
+        name: razonSocial.value,
+        nit: nit.value,
+        adminSettings: payload
+      })
+    } catch (e) {
+      console.error('Error saving admin settings', e)
+    }
     applyRegionalFormatting()
   }
 

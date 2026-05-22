@@ -608,7 +608,7 @@ async function loadActiveIntegrations() {
   }
 }
 onMounted(async () => {
-  adminStore.loadSettings()
+  await adminStore.loadSettings()
   loadActiveIntegrations()
   if (activeTab.value === 'logs') {
     fetchAuditLogs()
