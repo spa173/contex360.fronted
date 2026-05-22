@@ -362,6 +362,9 @@ export const businessApi = {
   async getAdminTenants() {
     return request<any[]>('/admin/tenants')
   },
+  async updateTenant(tenantId: string, data: any) {
+    return request<any>(`/admin/tenants/${tenantId}`, { method: 'PATCH', body: data })
+  },
   async getAdminUsers() {
     return request<any[]>('/admin/users')
   },
