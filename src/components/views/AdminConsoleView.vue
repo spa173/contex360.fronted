@@ -268,16 +268,19 @@ const showIntegrationsModal = ref(false)
 const integrationSearch = ref('')
 const integrationCategory = ref('todas')
 
-const INTEGRATIONS_KEY = 'contex_integrations_enabled'
+const activeIntegrationsState = ref([])
 
-function loadIntegrationStates() {
-  try { return JSON.parse(localStorage.getItem(INTEGRATIONS_KEY) || '{}') } catch { return {} }
-}
-
-function saveIntegrationState(id, enabled) {
-  const states = loadIntegrationStates()
-  states[id] = enabled
-  localStorage.setItem(INTEGRATIONS_KEY, JSON.stringify(states))
+async function saveIntegrationState(id, enabled) {
+  if (enabled) {
+    if (!activeIntegrationsState.value.includes(id)) {
+      activeIntegrationsState.value.push(id)
+    }
+  } else {
+    activeIntegrationsState.value = activeIntegrationsState.value.filter(i => i !== id)
+  }
+  if (activeTenantId.value) {
+    await businessApi.updateTenant(activeTenantId.value, { activeIntegrations: activeIntegrationsState.value })
+  }
 }
 
 async function fetchBancolombiaConfig() {
@@ -437,7 +440,7 @@ const integrationCatalog = ref([
   { id: 'gmail', name: 'Gmail', desc: 'Envía facturas PDF directamente desde tu cuenta', cat: 'comunicaciones', icon: 'mail', color: '#EA4335', bg: '#EA433515' },
   { id: 'smtp', name: 'Servidor SMTP Personalizado', desc: 'Envía facturas usando tu propio correo corporativo', cat: 'comunicaciones', icon: 'alternate_email', color: '#2563EB', bg: '#2563EB15' },
   { id: 'twilio', name: 'Twilio', desc: 'SMS y llamadas automáticas a clientes y proveedores', cat: 'comunicaciones', icon: 'sms', color: '#F22F46', bg: '#F22F4615' },
-].map(i => ({ ...i, enabled: loadIntegrationStates()[i.id] ?? false })))
+].map(i => ({ ...i, enabled: activeIntegrationsState.value.includes(i.id) })))
 
 const integrationCategories = [
   { id: 'todas', label: 'Todas' },
@@ -464,8 +467,11 @@ const activeCatalogIntegrations = computed(() => {
 })
 
 function toggleIntegration(integration) {
-  integration.enabled = !integration.enabled
-  saveIntegrationState(integration.id, integration.enabled)
+  const willBeEnabled = !integration.enabled
+  // We don't manually mutate integration.enabled because it's computed now! Wait, integrationCatalog is still a ref!
+  // If it's still a ref, we mutate it and then save the state.
+  integration.enabled = willBeEnabled
+  saveIntegrationState(integration.id, willBeEnabled)
   emit('notify', {
     message: integration.enabled ? `${integration.name} activado` : `${integration.name} desactivado`,
     detail: integration.enabled
@@ -585,8 +591,25 @@ async function disconnectGmail() {
   }
   emit('notify', { message: 'Gmail desconectado', detail: 'La cuenta de Gmail fue desvinculada del workspace.' })
 }
+
+async function loadActiveIntegrations() {
+  if (!activeTenantId.value) return
+  try {
+    const tenant = await businessApi.getTenantDetails(activeTenantId.value)
+    if (tenant && tenant.activeIntegrations) {
+      activeIntegrationsState.value = tenant.activeIntegrations
+      // Update the integration catalog
+      integrationCatalog.value.forEach(i => {
+        i.enabled = activeIntegrationsState.value.includes(i.id)
+      })
+    }
+  } catch (e) {
+    console.error('Error loading active integrations:', e)
+  }
+}
 onMounted(async () => {
   adminStore.loadSettings()
+  loadActiveIntegrations()
   if (activeTab.value === 'logs') {
     fetchAuditLogs()
   } else if (activeTab.value === 'cumplimiento') {
