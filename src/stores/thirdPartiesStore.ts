@@ -46,6 +46,15 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     }
   }
 
+  async function addThirdParty(data: any) {
+    if (!activeTenantId.value) throw new Error('No active tenant')
+    const res = await businessApi.createThirdParty(data, activeTenantId.value)
+    if (res) {
+      thirdParties.value.push(res)
+    }
+    return res
+  }
+
   // Sync back to root
   watch(thirdParties, (newVal) => {
     (root.$state as any).thirdParties = newVal
@@ -59,5 +68,6 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     tenantEmployees,
     canManageThirdParties,
     fetchThirdParties,
+    addThirdParty,
   }
 })

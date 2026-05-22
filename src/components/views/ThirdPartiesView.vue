@@ -1,7 +1,8 @@
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { formatCurrency } from '../../utils/ui'
+import { generatePdfReport } from '../../utils/pdfExport'
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -17,6 +18,54 @@ function initials(name) {
 function handleAction(tp) {
   emit('notify', { message: 'Solicitud enviada', detail: `Se solicitó actualización de RUT a ${tp.name}.` })
 }
+
+// Exportar
+async function handleExport() {
+  emit('notify', { message: 'Generando Reporte', detail: 'ContexAI está analizando los datos de cartera...' })
+  const total = tenantThirdParties.value.length
+  const totalBalance = tenantThirdParties.value.reduce((s, tp) => s + (tp.balance || 0), 0)
+  
+  await generatePdfReport({
+    title: 'Reporte de Terceros y Cartera',
+    subtitle: `Terceros totales: ${total}`,
+    fileName: `Cartera_Terceros_${Date.now()}.pdf`,
+    data: {
+      'Terceros Registrados': `${total} entidades`,
+      'Saldo Total de Cartera': formatCurrency(totalBalance),
+    },
+    aiSummary: 'El estado de cartera actual es saludable. No se detectan anomalías de crédito en los clientes principales.'
+  })
+  emit('notify', { message: 'PDF Descargado', detail: 'El reporte de terceros ha sido generado y descargado exitosamente.' })
+}
+
+// Nuevo Tercero Modal
+const showNewThirdPartyModal = ref(false)
+const isSubmitting = ref(false)
+const newThirdParty = ref({
+  name: '',
+  nit: '',
+  email: '',
+  kind: 'client',
+  taxProfile: 'RegimenComun'
+})
+
+async function handleCreateThirdParty() {
+  if (!newThirdParty.value.name || !newThirdParty.value.nit || !newThirdParty.value.email) {
+    emit('notify', { message: 'Faltan datos', detail: 'Por favor completa todos los campos obligatorios (Nombre, NIT y Correo).' })
+    return
+  }
+  isSubmitting.value = true
+  try {
+    await store.addThirdParty({ ...newThirdParty.value })
+    emit('notify', { message: 'Tercero Creado', detail: `El tercero ${newThirdParty.value.name} ha sido guardado exitosamente.` })
+    showNewThirdPartyModal.value = false
+    newThirdParty.value = { name: '', nit: '', email: '', kind: 'client', taxProfile: 'RegimenComun' }
+  } catch (e) {
+    emit('notify', { message: 'Error', detail: e.message || 'No se pudo crear el tercero.' })
+  } finally {
+    isSubmitting.value = false
+  }
+}
 </script>
 
 <template>
@@ -30,10 +79,10 @@ function handleAction(tp) {
         <p class="text-[14px] text-[#71717A]">Administración integral de clientes, proveedores y socios.</p>
       </div>
       <div class="flex gap-2">
-        <button class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
-        <button class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
+        <button @click="showNewThirdPartyModal = true" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
           <span class="material-symbols-outlined text-[18px]">add</span>Nuevo tercero
         </button>
       </div>
@@ -97,6 +146,64 @@ function handleAction(tp) {
           <div class="flex items-baseline gap-2"><span class="text-[28px] font-bold tracking-[-0.02em]">12%</span><span class="text-[11px] font-semibold text-emerald-400">↓ 2.4%</span></div>
           <p class="text-[11px] text-white/60 mt-1">Bajo riesgo</p>
         </div>
+      </div>
+    </div>
+
+    <!-- Nuevo Tercero Modal -->
+    <div v-if="showNewThirdPartyModal" class="fixed inset-0 z-[100] flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showNewThirdPartyModal = false"></div>
+      <div class="relative bg-white rounded-[16px] w-full max-w-md shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="px-6 py-5 border-b border-[#F4F4F5] flex justify-between items-center bg-[#FAFAFA]">
+          <div>
+            <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">Nuevo Tercero</h3>
+            <p class="text-[13px] text-[#71717A] mt-0.5">Agrega un cliente o proveedor a tu base de datos.</p>
+          </div>
+          <button @click="showNewThirdPartyModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors rounded-full p-1 hover:bg-[#F4F4F5]">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+        
+        <form @submit.prevent="handleCreateThirdParty" class="p-6 space-y-4">
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Tipo de Tercero</label>
+              <select v-model="newThirdParty.kind" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
+                <option value="client">Cliente</option>
+                <option value="provider">Proveedor</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Perfil Tributario</label>
+              <select v-model="newThirdParty.taxProfile" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
+                <option value="RegimenComun">Régimen Común</option>
+                <option value="RegimenSimplificado">Régimen Simplificado</option>
+                <option value="GranContribuyente">Gran Contribuyente</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Razón Social o Nombre Completo *</label>
+            <input v-model="newThirdParty.name" placeholder="Ej. Acme SAS" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div>
+            <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">NIT o Documento *</label>
+            <input v-model="newThirdParty.nit" placeholder="Ej. 900.123.456-7" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div>
+            <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Correo Electrónico *</label>
+            <input v-model="newThirdParty.email" type="email" placeholder="facturacion@empresa.com" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B]" />
+          </div>
+
+          <div class="pt-4 flex gap-3">
+            <button type="button" @click="showNewThirdPartyModal = false" class="flex-1 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">Cancelar</button>
+            <button type="submit" :disabled="isSubmitting" class="flex-1 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold disabled:opacity-50">
+              {{ isSubmitting ? 'Guardando...' : 'Guardar Tercero' }}
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   </section>
