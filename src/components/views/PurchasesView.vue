@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, computed } from 'vue'
 import { usePurchasesStore } from '../../stores/purchasesStore'
 import { useAiStore } from '../../stores/aiStore'
@@ -49,6 +49,7 @@ async function handleFileUpload() {
 // Manual Purchase Modal State
 const showManualModal = ref(false)
 const isSubmitting = ref(false)
+const validationErrors = ref<{ provider: string; items: string[] }>({ provider: '', items: [] })
 const manualForm = ref({
   providerId: '',
   issuedAt: new Date().toISOString().slice(0, 10),
@@ -76,13 +77,13 @@ function addItem() {
   manualForm.value.items.push({ productId: '', productName: '', quantity: 1, unitPrice: 0, taxRate: 19 })
 }
 
-function removeItem(idx) {
+function removeItem(idx: number) {
   if (manualForm.value.items.length > 1) {
     manualForm.value.items.splice(idx, 1)
   }
 }
 
-function onProductSelect(item) {
+function onProductSelect(item: any) {
   if (!item.productId) return
   const product = tenantProducts.value.find(p => p.id === item.productId)
   if (product) {
@@ -97,17 +98,24 @@ const manualTax = computed(() => manualForm.value.items.reduce((sum, item) => su
 const manualTotal = computed(() => manualSubtotal.value + manualTax.value)
 
 async function submitManualPurchase() {
+  // Validaciones inline
+  const errors = { provider: '', items: [] as string[] }
   if (!manualForm.value.providerId) {
-    emit('notify', { message: 'Falta proveedor', detail: 'Por favor selecciona un proveedor.' })
+    errors.provider = 'Selecciona un proveedor.'
+  }
+  manualForm.value.items.forEach((item: any, idx: number) => {
+    if (!item.productName) {
+      errors.items[idx] = 'El ítem necesita nombre.'
+    } else {
+      errors.items[idx] = ''
+    }
+  })
+  if (errors.provider || errors.items.some(e => e)) {
+    validationErrors.value = errors
     return
   }
-  for (const item of manualForm.value.items) {
-    if (!item.productName) {
-      emit('notify', { message: 'Ítem inválido', detail: 'Todos los ítems deben tener un nombre de producto.' })
-      return
-    }
-  }
-
+  // Limpiar errores antes de enviar
+  validationErrors.value = { provider: '', items: [] }
   isSubmitting.value = true
   try {
     const payload = {
@@ -129,15 +137,20 @@ async function submitManualPurchase() {
     if (res.ok) {
       emit('notify', { message: 'Compra registrada', detail: 'La compra manual ha sido contabilizada.' })
       showManualModal.value = false
+      // Refrescar lista desde el backend
+      await purchases.fetchPurchases()
     } else {
+      // Mostrar error del backend como toast
       emit('notify', { message: 'Error', detail: res.message })
     }
-  } catch (e) {
+  } catch (e: any) {
     emit('notify', { message: 'Error', detail: e.message })
   } finally {
     isSubmitting.value = false
   }
 }
+
+
 </script>
 
 <template>
@@ -243,6 +256,7 @@ async function submitManualPurchase() {
                 <option value="" disabled>Selecciona un proveedor</option>
                 <option v-for="tp in tenantProviders" :key="tp.id" :value="tp.id">{{ tp.name }} ({{ tp.nit }})</option>
               </select>
+              <p v-if="validationErrors.provider" class="text-[11px] text-red-600 mt-1">{{ validationErrors.provider }}</p>
             </div>
             <div>
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Fecha de Emisión *</label>
@@ -288,6 +302,7 @@ async function submitManualPurchase() {
                           <option v-for="p in tenantProducts" :key="p.id" :value="p.id">{{ p.name }}</option>
                         </select>
                         <input v-if="!item.productId" v-model="item.productName" placeholder="Descripción libre" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+<p v-if="validationErrors.items[idx]" class="text-[11px] text-red-600 mt-1">{{ validationErrors.items[idx] }}</p>
                       </div>
                     </td>
                     <td class="px-3 py-2">
