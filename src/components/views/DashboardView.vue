@@ -276,19 +276,6 @@ async function loadOcrRuns() {
   }
 }
 
-async function simulateOcr() {
-  try {
-    emit('notify', { message: 'Iniciando OCR de IA', detail: 'Analizando estructura del documento de compras...' })
-    await businessApi.simulateOcrRun()
-    await Promise.all([
-      loadOcrRuns(),
-      fetchDashboardData()
-    ])
-    emit('notify', { message: 'OCR Completado', detail: 'Se ha procesado y extraído la información de la factura con éxito.' })
-  } catch (err) {
-    console.error('Error simulando OCR:', err)
-  }
-}
 
 async function approveOcr(run) {
   try {
@@ -626,9 +613,6 @@ onUnmounted(() => {
             <p class="text-[12px] text-[#71717A] font-medium">Revisa, edita y aprueba las facturas extraídas automáticamente por la inteligencia artificial</p>
           </div>
           <div class="flex items-center gap-3">
-            <button @click="simulateOcr" class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#18181B] text-white hover:bg-[#27272A] rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm">
-              <span class="material-symbols-outlined text-[16px]">add_circle</span> Simular Recibo / Factura
-            </button>
             <button @click="showOcrModal = false" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#F4F4F5] text-[#71717A] transition-colors">
               <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
@@ -646,10 +630,7 @@ onUnmounted(() => {
             <div v-else-if="ocrRuns.length === 0" class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-[#E4E4E7] rounded-xl px-4">
               <span class="material-symbols-outlined text-[42px] text-[#A1A1AA] mb-3">folder_open</span>
               <h4 class="text-[14px] font-bold text-[#18181B]">Bandeja de Entrada Limpia</h4>
-              <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1 mb-5">No tienes facturas ni recibos pendientes de revisión por parte de la IA.</p>
-              <button @click="simulateOcr" class="inline-flex items-center gap-1.5 px-4 py-2 border border-[#E4E4E7] rounded-lg text-[12px] font-extrabold text-[#18181B] hover:bg-[#F4F4F5] transition-all">
-                <span class="material-symbols-outlined text-[16px]">bolt</span> Generar Demo de Factura
-              </button>
+              <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1">No tienes facturas ni recibos pendientes de revisión por parte de la IA.</p>
             </div>
             <div v-else class="space-y-3.5">
               <div v-for="run in ocrRuns" :key="run.id" 

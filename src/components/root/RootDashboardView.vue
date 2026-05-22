@@ -2,7 +2,8 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 
-const API = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001'
+const API = import.meta.env.VITE_API_BASE_URL
+if (!API) throw new Error('VITE_API_BASE_URL environment variable is required')
 
 const stats = ref<any>(null)
 const loading = ref(true)

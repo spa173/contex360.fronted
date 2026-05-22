@@ -20,30 +20,44 @@ const inventoryStore = useInventoryStore()
 const tenantProviders = computed(() => thirdPartiesStore.tenantProviders)
 const tenantProducts = computed(() => inventoryStore.tenantProducts)
 
-async function handleFileUpload() {
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+function triggerFileSelect() {
+  fileInputRef.value?.click()
+}
+
+async function handleFileUpload(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0]
+  if (!file) return
+
   isProcessing.value = true
-  setTimeout(async () => {
-    isProcessing.value = false
-    const res = await purchases.registerPurchase({
-      providerId: tenantProviders.value[0]?.id || 'tp-2',
-      paymentTermDays: 30,
-      notes: 'Factura procesada con ContexAI OCR (98% precisión)',
-      items: [
-        {
-          productId: 'prod-1',
-          productName: 'Suministros de Oficina y Hardware',
-          quantity: 2,
-          unitPrice: 2400000,
-          taxRate: 19
-        }
-      ]
+  try {
+    // Llamar al endpoint OCR real del backend
+    const formData = new FormData()
+    formData.append('file', file)
+    const tenantId = purchases.purchases[0]?.tenantId || ''
+    const baseUrl = (await import('../../services/apiBase')).getApiBaseUrl()
+    const response = await fetch(`${baseUrl}/analytics/ocr-runs/upload`, {
+      method: 'POST',
+      headers: tenantId ? { 'x-tenant-id': tenantId } : {},
+      credentials: 'include',
+      body: formData,
     })
-    if (res.ok) {
-      emit('notify', { message: 'Factura registrada', detail: `Compra ${res.purchase?.number || 'FAC-OCR'} contabilizada exitosamente.` })
+    if (response.ok) {
+      await purchases.fetchPurchases()
+      emit('notify', { message: 'Factura recibida', detail: 'El documento fue enviado al motor OCR. Revisa las tareas de IA en el Dashboard.' })
     } else {
-      emit('notify', { message: 'Aviso IA', detail: res.message })
+      const err = await response.json().catch(() => ({}))
+      emit('notify', { message: 'Error OCR', detail: err.message || 'No se pudo procesar el archivo.' })
     }
-  }, 2000)
+  } catch (e: any) {
+    emit('notify', { message: 'Error', detail: e.message || 'Error al subir el archivo.' })
+  } finally {
+    isProcessing.value = false
+    // Limpiar input para permitir re-subida del mismo archivo
+    if (fileInputRef.value) fileInputRef.value.value = ''
+  }
 }
 
 // Manual Purchase Modal State
@@ -174,8 +188,16 @@ async function submitManualPurchase() {
     <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 sm:p-10 mb-6 relative overflow-hidden">
       <div class="absolute -top-20 -right-20 w-[400px] h-[300px] rounded-full opacity-50 pointer-events-none" style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"></div>
       <div class="relative grid lg:grid-cols-[1fr_320px] gap-8 items-center">
+        <!-- Input real oculto -->
+        <input
+          ref="fileInputRef"
+          type="file"
+          accept=".pdf,.jpg,.jpeg,.png"
+          class="hidden"
+          @change="handleFileUpload"
+        />
         <div
-          @click="handleFileUpload"
+          @click="triggerFileSelect"
           class="border-2 border-dashed border-[#E4E4E7] rounded-[14px] p-8 text-center hover:border-[#2563EB] hover:bg-[#FAFAFA] transition-all cursor-pointer"
         >
           <div class="w-14 h-14 mx-auto rounded-[12px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] mb-4">
