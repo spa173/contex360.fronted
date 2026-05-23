@@ -51,7 +51,7 @@ describe('ErrorBoundary', () => {
     
     const originalLocation = window.location
     delete (window as any).location
-    window.location = { ...originalLocation, reload: vi.fn() }
+    ;(window as any).location = { ...originalLocation, reload: vi.fn() } as any
 
     const ChildComponent = defineComponent({
       template: '<button class="trigger-error" @click="throwError">Throw Error</button>',
@@ -76,7 +76,7 @@ describe('ErrorBoundary', () => {
 
     expect(window.location.reload).toHaveBeenCalled()
 
-    window.location = originalLocation
+    ;(window as any).location = originalLocation as any
     consoleError.mockRestore()
   })
 })
