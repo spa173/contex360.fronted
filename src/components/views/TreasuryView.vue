@@ -27,17 +27,33 @@ function handleIgnoreInsight() {
   emit('notify', { message: 'Insight descartado', detail: 'La programación original se mantendrá sin cambios.' })
 }
 
-function handleNewPayment() {
-  treasury.schedulePayment({
-    vendorName: 'Nuevo Proveedor SAS',
-    amount: 3500000,
-    priority: 'Alta'
+const showPaymentModal = ref(false)
+const newPaymentForm = ref({
+  vendorName: '',
+  amount: null,
+  priority: 'Media',
+  dueDate: ''
+})
+
+async function submitPayment() {
+  if (!newPaymentForm.value.vendorName || !newPaymentForm.value.amount) return
+  showPaymentModal.value = false
+  await treasury.schedulePayment({
+    vendorName: newPaymentForm.value.vendorName,
+    amount: newPaymentForm.value.amount,
+    priority: newPaymentForm.value.priority,
+    dueDate: newPaymentForm.value.dueDate || new Date().toISOString()
   })
-  emit('notify', { message: 'Pago programado', detail: 'Se ha agregado el nuevo pago al calendario de tesorería.' })
+  emit('notify', { message: 'Pago programado exitosamente', detail: 'Se ha creado la orden de compra y el proveedor (si era nuevo) correctamente en el sistema.' })
+  newPaymentForm.value = { vendorName: '', amount: null, priority: 'Media', dueDate: '' }
+}
+
+function handleNewPayment() {
+  showPaymentModal.value = true
 }
 
 async function handleExport() {
-  emit('notify', { message: 'Generando PDF de Tesorería', detail: 'ContexAI está proyectando el flujo de caja y liquidez disponible...' })
+  emit('notify', { message: 'Generando PDF de Tesorería', detail: 'ContexAI está analizando el flujo de liquidez disponible...' })
   const totalProg = programmedPayments.value.reduce((s, p) => s + (Number(p.amount) || 0), 0)
 
   await generatePdfReport({
@@ -48,16 +64,17 @@ async function handleExport() {
       'Balance Total Disponible': formatCurrency(totalBalance.value),
       'Pagos Programados Totales': `${programmedPayments.value.length} transacciones`,
       'Monto Total Programado': formatCurrency(totalProg),
-      'Cobros Pendientes': `${pendingCollections.value} clientes`
+      'Cobros Pendientes': `${pendingCollections.value} facturas de clientes`
     },
-    aiSummary: 'El flujo de liquidez proyectado cubre de forma holgada los compromisos a corto plazo para los próximos 30 días.'
+    aiSummary: treasury.aiInsights?.insight || 'No hay datos suficientes para generar un insight.'
   })
-  emit('notify', { message: 'PDF Descargado', detail: 'El reporte de tesorería ha sido guardado exitosamente.' })
+  emit('notify', { message: 'PDF Descargado', detail: 'El reporte de tesorería se generó a partir de datos reales.' })
 }
 
 function priorityClass(p) {
   if (p === 'Alta') return 'bg-rose-50 text-rose-700'
   if (p === 'Media') return 'bg-amber-50 text-amber-700'
+  if (p === 'Baja') return 'bg-emerald-50 text-emerald-700'
   if (p === 'Optimizada') return 'bg-purple-50 text-purple-700 font-bold'
   return 'bg-[#F4F4F5] text-[#71717A]'
 }
@@ -154,6 +171,47 @@ function priorityClass(p) {
           </div>
           <p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Flujo de caja óptimo</p>
           <p class="text-[11px] text-[#71717A] mt-0.5">Programación ajustada exitosamente.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Nuevo Pago -->
+    <div v-if="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white w-[90%] max-w-[400px] rounded-[16px] shadow-2xl border border-[#E4E4E7] overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="px-5 py-4 border-b border-[#F4F4F5] flex justify-between items-center">
+          <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Programar Nuevo Pago</h3>
+          <button @click="showPaymentModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors"><span class="material-symbols-outlined text-[20px]">close</span></button>
+        </div>
+        <div class="p-5 space-y-4">
+          <div>
+            <label class="block text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5">Proveedor</label>
+            <input v-model="newPaymentForm.vendorName" type="text" placeholder="Ej. Papelería SAS" class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#E4E4E7] rounded-[8px] text-[13px] text-[#18181B] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5">Monto (COP)</label>
+            <input v-model.number="newPaymentForm.amount" type="number" placeholder="Ej. 150000" class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#E4E4E7] rounded-[8px] text-[13px] text-[#18181B] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all font-mono">
+          </div>
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5">Vencimiento</label>
+              <input v-model="newPaymentForm.dueDate" type="date" class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#E4E4E7] rounded-[8px] text-[13px] text-[#18181B] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all">
+            </div>
+            <div>
+              <label class="block text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5">Prioridad</label>
+              <select v-model="newPaymentForm.priority" class="w-full px-3 py-2 bg-[#FAFAFA] border border-[#E4E4E7] rounded-[8px] text-[13px] text-[#18181B] focus:outline-none focus:border-[#2563EB] focus:ring-1 focus:ring-[#2563EB] transition-all appearance-none">
+                <option value="Alta">Alta</option>
+                <option value="Media">Media</option>
+                <option value="Baja">Baja</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="px-5 py-4 bg-[#FAFAFA] border-t border-[#F4F4F5] flex justify-end gap-2">
+          <button @click="showPaymentModal = false" class="px-4 py-2 border border-[#E4E4E7] bg-white text-[#71717A] rounded-[8px] text-[12px] font-semibold hover:bg-[#F4F4F5] transition-colors">Cancelar</button>
+          <button @click="submitPayment" :disabled="!newPaymentForm.vendorName || !newPaymentForm.amount || treasury.isSaving" class="flex items-center justify-center min-w-[120px] px-4 py-2 bg-[#18181B] text-white rounded-[8px] text-[12px] font-semibold hover:bg-[#27272A] disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <span v-if="treasury.isSaving" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+            <span v-else>Guardar Orden</span>
+          </button>
         </div>
       </div>
     </div>
