@@ -14,7 +14,7 @@ export default defineConfig({
     globals: true,
     include: ['src/**/*.{test,spec}.{js,ts}'],
     setupFiles: './src/test/setup.js',
-    passWithNoTests: true,
+    passWithNoTests: false,
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov'],
