@@ -170,6 +170,12 @@ export const businessApi = {
   async getLedgerEntries(tenantId?: string | null) {
     return request<any[]>('/ledger', { tenantId })
   },
+  async getBalanceSheet(tenantId?: string | null) {
+    return request<any>('/ledger/reports/balance-sheet', { tenantId })
+  },
+  async getProfitAndLoss(tenantId?: string | null) {
+    return request<any>('/ledger/reports/profit-and-loss', { tenantId })
+  },
 
   // Invoices
   async getInvoices(tenantId?: string | null) {
@@ -251,6 +257,27 @@ export const businessApi = {
   },
   async createMovement(data: any, tenantId?: string | null) {
     return request<any>('/inventory/movements', { method: 'POST', body: data, tenantId })
+  },
+  async transferStock(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/transfer', { method: 'POST', body: data, tenantId })
+  },
+  async receiveTransfer(transferId: string, tenantId?: string | null) {
+    return request<any>(`/inventory/receive-transfer/${transferId}`, { method: 'POST', tenantId })
+  },
+  async auditInventory(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/audit', { method: 'POST', body: data, tenantId })
+  },
+  async receiveInventory(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/receive', { method: 'POST', body: data, tenantId })
+  },
+  async getDeadInventory(tenantId?: string | null) {
+    return request<any[]>('/inventory/analytics/dead', { tenantId })
+  },
+  async getReorderSuggestions(tenantId?: string | null) {
+    return request<any>('/inventory/analytics/reorder', { tenantId })
+  },
+  async getAbcAnalysis(tenantId?: string | null) {
+    return request<any>('/inventory/analytics/abc', { tenantId })
   },
 
   // Analytics

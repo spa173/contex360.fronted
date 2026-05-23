@@ -98,44 +98,9 @@ export const usePurchasesStore = defineStore('purchases', () => {
       const purchase = response as Purchase
       purchases.value.unshift(purchase)
 
-      // Create local ledger entry mirror (IVA descontable)
-      const providerName =
-        (root as any).thirdParties?.find(
-          (tp: any) => tp.id === purchase.providerId,
-        )?.name ?? 'Proveedor'
-
-      const entry = {
-        id: uid('entry'),
-        tenantId: purchase.tenantId,
-        referenceType: 'purchase',
-        referenceId: purchase.id,
-        description: `Compra ${purchase.number || purchase.id} - ${providerName}`,
-        amount: purchase.total,
-        entryAt: new Date().toISOString(),
-        createdAt: new Date().toISOString(),
-        lines: [
-          {
-            account: '510000',
-            label: 'Gastos operacionales de compra',
-            debit: purchase.subtotal,
-            credit: 0,
-          },
-          {
-            account: '240810',
-            label: 'IVA descontable',
-            debit: purchase.taxTotal,
-            credit: 0,
-          },
-          {
-            account: '220500',
-            label: 'Proveedores nacionales',
-            debit: 0,
-            credit: purchase.total,
-          },
-        ],
-      }
-
-      accounting.addEntry(entry)
+      // We no longer create a local ledger entry mock,
+      // as the backend automatically generates the real entry.
+      accounting.fetchLedgerEntries()
 
       return { ok: true, message: 'Compra registrada correctamente.', purchase }
     } catch (error) {

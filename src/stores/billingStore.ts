@@ -84,25 +84,9 @@ export const useBillingStore = defineStore('billing', () => {
       const response = await businessApi.createInvoice(payload, activeTenantId.value)
       const invoice = response as Invoice
       invoices.value.unshift(invoice)
-      const client = root.thirdParties.find(tp => tp.id === invoice.clientId)
-      const entry = createInvoiceEntry(invoice, client?.name || 'Cliente Genérico')
-      accounting.addEntry(entry)
-      businessApi.createLedgerEntry(
-        {
-          referenceType: entry.referenceType,
-          referenceId:   entry.referenceId,
-          description:   entry.description,
-          amount:        entry.amount,
-          entryAt:       entry.entryAt,
-          lines:         entry.lines.map((l) => ({
-            account: l.account,
-            label:   l.label,
-            debit:   l.debit,
-            credit:  l.credit,
-          })),
-        },
-        invoice.tenantId,
-      ).catch((err) => console.warn('[ledger] sync failed (non-blocking):', safeLogMessage(err)))
+      // We no longer create a local ledger entry mock,
+      // as the backend automatically generates the real entry.
+      accounting.fetchLedgerEntries()
       appendAuditEvent(root.$state, { tenantId: invoice.tenantId, entity: 'factura', action: 'Emitir', description: `Se emitió la factura ${invoice.number} por ${invoice.total}.`, actor: root.currentUser?.name || 'Sistema', severity: 'info' })
       
       // Llamada real al backend para transmitir la factura a la DIAN (en segundo plano)
