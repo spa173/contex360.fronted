@@ -17,6 +17,7 @@ import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import AppLoading from './components/layout/AppLoading.vue'
 import PaymentSuccess from './components/views/PaymentSuccess.vue'
+import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
 
@@ -180,7 +181,8 @@ onMounted(() => {
 
 <template>
   <div class="app-root">
-    <!-- Initial load skeleton -->
+    <ErrorBoundary>
+      <!-- Initial load skeleton -->
     <AppLoading
       v-if="isLoading || loadError"
       :error="loadError"
@@ -260,6 +262,7 @@ onMounted(() => {
         />
       </template>
     </template>
+    </ErrorBoundary>
 
     <SessionRecoveryModal />
     <Toaster
