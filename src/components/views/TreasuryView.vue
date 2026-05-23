@@ -92,7 +92,7 @@ function priorityClass(p) {
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
         <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3"><span class="material-symbols-outlined text-[20px]">timeline</span></div>
         <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Proyección 30d</p>
-        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em] font-mono">Activa</p>
+        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em] font-mono">{{ treasury.cashFlowTrend?.projected?.length > 0 ? formatCurrency(treasury.cashFlowTrend.projected[treasury.cashFlowTrend.projected.length - 1].balance) : 'Activa' }}</p>
       </div>
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
         <div class="w-9 h-9 rounded-[10px] bg-rose-50 flex items-center justify-center text-rose-700 mb-3"><span class="material-symbols-outlined text-[20px]">outbox</span></div>
@@ -142,7 +142,7 @@ function priorityClass(p) {
         <div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Insights de IA</h3></div>
         <div v-if="showAiInsight && programmedPayments.length > 0" class="bg-white border border-[#E4E4E7] rounded-[14px] p-4 transition-all">
           <div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[16px] text-[#2563EB]">lightbulb</span><p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Optimización</p></div>
-          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Mover el pago a <strong>{{ programmedPayments[0]?.vendorName }}</strong> al día 25 para evitar déficit temporal proyectado.</p>
+          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">{{ treasury.aiInsights?.insight || `Mover el pago a <strong>${programmedPayments[0]?.vendorName}</strong> al día 25 para evitar déficit temporal proyectado.` }}</p>
           <div class="flex gap-2">
             <button @click="handleApplyInsight" class="flex-1 py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold hover:bg-[#1D4ED8] transition-colors">Aplicar</button>
             <button @click="handleIgnoreInsight" class="px-3 py-1.5 border border-[#E4E4E7] text-[#71717A] rounded-[8px] text-[11px] font-semibold hover:bg-[#FAFAFA] transition-colors">Ignorar</button>

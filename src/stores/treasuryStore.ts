@@ -33,24 +33,55 @@ export const useTreasuryStore = defineStore('treasury', () => {
 
   const programmedPayments = ref<ProgrammedPayment[]>([])
 
+  const cashFlowTrend = ref<any>(null)
+  const aiInsights = ref<any>(null)
+
   function applyInsightOptimization() {
-    // Optimizes the first programmed payment found in the list (if any)
+    // In a real flow, this would call an API, but for now we apply it locally for the UI effect
     const firstPayment = programmedPayments.value[0]
     if (firstPayment) {
-      firstPayment.dueDate = new Date(Date.now() + 86400000 * 9).toISOString() // Moved 9 days later
+      firstPayment.dueDate = new Date(Date.now() + 86400000 * 9).toISOString()
       firstPayment.priority = 'Optimizada'
     }
   }
 
-  function schedulePayment(payment: any) {
-    programmedPayments.value.unshift({
-      id: `pay-${Date.now()}`,
-      vendorName: payment.vendorName || 'Proveedor General',
-      dueDate: payment.dueDate || new Date(Date.now() + 86400000 * 5).toISOString(),
-      priority: payment.priority || 'Media',
-      amount: Number(payment.amount) || 1000000,
-      status: 'Programado'
-    })
+  async function schedulePayment(payment: any) {
+    if (!activeTenantId.value) return
+    isSaving.value = true
+    try {
+      const providers = await businessApi.getThirdParties('provider', activeTenantId.value)
+      let providerId = providers.length > 0 ? providers[0].id : null
+      
+      if (!providerId) {
+        const newProvider = await businessApi.createThirdParty({
+          name: payment.vendorName || 'Nuevo Proveedor SAS',
+          documentType: 'NIT',
+          documentNumber: '900' + Math.floor(Math.random() * 1000000),
+          kind: 'provider',
+        }, activeTenantId.value)
+        providerId = newProvider.id
+      }
+
+      await businessApi.createPurchase({
+        providerId,
+        paymentTermDays: 15,
+        items: [
+          {
+            productId: 'temp-service',
+            productName: 'Pago programado desde Tesorería',
+            quantity: 1,
+            unitPrice: Number(payment.amount) || 1000000,
+            taxRate: 0,
+          }
+        ]
+      }, activeTenantId.value)
+
+      await fetchAll()
+    } catch (err) {
+      console.error('[treasury] schedule payment failed:', err)
+    } finally {
+      isSaving.value = false
+    }
   }
 
   const totalBalance = computed(() => balance.value.balance ?? 0)
@@ -61,23 +92,27 @@ export const useTreasuryStore = defineStore('treasury', () => {
     if (!activeTenantId.value) return
     isLoading.value = true
     try {
-      const [txs, bal, alerts, purchases] = await Promise.all([
-        businessApi.getTransactions(activeTenantId.value),
-        businessApi.getTreasuryBalance(activeTenantId.value),
+      const [txs, bal, alerts, purchases, cashFlow, insights] = await Promise.all([
+        businessApi.getTransactions(activeTenantId.value).catch(() => []),
+        businessApi.getTreasuryBalance(activeTenantId.value).catch(() => ({ balance: 0, incomeMonth: 0, expenseMonth: 0 })),
         businessApi.getAlerts(activeTenantId.value).catch(() => ({ pendingInvoices: 0 })),
         businessApi.getPurchases(activeTenantId.value).catch(() => []),
+        businessApi.getCashFlowTrend(activeTenantId.value).catch(() => null),
+        businessApi.getAiInsights(activeTenantId.value).catch(() => [])
       ])
       transactions.value = Array.isArray(txs) ? txs : []
       balance.value = bal
       pendingCollectionsCount.value = alerts?.pendingInvoices ?? 0
-      programmedPayments.value = (purchases || []).map((p: any) => ({
+      programmedPayments.value = (purchases || []).filter((p: any) => p.status === 'registered').map((p: any) => ({
         id: p.id,
         vendorName: p.provider?.name || 'Proveedor General',
         dueDate: p.dueAt || p.issuedAt || new Date().toISOString(),
         priority: p.total > 10000000 ? 'Alta' : p.total > 2000000 ? 'Media' : 'Baja',
         amount: Number(p.total),
-        status: p.status === 'registered' ? 'Programado' : p.status === 'paid' ? 'Aprobado' : 'Pendiente',
+        status: 'Programado',
       }))
+      cashFlowTrend.value = cashFlow
+      aiInsights.value = insights
     } catch (err) {
       console.error('[treasury] fetch failed:', err)
     } finally {
@@ -119,6 +154,8 @@ export const useTreasuryStore = defineStore('treasury', () => {
     totalBalance,
     pendingPaymentsCount,
     pendingCollectionsCount,
+    cashFlowTrend,
+    aiInsights,
     fetchAll,
     createTransaction,
     applyInsightOptimization,
