@@ -17,6 +17,7 @@ import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import AppLoading from './components/layout/AppLoading.vue'
 import PaymentSuccess from './components/views/PaymentSuccess.vue'
+import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
 
@@ -180,7 +181,8 @@ onMounted(() => {
 
 <template>
   <div class="app-root">
-    <!-- Initial load skeleton -->
+    <ErrorBoundary>
+      <!-- Initial load skeleton -->
     <AppLoading
       v-if="isLoading || loadError"
       :error="loadError"
@@ -191,26 +193,63 @@ onMounted(() => {
     <template v-else>
       <!-- Authenticated states -->
       <template v-if="store.currentUser">
-        <RootShell v-if="showRootPanel" @enter-erp="viewingAdminPanel = false" />
-        <AppShell v-else @open-admin-panel="viewingAdminPanel = true" />
+        <RootShell
+          v-if="showRootPanel"
+          @enter-erp="viewingAdminPanel = false"
+        />
+        <AppShell
+          v-else
+          @open-admin-panel="viewingAdminPanel = true"
+        />
       </template>
 
       <!-- Public states (unauthenticated) -->
       <template v-else>
-        <PaymentSuccess v-if="showPaymentSuccess" :plan-type="paymentSuccessPlan" @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)" />
-        <DemoRequestView v-else-if="showDemo" @back="showDemo = false" />
-        <ForgotPasswordView v-else-if="showForgotPassword" @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)" />
-        <ResetPasswordView v-else-if="showResetPassword" @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)" />
-        <PricingView v-else-if="showPricing" @back="showPricing = false" @request-demo="showDemo = true; showPricing = false" @login="showAuth = true; showPricing = false" @purchase-plan="handlePurchasePlan" />
-        <AuthScreen v-else-if="showAuth" @request-demo="showDemo = true; showAuth = false" @show-privacy="showPrivacy = true; showAuth = false" @forgot-password="showForgotPassword = true; showAuth = false" @back="showAuth = false" />
+        <PaymentSuccess
+          v-if="showPaymentSuccess"
+          :plan-type="paymentSuccessPlan"
+          @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)"
+        />
+        <DemoRequestView
+          v-else-if="showDemo"
+          @back="showDemo = false"
+        />
+        <ForgotPasswordView
+          v-else-if="showForgotPassword"
+          @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)"
+        />
+        <ResetPasswordView
+          v-else-if="showResetPassword"
+          @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)"
+        />
+        <PricingView
+          v-else-if="showPricing"
+          @back="showPricing = false"
+          @request-demo="showDemo = true; showPricing = false"
+          @login="showAuth = true; showPricing = false"
+          @purchase-plan="handlePurchasePlan"
+        />
+        <AuthScreen
+          v-else-if="showAuth"
+          @request-demo="showDemo = true; showAuth = false"
+          @show-privacy="showPrivacy = true; showAuth = false"
+          @forgot-password="showForgotPassword = true; showAuth = false"
+          @back="showAuth = false"
+        />
         <AboutView
           v-else-if="showAbout"
           @back="showAbout = false"
           @request-demo="showDemo = true"
           @login="showAuth = true"
         />
-        <PrivacyPolicyView v-else-if="showPrivacy" @back="handleCustomBack" />
-        <TermsOfUseView v-else-if="showTerms" @back="showTerms = false" />
+        <PrivacyPolicyView
+          v-else-if="showPrivacy"
+          @back="handleCustomBack"
+        />
+        <TermsOfUseView
+          v-else-if="showTerms"
+          @back="showTerms = false"
+        />
         <LandingPage
           v-else
           @login="showAuth = true"
@@ -223,9 +262,13 @@ onMounted(() => {
         />
       </template>
     </template>
+    </ErrorBoundary>
 
     <SessionRecoveryModal />
-    <Toaster position="top-right" richColors />
+    <Toaster
+      position="top-right"
+      rich-colors
+    />
     <ToastStack :toasts="toasts" />
   </div>
 </template>

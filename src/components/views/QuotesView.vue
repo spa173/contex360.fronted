@@ -171,20 +171,33 @@ async function submitNewQuote() {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500"
+  >
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
         <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
           <span>Operaciones</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-[#71717A]">Cotizaciones</span>
         </div>
-        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Cotizaciones</h1>
-        <p class="text-[14px] text-[#71717A]">Gestión de ofertas comerciales y conversión a factura.</p>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">
+          Cotizaciones
+        </h1>
+        <p class="text-[14px] text-[#71717A]">
+          Gestión de ofertas comerciales y conversión a factura.
+        </p>
       </div>
       <div class="flex gap-2">
-        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+        <button
+          class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold"
+          @click="handleExport"
+        >
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar
         </button>
-        <button @click="handleNewQuote" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold">
+        <button
+          class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold"
+          @click="handleNewQuote"
+        >
           <span class="material-symbols-outlined text-[18px]">add</span>Nueva cotización
         </button>
       </div>
@@ -194,7 +207,11 @@ async function submitNewQuote() {
       <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
         <div class="relative">
           <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
-          <input v-model="searchQuery" placeholder="Filtrar cotizaciones..." class="pl-8 pr-3 py-1.5 text-[12px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-56" />
+          <input
+            v-model="searchQuery"
+            placeholder="Filtrar cotizaciones..."
+            class="pl-8 pr-3 py-1.5 text-[12px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B] w-56"
+          >
         </div>
         <span class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider">{{ filteredQuotes.length }} registros</span>
       </div>
@@ -202,31 +219,75 @@ async function submitNewQuote() {
         <table class="w-full text-left min-w-[600px]">
           <thead>
             <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-              <th class="px-5 py-3">ID</th>
-              <th class="px-5 py-3">Cliente</th>
-              <th class="px-5 py-3">Vence</th>
-              <th class="px-5 py-3 text-right">Monto</th>
-              <th class="px-5 py-3">Estado</th>
-              <th class="px-5 py-3">Acción</th>
+              <th class="px-5 py-3">
+                ID
+              </th>
+              <th class="px-5 py-3">
+                Cliente
+              </th>
+              <th class="px-5 py-3">
+                Vence
+              </th>
+              <th class="px-5 py-3 text-right">
+                Monto
+              </th>
+              <th class="px-5 py-3">
+                Estado
+              </th>
+              <th class="px-5 py-3">
+                Acción
+              </th>
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="q in filteredQuotes" :key="q.id" @click="selectedQuote = q" class="hover:bg-[#FAFAFA] cursor-pointer">
-              <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ q.number }}</td>
-              <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ q.customerName || q.client?.name || 'Cliente' }}</td>
-              <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(q.dueDate || q.createdAt).toLocaleDateString() }}</td>
-              <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(q.total) }}</td>
-              <td class="px-5 py-3.5"><span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', statusBadge(q.status).class]">{{ statusBadge(q.status).label }}</span></td>
+            <tr
+              v-for="q in filteredQuotes"
+              :key="q.id"
+              class="hover:bg-[#FAFAFA] cursor-pointer"
+              @click="selectedQuote = q"
+            >
+              <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">
+                {{ q.number }}
+              </td>
+              <td class="px-5 py-3.5 font-semibold text-[#18181B]">
+                {{ q.customerName || q.client?.name || 'Cliente' }}
+              </td>
+              <td class="px-5 py-3.5 text-[#71717A]">
+                {{ new Date(q.dueDate || q.createdAt).toLocaleDateString() }}
+              </td>
+              <td class="px-5 py-3.5 text-right font-mono font-semibold">
+                {{ formatCurrency(q.total) }}
+              </td>
               <td class="px-5 py-3.5">
-                <button v-if="(q.status || '').toLowerCase().startsWith('appro')" @click.stop="handleConvertToInvoice(q)" class="text-[11px] font-semibold text-[#2563EB] hover:underline">
+                <span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', statusBadge(q.status).class]">{{ statusBadge(q.status).label }}</span>
+              </td>
+              <td class="px-5 py-3.5">
+                <button
+                  v-if="(q.status || '').toLowerCase().startsWith('appro')"
+                  class="text-[11px] font-semibold text-[#2563EB] hover:underline"
+                  @click.stop="handleConvertToInvoice(q)"
+                >
                   Convertir a factura →
                 </button>
-                <span v-else-if="(q.status || '').toLowerCase() === 'converted'" class="text-[11px] text-purple-700 font-semibold">Convertida ✓</span>
-                <button v-else class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[16px]">more_horiz</span></button>
+                <span
+                  v-else-if="(q.status || '').toLowerCase() === 'converted'"
+                  class="text-[11px] text-purple-700 font-semibold"
+                >Convertida ✓</span>
+                <button
+                  v-else
+                  class="text-[#A1A1AA] hover:text-[#18181B]"
+                >
+                  <span class="material-symbols-outlined text-[16px]">more_horiz</span>
+                </button>
               </td>
             </tr>
             <tr v-if="filteredQuotes.length === 0">
-              <td colspan="6" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay cotizaciones registradas.</td>
+              <td
+                colspan="6"
+                class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+              >
+                No hay cotizaciones registradas.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -234,15 +295,28 @@ async function submitNewQuote() {
     </div>
 
     <!-- New Quote Modal -->
-    <div v-if="showNewQuoteModal" class="fixed inset-0 z-[100] flex items-center justify-center">
-      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showNewQuoteModal = false"></div>
+    <div
+      v-if="showNewQuoteModal"
+      class="fixed inset-0 z-[100] flex items-center justify-center"
+    >
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        @click="showNewQuoteModal = false"
+      />
       <div class="relative bg-white rounded-[16px] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         <div class="px-6 py-5 border-b border-[#F4F4F5] flex justify-between items-center bg-[#FAFAFA] shrink-0">
           <div>
-            <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">Nueva Cotización</h3>
-            <p class="text-[13px] text-[#71717A] mt-0.5">Elabora una propuesta comercial para un cliente.</p>
+            <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">
+              Nueva Cotización
+            </h3>
+            <p class="text-[13px] text-[#71717A] mt-0.5">
+              Elabora una propuesta comercial para un cliente.
+            </p>
           </div>
-          <button @click="showNewQuoteModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors rounded-full p-1 hover:bg-[#F4F4F5]">
+          <button
+            class="text-[#A1A1AA] hover:text-[#18181B] transition-colors rounded-full p-1 hover:bg-[#F4F4F5]"
+            @click="showNewQuoteModal = false"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
@@ -252,14 +326,33 @@ async function submitNewQuote() {
           <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Cliente *</label>
-              <select v-model="quoteForm.clientId" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
-                <option value="" disabled>Selecciona un cliente</option>
-                <option v-for="tp in tenantClients" :key="tp.id" :value="tp.id">{{ tp.name }} ({{ tp.nit }})</option>
+              <select
+                v-model="quoteForm.clientId"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+              >
+                <option
+                  value=""
+                  disabled
+                >
+                  Selecciona un cliente
+                </option>
+                <option
+                  v-for="tp in tenantClients"
+                  :key="tp.id"
+                  :value="tp.id"
+                >
+                  {{ tp.name }} ({{ tp.nit }})
+                </option>
               </select>
             </div>
             <div>
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Válido Hasta *</label>
-              <input v-model="quoteForm.validUntil" type="date" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="quoteForm.validUntil"
+                type="date"
+                required
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+              >
             </div>
           </div>
 
@@ -267,7 +360,10 @@ async function submitNewQuote() {
           <div>
             <div class="flex items-center justify-between mb-3">
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider block">Ítems Cotizados *</label>
-              <button @click="addItem" class="text-[12px] font-bold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1">
+              <button
+                class="text-[12px] font-bold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1"
+                @click="addItem"
+              >
                 <span class="material-symbols-outlined text-[14px]">add</span> Añadir fila
               </button>
             </div>
@@ -276,43 +372,99 @@ async function submitNewQuote() {
               <table class="w-full text-left">
                 <thead class="bg-[#FAFAFA] border-b border-[#E4E4E7]">
                   <tr>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A]">Producto / Servicio</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">Cant</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px]">Precio Unit.</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">% IVA</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px] text-right">Subtotal</th>
-                    <th class="px-3 py-2 w-[40px]"></th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A]">
+                      Producto / Servicio
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">
+                      Cant
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px]">
+                      Precio Unit.
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">
+                      % IVA
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px] text-right">
+                      Subtotal
+                    </th>
+                    <th class="px-3 py-2 w-[40px]" />
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-[#F4F4F5]">
-                  <tr v-for="(item, idx) in quoteForm.items" :key="idx" class="bg-white">
+                  <tr
+                    v-for="(item, idx) in quoteForm.items"
+                    :key="idx"
+                    class="bg-white"
+                  >
                     <td class="px-3 py-2">
                       <div class="flex flex-col gap-1">
-                        <select v-model="item.productId" @change="onProductSelect(item)" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
-                          <option value="">-- Servicio o ítem libre --</option>
-                          <option v-for="p in tenantProducts" :key="p.id" :value="p.id">{{ p.name }}</option>
+                        <select
+                          v-model="item.productId"
+                          class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                          @change="onProductSelect(item)"
+                        >
+                          <option value="">
+                            -- Servicio o ítem libre --
+                          </option>
+                          <option
+                            v-for="p in tenantProducts"
+                            :key="p.id"
+                            :value="p.id"
+                          >
+                            {{ p.name }}
+                          </option>
                         </select>
-                        <input v-if="!item.productId" v-model="item.productName" placeholder="Descripción de la oferta" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+                        <input
+                          v-if="!item.productId"
+                          v-model="item.productName"
+                          placeholder="Descripción de la oferta"
+                          class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                        >
                       </div>
                     </td>
                     <td class="px-3 py-2">
-                      <input v-model.number="item.quantity" type="number" min="1" step="any" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+                      <input
+                        v-model.number="item.quantity"
+                        type="number"
+                        min="1"
+                        step="any"
+                        class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                      >
                     </td>
                     <td class="px-3 py-2">
-                      <input v-model.number="item.unitPrice" type="number" min="0" step="any" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+                      <input
+                        v-model.number="item.unitPrice"
+                        type="number"
+                        min="0"
+                        step="any"
+                        class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                      >
                     </td>
                     <td class="px-3 py-2">
-                      <select v-model.number="item.taxRate" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
-                        <option value="0">0%</option>
-                        <option value="5">5%</option>
-                        <option value="19">19%</option>
+                      <select
+                        v-model.number="item.taxRate"
+                        class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                      >
+                        <option value="0">
+                          0%
+                        </option>
+                        <option value="5">
+                          5%
+                        </option>
+                        <option value="19">
+                          19%
+                        </option>
                       </select>
                     </td>
                     <td class="px-3 py-2 text-right font-mono text-[12px] font-semibold text-[#18181B]">
                       {{ formatCurrency(item.quantity * item.unitPrice) }}
                     </td>
                     <td class="px-3 py-2 text-right">
-                      <button @click="removeItem(idx)" :disabled="quoteForm.items.length <= 1" class="text-[#A1A1AA] hover:text-red-500 disabled:opacity-30">
+                      <button
+                        :disabled="quoteForm.items.length <= 1"
+                        class="text-[#A1A1AA] hover:text-red-500 disabled:opacity-30"
+                        @click="removeItem(idx)"
+                      >
                         <span class="material-symbols-outlined text-[18px]">delete</span>
                       </button>
                     </td>
@@ -326,11 +478,20 @@ async function submitNewQuote() {
               <div class="w-full md:w-1/2 space-y-4">
                 <div>
                   <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-1 block">Términos Comerciales</label>
-                  <textarea v-model="quoteForm.terms" rows="2" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2 text-[13px] bg-[#FAFAFA] outline-none focus:border-[#18181B] resize-none"></textarea>
+                  <textarea
+                    v-model="quoteForm.terms"
+                    rows="2"
+                    class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2 text-[13px] bg-[#FAFAFA] outline-none focus:border-[#18181B] resize-none"
+                  />
                 </div>
                 <div>
                   <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-1 block">Notas Privadas</label>
-                  <textarea v-model="quoteForm.notes" rows="1" placeholder="Ej. Margen especial, competencia..." class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2 text-[13px] bg-[#FAFAFA] outline-none focus:border-[#18181B] resize-none"></textarea>
+                  <textarea
+                    v-model="quoteForm.notes"
+                    rows="1"
+                    placeholder="Ej. Margen especial, competencia..."
+                    class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2 text-[13px] bg-[#FAFAFA] outline-none focus:border-[#18181B] resize-none"
+                  />
                 </div>
               </div>
               <div class="w-full md:w-1/2 max-w-[280px] bg-[#FAFAFA] rounded-[10px] p-4 border border-[#E4E4E7]">
@@ -353,9 +514,21 @@ async function submitNewQuote() {
 
         <!-- Footer actions -->
         <div class="px-6 py-4 border-t border-[#F4F4F5] bg-[#FAFAFA] flex justify-end gap-3 shrink-0">
-          <button @click="showNewQuoteModal = false" class="px-4 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">Cancelar</button>
-          <button @click="submitNewQuote" :disabled="isSubmitting" class="px-6 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold flex items-center gap-2 disabled:opacity-50">
-            <span v-if="isSubmitting" class="material-symbols-outlined animate-spin text-[16px]">sync</span>
+          <button
+            class="px-4 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold"
+            @click="showNewQuoteModal = false"
+          >
+            Cancelar
+          </button>
+          <button
+            :disabled="isSubmitting"
+            class="px-6 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold flex items-center gap-2 disabled:opacity-50"
+            @click="submitNewQuote"
+          >
+            <span
+              v-if="isSubmitting"
+              class="material-symbols-outlined animate-spin text-[16px]"
+            >sync</span>
             {{ isSubmitting ? 'Guardando...' : 'Guardar Cotización' }}
           </button>
         </div>

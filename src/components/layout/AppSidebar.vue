@@ -46,16 +46,42 @@ function handleItemClick(itemId) {
     <!-- Brand -->
     <div class="px-5 pt-6 pb-5 border-b border-[#F4F4F5]">
       <div class="flex items-center gap-2.5">
-        <svg class="c360-mark" width="32" height="32" viewBox="0 0 56 56">
-          <rect width="56" height="56" rx="12" fill="#18181B"/>
+        <svg
+          class="c360-mark"
+          width="32"
+          height="32"
+          viewBox="0 0 56 56"
+        >
+          <rect
+            width="56"
+            height="56"
+            rx="12"
+            fill="#18181B"
+          />
           <g class="rotor">
-            <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-            <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path
+              d="M44 18 A 16 16 0 1 0 44 38"
+              stroke="#fff"
+              stroke-width="5.5"
+              stroke-linecap="round"
+              fill="none"
+            />
+            <path
+              d="M44 18 A 16 16 0 0 1 44 38"
+              stroke="#2563EB"
+              stroke-width="5.5"
+              stroke-linecap="round"
+              fill="none"
+            />
           </g>
         </svg>
         <div>
-          <p class="text-[14px] font-bold tracking-tight text-[#18181B] leading-tight">Contex360</p>
-          <p class="text-[10px] text-[#A1A1AA] uppercase font-semibold tracking-wider">Enterprise</p>
+          <p class="text-[14px] font-bold tracking-tight text-[#18181B] leading-tight">
+            Contex360
+          </p>
+          <p class="text-[10px] text-[#A1A1AA] uppercase font-semibold tracking-wider">
+            Enterprise
+          </p>
         </div>
       </div>
     </div>
@@ -67,8 +93,12 @@ function handleItemClick(itemId) {
           {{ tenantInitials(activeTenant?.name) }}
         </div>
         <div class="flex-1 min-w-0">
-          <p class="text-[12px] font-semibold text-[#18181B] truncate">{{ activeTenant?.name || 'Sin workspace' }}</p>
-          <p class="text-[10px] text-[#A1A1AA] truncate">{{ activeTenant?.idNumber || '' }}</p>
+          <p class="text-[12px] font-semibold text-[#18181B] truncate">
+            {{ activeTenant?.name || 'Sin workspace' }}
+          </p>
+          <p class="text-[10px] text-[#A1A1AA] truncate">
+            {{ activeTenant?.idNumber || '' }}
+          </p>
         </div>
         <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">unfold_more</span>
       </div>
@@ -79,7 +109,6 @@ function handleItemClick(itemId) {
       <button
         v-for="item in menuItems"
         :key="item.id"
-        @click="handleItemClick(item.id)"
         :title="isFeatureLocked(item.id) ? 'Plan Enterprise requerido' : ''"
         :class="[
           'w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[13px] font-medium transition-colors text-left',
@@ -89,26 +118,29 @@ function handleItemClick(itemId) {
               ? 'bg-[#18181B] text-white'
               : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA]'
         ]"
+        @click="handleItemClick(item.id)"
       >
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-[18px]">{{ item.icon }}</span>
           <span>{{ item.label }}</span>
         </div>
-        <span v-if="isFeatureLocked(item.id)" class="material-symbols-outlined text-[16px] text-[#A1A1AA]">lock</span>
+        <span
+          v-if="isFeatureLocked(item.id)"
+          class="material-symbols-outlined text-[16px] text-[#A1A1AA]"
+        >lock</span>
       </button>
     </nav>
 
     <!-- Bottom: AI + Settings -->
     <div class="px-3 py-3 border-t border-[#F4F4F5] space-y-1">
       <button
-        @click="emit('open-ai-chat')"
         class="w-full flex items-center gap-3 px-3 py-2 rounded-[8px] text-[13px] font-semibold text-white bg-[#18181B] hover:bg-[#27272A] transition-colors"
+        @click="emit('open-ai-chat')"
       >
         <span class="material-symbols-outlined text-[18px]">auto_awesome</span>
         Asistente IA
       </button>
       <button
-        @click="handleItemClick('admin-console')"
         :title="isFeatureLocked('admin-console') ? 'Plan Enterprise requerido' : ''"
         :class="[
           'w-full flex items-center justify-between px-3 py-2 rounded-[8px] text-[13px] font-medium transition-colors text-left',
@@ -116,12 +148,16 @@ function handleItemClick(itemId) {
             ? 'opacity-50 cursor-not-allowed text-[#A1A1AA]'
             : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFA]'
         ]"
+        @click="handleItemClick('admin-console')"
       >
         <div class="flex items-center gap-3">
           <span class="material-symbols-outlined text-[18px]">settings</span>
           <span>Configuración</span>
         </div>
-        <span v-if="isFeatureLocked('admin-console')" class="material-symbols-outlined text-[16px] text-[#A1A1AA]">lock</span>
+        <span
+          v-if="isFeatureLocked('admin-console')"
+          class="material-symbols-outlined text-[16px] text-[#A1A1AA]"
+        >lock</span>
       </button>
     </div>
   </aside>

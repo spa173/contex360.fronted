@@ -167,20 +167,33 @@ async function handleAnonymize(user) {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500"
+  >
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
         <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
           <span>Gestión</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-[#71717A]">Usuarios</span>
         </div>
-        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Usuarios</h1>
-        <p class="text-[14px] text-[#71717A]">Administración de accesos, roles y seguridad.</p>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">
+          Usuarios
+        </h1>
+        <p class="text-[14px] text-[#71717A]">
+          Administración de accesos, roles y seguridad.
+        </p>
       </div>
       <div class="flex gap-2">
-        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors">
+        <button
+          class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors"
+          @click="handleExport"
+        >
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar log
         </button>
-        <button @click="openNewUserModal" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors">
+        <button
+          class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors"
+          @click="openNewUserModal"
+        >
           <span class="material-symbols-outlined text-[18px]">add</span>Nuevo usuario
         </button>
       </div>
@@ -188,24 +201,48 @@ async function handleAnonymize(user) {
 
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
-        <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3"><span class="material-symbols-outlined text-[20px]">group</span></div>
-        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Usuarios activos</p>
-        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">{{ tenantUsers.length }}</p>
+        <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3">
+          <span class="material-symbols-outlined text-[20px]">group</span>
+        </div>
+        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          Usuarios activos
+        </p>
+        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">
+          {{ tenantUsers.length }}
+        </p>
       </div>
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
-        <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3"><span class="material-symbols-outlined text-[20px]">badge</span></div>
-        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Roles</p>
-        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">12</p>
+        <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3">
+          <span class="material-symbols-outlined text-[20px]">badge</span>
+        </div>
+        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          Roles
+        </p>
+        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">
+          12
+        </p>
       </div>
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
-        <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3"><span class="material-symbols-outlined text-[20px]">key</span></div>
-        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Licencias libres</p>
-        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">8</p>
+        <div class="w-9 h-9 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] mb-3">
+          <span class="material-symbols-outlined text-[20px]">key</span>
+        </div>
+        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          Licencias libres
+        </p>
+        <p class="text-[22px] font-bold text-[#18181B] tracking-[-0.02em]">
+          8
+        </p>
       </div>
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5">
-        <div class="w-9 h-9 rounded-[10px] bg-rose-50 flex items-center justify-center text-rose-700 mb-3"><span class="material-symbols-outlined text-[20px]">security</span></div>
-        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Alertas</p>
-        <p class="text-[22px] font-bold text-rose-700 tracking-[-0.02em]">3</p>
+        <div class="w-9 h-9 rounded-[10px] bg-rose-50 flex items-center justify-center text-rose-700 mb-3">
+          <span class="material-symbols-outlined text-[20px]">security</span>
+        </div>
+        <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          Alertas
+        </p>
+        <p class="text-[22px] font-bold text-rose-700 tracking-[-0.02em]">
+          3
+        </p>
       </div>
     </div>
 
@@ -214,14 +251,34 @@ async function handleAnonymize(user) {
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between gap-3 flex-wrap">
           <div class="relative flex-1 max-w-sm">
             <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
-            <input v-model="searchQuery" placeholder="Buscar usuarios..." class="w-full pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B]" />
+            <input
+              v-model="searchQuery"
+              placeholder="Buscar usuarios..."
+              class="w-full pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B]"
+            >
           </div>
           <div class="flex gap-2">
-            <select v-if="users.currentUser?.isSystemOwner" v-model="selectedTenantId" @change="onTenantChange" class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer max-w-[200px] truncate">
-              <option value="">Todas las empresas</option>
-              <option v-for="t in users.tenants" :key="t.id" :value="t.id">{{ t.name }}</option>
+            <select
+              v-if="users.currentUser?.isSystemOwner"
+              v-model="selectedTenantId"
+              class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer max-w-[200px] truncate"
+              @change="onTenantChange"
+            >
+              <option value="">
+                Todas las empresas
+              </option>
+              <option
+                v-for="t in users.tenants"
+                :key="t.id"
+                :value="t.id"
+              >
+                {{ t.name }}
+              </option>
             </select>
-            <select v-model="selectedRole" class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer">
+            <select
+              v-model="selectedRole"
+              class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer"
+            >
               <option>Todos los roles</option><option>Super Admin</option><option>Administrador</option><option>Finanzas</option><option>Ventas</option><option>Usuario local</option>
             </select>
           </div>
@@ -230,41 +287,75 @@ async function handleAnonymize(user) {
           <table class="w-full text-left min-w-[600px]">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-                <th class="px-5 py-3">Usuario</th>
-                <th class="px-5 py-3">Rol</th>
-                <th class="px-5 py-3">Estado</th>
-                <th class="px-5 py-3"></th>
+                <th class="px-5 py-3">
+                  Usuario
+                </th>
+                <th class="px-5 py-3">
+                  Rol
+                </th>
+                <th class="px-5 py-3">
+                  Estado
+                </th>
+                <th class="px-5 py-3" />
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-[#FAFAFA] group transition-colors">
+              <tr
+                v-for="user in filteredUsers"
+                :key="user.id"
+                class="hover:bg-[#FAFAFA] group transition-colors"
+              >
                 <td class="px-5 py-3.5">
                   <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-[#18181B] text-white flex items-center justify-center font-semibold text-[11px]">{{ initials(user.name) }}</div>
+                    <div class="w-8 h-8 rounded-full bg-[#18181B] text-white flex items-center justify-center font-semibold text-[11px]">
+                      {{ initials(user.name) }}
+                    </div>
                     <div>
-                      <p class="font-semibold text-[#18181B]">{{ user.name }}</p>
-                      <p class="text-[11px] text-[#A1A1AA]">{{ user.email }}</p>
+                      <p class="font-semibold text-[#18181B]">
+                        {{ user.name }}
+                      </p>
+                      <p class="text-[11px] text-[#A1A1AA]">
+                        {{ user.email }}
+                      </p>
                     </div>
                   </div>
                 </td>
-                <td class="px-5 py-3.5"><span class="inline-flex px-2 py-0.5 rounded-md bg-[#F4F4F5] text-[#71717A] text-[11px] font-semibold uppercase">{{ user.role }}</span></td>
+                <td class="px-5 py-3.5">
+                  <span class="inline-flex px-2 py-0.5 rounded-md bg-[#F4F4F5] text-[#71717A] text-[11px] font-semibold uppercase">{{ user.role }}</span>
+                </td>
                 <td class="px-5 py-3.5">
                   <label class="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" :checked="user.status === 'active'" @change="handleStatusToggle(user)" class="sr-only peer">
-                    <div class="w-9 h-5 bg-[#E4E4E7] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]"></div>
+                    <input
+                      type="checkbox"
+                      :checked="user.status === 'active'"
+                      class="sr-only peer"
+                      @change="handleStatusToggle(user)"
+                    >
+                    <div class="w-9 h-5 bg-[#E4E4E7] rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#18181B]" />
                   </label>
                 </td>
                 <td class="px-5 py-3.5 text-right opacity-0 group-hover:opacity-100">
                   <div class="flex items-center justify-end gap-3.5">
-                    <button @click="handleAnonymize(user)" class="text-amber-500 hover:text-amber-700 transition-colors" title="Derecho al Olvido (Ley 1581 / GDPR)">
+                    <button
+                      class="text-amber-500 hover:text-amber-700 transition-colors"
+                      title="Derecho al Olvido (Ley 1581 / GDPR)"
+                      @click="handleAnonymize(user)"
+                    >
                       <span class="material-symbols-outlined text-[18px]">shield_person</span>
                     </button>
-                    <button class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+                    <button class="text-[#A1A1AA] hover:text-[#18181B]">
+                      <span class="material-symbols-outlined text-[18px]">edit</span>
+                    </button>
                   </div>
                 </td>
               </tr>
               <tr v-if="filteredUsers.length === 0">
-                <td colspan="4" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No se encontraron usuarios con ese criterio.</td>
+                <td
+                  colspan="4"
+                  class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+                >
+                  No se encontraron usuarios con ese criterio.
+                </td>
               </tr>
             </tbody>
           </table>
@@ -272,44 +363,94 @@ async function handleAnonymize(user) {
       </div>
 
       <div class="space-y-3">
-        <div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Insights de IA</h3></div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">
+            Insights de IA
+          </h3>
+        </div>
         <div class="bg-white border border-rose-200 rounded-[14px] overflow-hidden">
-          <div class="px-4 py-3 bg-rose-50 border-b border-rose-100 flex items-center gap-2"><span class="material-symbols-outlined text-[16px] text-rose-700">shield</span><p class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">Seguridad</p></div>
+          <div class="px-4 py-3 bg-rose-50 border-b border-rose-100 flex items-center gap-2">
+            <span class="material-symbols-outlined text-[16px] text-rose-700">shield</span><p class="text-[11px] font-bold text-rose-700 uppercase tracking-wider">
+              Seguridad
+            </p>
+          </div>
           <div class="p-4">
-            <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Intentos de acceso desde IPs no reconocidas detectados.</p>
-            <button @click="handleApplyInsight('bloqueo')" class="w-full py-1.5 bg-rose-600 text-white rounded-[8px] text-[11px] font-semibold">Revisar</button>
+            <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">
+              Intentos de acceso desde IPs no reconocidas detectados.
+            </p>
+            <button
+              class="w-full py-1.5 bg-rose-600 text-white rounded-[8px] text-[11px] font-semibold"
+              @click="handleApplyInsight('bloqueo')"
+            >
+              Revisar
+            </button>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Modal Nuevo Usuario -->
-    <div v-if="showNewUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+    <div
+      v-if="showNewUserModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+    >
       <div class="bg-white rounded-[14px] w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-          <h2 class="text-[16px] font-bold text-[#18181B]">Nuevo Usuario</h2>
-          <button @click="closeNewUserModal" class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined">close</span></button>
+          <h2 class="text-[16px] font-bold text-[#18181B]">
+            Nuevo Usuario
+          </h2>
+          <button
+            class="text-[#A1A1AA] hover:text-[#18181B]"
+            @click="closeNewUserModal"
+          >
+            <span class="material-symbols-outlined">close</span>
+          </button>
         </div>
         
-        <div class="p-5" v-if="!newPasswordResult">
+        <div
+          v-if="!newPasswordResult"
+          class="p-5"
+        >
           <div class="space-y-4">
             <div>
               <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Nombre completo</label>
-              <input v-model="newUserForm.name" type="text" placeholder="Ej. Juan Pérez" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="newUserForm.name"
+                type="text"
+                placeholder="Ej. Juan Pérez"
+                class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]"
+              >
             </div>
             <div>
               <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Correo electrónico</label>
-              <input v-model="newUserForm.email" type="email" placeholder="juan@empresa.com" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="newUserForm.email"
+                type="email"
+                placeholder="juan@empresa.com"
+                class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]"
+              >
             </div>
             <div>
               <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Empresa / Workspace</label>
-              <select v-model="newUserForm.tenantId" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B] bg-white cursor-pointer">
-                <option v-for="t in users.tenants" :key="t.id" :value="t.id">{{ t.name }}</option>
+              <select
+                v-model="newUserForm.tenantId"
+                class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B] bg-white cursor-pointer"
+              >
+                <option
+                  v-for="t in users.tenants"
+                  :key="t.id"
+                  :value="t.id"
+                >
+                  {{ t.name }}
+                </option>
               </select>
             </div>
             <div>
               <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Rol en el sistema</label>
-              <select v-model="newUserForm.role" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B] bg-white cursor-pointer">
+              <select
+                v-model="newUserForm.role"
+                class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B] bg-white cursor-pointer"
+              >
                 <option>Administrador</option>
                 <option>Finanzas</option>
                 <option>Ventas</option>
@@ -318,28 +459,53 @@ async function handleAnonymize(user) {
             </div>
           </div>
           <div class="mt-6 flex justify-end gap-2">
-            <button @click="closeNewUserModal" class="px-4 py-2 border border-[#E4E4E7] rounded-[8px] text-[13px] font-semibold text-[#18181B] hover:bg-[#FAFAFA]">Cancelar</button>
-            <button @click="submitNewUser" class="px-4 py-2 bg-[#18181B] rounded-[8px] text-[13px] font-semibold text-white hover:bg-[#27272A]">Crear usuario</button>
+            <button
+              class="px-4 py-2 border border-[#E4E4E7] rounded-[8px] text-[13px] font-semibold text-[#18181B] hover:bg-[#FAFAFA]"
+              @click="closeNewUserModal"
+            >
+              Cancelar
+            </button>
+            <button
+              class="px-4 py-2 bg-[#18181B] rounded-[8px] text-[13px] font-semibold text-white hover:bg-[#27272A]"
+              @click="submitNewUser"
+            >
+              Crear usuario
+            </button>
           </div>
         </div>
 
-        <div class="p-5" v-else>
+        <div
+          v-else
+          class="p-5"
+        >
           <div class="text-center mb-5">
             <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
               <span class="material-symbols-outlined text-[24px]">check</span>
             </div>
-            <h3 class="text-[16px] font-bold text-[#18181B]">¡Usuario Creado!</h3>
-            <p class="text-[13px] text-[#71717A] mt-1">Comparte esta clave temporal con el usuario. Tendrá que cambiarla al iniciar sesión por primera vez.</p>
+            <h3 class="text-[16px] font-bold text-[#18181B]">
+              ¡Usuario Creado!
+            </h3>
+            <p class="text-[13px] text-[#71717A] mt-1">
+              Comparte esta clave temporal con el usuario. Tendrá que cambiarla al iniciar sesión por primera vez.
+            </p>
           </div>
           <div class="bg-[#F4F4F5] p-4 rounded-[8px] text-center mb-5 border border-[#E4E4E7]">
-            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Clave Temporal</p>
-            <p class="text-[20px] font-mono font-bold tracking-wider text-[#18181B]">{{ newPasswordResult }}</p>
+            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Clave Temporal
+            </p>
+            <p class="text-[20px] font-mono font-bold tracking-wider text-[#18181B]">
+              {{ newPasswordResult }}
+            </p>
           </div>
-          <button @click="closeNewUserModal" class="w-full py-2.5 bg-[#18181B] text-white rounded-[8px] text-[13px] font-semibold hover:bg-[#27272A]">Entendido</button>
+          <button
+            class="w-full py-2.5 bg-[#18181B] text-white rounded-[8px] text-[13px] font-semibold hover:bg-[#27272A]"
+            @click="closeNewUserModal"
+          >
+            Entendido
+          </button>
         </div>
       </div>
     </div>
-
   </section>
 </template>
 

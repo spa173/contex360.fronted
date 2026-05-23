@@ -49,9 +49,15 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
 <template>
   <Teleport to="body">
     <Transition name="fade">
-      <div v-if="isOpen" class="fixed inset-0 z-[1000] flex items-start justify-center pt-[15vh] px-4">
+      <div
+        v-if="isOpen"
+        class="fixed inset-0 z-[1000] flex items-start justify-center pt-[15vh] px-4"
+      >
         <!-- Backdrop -->
-        <div class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm" @click="isOpen = false"></div>
+        <div
+          class="fixed inset-0 bg-[#0F172A]/40 backdrop-blur-sm"
+          @click="isOpen = false"
+        />
 
         <!-- Command Palette -->
         <div class="relative w-full max-w-xl bg-white rounded-2xl shadow-2xl border border-[#E2E8F0] overflow-hidden animate-in zoom-in-95 duration-200">
@@ -64,7 +70,7 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
               placeholder="¿Qué quieres hacer hoy? (Ej: 'Crear factura')"
               class="flex-1 bg-transparent border-none outline-none text-[#1E293B] font-medium placeholder:text-[#94A3B8]"
               autoFocus
-            />
+            >
             <div class="flex items-center gap-1 px-1.5 py-0.5 rounded border border-[#E2E8F0] bg-[#F8F9FF] text-[10px] font-bold text-[#64748B]">
               ESC
             </div>
@@ -83,8 +89,12 @@ onUnmounted(() => window.removeEventListener('keydown', handleKeyDown))
                 <span class="material-symbols-outlined">{{ cmd.icon }}</span>
               </div>
               <div class="flex-1">
-                <h4 class="text-sm font-bold text-[#1E293B]">{{ cmd.title }}</h4>
-                <p class="text-[11px] font-medium text-[#64748B]">{{ cmd.description }}</p>
+                <h4 class="text-sm font-bold text-[#1E293B]">
+                  {{ cmd.title }}
+                </h4>
+                <p class="text-[11px] font-medium text-[#64748B]">
+                  {{ cmd.description }}
+                </p>
               </div>
               <div class="text-[10px] font-bold text-[#94A3B8] opacity-50">
                 ⌘ {{ cmd.shortcut }}

@@ -463,7 +463,7 @@ const filteredIntegrations = computed(() => {
 })
 
 const activeCatalogIntegrations = computed(() => {
-  return integrationCatalog.value.filter(i => i.enabled && i.id !== 'bancolombia')
+  return integrationCatalog.value.filter(i => i.enabled)
 })
 
 function toggleIntegration(integration) {
@@ -826,20 +826,33 @@ async function saveBancolombiaConfig() {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500"
+  >
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
         <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
           <span>Sistema</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-[#71717A]">Consola Admin</span>
         </div>
-        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Consola de Administración</h1>
-        <p class="text-[14px] text-[#71717A]">Configuración global del sistema y preferencias de inteligencia artificial.</p>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">
+          Consola de Administración
+        </h1>
+        <p class="text-[14px] text-[#71717A]">
+          Configuración global del sistema y preferencias de inteligencia artificial.
+        </p>
       </div>
       <div class="flex gap-2">
-        <button @click="handleDiscard" class="px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#71717A] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors">
+        <button
+          class="px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#71717A] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors"
+          @click="handleDiscard"
+        >
           Descartar
         </button>
-        <button @click="handleSave" class="flex items-center gap-2 px-4 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors shadow-sm">
+        <button
+          class="flex items-center gap-2 px-4 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors shadow-sm"
+          @click="handleSave"
+        >
           <span class="material-symbols-outlined text-[18px]">save</span>Guardar
         </button>
       </div>
@@ -849,32 +862,48 @@ async function saveBancolombiaConfig() {
     <div class="border-b border-[#E4E4E7] mb-6">
       <div class="flex gap-1 -mb-px overflow-x-auto">
         <button
-          v-for="t in tabs" :key="t.id"
-          @click="activeTab = t.id"
+          v-for="t in tabs"
+          :key="t.id"
           :class="[
             'px-4 py-2.5 text-[13px] font-semibold border-b-2 transition-colors whitespace-nowrap',
             activeTab === t.id ? 'text-[#18181B] border-[#18181B]' : 'text-[#71717A] hover:text-[#18181B] border-transparent'
           ]"
-        >{{ t.label }}</button>
+          @click="activeTab = t.id"
+        >
+          {{ t.label }}
+        </button>
       </div>
     </div>
 
     <!-- Empresa -->
-    <div v-if="activeTab === 'empresa'" class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div
+      v-if="activeTab === 'empresa'"
+      class="grid grid-cols-1 lg:grid-cols-3 gap-6"
+    >
       <div class="lg:col-span-2 space-y-6">
         <section class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm">
           <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
             <span class="material-symbols-outlined text-[20px] text-[#18181B]">domain</span>
-            <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Identidad Corporativa</h3>
+            <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+              Identidad Corporativa
+            </h3>
           </div>
           <div class="grid md:grid-cols-2 gap-5">
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Razón Social</label>
-              <input v-model="adminStore.razonSocial" @change="adminStore.saveSettings()" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] transition-colors" />
+              <input
+                v-model="adminStore.razonSocial"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] transition-colors"
+                @change="adminStore.saveSettings()"
+              >
             </div>
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">NIT</label>
-              <input v-model="adminStore.nit" @change="adminStore.saveSettings()" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-mono outline-none focus:border-[#18181B] transition-colors" />
+              <input
+                v-model="adminStore.nit"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-mono outline-none focus:border-[#18181B] transition-colors"
+                @change="adminStore.saveSettings()"
+              >
             </div>
           </div>
         </section>
@@ -884,28 +913,34 @@ async function saveBancolombiaConfig() {
         <section class="bg-white border border-[#2563EB] ring-2 ring-[#2563EB]/10 rounded-[16px] p-6 shadow-sm bg-gradient-to-br from-[#F8FAFC] to-white">
           <div class="flex items-center gap-2 mb-4">
             <span class="material-symbols-outlined text-[20px] text-[#2563EB]">auto_awesome</span>
-            <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">ContexAI Global</h3>
+            <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+              ContexAI Global
+            </h3>
           </div>
           <div class="space-y-4">
             <div class="flex items-center justify-between pt-2">
               <div>
-                <p class="text-[13px] font-extrabold text-[#18181B]">OCR Automático</p>
-                <p class="text-[12px] text-[#71717A] mt-0.5">Procesar facturas con IA</p>
+                <p class="text-[13px] font-extrabold text-[#18181B]">
+                  OCR Automático
+                </p>
+                <p class="text-[12px] text-[#71717A] mt-0.5">
+                  Procesar facturas con IA
+                </p>
               </div>
               <button
                 type="button"
-                @click="handleOcrChange"
                 :class="[
                   'w-12 h-7 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center shadow-inner cursor-pointer select-none border border-black/10',
                   adminStore.ocrEnabled ? 'bg-[#2563EB]' : 'bg-[#D4D4D8]'
                 ]"
+                @click="handleOcrChange"
               >
                 <div
                   :class="[
                     'bg-white w-5 h-5 rounded-full shadow-md transform transition-transform duration-300',
                     adminStore.ocrEnabled ? 'translate-x-5' : 'translate-x-0'
                   ]"
-                ></div>
+                />
               </button>
             </div>
           </div>
@@ -914,33 +949,53 @@ async function saveBancolombiaConfig() {
     </div>
 
     <!-- General -->
-    <div v-if="activeTab === 'general'" class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 max-w-3xl shadow-sm">
+    <div
+      v-if="activeTab === 'general'"
+      class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 max-w-3xl shadow-sm"
+    >
       <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
         <span class="material-symbols-outlined text-[20px] text-[#18181B]">tune</span>
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Preferencias regionales</h3>
+        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+          Preferencias regionales
+        </h3>
       </div>
       <div class="grid md:grid-cols-2 gap-5">
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Idioma</label>
-          <select v-model="adminStore.language" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select
+            v-model="adminStore.language"
+            class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors"
+          >
             <option>Español (Colombia)</option><option>English (US)</option><option>Português (Brasil)</option>
           </select>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Zona horaria</label>
-          <select v-model="adminStore.timezone" @change="handleTimezoneChange" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select
+            v-model="adminStore.timezone"
+            class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors"
+            @change="handleTimezoneChange"
+          >
             <option>(UTC-05) Bogotá</option><option>(UTC-03) Buenos Aires</option>
           </select>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Moneda</label>
-          <select v-model="adminStore.currency" @change="handleCurrencyChange" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select
+            v-model="adminStore.currency"
+            class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors"
+            @change="handleCurrencyChange"
+          >
             <option>COP · Peso colombiano</option><option>USD · Dólar</option>
           </select>
         </div>
         <div>
           <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider mb-1.5 block">Formato de fecha</label>
-          <select v-model="adminStore.dateFormat" @change="handleDateChange" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors">
+          <select
+            v-model="adminStore.dateFormat"
+            class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] text-[#18181B] font-semibold outline-none focus:border-[#18181B] bg-white transition-colors"
+            @change="handleDateChange"
+          >
             <option>DD/MM/YYYY</option><option>MM/DD/YYYY</option><option>YYYY-MM-DD</option>
           </select>
         </div>
@@ -948,10 +1003,20 @@ async function saveBancolombiaConfig() {
     </div>
 
     <!-- Impuestos -->
-    <div v-if="activeTab === 'impuestos'" class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
+    <div
+      v-if="activeTab === 'impuestos'"
+      class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm"
+    >
       <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-        <div class="flex items-center gap-2"><span class="material-symbols-outlined text-[20px] text-[#18181B]">percent</span><h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Impuestos configurados</h3></div>
-        <button @click="showTaxModal = true" class="flex items-center gap-2 px-3.5 py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-[10px] text-[12px] font-semibold transition-colors">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-[20px] text-[#18181B]">percent</span><h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            Impuestos configurados
+          </h3>
+        </div>
+        <button
+          class="flex items-center gap-2 px-3.5 py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-[10px] text-[12px] font-semibold transition-colors"
+          @click="showTaxModal = true"
+        >
           <span class="material-symbols-outlined text-[16px]">add</span>Nuevo impuesto
         </button>
       </div>
@@ -959,34 +1024,54 @@ async function saveBancolombiaConfig() {
         <table class="w-full text-left min-w-[550px]">
           <thead>
             <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-              <th class="px-6 py-3">Nombre</th><th class="px-6 py-3">Código DIAN</th><th class="px-6 py-3">Tipo</th><th class="px-6 py-3 text-right">Tasa</th><th class="px-6 py-3">Activo</th>
+              <th class="px-6 py-3">
+                Nombre
+              </th><th class="px-6 py-3">
+                Código DIAN
+              </th><th class="px-6 py-3">
+                Tipo
+              </th><th class="px-6 py-3 text-right">
+                Tasa
+              </th><th class="px-6 py-3">
+                Activo
+              </th>
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="t in adminStore.taxes" :key="t.id" class="hover:bg-[#FAFAFA]/50 transition-colors">
-              <td class="px-6 py-4 font-bold text-[#18181B]">{{ t.name }}</td>
-              <td class="px-6 py-4 font-mono text-[#A1A1AA] text-[12px]">{{ t.code }}</td>
+            <tr
+              v-for="t in adminStore.taxes"
+              :key="t.id"
+              class="hover:bg-[#FAFAFA]/50 transition-colors"
+            >
+              <td class="px-6 py-4 font-bold text-[#18181B]">
+                {{ t.name }}
+              </td>
+              <td class="px-6 py-4 font-mono text-[#A1A1AA] text-[12px]">
+                {{ t.code }}
+              </td>
               <td class="px-6 py-4">
                 <span :class="['inline-flex px-2.5 py-1 rounded-md text-[11px] font-bold shadow-sm', t.type === 'Suma' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200']">
                   {{ t.type }}
                 </span>
               </td>
-              <td class="px-6 py-4 text-right font-mono font-bold text-[#18181B]">{{ t.rate }}</td>
+              <td class="px-6 py-4 text-right font-mono font-bold text-[#18181B]">
+                {{ t.rate }}
+              </td>
               <td class="px-6 py-4">
                 <button
                   type="button"
-                  @click="t.active = !t.active; adminStore.saveSettings()"
                   :class="[
                     'w-11 h-6 rounded-full p-1 transition-all duration-300 focus:outline-none flex items-center shadow-inner cursor-pointer select-none border border-black/10',
                     t.active ? 'bg-[#18181B]' : 'bg-[#D4D4D8]'
                   ]"
+                  @click="t.active = !t.active; adminStore.saveSettings()"
                 >
                   <div
                     :class="[
                       'bg-white w-4 h-4 rounded-full shadow transform transition-transform duration-300',
                       t.active ? 'translate-x-5' : 'translate-x-0'
                     ]"
-                  ></div>
+                  />
                 </button>
               </td>
             </tr>
@@ -996,7 +1081,10 @@ async function saveBancolombiaConfig() {
     </div>
 
     <!-- Modal Nuevo Impuesto -->
-    <div v-if="showTaxModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      v-if="showTaxModal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+    >
       <div class="bg-white rounded-[20px] max-w-md w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200">
         <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-5">
           <div class="flex items-center gap-2.5">
@@ -1004,45 +1092,83 @@ async function saveBancolombiaConfig() {
               <span class="material-symbols-outlined text-[18px]">account_balance</span>
             </div>
             <div>
-              <h3 class="text-[16px] font-bold text-[#18181B]">Configurar nuevo impuesto</h3>
-              <p class="text-[12px] text-[#71717A]">Agrega una retención o tributo al catálogo</p>
+              <h3 class="text-[16px] font-bold text-[#18181B]">
+                Configurar nuevo impuesto
+              </h3>
+              <p class="text-[12px] text-[#71717A]">
+                Agrega una retención o tributo al catálogo
+              </p>
             </div>
           </div>
-          <button @click="showTaxModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
+          <button
+            class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1"
+            @click="showTaxModal = false"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
-        <form @submit.prevent="submitNewTax" class="space-y-4">
+        <form
+          class="space-y-4"
+          @submit.prevent="submitNewTax"
+        >
           <div>
             <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Nombre comercial (Ej. Impoconsumo)</label>
-            <input v-model="newTax.name" required placeholder="Nombre del impuesto" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-medium outline-none focus:border-[#18181B]" />
+            <input
+              v-model="newTax.name"
+              required
+              placeholder="Nombre del impuesto"
+              class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-medium outline-none focus:border-[#18181B]"
+            >
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Código DIAN</label>
-              <input v-model="newTax.code" placeholder="Ej. 08" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+              <input
+                v-model="newTax.code"
+                placeholder="Ej. 08"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]"
+              >
             </div>
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tipo de impacto</label>
-              <select v-model="newTax.type" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option value="Suma">Suma (+)</option>
-                <option value="Resta">Resta (-)</option>
+              <select
+                v-model="newTax.type"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white"
+              >
+                <option value="Suma">
+                  Suma (+)
+                </option>
+                <option value="Resta">
+                  Resta (-)
+                </option>
               </select>
             </div>
           </div>
 
           <div>
             <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tasa Porcentual (%) o por mil (‰)</label>
-            <input v-model="newTax.rate" required placeholder="Ej. 8% o 4‰" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono font-bold outline-none focus:border-[#18181B]" />
+            <input
+              v-model="newTax.rate"
+              required
+              placeholder="Ej. 8% o 4‰"
+              class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono font-bold outline-none focus:border-[#18181B]"
+            >
           </div>
 
           <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
-            <button type="button" @click="showTaxModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
+            <button
+              type="button"
+              class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]"
+              @click="showTaxModal = false"
+            >
               Cancelar
             </button>
-            <button type="submit" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm">
+            <button
+              type="submit"
+              class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm"
+            >
               Guardar impuesto
             </button>
           </div>
@@ -1051,7 +1177,10 @@ async function saveBancolombiaConfig() {
     </div>
 
     <!-- Integraciones -->
-    <div v-if="activeTab === 'integraciones'" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div
+      v-if="activeTab === 'integraciones'"
+      class="grid grid-cols-1 md:grid-cols-2 gap-6"
+    >
       <div class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm">
         <div class="flex items-start justify-between mb-5">
           <div class="flex items-center gap-3.5">
@@ -1059,18 +1188,31 @@ async function saveBancolombiaConfig() {
               <span class="material-symbols-outlined text-[24px]">verified_user</span>
             </div>
             <div>
-              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">DIAN</p>
-              <p class="text-[12px] text-[#71717A] mt-0.5">Facturación electrónica directa</p>
+              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+                DIAN
+              </p>
+              <p class="text-[12px] text-[#71717A] mt-0.5">
+                Facturación electrónica directa
+              </p>
             </div>
           </div>
-          <span v-if="dianValidationResult?.valid" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>Conectado
+          <span
+            v-if="dianValidationResult?.valid"
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm"
+          >
+            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />Conectado
           </span>
-          <span v-else class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 text-[11px] font-extrabold border border-amber-200 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-amber-500"></span>Pendiente Configurar
+          <span
+            v-else
+            class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-50 text-amber-700 text-[11px] font-extrabold border border-amber-200 shadow-sm"
+          >
+            <span class="w-2 h-2 rounded-full bg-amber-500" />Pendiente Configurar
           </span>
         </div>
-        <button @click="handleIntegration('DIAN')" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
+        <button
+          class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm"
+          @click="handleIntegration('DIAN')"
+        >
           Configurar Parámetros DIAN
         </button>
       </div>
@@ -1082,50 +1224,82 @@ async function saveBancolombiaConfig() {
               B
             </div>
             <div>
-              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">Bancolombia</p>
-              <p class="text-[12px] text-[#71717A] mt-0.5">Open Finance y extractos empresariales</p>
+              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+                Bancolombia
+              </p>
+              <p class="text-[12px] text-[#71717A] mt-0.5">
+                Open Finance y extractos empresariales
+              </p>
             </div>
           </div>
           <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold border shadow-sm', bancolombiaStatus.wrapper]">
-            <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]"></span>{{ bancolombiaStatus.label }}
+            <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]" />{{ bancolombiaStatus.label }}
           </span>
         </div>
-        <button @click="handleIntegration('Bancolombia')" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
+        <button
+          class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm"
+          @click="handleIntegration('Bancolombia')"
+        >
           Configurar conexión real
         </button>
-        <p v-if="bancolombiaConfig.lastSyncAt" class="mt-2 text-[11px] text-[#71717A]">
+        <p
+          v-if="bancolombiaConfig.lastSyncAt"
+          class="mt-2 text-[11px] text-[#71717A]"
+        >
           Última sincronización: {{ formatLogDate(bancolombiaConfig.lastSyncAt) }}
         </p>
-        <p v-else class="mt-2 text-[11px] text-[#71717A]">
+        <p
+          v-else
+          class="mt-2 text-[11px] text-[#71717A]"
+        >
           La autorización se completa en el backend antes de sincronizar movimientos.
         </p>
       </div>
 
-      <div v-for="intg in activeCatalogIntegrations" :key="intg.id" class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm">
+      <div
+        v-for="intg in activeCatalogIntegrations"
+        :key="intg.id"
+        class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm"
+      >
         <div class="flex items-start justify-between mb-5">
           <div class="flex items-center gap-3.5">
-            <div class="w-12 h-12 rounded-[12px] flex items-center justify-center text-[24px] shadow-sm border" :style="{ backgroundColor: intg.bg, color: intg.color, borderColor: `${intg.color}30` }">
+            <div
+              class="w-12 h-12 rounded-[12px] flex items-center justify-center text-[24px] shadow-sm border"
+              :style="{ backgroundColor: intg.bg, color: intg.color, borderColor: `${intg.color}30` }"
+            >
               <span class="material-symbols-outlined">{{ intg.icon }}</span>
             </div>
             <div>
-              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">{{ intg.name }}</p>
-              <p class="text-[12px] text-[#71717A] mt-0.5">{{ intg.desc }}</p>
+              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+                {{ intg.name }}
+              </p>
+              <p class="text-[12px] text-[#71717A] mt-0.5">
+                {{ intg.desc }}
+              </p>
             </div>
           </div>
           <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Activa
+            <span class="w-2 h-2 rounded-full bg-emerald-500" />Activa
           </span>
         </div>
-        <button @click="configureIntegration(intg)" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
+        <button
+          class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm"
+          @click="configureIntegration(intg)"
+        >
           Configurar credenciales
         </button>
       </div>
 
-      <div @click="showIntegrationsModal = true" class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group">
+      <div
+        class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group"
+        @click="showIntegrationsModal = true"
+      >
         <div class="w-12 h-12 rounded-[12px] bg-[#FAFAFA] group-hover:bg-[#2563EB]/10 group-hover:text-[#2563EB] flex items-center justify-center text-[#A1A1AA] mb-3 transition-colors">
           <span class="material-symbols-outlined text-[24px]">add</span>
         </div>
-        <p class="text-[14px] font-extrabold text-[#18181B]">Explorar integraciones</p>
+        <p class="text-[14px] font-extrabold text-[#18181B]">
+          Explorar integraciones
+        </p>
         <div class="flex items-center gap-1.5 mt-1 justify-center flex-wrap">
           <span class="text-[12px] text-[#71717A]">{{ integrationCatalog.filter(i => i.enabled).length }} activas</span>
           <span class="text-[#D4D4D8]">·</span>
@@ -1135,7 +1309,10 @@ async function saveBancolombiaConfig() {
     </div>
 
     <!-- Modal Configuración DIAN -->
-    <div v-if="showDianModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
+    <div
+      v-if="showDianModal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200"
+    >
       <div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]">
         <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-5">
           <div class="flex items-center gap-2.5">
@@ -1143,85 +1320,161 @@ async function saveBancolombiaConfig() {
               <span class="material-symbols-outlined text-[18px]">verified_user</span>
             </div>
             <div>
-              <h3 class="text-[16px] font-bold text-[#18181B]">Configuración de Facturación DIAN</h3>
-              <p class="text-[12px] text-[#71717A]">Ambiente habilitado para transmisión directa UBL 2.1</p>
+              <h3 class="text-[16px] font-bold text-[#18181B]">
+                Configuración de Facturación DIAN
+              </h3>
+              <p class="text-[12px] text-[#71717A]">
+                Ambiente habilitado para transmisión directa UBL 2.1
+              </p>
             </div>
           </div>
-          <button @click="showDianModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
+          <button
+            class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1"
+            @click="showDianModal = false"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
 
-        <form @submit.prevent="saveDianConfig" class="space-y-4">
+        <form
+          class="space-y-4"
+          @submit.prevent="saveDianConfig"
+        >
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Ambiente DIAN</label>
-              <select v-model="dianConfig.dianEnvironment" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option value="test">Pruebas / Habilitación</option>
-                <option value="production">Producción Real</option>
+              <select
+                v-model="dianConfig.dianEnvironment"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white"
+              >
+                <option value="test">
+                  Pruebas / Habilitación
+                </option>
+                <option value="production">
+                  Producción Real
+                </option>
               </select>
             </div>
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">NIT del Transmisor</label>
-              <input v-model="dianConfig.dianNit" placeholder="Ej. 900123456-7" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+              <input
+                v-model="dianConfig.dianNit"
+                placeholder="Ej. 900123456-7"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]"
+              >
             </div>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Software ID (DIAN)</label>
-              <input v-model="dianConfig.dianSoftwareId" placeholder="UUID del Software" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+              <input
+                v-model="dianConfig.dianSoftwareId"
+                placeholder="UUID del Software"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]"
+              >
             </div>
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Software Pin (DIAN)</label>
-              <input v-model="dianConfig.dianSoftwarePin" placeholder="Pin de 5 dígitos" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+              <input
+                v-model="dianConfig.dianSoftwarePin"
+                placeholder="Pin de 5 dígitos"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]"
+              >
             </div>
           </div>
 
           <div>
             <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Test Set ID (Solo Pruebas)</label>
-            <input v-model="dianConfig.dianTestSetId" placeholder="SetID provisto por DIAN para pruebas" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
+            <input
+              v-model="dianConfig.dianTestSetId"
+              placeholder="SetID provisto por DIAN para pruebas"
+              class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]"
+            >
           </div>
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Vigencia desde</label>
-              <input v-model="dianConfig.resolutionFrom" type="date" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="dianConfig.resolutionFrom"
+                type="date"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]"
+              >
             </div>
             <div>
               <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Vigencia hasta</label>
-              <input v-model="dianConfig.resolutionTo" type="date" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="dianConfig.resolutionTo"
+                type="date"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]"
+              >
             </div>
           </div>
 
           <div>
             <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Contraseña del certificado</label>
-            <input v-model="dianConfig.dianCertificatePassword" type="password" placeholder="Contraseña de firma digital" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]" />
+            <input
+              v-model="dianConfig.dianCertificatePassword"
+              type="password"
+              placeholder="Contraseña de firma digital"
+              class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#18181B]"
+            >
           </div>
 
           <div>
             <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Certificado digital (.p12/.pfx)</label>
-            <input ref="dianCertificateInput" type="file" accept=".p12,.pfx,application/x-pkcs12" @change="handleDianCertificateChange" class="w-full border border-dashed border-[#D4D4D8] rounded-[10px] px-3.5 py-2.5 text-[13px] bg-[#FAFAFA] file:mr-3 file:rounded-md file:border-0 file:bg-[#18181B] file:px-3 file:py-2 file:text-white file:font-semibold" />
+            <input
+              ref="dianCertificateInput"
+              type="file"
+              accept=".p12,.pfx,application/x-pkcs12"
+              class="w-full border border-dashed border-[#D4D4D8] rounded-[10px] px-3.5 py-2.5 text-[13px] bg-[#FAFAFA] file:mr-3 file:rounded-md file:border-0 file:bg-[#18181B] file:px-3 file:py-2 file:text-white file:font-semibold"
+              @change="handleDianCertificateChange"
+            >
             <div class="mt-2 flex items-center justify-between gap-3 text-[11px]">
               <span class="text-[#71717A]">{{ dianHasCertificate ? `Cargado: ${dianCertificateFileName}` : 'No hay certificado cargado en esta sesión.' }}</span>
-              <button v-if="dianHasCertificate" type="button" @click="clearDianCertificate" class="text-[#2563EB] font-semibold hover:underline">Limpiar</button>
+              <button
+                v-if="dianHasCertificate"
+                type="button"
+                class="text-[#2563EB] font-semibold hover:underline"
+                @click="clearDianCertificate"
+              >
+                Limpiar
+              </button>
             </div>
           </div>
 
           <!-- Real-time Diagnostic/Validation Panel -->
-          <div v-if="dianValidationResult" class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-[12px] p-4 space-y-2">
+          <div
+            v-if="dianValidationResult"
+            class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-[12px] p-4 space-y-2"
+          >
             <p class="text-[11px] font-bold text-[#18181B] flex items-center gap-1.5">
               <span class="material-symbols-outlined text-[16px] text-emerald-600">health_and_safety</span>
               Diagnóstico en Tiempo Real DIAN:
             </p>
-            <div v-if="dianValidationResult.valid && (!dianValidationResult.errors || !dianValidationResult.errors.length)" class="text-[12px] text-emerald-700 font-semibold bg-emerald-50 p-2.5 rounded-lg border border-emerald-200">
+            <div
+              v-if="dianValidationResult.valid && (!dianValidationResult.errors || !dianValidationResult.errors.length)"
+              class="text-[12px] text-emerald-700 font-semibold bg-emerald-50 p-2.5 rounded-lg border border-emerald-200"
+            >
               ✓ Configuración 100% válida. La plataforma está lista para transmitir documentos electrónicos.
             </div>
-            <div v-else class="space-y-1.5">
-              <div v-for="err in dianValidationResult.errors" :key="err" class="text-[11px] text-rose-700 font-medium bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200 flex items-start gap-1">
+            <div
+              v-else
+              class="space-y-1.5"
+            >
+              <div
+                v-for="err in dianValidationResult.errors"
+                :key="err"
+                class="text-[11px] text-rose-700 font-medium bg-rose-50 px-2.5 py-1.5 rounded-lg border border-rose-200 flex items-start gap-1"
+              >
                 <span class="material-symbols-outlined text-[14px] mt-0.5">error</span>
                 <span>{{ err }}</span>
               </div>
-              <div v-for="warn in dianValidationResult.warnings" :key="warn" class="text-[11px] text-amber-700 font-medium bg-amber-50 px-2.5 py-1.5 rounded-lg border border-amber-200 flex items-start gap-1">
+              <div
+                v-for="warn in dianValidationResult.warnings"
+                :key="warn"
+                class="text-[11px] text-amber-700 font-medium bg-amber-50 px-2.5 py-1.5 rounded-lg border border-amber-200 flex items-start gap-1"
+              >
                 <span class="material-symbols-outlined text-[14px] mt-0.5">warning</span>
                 <span>{{ warn }}</span>
               </div>
@@ -1229,200 +1482,23 @@ async function saveBancolombiaConfig() {
           </div>
 
           <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
-            <button type="button" @click="showDianModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
+            <button
+              type="button"
+              class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]"
+              @click="showDianModal = false"
+            >
               Cancelar
             </button>
-            <button type="submit" :disabled="dianValidating" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm flex items-center gap-1.5 disabled:opacity-50">
-              <div v-if="dianValidating" class="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></div>
-              Guardar y Verificar Conexión
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-
-    <!-- Modal Configuración Bancolombia -->
-    <div v-if="showBancolombiaModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
-      <div class="bg-white rounded-[20px] max-w-lg w-full p-6 shadow-2xl border border-[#E4E4E7] animate-in zoom-in-95 duration-200 overflow-y-auto max-h-[90vh]">
-        <div class="flex items-center justify-between pb-4 border-b border-[#F4F4F5] mb-4">
-          <div class="flex items-center gap-2.5">
-            <div class="w-12 h-12 rounded-[12px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] font-extrabold text-[20px] shadow-sm border border-[#2563EB]/20">
-              B
-            </div>
-            <div>
-              <h3 class="text-[16px] font-bold text-[#18181B]">Conciliación Bancolombia</h3>
-              <p class="text-[12px] text-[#71717A]">Open Finance valida consentimiento y titularidad; la conciliación real entra por extractos empresariales.</p>
-            </div>
-          </div>
-          <button @click="showBancolombiaModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors p-1">
-            <span class="material-symbols-outlined text-[20px]">close</span>
-          </button>
-        </div>
-
-        <div class="flex items-center justify-between gap-3 mb-4">
-          <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold border shadow-sm', bancolombiaStatus.wrapper]">
-            <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]"></span>
-            {{ bancolombiaStatus.label }}
-          </span>
-          <span class="text-[11px] font-semibold text-[#71717A]">{{ bancolombiaModeLabel }}</span>
-        </div>
-
-        <div v-if="bancolombiaLoading" class="mb-4 flex items-center gap-2 text-[11px] text-[#71717A]">
-          <span class="w-3.5 h-3.5 border-2 border-[#18181B]/20 border-t-[#18181B] rounded-full animate-spin"></span>
-          Cargando configuración segura desde el backend...
-        </div>
-
-        <div class="mb-4 rounded-[12px] border border-[#DBEAFE] bg-[#EFF6FF] px-3.5 py-3">
-          <p class="text-[11px] font-bold text-[#1D4ED8]">Implementación real</p>
-          <p class="mt-1 text-[11px] leading-[1.5] text-[#1E3A8A]">
-            El navegador no guarda el client secret. El backend maneja el consentimiento y guarda tokens cifrados; los movimientos llegan desde extractos empresariales o una fuente de transacciones.
-          </p>
-        </div>
-
-        <form @submit.prevent="saveBancolombiaConfig" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Modo de conexión</label>
-              <select v-model="bancolombiaConfig.integrationMode" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option v-for="mode in bancolombiaConnectionModes" :key="mode.value" :value="mode.value">{{ mode.label }}</option>
-              </select>
-            </div>
-            <div>
-              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Ambiente</label>
-              <select v-model="bancolombiaConfig.environment" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option value="sandbox">Sandbox / Pruebas</option>
-                <option value="production">Producción</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Número de cuenta bancaria</label>
-            <input v-model="bancolombiaConfig.accountNumber" placeholder="Ej. 031-987654-21" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
-          </div>
-
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Tipo de cuenta</label>
-              <select v-model="bancolombiaConfig.accountType" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option value="Ahorros">Ahorros</option>
-                <option value="Corriente">Corriente</option>
-              </select>
-            </div>
-            <div class="rounded-[10px] border border-[#E4E4E7] bg-[#FAFAFA] p-3.5">
-              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Estado</label>
-              <span :class="['inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-extrabold border shadow-sm', bancolombiaStatus.wrapper]">
-                <span :class="['w-2 h-2 rounded-full', bancolombiaStatus.dot]"></span>
-                {{ bancolombiaStatus.label }}
-              </span>
-              <p class="mt-2 text-[11px] text-[#71717A] leading-[1.5]">
-                El backend valida la autorización, renueva tokens y confirma si la cuenta está realmente sincronizando.
-              </p>
-            </div>
-          </div>
-
-          <div v-if="bancolombiaConfig.integrationMode === 'open_finance'">
-            <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Client ID (público)</label>
-            <input v-model="bancolombiaConfig.clientId" placeholder="ID de la app registrada" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-mono outline-none focus:border-[#18181B]" />
-            <p class="mt-1 text-[11px] text-[#71717A] leading-[1.5]">
-              El Client Secret se administra en el backend o en un vault. Aquí solo capturamos el identificador público.
-            </p>
-          </div>
-
-          <div v-else class="rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] p-3.5 space-y-3">
-            <div class="flex items-start gap-2.5">
-              <span class="material-symbols-outlined text-[18px] text-[#2563EB] mt-0.5">receipt_long</span>
-              <div>
-                <p class="text-[11px] font-bold text-[#18181B]">Conexión empresarial</p>
-                <p class="text-[11px] text-[#71717A] leading-[1.5]">
-                  Normalmente recibe extractos MT940 o CAMT.053 y luego el backend los cruza contra la contabilidad.
-                </p>
-              </div>
-            </div>
-            <div>
-              <label class="text-[11px] font-semibold text-[#71717A] uppercase tracking-wider block mb-1.5">Formato de extracto</label>
-              <select v-model="bancolombiaConfig.statementFormat" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white">
-                <option v-for="format in bancolombiaStatementFormats" :key="format.value" :value="format.value">{{ format.label }}</option>
-              </select>
-            </div>
-            <div class="rounded-[10px] border border-[#E4E4E7] bg-white p-3 space-y-2">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="text-[11px] font-bold text-[#18181B]">Subir extracto bancario</p>
-                  <p class="text-[11px] text-[#71717A] leading-[1.4]">
-                    Sube un archivo MT940 o CAMT.053 para importar movimientos reales a tesorería.
-                  </p>
-                </div>
-                <button
-                  v-if="bancolombiaStatementFile"
-                  type="button"
-                  @click="clearBancolombiaStatementFile"
-                  class="text-[11px] font-semibold text-rose-600 hover:text-rose-700"
-                >
-                  Limpiar
-                </button>
-              </div>
-              <input
-                type="file"
-                accept=".mt940,.sta,.txt,.xml,text/plain,application/xml"
-                @change="handleBancolombiaStatementFileChange"
-                class="block w-full text-[12px] text-[#71717A] file:mr-3 file:rounded-[8px] file:border-0 file:bg-[#18181B] file:px-3 file:py-1.5 file:text-[11px] file:font-semibold file:text-white hover:file:bg-[#27272A]"
+            <button
+              type="submit"
+              :disabled="dianValidating"
+              class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm flex items-center gap-1.5 disabled:opacity-50"
+            >
+              <div
+                v-if="dianValidating"
+                class="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"
               />
-              <p class="text-[11px] text-[#71717A] leading-[1.4]">
-                Archivo cargado: <span class="font-semibold text-[#18181B]">{{ bancolombiaStatementFileLabel }}</span>
-              </p>
-            </div>
-          </div>
-
-          <div class="flex gap-2.5 p-3.5 rounded-[10px] border border-[#E4E4E7] bg-white">
-            <span class="material-symbols-outlined text-[20px] text-[#2563EB] flex-shrink-0">shield</span>
-            <div class="text-[11px] text-[#18181B] leading-[1.5]">
-              <p class="font-semibold">Seguridad bancaria</p>
-              <p>Los tokens viven cifrados en el backend. El navegador solo guarda metadatos y el estado de la conexión.</p>
-            </div>
-          </div>
-
-          <div v-if="bancolombiaConfig.lastSyncAt" class="text-[11px] text-[#71717A]">
-            Última sincronización: {{ formatLogDate(bancolombiaConfig.lastSyncAt) }}
-          </div>
-
-          <div v-if="bancolombiaConfig.authorizationStatus === 'connected'" class="flex flex-wrap gap-2">
-            <button
-              type="button"
-              @click="syncBancolombiaNow"
-              :disabled="bancolombiaSyncing || bancolombiaSaving || bancolombiaConnecting"
-              class="px-4 py-2 text-[13px] font-semibold border border-[#E4E4E7] text-[#18181B] rounded-[10px] hover:bg-[#FAFAFA] transition-colors disabled:opacity-50 flex items-center gap-2"
-            >
-              <span v-if="bancolombiaSyncing" class="w-4 h-4 border-2 border-[#18181B]/20 border-t-[#18181B] rounded-full animate-spin"></span>
-              {{ bancolombiaSyncing ? 'Sincronizando...' : (bancolombiaStatementFile ? 'Importar extracto' : 'Sincronizar ahora') }}
-            </button>
-            <button
-              type="button"
-              @click="disconnectBancolombia"
-              :disabled="bancolombiaSaving || bancolombiaConnecting || bancolombiaSyncing"
-              class="px-4 py-2 text-[13px] font-semibold border border-rose-200 text-rose-600 rounded-[10px] hover:bg-rose-50 transition-colors disabled:opacity-50"
-            >
-              Desconectar
-            </button>
-          </div>
-
-          <div class="rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] p-3.5">
-            <p class="text-[11px] font-bold text-[#18181B] mb-2">Flujo real en producción</p>
-            <ul class="space-y-1 text-[11px] text-[#71717A] leading-[1.5]">
-              <li>1. Registras la app en el portal de Bancolombia y defines los scopes.</li>
-              <li>2. El backend abre el consentimiento y recibe el callback autorizado.</li>
-              <li>3. Los tokens se guardan cifrados y nunca se exponen al navegador.</li>
-              <li>4. Open Finance valida titularidad; la conciliación consume extractos MT940 o CAMT.053 y los cruza con la contabilidad.</li>
-            </ul>
-          </div>
-
-          <div class="flex items-center justify-end gap-2 pt-4 border-t border-[#F4F4F5]">
-            <button type="button" @click="showBancolombiaModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:bg-[#FAFAFA] rounded-[10px]">
-              Cancelar
-            </button>
-            <button type="submit" :disabled="bancolombiaSaving || bancolombiaLoading || bancolombiaConnecting" class="px-4 py-2 text-[13px] font-semibold bg-[#18181B] text-white hover:bg-[#27272A] rounded-[10px] shadow-sm flex items-center gap-1.5 disabled:opacity-50">
-              <div v-if="bancolombiaSaving" class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
-              {{ bancolombiaSaving ? 'Guardando...' : 'Guardar configuración segura' }}
+              Guardar y Verificar Conexión
             </button>
           </div>
         </form>
@@ -1436,49 +1512,91 @@ async function saveBancolombiaConfig() {
     />
 
     <!-- Logs -->
-    <div v-if="activeTab === 'logs'" class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
+    <div
+      v-if="activeTab === 'logs'"
+      class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm"
+    >
       <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-        <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">Auditoría del Sistema y Cambios Globales</h3>
-        <button v-if="!logsLoading" @click="fetchAuditLogs" class="text-[#71717A] hover:text-[#18181B] flex items-center gap-1 text-[12px] font-semibold">
+        <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+          Auditoría del Sistema y Cambios Globales
+        </h3>
+        <button
+          v-if="!logsLoading"
+          class="text-[#71717A] hover:text-[#18181B] flex items-center gap-1 text-[12px] font-semibold"
+          @click="fetchAuditLogs"
+        >
           <span class="material-symbols-outlined text-[16px]">refresh</span>Actualizar
         </button>
       </div>
 
       <!-- Loading State -->
-      <div v-if="logsLoading" class="py-12 text-center text-[#71717A]">
-        <div class="animate-spin w-6 h-6 border-2 border-black/10 border-t-black rounded-full mx-auto mb-3"></div>
-        <p class="text-[13px] font-medium">Cargando logs de auditoría...</p>
+      <div
+        v-if="logsLoading"
+        class="py-12 text-center text-[#71717A]"
+      >
+        <div class="animate-spin w-6 h-6 border-2 border-black/10 border-t-black rounded-full mx-auto mb-3" />
+        <p class="text-[13px] font-medium">
+          Cargando logs de auditoría...
+        </p>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="logsError" class="p-6 text-center text-rose-600 bg-rose-50 border-t border-rose-100 text-[13px] font-medium">
+      <div
+        v-else-if="logsError"
+        class="p-6 text-center text-rose-600 bg-rose-50 border-t border-rose-100 text-[13px] font-medium"
+      >
         {{ logsError }}
       </div>
 
       <!-- Empty State -->
-      <div v-else-if="!auditLogs.length" class="py-12 text-center text-[#71717A]">
+      <div
+        v-else-if="!auditLogs.length"
+        class="py-12 text-center text-[#71717A]"
+      >
         <span class="material-symbols-outlined text-[36px] text-[#A1A1AA] mb-2">assignment_late</span>
-        <p class="text-[13px] font-medium">No se encontraron eventos de auditoría registrados.</p>
+        <p class="text-[13px] font-medium">
+          No se encontraron eventos de auditoría registrados.
+        </p>
       </div>
 
       <!-- Table View -->
-      <div v-else class="overflow-x-auto">
+      <div
+        v-else
+        class="overflow-x-auto"
+      >
         <table class="w-full text-left min-w-[600px]">
           <thead>
             <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-              <th class="px-6 py-3.5">Usuario</th>
-              <th class="px-6 py-3.5">Acción</th>
-              <th class="px-6 py-3.5">Entidad / Detalle</th>
-              <th class="px-6 py-3.5">Empresa</th>
-              <th class="px-6 py-3.5 text-right">Fecha</th>
+              <th class="px-6 py-3.5">
+                Usuario
+              </th>
+              <th class="px-6 py-3.5">
+                Acción
+              </th>
+              <th class="px-6 py-3.5">
+                Entidad / Detalle
+              </th>
+              <th class="px-6 py-3.5">
+                Empresa
+              </th>
+              <th class="px-6 py-3.5 text-right">
+                Fecha
+              </th>
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="log in auditLogs" :key="log.id" class="hover:bg-[#FAFAFA]/50 transition-colors">
+            <tr
+              v-for="log in auditLogs"
+              :key="log.id"
+              class="hover:bg-[#FAFAFA]/50 transition-colors"
+            >
               <td class="px-6 py-4 font-bold text-[#18181B]">
                 <div class="flex flex-col">
                   <span>{{ log.actorUser?.name || log.actor }}</span>
-                  <span v-if="log.actorUser?.email" class="text-[11px] font-normal text-[#A1A1AA] mt-0.5">{{ log.actorUser.email }}</span>
+                  <span
+                    v-if="log.actorUser?.email"
+                    class="text-[11px] font-normal text-[#A1A1AA] mt-0.5"
+                  >{{ log.actorUser.email }}</span>
                 </div>
               </td>
               <td class="px-6 py-4">
@@ -1505,31 +1623,52 @@ async function saveBancolombiaConfig() {
     </div>
 
     <!-- Cumplimiento SOC 2 -->
-    <div v-if="activeTab === 'cumplimiento'" class="space-y-6">
+    <div
+      v-if="activeTab === 'cumplimiento'"
+      class="space-y-6"
+    >
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm">
           <div class="w-9 h-9 rounded-[10px] bg-emerald-50 flex items-center justify-center text-emerald-700 mb-3">
             <span class="material-symbols-outlined text-[20px]">gpp_good</span>
           </div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Criterio de Seguridad</p>
-          <p class="text-[20px] font-bold text-[#18181B] tracking-tight">100% - Protegido</p>
-          <p class="text-[12px] text-[#71717A] mt-1">2FA, cifrado de claves e inmutabilidad activos.</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Criterio de Seguridad
+          </p>
+          <p class="text-[20px] font-bold text-[#18181B] tracking-tight">
+            100% - Protegido
+          </p>
+          <p class="text-[12px] text-[#71717A] mt-1">
+            2FA, cifrado de claves e inmutabilidad activos.
+          </p>
         </div>
         <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm">
           <div class="w-9 h-9 rounded-[10px] bg-blue-50 flex items-center justify-center text-blue-700 mb-3">
             <span class="material-symbols-outlined text-[20px]">encrypted</span>
           </div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Confidencialidad</p>
-          <p class="text-[20px] font-bold text-[#18181B] tracking-tight">100% - Cifrado</p>
-          <p class="text-[12px] text-[#71717A] mt-1">Aislamiento lógico y cifrado en tránsito/reposo.</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Confidencialidad
+          </p>
+          <p class="text-[20px] font-bold text-[#18181B] tracking-tight">
+            100% - Cifrado
+          </p>
+          <p class="text-[12px] text-[#71717A] mt-1">
+            Aislamiento lógico y cifrado en tránsito/reposo.
+          </p>
         </div>
         <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm">
           <div class="w-9 h-9 rounded-[10px] bg-purple-50 flex items-center justify-center text-purple-700 mb-3">
             <span class="material-symbols-outlined text-[20px]">bolt</span>
           </div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Disponibilidad</p>
-          <p class="text-[20px] font-bold text-[#18181B] tracking-tight">100% - Monitoreado</p>
-          <p class="text-[12px] text-[#71717A] mt-1">Replica de Neon DB activa con conmutación por error.</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Disponibilidad
+          </p>
+          <p class="text-[20px] font-bold text-[#18181B] tracking-tight">
+            100% - Monitoreado
+          </p>
+          <p class="text-[12px] text-[#71717A] mt-1">
+            Replica de Neon DB activa con conmutación por error.
+          </p>
         </div>
       </div>
 
@@ -1539,12 +1678,17 @@ async function saveBancolombiaConfig() {
           <div>
             <div class="flex items-center gap-2 mb-3">
               <span class="material-symbols-outlined text-[#2563EB] text-[20px]">verified</span>
-              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">Revisión de Accesos Corporativos (CC6.3)</h3>
+              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+                Revisión de Accesos Corporativos (CC6.3)
+              </h3>
             </div>
             <p class="text-[13px] text-[#71717A] leading-[1.6] mb-4">
               SOC 2 exige la revisión periódica manual de los accesos y privilegios otorgados en la plataforma. Este proceso audita que cada cuenta cumpla con el principio del menor privilegio (*Least Privilege*) y documenta la revisión para los auditores externos.
             </p>
-            <div v-if="complianceDashboard" class="bg-[#FAFAFA] border border-[#F4F4F5] rounded-[10px] p-4 mb-4">
+            <div
+              v-if="complianceDashboard"
+              class="bg-[#FAFAFA] border border-[#F4F4F5] rounded-[10px] p-4 mb-4"
+            >
               <div class="flex justify-between text-[12px] py-1 border-b border-[#F4F4F5]">
                 <span class="text-[#71717A]">Última revisión:</span>
                 <span class="font-semibold text-[#18181B]">{{ complianceDashboard.lastAccessReviewAt ? formatLogDate(complianceDashboard.lastAccessReviewAt) : 'Pendiente este ciclo' }}</span>
@@ -1555,9 +1699,19 @@ async function saveBancolombiaConfig() {
               </div>
             </div>
           </div>
-          <button @click="handleRunAccessReview" :disabled="accessReviewRunning" class="w-full py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] flex items-center justify-center gap-2 transition-colors disabled:opacity-50">
-            <span v-if="accessReviewRunning" class="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"></span>
-            <span v-else class="material-symbols-outlined text-[18px]">rule</span>
+          <button
+            :disabled="accessReviewRunning"
+            class="w-full py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] flex items-center justify-center gap-2 transition-colors disabled:opacity-50"
+            @click="handleRunAccessReview"
+          >
+            <span
+              v-if="accessReviewRunning"
+              class="animate-spin w-4 h-4 border-2 border-white/20 border-t-white rounded-full"
+            />
+            <span
+              v-else
+              class="material-symbols-outlined text-[18px]"
+            >rule</span>
             {{ accessReviewRunning ? 'Procesando Auditoría...' : 'Iniciar Auditoría de Accesos Manual (CC6.3)' }}
           </button>
         </div>
@@ -1567,7 +1721,9 @@ async function saveBancolombiaConfig() {
           <div>
             <div class="flex items-center gap-2 mb-3">
               <span class="material-symbols-outlined text-rose-600 text-[20px]">notifications_active</span>
-              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">Simulacro y Respuesta a Brechas (CC7.3)</h3>
+              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+                Simulacro y Respuesta a Brechas (CC7.3)
+              </h3>
             </div>
             <p class="text-[13px] text-[#71717A] leading-[1.6] mb-4">
               Cumpla con el criterio de preparación para incidentes probando anualmente el Plan de Respuesta a Incidentes (IRP). Puede simular una alerta y notificar por correo a los administradores del sistema, generando trazabilidad inmutable.
@@ -1575,12 +1731,19 @@ async function saveBancolombiaConfig() {
             <div class="bg-rose-50 border border-rose-100 rounded-[10px] p-4 text-[13px] text-rose-700 flex items-start gap-2.5 mb-4">
               <span class="material-symbols-outlined text-[18px] text-rose-600 mt-0.5">info</span>
               <div>
-                <p class="font-bold">Monitoreo de Brechas Activo</p>
-                <p class="text-[12px] text-rose-600/90 mt-0.5">El sistema monitorea intentos de fuerza bruta e IPs anómalas continuamente.</p>
+                <p class="font-bold">
+                  Monitoreo de Brechas Activo
+                </p>
+                <p class="text-[12px] text-rose-600/90 mt-0.5">
+                  El sistema monitorea intentos de fuerza bruta e IPs anómalas continuamente.
+                </p>
               </div>
             </div>
           </div>
-          <button @click="handleSimulateBreach('simulated-breach')" class="w-full py-2.5 bg-rose-600 text-white rounded-[10px] text-[13px] font-semibold hover:bg-rose-700 flex items-center justify-center gap-2 transition-colors">
+          <button
+            class="w-full py-2.5 bg-rose-600 text-white rounded-[10px] text-[13px] font-semibold hover:bg-rose-700 flex items-center justify-center gap-2 transition-colors"
+            @click="handleSimulateBreach('simulated-breach')"
+          >
             <span class="material-symbols-outlined text-[18px]">campaign</span>
             Simular Alerta y Notificar Administradores (CC7.3)
           </button>
@@ -1590,36 +1753,71 @@ async function saveBancolombiaConfig() {
       <!-- Real-time Alerts Table (CC7.3) -->
       <div class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
         <div class="px-6 py-4 border-b border-[#F4F4F5]">
-          <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">Centro de Incidentes de Seguridad Activos</h3>
+          <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+            Centro de Incidentes de Seguridad Activos
+          </h3>
         </div>
-        <div v-if="!breachAlerts.length" class="py-12 text-center text-[#71717A]">
+        <div
+          v-if="!breachAlerts.length"
+          class="py-12 text-center text-[#71717A]"
+        >
           <span class="material-symbols-outlined text-[36px] text-emerald-600 mb-2">shield_check</span>
-          <p class="text-[13px] font-semibold text-emerald-700">¡Tu sistema está limpio!</p>
-          <p class="text-[12px] text-[#A1A1AA] mt-0.5">No se reportan alertas de seguridad críticas en este ciclo de auditoría.</p>
+          <p class="text-[13px] font-semibold text-emerald-700">
+            ¡Tu sistema está limpio!
+          </p>
+          <p class="text-[12px] text-[#A1A1AA] mt-0.5">
+            No se reportan alertas de seguridad críticas en este ciclo de auditoría.
+          </p>
         </div>
-        <div v-else class="overflow-x-auto">
+        <div
+          v-else
+          class="overflow-x-auto"
+        >
           <table class="w-full text-left">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-                <th class="px-6 py-3.5">Evento</th>
-                <th class="px-6 py-3.5">Descripción</th>
-                <th class="px-6 py-3.5">Gravedad</th>
-                <th class="px-6 py-3.5">Trazabilidad</th>
-                <th class="px-6 py-3.5 text-right">Acción</th>
+                <th class="px-6 py-3.5">
+                  Evento
+                </th>
+                <th class="px-6 py-3.5">
+                  Descripción
+                </th>
+                <th class="px-6 py-3.5">
+                  Gravedad
+                </th>
+                <th class="px-6 py-3.5">
+                  Trazabilidad
+                </th>
+                <th class="px-6 py-3.5 text-right">
+                  Acción
+                </th>
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="alert in breachAlerts" :key="alert.id" class="hover:bg-[#FAFAFA]/50 transition-colors">
-                <td class="px-6 py-4 font-bold text-[#18181B]">{{ alert.action }}</td>
-                <td class="px-6 py-4 text-[#71717A]">{{ alert.description }}</td>
+              <tr
+                v-for="alert in breachAlerts"
+                :key="alert.id"
+                class="hover:bg-[#FAFAFA]/50 transition-colors"
+              >
+                <td class="px-6 py-4 font-bold text-[#18181B]">
+                  {{ alert.action }}
+                </td>
+                <td class="px-6 py-4 text-[#71717A]">
+                  {{ alert.description }}
+                </td>
                 <td class="px-6 py-4">
                   <span class="inline-flex px-2 py-0.5 rounded-md text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200 uppercase">
                     {{ alert.severity }}
                   </span>
                 </td>
-                <td class="px-6 py-4 font-mono text-[#A1A1AA] text-[12px]">{{ formatLogDate(alert.at) }}</td>
+                <td class="px-6 py-4 font-mono text-[#A1A1AA] text-[12px]">
+                  {{ formatLogDate(alert.at) }}
+                </td>
                 <td class="px-6 py-4 text-right">
-                  <button @click="handleSimulateBreach(alert.id)" class="px-3 py-1.5 bg-[#18181B] text-white hover:bg-[#27272A] rounded-[8px] text-[11px] font-semibold transition-colors">
+                  <button
+                    class="px-3 py-1.5 bg-[#18181B] text-white hover:bg-[#27272A] rounded-[8px] text-[11px] font-semibold transition-colors"
+                    @click="handleSimulateBreach(alert.id)"
+                  >
                     Notificar Alerta
                   </button>
                 </td>
@@ -1633,10 +1831,16 @@ async function saveBancolombiaConfig() {
 
   <!-- Integrations Catalog Modal -->
   <Teleport to="body">
-    <div v-if="showIntegrationsModal" class="fixed inset-0 z-[200] flex items-center justify-center p-4" @click.self="showIntegrationsModal = false">
-      <div class="absolute inset-0 bg-black/30 backdrop-blur-sm" @click="showIntegrationsModal = false"></div>
+    <div
+      v-if="showIntegrationsModal"
+      class="fixed inset-0 z-[200] flex items-center justify-center p-4"
+      @click.self="showIntegrationsModal = false"
+    >
+      <div
+        class="absolute inset-0 bg-black/30 backdrop-blur-sm"
+        @click="showIntegrationsModal = false"
+      />
       <div class="relative bg-white rounded-[20px] shadow-[0_8px_80px_rgba(0,0,0,0.22)] w-full max-w-[860px] max-h-[88vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5] flex-shrink-0">
           <div class="flex items-center gap-3">
@@ -1644,11 +1848,18 @@ async function saveBancolombiaConfig() {
               <span class="material-symbols-outlined text-[20px] text-[#2563EB]">hub</span>
             </div>
             <div>
-              <h2 class="text-[16px] font-extrabold tracking-tight text-[#18181B]">Catálogo de Integraciones</h2>
-              <p class="text-[11px] text-[#A1A1AA] font-medium">{{ integrationCatalog.filter(i => i.enabled).length }} activas de {{ integrationCatalog.length }} disponibles</p>
+              <h2 class="text-[16px] font-extrabold tracking-tight text-[#18181B]">
+                Catálogo de Integraciones
+              </h2>
+              <p class="text-[11px] text-[#A1A1AA] font-medium">
+                {{ integrationCatalog.filter(i => i.enabled).length }} activas de {{ integrationCatalog.length }} disponibles
+              </p>
             </div>
           </div>
-          <button @click="showIntegrationsModal = false" class="w-8 h-8 rounded-[8px] hover:bg-[#F4F4F5] flex items-center justify-center text-[#A1A1AA] hover:text-[#18181B] transition-colors">
+          <button
+            class="w-8 h-8 rounded-[8px] hover:bg-[#F4F4F5] flex items-center justify-center text-[#A1A1AA] hover:text-[#18181B] transition-colors"
+            @click="showIntegrationsModal = false"
+          >
             <span class="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
@@ -1657,83 +1868,132 @@ async function saveBancolombiaConfig() {
         <div class="px-6 pt-4 pb-3 border-b border-[#F4F4F5] flex-shrink-0 space-y-3">
           <div class="flex items-center gap-2 border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 bg-[#FAFAFA] focus-within:border-[#2563EB] focus-within:bg-white transition-all">
             <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">search</span>
-            <input v-model="integrationSearch" type="text" placeholder="Buscar integración..." class="flex-1 bg-transparent outline-none text-[13px] text-[#18181B] placeholder:text-[#A1A1AA]" />
+            <input
+              v-model="integrationSearch"
+              type="text"
+              placeholder="Buscar integración..."
+              class="flex-1 bg-transparent outline-none text-[13px] text-[#18181B] placeholder:text-[#A1A1AA]"
+            >
           </div>
           <div class="flex gap-1.5 flex-wrap">
             <button
-              v-for="cat in integrationCategories" :key="cat.id"
-              @click="integrationCategory = cat.id"
+              v-for="cat in integrationCategories"
+              :key="cat.id"
               :class="[
                 'px-3 py-1.5 rounded-[8px] text-[11px] font-bold transition-all border',
                 integrationCategory === cat.id
                   ? 'bg-[#18181B] text-white border-[#18181B]'
                   : 'bg-white text-[#71717A] border-[#E4E4E7] hover:border-[#D4D4D8] hover:text-[#18181B]'
               ]"
-            >{{ cat.label }}</button>
+              @click="integrationCategory = cat.id"
+            >
+              {{ cat.label }}
+            </button>
           </div>
         </div>
 
         <!-- Grid -->
         <div class="overflow-y-auto flex-1 px-6 py-4">
-          <div v-if="filteredIntegrations.length === 0" class="flex flex-col items-center justify-center py-16 text-center">
+          <div
+            v-if="filteredIntegrations.length === 0"
+            class="flex flex-col items-center justify-center py-16 text-center"
+          >
             <span class="material-symbols-outlined text-[36px] text-[#D4D4D8] mb-2">search_off</span>
-            <p class="text-[13px] font-bold text-[#18181B]">Sin resultados</p>
-            <p class="text-[12px] text-[#71717A]">Prueba con otro término o categoría.</p>
+            <p class="text-[13px] font-bold text-[#18181B]">
+              Sin resultados
+            </p>
+            <p class="text-[12px] text-[#71717A]">
+              Prueba con otro término o categoría.
+            </p>
           </div>
-          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+          <div
+            v-else
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3"
+          >
             <div
-              v-for="intg in filteredIntegrations" :key="intg.id"
+              v-for="intg in filteredIntegrations"
+              :key="intg.id"
               class="border border-[#E4E4E7] rounded-[14px] p-4 bg-white hover:shadow-md transition-all flex flex-col gap-3"
               :class="{ 'border-[#2563EB]/30 bg-[#2563EB]/[0.02]': intg.enabled }"
             >
               <!-- Logo + toggle -->
               <div class="flex items-start justify-between">
-                <div class="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0" :style="{ background: intg.bg }">
-                  <span class="material-symbols-outlined text-[20px]" :style="{ color: intg.color }">{{ intg.icon }}</span>
+                <div
+                  class="w-10 h-10 rounded-[10px] flex items-center justify-center flex-shrink-0"
+                  :style="{ background: intg.bg }"
+                >
+                  <span
+                    class="material-symbols-outlined text-[20px]"
+                    :style="{ color: intg.color }"
+                  >{{ intg.icon }}</span>
                 </div>
                 <!-- Toggle switch -->
                 <button
-                  @click="toggleIntegration(intg)"
                   :class="[
                     'relative w-10 h-5 rounded-full transition-colors flex-shrink-0',
                     intg.enabled ? 'bg-[#2563EB]' : 'bg-[#E4E4E7]'
                   ]"
+                  @click="toggleIntegration(intg)"
                 >
                   <span
                     :class="[
                       'absolute top-0.5 w-4 h-4 bg-white rounded-full shadow-sm transition-transform',
                       intg.enabled ? 'translate-x-5' : 'translate-x-0.5'
                     ]"
-                  ></span>
+                  />
                 </button>
               </div>
 
               <!-- Info -->
               <div class="flex-1">
                 <div class="flex items-center gap-2 mb-0.5">
-                  <p class="text-[13px] font-extrabold text-[#18181B]">{{ intg.name }}</p>
-                  <span v-if="intg.enabled" class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-[5px]">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Activa
+                  <p class="text-[13px] font-extrabold text-[#18181B]">
+                    {{ intg.name }}
+                  </p>
+                  <span
+                    v-if="intg.enabled"
+                    class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-[5px]"
+                  >
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" />Activa
                   </span>
                 </div>
-                <p class="text-[11px] text-[#71717A] leading-snug">{{ intg.desc }}</p>
+                <p class="text-[11px] text-[#71717A] leading-snug">
+                  {{ intg.desc }}
+                </p>
               </div>
 
               <!-- Gmail: special OAuth card -->
               <template v-if="intg.id === 'gmail'">
-                <div v-if="gmailConnectedEmail" class="space-y-2">
+                <div
+                  v-if="gmailConnectedEmail"
+                  class="space-y-2"
+                >
                   <div class="flex items-center gap-1.5 px-2.5 py-2 bg-emerald-50 border border-emerald-200 rounded-[8px]">
                     <span class="material-symbols-outlined text-[14px] text-emerald-600">verified</span>
                     <span class="text-[11px] font-semibold text-emerald-700 truncate">{{ gmailConnectedEmail }}</span>
                   </div>
-                  <button @click="disconnectGmail" class="w-full py-2 border border-rose-200 rounded-[8px] text-[11px] font-bold text-rose-600 hover:bg-rose-50 transition-colors flex items-center justify-center gap-1.5">
+                  <button
+                    class="w-full py-2 border border-rose-200 rounded-[8px] text-[11px] font-bold text-rose-600 hover:bg-rose-50 transition-colors flex items-center justify-center gap-1.5"
+                    @click="disconnectGmail"
+                  >
                     <span class="material-symbols-outlined text-[14px]">link_off</span>
                     Desconectar cuenta
                   </button>
                 </div>
-                <button v-else @click="openGmailOAuth" :disabled="gmailConnecting" class="w-full py-2 border border-[#E4E4E7] rounded-[8px] text-[11px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50">
-                  <span v-if="gmailConnecting" class="w-3.5 h-3.5 border-2 border-[#18181B] border-t-transparent rounded-full animate-spin"></span>
-                  <span v-else class="material-symbols-outlined text-[14px]">login</span>
+                <button
+                  v-else
+                  :disabled="gmailConnecting"
+                  class="w-full py-2 border border-[#E4E4E7] rounded-[8px] text-[11px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors flex items-center justify-center gap-1.5 disabled:opacity-50"
+                  @click="openGmailOAuth"
+                >
+                  <span
+                    v-if="gmailConnecting"
+                    class="w-3.5 h-3.5 border-2 border-[#18181B] border-t-transparent rounded-full animate-spin"
+                  />
+                  <span
+                    v-else
+                    class="material-symbols-outlined text-[14px]"
+                  >login</span>
                   {{ gmailConnecting ? 'Conectando...' : 'Conectar con Google' }}
                 </button>
               </template>
@@ -1742,13 +2002,16 @@ async function saveBancolombiaConfig() {
               <template v-else>
                 <button
                   v-if="intg.enabled"
-                  @click="configureIntegration(intg)"
                   class="w-full py-2 border border-[#2563EB]/30 rounded-[8px] text-[11px] font-bold text-[#2563EB] hover:bg-[#2563EB]/5 transition-colors flex items-center justify-center gap-1.5"
+                  @click="configureIntegration(intg)"
                 >
                   <span class="material-symbols-outlined text-[14px]">settings</span>
                   Configurar credenciales
                 </button>
-                <div v-else class="w-full py-2 rounded-[8px] text-[11px] font-medium text-[#A1A1AA] text-center">
+                <div
+                  v-else
+                  class="w-full py-2 rounded-[8px] text-[11px] font-medium text-[#A1A1AA] text-center"
+                >
                   Activa para configurar
                 </div>
               </template>
@@ -1758,15 +2021,23 @@ async function saveBancolombiaConfig() {
 
         <!-- Footer -->
         <div class="px-6 py-3 border-t border-[#F4F4F5] bg-[#FAFAFA] flex items-center justify-between flex-shrink-0">
-          <p class="text-[11px] text-[#A1A1AA]">Los cambios se guardan automáticamente en este dispositivo.</p>
-          <button @click="showIntegrationsModal = false" class="px-4 py-2 bg-[#18181B] text-white rounded-[8px] text-[12px] font-bold hover:bg-[#27272A] transition-colors">
+          <p class="text-[11px] text-[#A1A1AA]">
+            Los cambios se guardan automáticamente en este dispositivo.
+          </p>
+          <button
+            class="px-4 py-2 bg-[#18181B] text-white rounded-[8px] text-[12px] font-bold hover:bg-[#27272A] transition-colors"
+            @click="showIntegrationsModal = false"
+          >
             Cerrar
           </button>
         </div>
       </div>
     </div>
     <!-- Modal SMTP -->
-    <div v-if="showSmtpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
+    <div
+      v-if="showSmtpModal"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4"
+    >
       <div class="bg-white rounded-[20px] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
         <div class="px-6 py-5 border-b border-[#E4E4E7] flex justify-between items-center bg-[#FAFAFA]">
           <div class="flex items-center gap-3">
@@ -1774,11 +2045,18 @@ async function saveBancolombiaConfig() {
               <span class="material-symbols-outlined text-[20px] text-[#2563EB]">alternate_email</span>
             </div>
             <div>
-              <h2 class="text-[18px] font-bold text-[#18181B] tracking-tight">Servidor SMTP Propio</h2>
-              <p class="text-[13px] text-[#71717A]">Envía facturas desde tu correo corporativo</p>
+              <h2 class="text-[18px] font-bold text-[#18181B] tracking-tight">
+                Servidor SMTP Propio
+              </h2>
+              <p class="text-[13px] text-[#71717A]">
+                Envía facturas desde tu correo corporativo
+              </p>
             </div>
           </div>
-          <button @click="showSmtpModal = false" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 text-[#A1A1AA] hover:text-[#18181B] transition-colors">
+          <button
+            class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 text-[#A1A1AA] hover:text-[#18181B] transition-colors"
+            @click="showSmtpModal = false"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
@@ -1801,31 +2079,64 @@ async function saveBancolombiaConfig() {
           <div class="grid grid-cols-2 gap-4">
             <div class="col-span-2">
               <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Servidor SMTP (Host)</label>
-              <input v-model="smtpConfig.smtpHost" placeholder="ej. smtp.office365.com" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+              <input
+                v-model="smtpConfig.smtpHost"
+                placeholder="ej. smtp.office365.com"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white"
+              >
             </div>
             <div>
               <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Puerto</label>
-              <input v-model.number="smtpConfig.smtpPort" type="number" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+              <input
+                v-model.number="smtpConfig.smtpPort"
+                type="number"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white"
+              >
             </div>
             <div class="col-span-2">
               <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Correo Electrónico (Remitente)</label>
-              <input v-model="smtpConfig.smtpFromEmail" placeholder="facturacion@miempresa.com" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+              <input
+                v-model="smtpConfig.smtpFromEmail"
+                placeholder="facturacion@miempresa.com"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white"
+              >
             </div>
             <div class="col-span-2">
               <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Usuario de Autenticación</label>
-              <input v-model="smtpConfig.smtpUser" placeholder="usualmente tu correo" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+              <input
+                v-model="smtpConfig.smtpUser"
+                placeholder="usualmente tu correo"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white"
+              >
             </div>
             <div class="col-span-2">
               <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Contraseña / App Password</label>
-              <input v-model="smtpConfig.smtpPassword" type="password" placeholder="••••••••" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+              <input
+                v-model="smtpConfig.smtpPassword"
+                type="password"
+                placeholder="••••••••"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white"
+              >
             </div>
           </div>
         </div>
 
         <div class="px-6 py-4 border-t border-[#E4E4E7] flex justify-end gap-3 bg-[#FAFAFA]">
-          <button @click="showSmtpModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors">Cancelar</button>
-          <button @click="saveSmtpConfig" :disabled="smtpSaving" class="px-5 py-2 bg-[#2563EB] text-white text-[13px] font-semibold rounded-[10px] hover:bg-[#1D4ED8] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
-            <span v-if="smtpSaving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <button
+            class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors"
+            @click="showSmtpModal = false"
+          >
+            Cancelar
+          </button>
+          <button
+            :disabled="smtpSaving"
+            class="px-5 py-2 bg-[#2563EB] text-white text-[13px] font-semibold rounded-[10px] hover:bg-[#1D4ED8] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            @click="saveSmtpConfig"
+          >
+            <span
+              v-if="smtpSaving"
+              class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+            />
             <span>Guardar y Conectar</span>
           </button>
         </div>

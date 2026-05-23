@@ -34,10 +34,13 @@ function togglePassword() {
 
 <template>
   <Transition name="fade">
-    <div v-if="authStore.isSessionExpired" class="recovery-overlay">
+    <div
+      v-if="authStore.isSessionExpired"
+      class="recovery-overlay"
+    >
       <div class="recovery-card">
         <div class="recovery-icon">
-          <div class="icon-pulse"></div>
+          <div class="icon-pulse" />
           <Lock class="h-8 w-8 text-emerald-400" />
         </div>
 
@@ -46,8 +49,14 @@ function togglePassword() {
           <p>Por seguridad, re-auténtica tu cuenta para continuar sin perder tu progreso actual.</p>
         </div>
 
-        <form @submit.prevent="handleReauth" class="recovery-form">
-          <div v-if="error" class="error-banner">
+        <form
+          class="recovery-form"
+          @submit.prevent="handleReauth"
+        >
+          <div
+            v-if="error"
+            class="error-banner"
+          >
             <AlertCircle class="h-4 w-4" />
             <span>{{ error }}</span>
           </div>
@@ -62,10 +71,20 @@ function togglePassword() {
                 placeholder="Ingresa tu contraseña"
                 required
                 autofocus
-              />
-              <button type="button" @click="togglePassword" class="toggle-btn">
-                <Eye v-if="!showPassword" class="h-4 w-4" />
-                <EyeOff v-else class="h-4 w-4" />
+              >
+              <button
+                type="button"
+                class="toggle-btn"
+                @click="togglePassword"
+              >
+                <Eye
+                  v-if="!showPassword"
+                  class="h-4 w-4"
+                />
+                <EyeOff
+                  v-else
+                  class="h-4 w-4"
+                />
               </button>
             </div>
           </div>
@@ -75,13 +94,22 @@ function togglePassword() {
             class="reauth-btn" 
             :disabled="isSubmitting || !password"
           >
-            <ShieldCheck v-if="!isSubmitting" class="h-5 w-5 mr-2" />
-            <span v-else class="loader mr-2"></span>
+            <ShieldCheck
+              v-if="!isSubmitting"
+              class="h-5 w-5 mr-2"
+            />
+            <span
+              v-else
+              class="loader mr-2"
+            />
             {{ isSubmitting ? 'Verificando...' : 'Re-autenticar' }}
           </button>
         </form>
 
-        <button @click="authStore.logout()" class="logout-link">
+        <button
+          class="logout-link"
+          @click="authStore.logout()"
+        >
           Cerrar sesión y salir
         </button>
       </div>

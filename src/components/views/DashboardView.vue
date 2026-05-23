@@ -364,7 +364,10 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in duration-500 max-w-[1600px] mx-auto">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in duration-500 max-w-[1600px] mx-auto"
+  >
     <!-- Page header -->
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
@@ -376,56 +379,98 @@ onUnmounted(() => {
         <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">
           Buenos días, {{ userName }}
         </h1>
-        <p class="text-[14px] text-[#71717A]">Aquí están los movimientos importantes de las últimas 24 horas.</p>
+        <p class="text-[14px] text-[#71717A]">
+          Aquí están los movimientos importantes de las últimas 24 horas.
+        </p>
       </div>
       <div class="flex flex-wrap gap-2">
-        <div class="relative inline-block text-left" @click.stop>
-          <button @click="toggleDropdown" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors shadow-sm">
+        <div
+          class="relative inline-block text-left"
+          @click.stop
+        >
+          <button
+            class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors shadow-sm"
+            @click="toggleDropdown"
+          >
             <span class="material-symbols-outlined text-[18px]">calendar_today</span>
             <span>{{ displayPeriod }}</span>
-            <span class="material-symbols-outlined text-[16px] text-[#A1A1AA] transition-transform duration-200" :class="{ 'rotate-180': isDropdownOpen }">expand_more</span>
+            <span
+              class="material-symbols-outlined text-[16px] text-[#A1A1AA] transition-transform duration-200"
+              :class="{ 'rotate-180': isDropdownOpen }"
+            >expand_more</span>
           </button>
 
           <!-- Dropdown Menu -->
-          <div v-if="isDropdownOpen" class="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white border border-[#E4E4E7] rounded-xl shadow-lg z-50 p-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150">
-            <div class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider px-2 mb-1">Periodo</div>
+          <div
+            v-if="isDropdownOpen"
+            class="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] bg-white border border-[#E4E4E7] rounded-xl shadow-lg z-50 p-3 space-y-2 animate-in fade-in slide-in-from-top-1 duration-150"
+          >
+            <div class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider px-2 mb-1">
+              Periodo
+            </div>
             
-            <button v-for="p in presets" :key="p.value" @click="selectPreset(p)"
+            <button
+              v-for="p in presets"
+              :key="p.value"
               :class="['w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors text-left', 
-                        selectedPeriod === p.value ? 'bg-[#18181B] text-white' : 'text-[#3F3F46] hover:bg-[#F4F4F5]']">
+                       selectedPeriod === p.value ? 'bg-[#18181B] text-white' : 'text-[#3F3F46] hover:bg-[#F4F4F5]']"
+              @click="selectPreset(p)"
+            >
               <span>{{ p.label }}</span>
-              <span v-if="selectedPeriod === p.value" class="material-symbols-outlined text-[16px]">done</span>
+              <span
+                v-if="selectedPeriod === p.value"
+                class="material-symbols-outlined text-[16px]"
+              >done</span>
             </button>
             
-            <div class="border-t border-[#F4F4F5] my-2"></div>
+            <div class="border-t border-[#F4F4F5] my-2" />
             
-            <button @click="selectPreset({ value: 'custom', label: 'Rango personalizado' })"
+            <button
               :class="['w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-[13px] font-semibold transition-colors text-left', 
-                        selectedPeriod === 'custom' ? 'bg-[#18181B] text-white' : 'text-[#3F3F46] hover:bg-[#F4F4F5]']">
+                       selectedPeriod === 'custom' ? 'bg-[#18181B] text-white' : 'text-[#3F3F46] hover:bg-[#F4F4F5]']"
+              @click="selectPreset({ value: 'custom', label: 'Rango personalizado' })"
+            >
               <span>Rango personalizado</span>
-              <span v-if="selectedPeriod === 'custom'" class="material-symbols-outlined text-[16px]">done</span>
+              <span
+                v-if="selectedPeriod === 'custom'"
+                class="material-symbols-outlined text-[16px]"
+              >done</span>
             </button>
 
             <!-- Custom Range Inputs -->
-            <div v-if="selectedPeriod === 'custom'" class="p-2.5 space-y-3.5 bg-[#FAFAFA] rounded-lg mt-2 border border-[#E4E4E7]">
+            <div
+              v-if="selectedPeriod === 'custom'"
+              class="p-2.5 space-y-3.5 bg-[#FAFAFA] rounded-lg mt-2 border border-[#E4E4E7]"
+            >
               <div class="space-y-1">
                 <label class="text-[10px] font-bold text-[#71717A] uppercase tracking-wider block">Desde</label>
-                <input type="date" v-model="customFromDate" 
-                  class="w-full px-2.5 py-1.5 border border-[#E4E4E7] rounded-md bg-white text-[12px] font-semibold text-[#18181B] focus:outline-none focus:ring-1 focus:ring-[#18181B] transition-shadow shadow-sm" />
+                <input
+                  v-model="customFromDate"
+                  type="date" 
+                  class="w-full px-2.5 py-1.5 border border-[#E4E4E7] rounded-md bg-white text-[12px] font-semibold text-[#18181B] focus:outline-none focus:ring-1 focus:ring-[#18181B] transition-shadow shadow-sm"
+                >
               </div>
               <div class="space-y-1">
                 <label class="text-[10px] font-bold text-[#71717A] uppercase tracking-wider block">Hasta</label>
-                <input type="date" v-model="customToDate" 
-                  class="w-full px-2.5 py-1.5 border border-[#E4E4E7] rounded-md bg-white text-[12px] font-semibold text-[#18181B] focus:outline-none focus:ring-1 focus:ring-[#18181B] transition-shadow shadow-sm" />
+                <input
+                  v-model="customToDate"
+                  type="date" 
+                  class="w-full px-2.5 py-1.5 border border-[#E4E4E7] rounded-md bg-white text-[12px] font-semibold text-[#18181B] focus:outline-none focus:ring-1 focus:ring-[#18181B] transition-shadow shadow-sm"
+                >
               </div>
-              <button @click="applyCustomRange" 
-                class="w-full py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm flex items-center justify-center gap-1.5">
+              <button
+                class="w-full py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm flex items-center justify-center gap-1.5" 
+                @click="applyCustomRange"
+              >
                 Aplicar rango
               </button>
             </div>
           </div>
         </div>
-        <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors shadow-sm">
+        <button
+          class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors shadow-sm"
+          @click="handleExport"
+        >
           <span class="material-symbols-outlined text-[18px]">download</span>
           Exportar
         </button>
@@ -442,7 +487,9 @@ onUnmounted(() => {
           <span class="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider">Insight de IA</span>
           <span class="text-[11px] text-[#A1A1AA] font-medium">actualizado hace 4 min</span>
         </div>
-        <p class="text-[13px] sm:text-[14px] text-[#1E293B] leading-[1.5] font-medium pr-2">{{ dashboardData.aiInsight }}</p>
+        <p class="text-[13px] sm:text-[14px] text-[#1E293B] leading-[1.5] font-medium pr-2">
+          {{ dashboardData.aiInsight }}
+        </p>
       </div>
     </div>
 
@@ -454,14 +501,23 @@ onUnmounted(() => {
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">payments</span>
           </div>
-          <span v-if="dashboardData.totalSales > 0" class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-tight">
+          <span
+            v-if="dashboardData.totalSales > 0"
+            class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-tight"
+          >
             <span class="material-symbols-outlined text-[12px]">arrow_upward</span>15%
           </span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Ventas del día</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">$ {{ formatCompact(dashboardData.totalSales) }}</p>
-          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.totalSales > 0 ? 'Operación activa' : 'Sin ventas registradas' }}</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Ventas del día
+          </p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+            $ {{ formatCompact(dashboardData.totalSales) }}
+          </p>
+          <p class="text-[12px] font-medium text-[#71717A]">
+            {{ dashboardData.totalSales > 0 ? 'Operación activa' : 'Sin ventas registradas' }}
+          </p>
         </div>
       </div>
 
@@ -471,12 +527,21 @@ onUnmounted(() => {
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">receipt_long</span>
           </div>
-          <span v-if="dashboardData.pendingInvoices > 0" class="inline-flex px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold tracking-tight">Por cobrar</span>
+          <span
+            v-if="dashboardData.pendingInvoices > 0"
+            class="inline-flex px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold tracking-tight"
+          >Por cobrar</span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Facturas pendientes</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">{{ dashboardData.pendingInvoices }}</p>
-          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.pendingInvoices > 0 ? 'Documentos pendientes' : 'Al día con las cuentas' }}</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Facturas pendientes
+          </p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+            {{ dashboardData.pendingInvoices }}
+          </p>
+          <p class="text-[12px] font-medium text-[#71717A]">
+            {{ dashboardData.pendingInvoices > 0 ? 'Documentos pendientes' : 'Al día con las cuentas' }}
+          </p>
         </div>
       </div>
 
@@ -486,19 +551,31 @@ onUnmounted(() => {
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">inventory_2</span>
           </div>
-          <span v-if="dashboardData.lowStockAlerts > 0" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold tracking-tight">
-            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>Stock bajo
+          <span
+            v-if="dashboardData.lowStockAlerts > 0"
+            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold tracking-tight"
+          >
+            <span class="w-1.5 h-1.5 rounded-full bg-rose-500" />Stock bajo
           </span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Stock bajo</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">{{ dashboardData.lowStockAlerts }} SKUs</p>
-          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.lowStockAlerts > 0 ? 'Requieren reabastecer' : 'Nivel de inventario óptimo' }}</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Stock bajo
+          </p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+            {{ dashboardData.lowStockAlerts }} SKUs
+          </p>
+          <p class="text-[12px] font-medium text-[#71717A]">
+            {{ dashboardData.lowStockAlerts > 0 ? 'Requieren reabastecer' : 'Nivel de inventario óptimo' }}
+          </p>
         </div>
       </div>
 
       <!-- AI Tasks -->
-      <div @click="openOcrModal" class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors cursor-pointer group">
+      <div
+        class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors cursor-pointer group"
+        @click="openOcrModal"
+      >
         <div class="flex items-start justify-between mb-6">
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] group-hover:bg-[#18181B] group-hover:text-white transition-colors">
             <span class="material-symbols-outlined text-[22px]">document_scanner</span>
@@ -506,9 +583,15 @@ onUnmounted(() => {
           <span class="inline-flex px-2 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[11px] font-bold tracking-tight">OCR listo</span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">Tareas de IA</p>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">{{ dashboardData.ocrRunsCount }}</p>
-          <p class="text-[12px] font-medium text-[#71717A]">{{ dashboardData.ocrRunsCount > 0 ? 'listas para revisar' : 'sin documentos pendientes' }}</p>
+          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+            Tareas de IA
+          </p>
+          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+            {{ dashboardData.ocrRunsCount }}
+          </p>
+          <p class="text-[12px] font-medium text-[#71717A]">
+            {{ dashboardData.ocrRunsCount > 0 ? 'listas para revisar' : 'sin documentos pendientes' }}
+          </p>
         </div>
       </div>
     </div>
@@ -521,38 +604,114 @@ onUnmounted(() => {
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider">Flujo de caja</span>
             <div class="flex items-center gap-4 text-[12px] font-semibold text-[#71717A]">
-              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#18181B]"></span>Real</span>
-              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#2563EB]"></span>Proyección</span>
+              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#18181B]" />Real</span>
+              <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />Proyección</span>
             </div>
           </div>
-          <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight">Histórico vs Predicción IA</h3>
-          <p class="text-[13px] text-[#71717A] mb-8 font-medium">Últimos 30 días + 15 días proyectados</p>
+          <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight">
+            Histórico vs Predicción IA
+          </h3>
+          <p class="text-[13px] text-[#71717A] mb-8 font-medium">
+            Últimos 30 días + 15 días proyectados
+          </p>
         </div>
 
         <!-- SVG Chart Replicating Image 1 -->
         <div class="relative w-full h-64 pt-8 pb-4">
-          <svg class="w-full h-full overflow-visible" viewBox="0 0 700 220" preserveAspectRatio="none">
+          <svg
+            class="w-full h-full overflow-visible"
+            viewBox="0 0 700 220"
+            preserveAspectRatio="none"
+          >
             <!-- Grid lines -->
-            <line x1="0" y1="40" x2="700" y2="40" stroke="#F4F4F5" stroke-dasharray="4" />
-            <line x1="0" y1="100" x2="700" y2="100" stroke="#F4F4F5" stroke-dasharray="4" />
-            <line x1="0" y1="160" x2="700" y2="160" stroke="#F4F4F5" stroke-dasharray="4" />
+            <line
+              x1="0"
+              y1="40"
+              x2="700"
+              y2="40"
+              stroke="#F4F4F5"
+              stroke-dasharray="4"
+            />
+            <line
+              x1="0"
+              y1="100"
+              x2="700"
+              y2="100"
+              stroke="#F4F4F5"
+              stroke-dasharray="4"
+            />
+            <line
+              x1="0"
+              y1="160"
+              x2="700"
+              y2="160"
+              stroke="#F4F4F5"
+              stroke-dasharray="4"
+            />
             <!-- Historical area gradient -->
             <defs>
-              <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#18181B" stop-opacity="0.18" />
-                <stop offset="100%" stop-color="#18181B" stop-opacity="0.0" />
+              <linearGradient
+                id="chartGrad"
+                x1="0"
+                y1="0"
+                x2="0"
+                y2="1"
+              >
+                <stop
+                  offset="0%"
+                  stop-color="#18181B"
+                  stop-opacity="0.18"
+                />
+                <stop
+                  offset="100%"
+                  stop-color="#18181B"
+                  stop-opacity="0.0"
+                />
               </linearGradient>
             </defs>
             <!-- Area path -->
-            <path :d="svgPaths.area" fill="url(#chartGrad)" />
+            <path
+              :d="svgPaths.area"
+              fill="url(#chartGrad)"
+            />
             <!-- Line path -->
-            <path :d="svgPaths.line" fill="none" stroke="#18181B" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              :d="svgPaths.line"
+              fill="none"
+              stroke="#18181B"
+              stroke-width="3"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
             <!-- Prediction dashed line -->
-            <path :d="svgPaths.projection" fill="none" stroke="#2563EB" stroke-width="3" stroke-dasharray="7,5" stroke-linecap="round" stroke-linejoin="round" />
+            <path
+              :d="svgPaths.projection"
+              fill="none"
+              stroke="#2563EB"
+              stroke-width="3"
+              stroke-dasharray="7,5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
             <!-- Today vertical line -->
-            <line x1="420" y1="10" x2="420" y2="220" stroke="#D4D4D8" stroke-dasharray="4" stroke-width="1.5" />
+            <line
+              x1="420"
+              y1="10"
+              x2="420"
+              y2="220"
+              stroke="#D4D4D8"
+              stroke-dasharray="4"
+              stroke-width="1.5"
+            />
             <!-- Today dot -->
-            <circle cx="420" :cy="svgPaths.todayY" r="6" fill="#18181B" stroke="#ffffff" stroke-width="2.5" />
+            <circle
+              cx="420"
+              :cy="svgPaths.todayY"
+              r="6"
+              fill="#18181B"
+              stroke="#ffffff"
+              stroke-width="2.5"
+            />
           </svg>
 
           <!-- Today badge -->
@@ -574,25 +733,48 @@ onUnmounted(() => {
       <!-- Alertas Column -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 shadow-sm flex flex-col justify-between self-start w-full">
         <div>
-          <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight mb-6">Alertas</h3>
-          <div v-if="alertsList.length > 0" class="space-y-4 divide-y divide-[#F4F4F5]">
-            <div v-for="alert in alertsList" :key="alert.id" class="pt-4 first:pt-0">
+          <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight mb-6">
+            Alertas
+          </h3>
+          <div
+            v-if="alertsList.length > 0"
+            class="space-y-4 divide-y divide-[#F4F4F5]"
+          >
+            <div
+              v-for="alert in alertsList"
+              :key="alert.id"
+              class="pt-4 first:pt-0"
+            >
               <div class="flex items-center gap-2.5 mb-1">
-                <span :class="['w-2 h-2 rounded-full flex-shrink-0', alert.color]"></span>
-                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">{{ alert.title }}</p>
+                <span :class="['w-2 h-2 rounded-full flex-shrink-0', alert.color]" />
+                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">
+                  {{ alert.title }}
+                </p>
               </div>
-              <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">{{ alert.description }} <span class="text-[#A1A1AA] ml-1 font-normal">{{ alert.time }}</span></p>
+              <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">
+                {{ alert.description }} <span class="text-[#A1A1AA] ml-1 font-normal">{{ alert.time }}</span>
+              </p>
             </div>
           </div>
-          <div v-else class="flex flex-col items-center justify-center py-8 text-center">
+          <div
+            v-else
+            class="flex flex-col items-center justify-center py-8 text-center"
+          >
             <span class="material-symbols-outlined text-[36px] text-emerald-500 mb-2">check_circle</span>
-            <p class="text-[14px] font-bold text-[#18181B]">Sin alertas pendientes</p>
-            <p class="text-[12px] text-[#71717A]">Tu negocio está funcionando perfectamente.</p>
+            <p class="text-[14px] font-bold text-[#18181B]">
+              Sin alertas pendientes
+            </p>
+            <p class="text-[12px] text-[#71717A]">
+              Tu negocio está funcionando perfectamente.
+            </p>
           </div>
         </div>
 
         <div class="pt-6 mt-6 border-t border-[#F4F4F5]">
-          <button @click="handleViewAlerts" class="text-[13px] font-bold text-[#18181B] hover:text-[#2563EB] transition-colors flex items-center gap-1.5 group">
+          <button
+            class="text-[13px] font-bold text-[#18181B] hover:text-[#2563EB] transition-colors flex items-center gap-1.5 group"
+            @click="handleViewAlerts"
+          >
             Ver todas las alertas <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
           </button>
         </div>
@@ -600,20 +782,33 @@ onUnmounted(() => {
     </div>
 
     <!-- AI OCR Runs Modal -->
-    <div v-if="showOcrModal" class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      v-if="showOcrModal"
+      class="fixed inset-0 z-50 flex items-center justify-center p-4"
+    >
       <!-- Backdrop -->
-      <div @click="showOcrModal = false" class="absolute inset-0 bg-[#09090B]/40 backdrop-blur-sm transition-opacity"></div>
+      <div
+        class="absolute inset-0 bg-[#09090B]/40 backdrop-blur-sm transition-opacity"
+        @click="showOcrModal = false"
+      />
 
       <!-- Modal Card -->
       <div class="relative bg-white border border-[#E4E4E7] rounded-[18px] shadow-2xl w-full max-w-4xl max-h-[85vh] flex flex-col overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         <!-- Header -->
         <div class="flex items-center justify-between px-6 py-5 border-b border-[#F4F4F5]">
           <div>
-            <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight">Tareas de OCR con IA</h3>
-            <p class="text-[12px] text-[#71717A] font-medium">Revisa, edita y aprueba las facturas extraídas automáticamente por la inteligencia artificial</p>
+            <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight">
+              Tareas de OCR con IA
+            </h3>
+            <p class="text-[12px] text-[#71717A] font-medium">
+              Revisa, edita y aprueba las facturas extraídas automáticamente por la inteligencia artificial
+            </p>
           </div>
           <div class="flex items-center gap-3">
-            <button @click="showOcrModal = false" class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#F4F4F5] text-[#71717A] transition-colors">
+            <button
+              class="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[#F4F4F5] text-[#71717A] transition-colors"
+              @click="showOcrModal = false"
+            >
               <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
           </div>
@@ -623,31 +818,52 @@ onUnmounted(() => {
         <div class="flex-1 overflow-y-auto p-6 flex flex-col lg:flex-row gap-6 min-h-0">
           <!-- Left side: List of runs -->
           <div class="flex-1 flex flex-col min-w-0">
-            <div v-if="isOcrLoading" class="flex flex-col items-center justify-center py-12">
-              <span class="animate-spin w-8 h-8 border-2 border-[#18181B] border-t-transparent rounded-full mb-3"></span>
-              <p class="text-[13px] font-medium text-[#71717A]">Procesando documentos...</p>
+            <div
+              v-if="isOcrLoading"
+              class="flex flex-col items-center justify-center py-12"
+            >
+              <span class="animate-spin w-8 h-8 border-2 border-[#18181B] border-t-transparent rounded-full mb-3" />
+              <p class="text-[13px] font-medium text-[#71717A]">
+                Procesando documentos...
+              </p>
             </div>
-            <div v-else-if="ocrRuns.length === 0" class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-[#E4E4E7] rounded-xl px-4">
+            <div
+              v-else-if="ocrRuns.length === 0"
+              class="flex flex-col items-center justify-center py-12 text-center border-2 border-dashed border-[#E4E4E7] rounded-xl px-4"
+            >
               <span class="material-symbols-outlined text-[42px] text-[#A1A1AA] mb-3">folder_open</span>
-              <h4 class="text-[14px] font-bold text-[#18181B]">Bandeja de Entrada Limpia</h4>
-              <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1">No tienes facturas ni recibos pendientes de revisión por parte de la IA.</p>
+              <h4 class="text-[14px] font-bold text-[#18181B]">
+                Bandeja de Entrada Limpia
+              </h4>
+              <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1">
+                No tienes facturas ni recibos pendientes de revisión por parte de la IA.
+              </p>
             </div>
-            <div v-else class="space-y-3.5">
-              <div v-for="run in ocrRuns" :key="run.id" 
-                @click="selectedOcrRun = run"
+            <div
+              v-else
+              class="space-y-3.5"
+            >
+              <div
+                v-for="run in ocrRuns"
+                :key="run.id" 
                 :class="['border rounded-xl p-4 cursor-pointer transition-all hover:border-[#18181B] hover:shadow-sm flex items-start gap-4', selectedOcrRun?.id === run.id ? 'border-[#18181B] bg-[#F8F8F8]' : 'border-[#E4E4E7] bg-white']"
+                @click="selectedOcrRun = run"
               >
                 <div class="w-10 h-10 rounded-[8px] bg-[#F4F4F5] flex items-center justify-center text-[#71717A] flex-shrink-0">
                   <span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
                 </div>
                 <div class="flex-1 min-w-0">
                   <div class="flex items-start justify-between gap-2 mb-1">
-                    <h5 class="text-[14px] font-bold text-[#18181B] truncate">{{ run.fields?.vendor || 'Factura Sin Nombre' }}</h5>
+                    <h5 class="text-[14px] font-bold text-[#18181B] truncate">
+                      {{ run.fields?.vendor || 'Factura Sin Nombre' }}
+                    </h5>
                     <span :class="['inline-flex px-1.5 py-0.5 rounded text-[10px] font-extrabold tracking-tight flex-shrink-0', run.confidence > 0.95 ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700']">
                       {{ Math.round(run.confidence * 100) }}% precisión
                     </span>
                   </div>
-                  <p class="text-[12px] text-[#71717A] font-semibold truncate">{{ run.source }}</p>
+                  <p class="text-[12px] text-[#71717A] font-semibold truncate">
+                    {{ run.source }}
+                  </p>
                   <div class="flex items-center justify-between mt-3 text-[12px] font-bold">
                     <span class="text-[#71717A]">Total Extraído:</span>
                     <span class="text-[#18181B]">$ {{ Number(run.fields?.total || 0).toLocaleString('es-CO') }} COP</span>
@@ -659,15 +875,22 @@ onUnmounted(() => {
 
           <!-- Right side: Detail view -->
           <div class="w-full lg:w-[380px] border-t lg:border-t-0 lg:border-l border-[#F4F4F5] pt-6 lg:pt-0 lg:pl-6 flex flex-col flex-shrink-0 min-w-0">
-            <div v-if="selectedOcrRun" class="flex flex-col h-full justify-between min-h-0">
+            <div
+              v-if="selectedOcrRun"
+              class="flex flex-col h-full justify-between min-h-0"
+            >
               <div>
                 <div class="flex items-center gap-3 mb-5">
                   <div class="w-12 h-12 rounded-[10px] bg-[#2563EB]/5 border border-[#2563EB]/10 flex items-center justify-center text-[#2563EB]">
                     <span class="material-symbols-outlined text-[24px]">receipt_long</span>
                   </div>
                   <div class="min-w-0">
-                    <h4 class="text-[15px] font-extrabold text-[#18181B] leading-none mb-1 truncate">{{ selectedOcrRun.fields?.vendor }}</h4>
-                    <p class="text-[11px] text-[#71717A] font-semibold">NIT: {{ selectedOcrRun.fields?.nit }}</p>
+                    <h4 class="text-[15px] font-extrabold text-[#18181B] leading-none mb-1 truncate">
+                      {{ selectedOcrRun.fields?.vendor }}
+                    </h4>
+                    <p class="text-[11px] text-[#71717A] font-semibold">
+                      NIT: {{ selectedOcrRun.fields?.nit }}
+                    </p>
                   </div>
                 </div>
 
@@ -690,10 +913,18 @@ onUnmounted(() => {
                   <div>
                     <span class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider block mb-2">Items Extraídos ({{ selectedOcrRun.fields?.items?.length || 0 }})</span>
                     <div class="space-y-2 max-h-[140px] overflow-y-auto pr-1">
-                      <div v-for="(item, idx) in selectedOcrRun.fields?.items" :key="idx" class="bg-[#F9F9F9] rounded-lg p-2 flex items-center justify-between text-[11px] font-semibold text-[#1E293B]">
+                      <div
+                        v-for="(item, idx) in selectedOcrRun.fields?.items"
+                        :key="idx"
+                        class="bg-[#F9F9F9] rounded-lg p-2 flex items-center justify-between text-[11px] font-semibold text-[#1E293B]"
+                      >
                         <div class="min-w-0 flex-1">
-                          <p class="truncate font-bold text-[#18181B]">{{ item.description }}</p>
-                          <p class="text-[10px] text-[#71717A]">{{ item.qty }} x $ {{ Number(item.price).toLocaleString('es-CO') }}</p>
+                          <p class="truncate font-bold text-[#18181B]">
+                            {{ item.description }}
+                          </p>
+                          <p class="text-[10px] text-[#71717A]">
+                            {{ item.qty }} x $ {{ Number(item.price).toLocaleString('es-CO') }}
+                          </p>
                         </div>
                         <span class="font-extrabold text-[#18181B] ml-2">$ {{ Number(item.total).toLocaleString('es-CO') }}</span>
                       </div>
@@ -720,18 +951,31 @@ onUnmounted(() => {
 
               <!-- Action buttons -->
               <div class="flex items-center gap-3 pt-6 mt-6 border-t border-[#F4F4F5]">
-                <button @click="deleteOcr(selectedOcrRun)" class="flex-1 py-2 px-3 border border-[#E4E4E7] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg text-[12px] font-extrabold text-[#71717A] transition-all">
+                <button
+                  class="flex-1 py-2 px-3 border border-[#E4E4E7] hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 rounded-lg text-[12px] font-extrabold text-[#71717A] transition-all"
+                  @click="deleteOcr(selectedOcrRun)"
+                >
                   Descartar
                 </button>
-                <button @click="approveOcr(selectedOcrRun)" class="flex-[1.5] py-2 px-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm flex items-center justify-center gap-1.5">
+                <button
+                  class="flex-[1.5] py-2 px-3 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-lg text-[12px] font-extrabold tracking-tight transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                  @click="approveOcr(selectedOcrRun)"
+                >
                   <span class="material-symbols-outlined text-[16px]">done</span> Aprobar e Ingresar
                 </button>
               </div>
             </div>
-            <div v-else class="flex-1 flex flex-col items-center justify-center py-12 text-center text-[#A1A1AA]">
+            <div
+              v-else
+              class="flex-1 flex flex-col items-center justify-center py-12 text-center text-[#A1A1AA]"
+            >
               <span class="material-symbols-outlined text-[36px] mb-2">touch_app</span>
-              <p class="text-[13px] font-bold text-[#18181B]">Ninguna tarea seleccionada</p>
-              <p class="text-[11px] text-[#71717A] max-w-[200px] mt-0.5">Selecciona una factura de la lista de la izquierda para ver su análisis.</p>
+              <p class="text-[13px] font-bold text-[#18181B]">
+                Ninguna tarea seleccionada
+              </p>
+              <p class="text-[11px] text-[#71717A] max-w-[200px] mt-0.5">
+                Selecciona una factura de la lista de la izquierda para ver su análisis.
+              </p>
             </div>
           </div>
         </div>

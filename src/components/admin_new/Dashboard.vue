@@ -3,8 +3,12 @@
   <div class="space-y-8">
     <!-- Header -->
     <div class="pb-2">
-      <h2 class="text-3xl font-bold text-slate-50 mb-2">Dashboard</h2>
-      <p class="text-sm text-slate-500">Vista general de tu plataforma SaaS</p>
+      <h2 class="text-3xl font-bold text-slate-50 mb-2">
+        Dashboard
+      </h2>
+      <p class="text-sm text-slate-500">
+        Vista general de tu plataforma SaaS
+      </p>
     </div>
 
     <!-- Stats Grid -->
@@ -26,7 +30,9 @@
       <!-- Solicitudes Demo -->
       <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-lg shadow-black/20">
         <div class="flex items-center justify-between mb-5">
-          <h3 class="text-lg font-semibold text-slate-50">Solicitudes de Demo</h3>
+          <h3 class="text-lg font-semibold text-slate-50">
+            Solicitudes de Demo
+          </h3>
           <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             {{ demoRequests.length }} leads
           </span>
@@ -42,18 +48,30 @@
                 {{ req.empresa[0] }}
               </div>
               <div>
-                <p class="text-sm font-medium text-slate-200">{{ req.empresa }}</p>
-                <p class="text-xs text-slate-500">{{ req.nombre }}</p>
+                <p class="text-sm font-medium text-slate-200">
+                  {{ req.empresa }}
+                </p>
+                <p class="text-xs text-slate-500">
+                  {{ req.nombre }}
+                </p>
               </div>
             </div>
             <div class="text-right">
-              <span class="text-xs font-medium px-2 py-0.5 rounded-full" :class="getStatusClass(req.estado)">
+              <span
+                class="text-xs font-medium px-2 py-0.5 rounded-full"
+                :class="getStatusClass(req.estado)"
+              >
                 {{ req.estado }}
               </span>
-              <p class="text-xs text-slate-600 mt-1">{{ formatDate(req.createdAt) }}</p>
+              <p class="text-xs text-slate-600 mt-1">
+                {{ formatDate(req.createdAt) }}
+              </p>
             </div>
           </div>
-          <div v-if="!demoRequests.length" class="text-sm text-slate-500 text-center py-8">
+          <div
+            v-if="!demoRequests.length"
+            class="text-sm text-slate-500 text-center py-8"
+          >
             No hay solicitudes recientes.
           </div>
         </div>
@@ -62,23 +80,44 @@
       <!-- Estado de Cumplimiento -->
       <div class="bg-[#131926] border border-slate-800/50 rounded-xl p-6 shadow-lg shadow-black/20">
         <div class="flex items-center justify-between mb-5">
-          <h3 class="text-lg font-semibold text-slate-50">Cumplimiento ISO</h3>
+          <h3 class="text-lg font-semibold text-slate-50">
+            Cumplimiento ISO
+          </h3>
           <span class="text-xs font-medium px-2.5 py-1 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
             {{ complianceChecks.filter(c => c.status === 'active' || c.status === 'automated').length }}/{{ complianceChecks.length }}
           </span>
         </div>
         <div class="space-y-3">
-          <div v-for="check in complianceChecks.slice(0, 6)" :key="check.id" class="flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-lg hover:bg-slate-800/30 transition-colors">
-            <div class="w-8 h-8 rounded-lg flex items-center justify-center" :class="getComplianceIconBg(check.status)">
-              <CheckCircle2 v-if="check.status === 'active' || check.status === 'automated'" class="w-4 h-4 text-emerald-400" />
-              <AlertCircle v-else class="w-4 h-4 text-amber-400" />
+          <div
+            v-for="check in complianceChecks.slice(0, 6)"
+            :key="check.id"
+            class="flex items-center gap-3 py-2.5 px-3 -mx-3 rounded-lg hover:bg-slate-800/30 transition-colors"
+          >
+            <div
+              class="w-8 h-8 rounded-lg flex items-center justify-center"
+              :class="getComplianceIconBg(check.status)"
+            >
+              <CheckCircle2
+                v-if="check.status === 'active' || check.status === 'automated'"
+                class="w-4 h-4 text-emerald-400"
+              />
+              <AlertCircle
+                v-else
+                class="w-4 h-4 text-amber-400"
+              />
             </div>
             <span class="text-sm text-slate-300 flex-1">{{ check.name || check.label }}</span>
-            <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="getComplianceClass(check.status)">
+            <span
+              class="text-xs px-2 py-0.5 rounded-full font-medium"
+              :class="getComplianceClass(check.status)"
+            >
               {{ check.status === 'active' || check.status === 'automated' ? 'Activo' : 'Pendiente' }}
             </span>
           </div>
-          <div v-if="!complianceChecks.length" class="text-sm text-slate-500 text-center py-8">
+          <div
+            v-if="!complianceChecks.length"
+            class="text-sm text-slate-500 text-center py-8"
+          >
             Cargando controles de cumplimiento...
           </div>
         </div>

@@ -50,8 +50,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="chart-container" style="position: relative; height: 300px; width: 100%;">
-    <canvas ref="canvasRef"></canvas>
+  <div
+    class="chart-container"
+    style="position: relative; height: 300px; width: 100%;"
+  >
+    <canvas ref="canvasRef" />
   </div>
 </template>
 

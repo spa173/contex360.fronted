@@ -90,7 +90,11 @@ function toggleSidebar() {
 <template>
   <div class="min-h-screen bg-[#FAFAFA] font-['Inter'] flex">
     <!-- Mobile backdrop -->
-    <div v-if="isSidebarOpen" @click="isSidebarOpen = false" class="lg:hidden fixed inset-0 bg-black/40 z-40"></div>
+    <div
+      v-if="isSidebarOpen"
+      class="lg:hidden fixed inset-0 bg-black/40 z-40"
+      @click="isSidebarOpen = false"
+    />
 
     <!-- Sidebar -->
     <AppSidebar
@@ -119,25 +123,91 @@ function toggleSidebar() {
       />
 
       <main class="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
-        <DashboardView v-if="store.activeView === 'dashboard'" :is-active="true" @notify="handleNotify" />
-        <BillingView v-if="store.activeView === 'billing'" :is-active="true" @notify="handleNotify" />
-        <PurchasesView v-if="store.activeView === 'purchases'" :is-active="true" @notify="handleNotify" />
-        <TreasuryView v-if="store.activeView === 'treasury'" :is-active="true" @notify="handleNotify" />
-        <InventoryView v-if="store.activeView === 'inventory'" :is-active="true" @notify="handleNotify" />
-        <ThirdPartiesView v-if="store.activeView === 'third-parties'" :is-active="true" @notify="handleNotify" />
-        <AccountingView v-if="store.activeView === 'accounting'" :is-active="true" @notify="handleNotify" />
-        <UsersView v-if="store.activeView === 'users'" :is-active="true" @notify="handleNotify" />
-        <ReportsView v-if="store.activeView === 'reports'" :is-active="true" @notify="handleNotify" />
-        <QuotesView v-if="store.activeView === 'quotes'" :is-active="true" @notify="handleNotify" />
-        <AdminConsoleView v-if="store.activeView === 'admin-console'" :is-active="true" @notify="handleNotify" />
-        <TwoFactorView v-if="store.activeView === 'two-factor'" @notify="handleNotify" />
-        <ProfileView v-if="store.activeView === 'profile'" :is-active="true" @notify="handleNotify" />
-        <AiView v-if="store.activeView === 'ai'" :is-active="true" @notify="handleNotify" />
-        <HelpCenterView v-if="store.activeView === 'help-center'" :is-active="true" @notify="handleNotify" />
-        <PlansView v-if="store.activeView === 'plans'" :is-active="true" @notify="handleNotify" />
+        <DashboardView
+          v-if="store.activeView === 'dashboard'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <BillingView
+          v-if="store.activeView === 'billing'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <PurchasesView
+          v-if="store.activeView === 'purchases'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <TreasuryView
+          v-if="store.activeView === 'treasury'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <InventoryView
+          v-if="store.activeView === 'inventory'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <ThirdPartiesView
+          v-if="store.activeView === 'third-parties'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <AccountingView
+          v-if="store.activeView === 'accounting'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <UsersView
+          v-if="store.activeView === 'users'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <ReportsView
+          v-if="store.activeView === 'reports'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <QuotesView
+          v-if="store.activeView === 'quotes'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <AdminConsoleView
+          v-if="store.activeView === 'admin-console'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <TwoFactorView
+          v-if="store.activeView === 'two-factor'"
+          @notify="handleNotify"
+        />
+        <ProfileView
+          v-if="store.activeView === 'profile'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <AiView
+          v-if="store.activeView === 'ai'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <HelpCenterView
+          v-if="store.activeView === 'help-center'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <PlansView
+          v-if="store.activeView === 'plans'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
       </main>
 
-      <ChatAssistant ref="chatRef" @navigate="handleNavigate" />
+      <ChatAssistant
+        ref="chatRef"
+        @navigate="handleNavigate"
+      />
       <SpotlightCommand @select="handleSpotlightAction" />
       <AlertsCenterModal />
     </div>

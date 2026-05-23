@@ -2,8 +2,12 @@
 <template>
   <div class="space-y-6">
     <div class="pb-2">
-      <h2 class="text-3xl font-bold text-slate-50 mb-1">Usuarios Globales</h2>
-      <p class="text-sm text-slate-500">{{ users.length }} usuarios registrados en el sistema</p>
+      <h2 class="text-3xl font-bold text-slate-50 mb-1">
+        Usuarios Globales
+      </h2>
+      <p class="text-sm text-slate-500">
+        {{ users.length }} usuarios registrados en el sistema
+      </p>
     </div>
 
     <div class="bg-[#131926] border border-slate-800/50 rounded-xl overflow-hidden shadow-lg shadow-black/10">
@@ -11,12 +15,24 @@
         <table class="w-full">
           <thead>
             <tr class="border-b border-slate-800/50 bg-[#0B0F1A]/50">
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Usuario</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Empresas</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Último Acceso</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Usuario
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Email
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Empresas
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Estado
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Último Acceso
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/30">
@@ -31,8 +47,12 @@
                     {{ user.name[0] }}
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-slate-200">{{ user.name }}</p>
-                    <p class="text-xs text-slate-600">{{ user.title || 'Sin cargo' }}</p>
+                    <p class="text-sm font-medium text-slate-200">
+                      {{ user.name }}
+                    </p>
+                    <p class="text-xs text-slate-600">
+                      {{ user.title || 'Sin cargo' }}
+                    </p>
                   </div>
                 </div>
               </td>
@@ -50,10 +70,16 @@
                       user.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border-rose-500/20'
                     ]"
                   >
-                    <div class="w-1.5 h-1.5 rounded-full" :class="user.status === 'active' ? 'bg-emerald-400' : 'bg-rose-400'"></div>
+                    <div
+                      class="w-1.5 h-1.5 rounded-full"
+                      :class="user.status === 'active' ? 'bg-emerald-400' : 'bg-rose-400'"
+                    />
                     {{ user.status === 'active' ? 'Activo' : 'Inactivo' }}
                   </span>
-                  <span v-if="user.isSystemOwner" class="px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] rounded font-bold uppercase tracking-wide">Root</span>
+                  <span
+                    v-if="user.isSystemOwner"
+                    class="px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 text-[10px] rounded font-bold uppercase tracking-wide"
+                  >Root</span>
                 </div>
               </td>
               <td class="px-6 py-4 text-sm text-slate-500">
@@ -62,8 +88,8 @@
               <td class="px-6 py-4">
                 <button 
                   class="text-xs text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 px-3 py-2 rounded-lg transition-all border border-transparent hover:border-rose-500/20"
-                  @click="$emit('erase', user.id)"
                   :disabled="erasingId === user.id"
+                  @click="$emit('erase', user.id)"
                 >
                   {{ erasingId === user.id ? 'Borrando...' : 'Anonimizar' }}
                 </button>
@@ -72,11 +98,16 @@
           </tbody>
         </table>
       </div>
-      <div v-if="!users.length" class="p-12 text-center">
+      <div
+        v-if="!users.length"
+        class="p-12 text-center"
+      >
         <div class="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mx-auto mb-4">
           <Users class="w-8 h-8 text-slate-600" />
         </div>
-        <p class="text-slate-500">No hay usuarios registrados.</p>
+        <p class="text-slate-500">
+          No hay usuarios registrados.
+        </p>
       </div>
     </div>
   </div>
