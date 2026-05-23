@@ -106,6 +106,7 @@ export const useStateStore = defineStore('state', {
     setActiveView(view: string) {
       this.activeView = view
       this.saveState()
+      return { ok: true }
     },
 
     hydrateState() {
