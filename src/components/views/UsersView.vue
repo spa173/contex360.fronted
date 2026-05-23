@@ -7,9 +7,31 @@ defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const users = useUsersStore()
-const tenantUsers = computed(() => users.tenantUsers || [])
 const searchQuery = ref('')
 const selectedRole = ref('Todos los roles')
+const selectedTenantId = ref(users.activeTenantId || (users.tenants[0]?.id || ''))
+
+const tenantUsers = computed(() => {
+  if (users.currentUser?.isSystemOwner && selectedTenantId.value) {
+    return (users.users || []).filter(u => u.isSystemOwner || (users.memberships || []).some(m => m.userId === u.id && m.tenantId === selectedTenantId.value))
+      .map(u => {
+        const m = (users.memberships || []).find(mb => mb.userId === u.id && mb.tenantId === selectedTenantId.value)
+        return {
+          ...u,
+          role: m ? m.role : (u.isSystemOwner ? 'Super Admin' : 'Usuario local'),
+          active: u.status === 'active'
+        }
+      })
+  }
+  return users.tenantUsers || []
+})
+
+async function onTenantChange() {
+  if (users.currentUser?.isSystemOwner && selectedTenantId.value) {
+    await users.fetchUsers(selectedTenantId.value)
+  }
+}
+
 
 function generateRandomDigits(length = 3) {
   const crypto = globalThis.crypto
@@ -193,9 +215,15 @@ async function handleAnonymize(user) {
             <span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] text-[16px]">search</span>
             <input v-model="searchQuery" placeholder="Buscar usuarios..." class="w-full pl-8 pr-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] bg-[#FAFAFA] outline-none focus:bg-white focus:border-[#18181B]" />
           </div>
-          <select v-model="selectedRole" class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer">
-            <option>Todos los roles</option><option>Super Admin</option><option>Administrador</option><option>Finanzas</option><option>Ventas</option><option>Usuario local</option>
-          </select>
+          <div class="flex gap-2">
+            <select v-if="users.currentUser?.isSystemOwner" v-model="selectedTenantId" @change="onTenantChange" class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer max-w-[200px] truncate">
+              <option value="">Todas las empresas</option>
+              <option v-for="t in users.tenants" :key="t.id" :value="t.id">{{ t.name }}</option>
+            </select>
+            <select v-model="selectedRole" class="border border-[#E4E4E7] rounded-[8px] py-2 px-3 text-[12px] font-semibold text-[#71717A] outline-none bg-white cursor-pointer">
+              <option>Todos los roles</option><option>Super Admin</option><option>Administrador</option><option>Finanzas</option><option>Ventas</option><option>Usuario local</option>
+            </select>
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left min-w-[600px]">

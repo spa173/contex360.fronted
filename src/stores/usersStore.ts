@@ -252,6 +252,18 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  async function fetchUsers(tenantId?: string) {
+    if (!root.currentUser?.isSystemOwner) return { ok: false, message: 'No autorizado.' }
+    try {
+      const fetchedUsers = await businessApi.getAdminUsers(tenantId)
+      root.users = fetchedUsers
+      root.saveState()
+      return { ok: true }
+    } catch (err: any) {
+      return { ok: false, message: err?.message || 'Error al obtener usuarios' }
+    }
+  }
+
   return {
     anonymizeUser,
     users,
@@ -267,6 +279,7 @@ export const useUsersStore = defineStore('users', () => {
     tenants,
     activeTenant,
     currentClientIp,
+    fetchUsers,
     createUser,
     toggleUserStatus,
     forcePasswordReset,

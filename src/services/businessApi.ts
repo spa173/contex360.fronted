@@ -398,8 +398,9 @@ export const businessApi = {
   async updateTenant(tenantId: string, data: any) {
     return request<any>(`/admin/tenants/${tenantId}`, { method: 'PATCH', body: data })
   },
-  async getAdminUsers() {
-    return request<any[]>('/admin/users')
+  async getAdminUsers(tenantId?: string) {
+    const query = tenantId ? `?tenantId=${tenantId}` : ''
+    return request<any[]>(`/admin/users${query}`)
   },
   async createUser(data: any) {
     return request<any>('/users', { method: 'POST', body: data })
