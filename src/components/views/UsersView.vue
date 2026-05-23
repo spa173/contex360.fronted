@@ -47,19 +47,52 @@ function handleStatusToggle(user) {
   emit('notify', { message: 'Estado actualizado', detail: `Acceso de ${user.name} cambiado exitosamente.` })
 }
 
-async function handleNewUser() {
-  const num = generateRandomDigits(3)
+const showNewUserModal = ref(false)
+const newPasswordResult = ref('')
+const newUserForm = ref({ name: '', email: '', role: 'Usuario local' })
+
+function openNewUserModal() {
+  newUserForm.value = { name: '', email: '', role: 'Usuario local' }
+  newPasswordResult.value = ''
+  showNewUserModal.value = true
+}
+
+function closeNewUserModal() {
+  showNewUserModal.value = false
+}
+
+async function submitNewUser() {
+  if (!newUserForm.value.name || !newUserForm.value.email) {
+    emit('notify', { message: 'Campos requeridos', detail: 'Nombre y correo son obligatorios.' })
+    return
+  }
+
   const result = await users.createUser({
-    name: `Asesor Comercial ${num}`,
-    email: `asesor.${num}@empresa.com`,
-    title: 'Asesor Comercial',
+    name: newUserForm.value.name,
+    email: newUserForm.value.email,
+    title: newUserForm.value.role,
   })
-  emit('notify', {
-    message: 'Usuario registrado',
-    detail: result.tempPassword
-      ? `Se ha creado una nueva cuenta de usuario. Clave temporal segura: ${result.tempPassword}`
-      : 'Se ha creado una nueva cuenta de usuario en el sistema.',
-  })
+
+  if (result.ok) {
+    // Optionally create membership for role
+    if (users.activeTenantId) {
+      users.upsertMembership({
+        userId: result.user?.id || (users.users.value || []).find(u => u.email === newUserForm.value.email)?.id,
+        tenantId: users.activeTenantId,
+        role: newUserForm.value.role
+      })
+    }
+    
+    if (result.tempPassword) {
+      newPasswordResult.value = result.tempPassword
+      emit('notify', { message: 'Usuario creado', detail: 'Guarde la contraseña temporal mostrada en pantalla.' })
+    } else {
+      closeNewUserModal()
+      emit('notify', { message: 'Usuario registrado', detail: 'Se ha creado la cuenta exitosamente.' })
+    }
+  } else {
+    emit('notify', { message: 'Error', detail: result.message })
+  }
 }
 
 async function handleExport() {
@@ -119,7 +152,7 @@ async function handleAnonymize(user) {
         <button @click="handleExport" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors">
           <span class="material-symbols-outlined text-[18px]">download</span>Exportar log
         </button>
-        <button @click="handleNewUser" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors">
+        <button @click="openNewUserModal" class="flex items-center gap-2 px-3.5 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold transition-colors">
           <span class="material-symbols-outlined text-[18px]">add</span>Nuevo usuario
         </button>
       </div>
@@ -215,6 +248,58 @@ async function handleAnonymize(user) {
         </div>
       </div>
     </div>
+
+    <!-- Modal Nuevo Usuario -->
+    <div v-if="showNewUserModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+      <div class="bg-white rounded-[14px] w-full max-w-md overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+        <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
+          <h2 class="text-[16px] font-bold text-[#18181B]">Nuevo Usuario</h2>
+          <button @click="closeNewUserModal" class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined">close</span></button>
+        </div>
+        
+        <div class="p-5" v-if="!newPasswordResult">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Nombre completo</label>
+              <input v-model="newUserForm.name" type="text" placeholder="Ej. Juan Pérez" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]" />
+            </div>
+            <div>
+              <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Correo electrónico</label>
+              <input v-model="newUserForm.email" type="email" placeholder="juan@empresa.com" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]" />
+            </div>
+            <div>
+              <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Rol en el sistema</label>
+              <select v-model="newUserForm.role" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B] bg-white cursor-pointer">
+                <option>Administrador</option>
+                <option>Finanzas</option>
+                <option>Ventas</option>
+                <option>Usuario local</option>
+              </select>
+            </div>
+          </div>
+          <div class="mt-6 flex justify-end gap-2">
+            <button @click="closeNewUserModal" class="px-4 py-2 border border-[#E4E4E7] rounded-[8px] text-[13px] font-semibold text-[#18181B] hover:bg-[#FAFAFA]">Cancelar</button>
+            <button @click="submitNewUser" class="px-4 py-2 bg-[#18181B] rounded-[8px] text-[13px] font-semibold text-white hover:bg-[#27272A]">Crear usuario</button>
+          </div>
+        </div>
+
+        <div class="p-5" v-else>
+          <div class="text-center mb-5">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3">
+              <span class="material-symbols-outlined text-[24px]">check</span>
+            </div>
+            <h3 class="text-[16px] font-bold text-[#18181B]">¡Usuario Creado!</h3>
+            <p class="text-[13px] text-[#71717A] mt-1">Comparte esta clave temporal con el usuario. Tendrá que cambiarla al iniciar sesión por primera vez.</p>
+          </div>
+          <div class="bg-[#F4F4F5] p-4 rounded-[8px] text-center mb-5 border border-[#E4E4E7]">
+            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Clave Temporal</p>
+            <p class="text-[20px] font-mono font-bold tracking-wider text-[#18181B]">{{ newPasswordResult }}</p>
+          </div>
+          <button @click="closeNewUserModal" class="w-full py-2.5 bg-[#18181B] text-white rounded-[8px] text-[13px] font-semibold hover:bg-[#27272A]">Entendido</button>
+        </div>
+      </div>
+    </div>
+
   </section>
 </template>
 
