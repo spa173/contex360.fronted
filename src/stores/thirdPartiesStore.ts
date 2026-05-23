@@ -9,6 +9,7 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
 
   // State
   const thirdParties = ref<any[]>([])
+  const aiInsights = ref<any>(null)
 
   // Getters
   const activeTenantId = computed(() => root.activeTenantId)
@@ -35,8 +36,12 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
   async function fetchThirdParties() {
     if (!activeTenantId.value) return
     try {
-      const data = await businessApi.getThirdParties()
+      const [data, insights] = await Promise.all([
+        businessApi.getThirdParties(),
+        businessApi.getThirdPartiesInsights(activeTenantId.value).catch(() => null)
+      ])
       thirdParties.value = Array.isArray(data) ? data : []
+      aiInsights.value = insights
     } catch (error) { 
       console.error('Error fetching third parties:', error)
       thirdParties.value = []
@@ -59,6 +64,7 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
 
   return {
     thirdParties,
+    aiInsights,
     tenantThirdParties,
     tenantClients,
     tenantProviders,

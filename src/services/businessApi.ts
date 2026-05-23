@@ -328,6 +328,9 @@ export const businessApi = {
   async getAiInsights(tenantId?: string | null) {
     return request<any>('/ai/insights', { tenantId })
   },
+  async getThirdPartiesInsights(tenantId?: string | null) {
+    return request<any>('/ai/third-parties-insights', { tenantId })
+  },
   async getAiHealth() {
     return request<any>('/ai/health')
   },
