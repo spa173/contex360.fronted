@@ -194,21 +194,19 @@ export const useBillingStore = defineStore('billing', () => {
   }
 
   function scheduleDianUpdates(invoiceId: string, tenantId: string) {
-    const transitions = [{ delay: 2000, status: 'enviada', note: 'Documento transmitido a la DIAN.', audit: 'Factura enviada a DIAN.' }, { delay: 5000, status: 'aceptada', note: 'DIAN aceptó el documento.', audit: 'Factura aceptada por DIAN.' }]
     clearScheduledDianUpdates(invoiceId)
+    // Consultar el estado real de la DIAN a los 3 y 10 segundos
     const timerIds: any[] = []
-    transitions.forEach((transition) => {
-      const timerId = setTimeout(() => {
-        const inv = invoices.value.find(i => i.id === invoiceId)
-        if (!inv) return
-        inv.status = transition.status as InvoiceStatus
-        if (!inv.timeline) inv.timeline = []
-        inv.timeline.push({ id: uid('tl'), status: transition.status, note: transition.note, at: new Date().toISOString() })
-        appendAuditEvent(root.$state, { tenantId, entity: 'dian', action: 'Actualizar estado', description: transition.audit, actor: 'Worker DIAN' })
-        root.saveState()
-      }, transition.delay)
-      timerIds.push(timerId)
-    })
+    
+    const timer1 = setTimeout(() => {
+      checkDianStatus(invoiceId)
+    }, 3000)
+    
+    const timer2 = setTimeout(() => {
+      checkDianStatus(invoiceId)
+    }, 10000)
+    
+    timerIds.push(timer1, timer2)
     scheduledDianTimers.set(invoiceId, timerIds)
   }
 

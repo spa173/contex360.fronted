@@ -13,6 +13,14 @@ const pinia = createPinia()
 app.use(pinia)
 app.use(router)
 
+app.config.errorHandler = (err, instance, info) => {
+  console.error('Global Vue Error Handler atrapó un error:', err, 'Info:', info)
+  const errorEvent = new CustomEvent('global-vue-error', { 
+    detail: { error: err, info } 
+  })
+  window.dispatchEvent(errorEvent)
+}
+
 async function bootstrap() {
   try {
     const stateStore = useStateStore(pinia)

@@ -38,42 +38,6 @@ async function request<T>(path: string, init: { method?: string; body?: unknown;
   return response.json() as T
 }
 
-export interface BancolombiaIntegrationConfig {
-  integrationMode: 'open_finance' | 'treasury_feed'
-  environment: 'sandbox' | 'production'
-  accountNumber: string
-  accountType: 'Ahorros' | 'Corriente'
-  clientId: string
-  statementFormat: 'MT940' | 'CAMT053'
-  authorizationStatus: 'draft' | 'ready' | 'connected' | 'paused'
-  lastSyncAt: string | null
-}
-
-export interface BancolombiaIntegrationUpdateResponse {
-  ok: boolean
-  data: BancolombiaIntegrationConfig
-  connectUrl?: string | null
-  needsConsent?: boolean
-  message?: string
-}
-
-export interface BancolombiaStatementFileInput {
-  fileName: string
-  contentType: string
-  text: string
-  format?: 'MT940' | 'CAMT053'
-}
-
-export interface BancolombiaSyncRequest {
-  statementFile?: BancolombiaStatementFileInput
-  entries?: Array<{
-    date?: string
-    description?: string
-    amount?: number | string
-    type?: 'INCOME' | 'EXPENSE' | 'credit' | 'debit' | 'income' | 'expense'
-    reference?: string
-  }>
-}
 
 export interface DianIntegrationConfig {
   dianEnvironment: 'test' | 'production'
@@ -331,22 +295,6 @@ export const businessApi = {
     return request<any>('/dian/config', { method: 'POST', body: config, tenantId })
   },
 
-  // Bancolombia Integration
-  async getBancolombiaConfig(tenantId?: string | null) {
-    return request<BancolombiaIntegrationConfig>('/integrations/bancolombia/config', { tenantId })
-  },
-  async updateBancolombiaConfig(config: Partial<BancolombiaIntegrationConfig>, tenantId?: string | null) {
-    return request<BancolombiaIntegrationUpdateResponse>('/integrations/bancolombia/config', { method: 'POST', body: config, tenantId })
-  },
-  async startBancolombiaOAuth(tenantId?: string | null) {
-    return request<{ ok: boolean; url: string }>('/integrations/bancolombia/connect', { method: 'POST', tenantId })
-  },
-  async disconnectBancolombia(tenantId?: string | null) {
-    return request<{ ok: boolean }>('/integrations/bancolombia/disconnect', { method: 'DELETE', tenantId })
-  },
-  async syncBancolombia(tenantId?: string | null, body?: BancolombiaSyncRequest) {
-    return request<{ ok: boolean; lastSyncAt: string; message: string; imported: number; skipped: number }>('/integrations/bancolombia/sync', { method: 'POST', body, tenantId })
-  },
 
   // AI
   async chatWithAi(message: string, history: any[] = [], attachment?: string | null) {

@@ -1,16 +1,47 @@
 <script setup lang="ts">
-import { ref, onErrorCaptured } from 'vue'
+import { ref, onErrorCaptured, onMounted, onUnmounted } from 'vue'
 import { AlertTriangle, RefreshCcw } from 'lucide-vue-next'
 
 const hasError = ref(false)
 const errorInfo = ref<Error | null>(null)
 
+// 1. Errores de Renderizado (Componentes Vue Hijos)
 onErrorCaptured((err, instance, info) => {
   hasError.value = true
   errorInfo.value = err as Error
-  console.error('ErrorBoundary capturó un error:', err, 'Info:', info, 'Instancia:', instance)
-  // Previene que el error se propague hacia arriba y tumbe toda la app
+  console.error('ErrorBoundary capturó un error de componente:', err, 'Info:', info)
   return false
+})
+
+// 2. Errores de la Configuración Global de Vue (main.js)
+const handleVueGlobalError = (event: Event) => {
+  const customEvent = event as CustomEvent
+  hasError.value = true
+  errorInfo.value = customEvent.detail?.error as Error
+}
+
+// 3. Errores Genéricos del Navegador
+const handleWindowError = (event: ErrorEvent) => {
+  hasError.value = true
+  errorInfo.value = event.error || new Error(event.message)
+}
+
+// 4. Promesas Rechazadas (Ej: Peticiones Axios / Acciones Pinia fallidas)
+const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+  hasError.value = true
+  errorInfo.value = event.reason instanceof Error ? event.reason : new Error(String(event.reason))
+}
+
+onMounted(() => {
+  window.addEventListener('global-vue-error', handleVueGlobalError)
+  window.addEventListener('error', handleWindowError)
+  window.addEventListener('unhandledrejection', handleUnhandledRejection)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('global-vue-error', handleVueGlobalError)
+  window.removeEventListener('error', handleWindowError)
+  window.removeEventListener('unhandledrejection', handleUnhandledRejection)
 })
 
 function reloadPage() {

@@ -407,7 +407,6 @@ function closeWompi() {
                     class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] bg-white outline-none focus:border-black"
                   >
                     <option value="" disabled>Selecciona tu banco...</option>
-                    <option value="bancolombia">Bancolombia</option>
                     <option value="davivienda">Davivienda</option>
                     <option value="bogota">Banco de Bogotá</option>
                     <option value="nequi">Nequi</option>
