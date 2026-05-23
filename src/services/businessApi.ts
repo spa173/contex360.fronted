@@ -170,6 +170,12 @@ export const businessApi = {
   async getLedgerEntries(tenantId?: string | null) {
     return request<any[]>('/ledger', { tenantId })
   },
+  async getBalanceSheet(tenantId?: string | null) {
+    return request<any>('/ledger/reports/balance-sheet', { tenantId })
+  },
+  async getProfitAndLoss(tenantId?: string | null) {
+    return request<any>('/ledger/reports/profit-and-loss', { tenantId })
+  },
 
   // Invoices
   async getInvoices(tenantId?: string | null) {
@@ -252,6 +258,27 @@ export const businessApi = {
   async createMovement(data: any, tenantId?: string | null) {
     return request<any>('/inventory/movements', { method: 'POST', body: data, tenantId })
   },
+  async transferStock(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/transfer', { method: 'POST', body: data, tenantId })
+  },
+  async receiveTransfer(transferId: string, tenantId?: string | null) {
+    return request<any>(`/inventory/receive-transfer/${transferId}`, { method: 'POST', tenantId })
+  },
+  async auditInventory(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/audit', { method: 'POST', body: data, tenantId })
+  },
+  async receiveInventory(data: any, tenantId?: string | null) {
+    return request<any>('/inventory/receive', { method: 'POST', body: data, tenantId })
+  },
+  async getDeadInventory(tenantId?: string | null) {
+    return request<any[]>('/inventory/analytics/dead', { tenantId })
+  },
+  async getReorderSuggestions(tenantId?: string | null) {
+    return request<any>('/inventory/analytics/reorder', { tenantId })
+  },
+  async getAbcAnalysis(tenantId?: string | null) {
+    return request<any>('/inventory/analytics/abc', { tenantId })
+  },
 
   // Analytics
   async getDashboardKpis(from?: string, to?: string, tenantId?: string | null) {
@@ -325,8 +352,11 @@ export const businessApi = {
   async chatWithAi(message: string, history: any[] = [], attachment?: string | null) {
     return request<any>('/ai/chat', { method: 'POST', body: { message, history, attachment } })
   },
-  async getAiInsights() {
-    return request<any>('/ai/insights')
+  async getAiInsights(tenantId?: string | null) {
+    return request<any>('/ai/insights', { tenantId })
+  },
+  async getThirdPartiesInsights(tenantId?: string | null) {
+    return request<any>('/ai/third-parties-insights', { tenantId })
   },
   async getAiHealth() {
     return request<any>('/ai/health')
@@ -368,8 +398,12 @@ export const businessApi = {
   async updateTenant(tenantId: string, data: any) {
     return request<any>(`/admin/tenants/${tenantId}`, { method: 'PATCH', body: data })
   },
-  async getAdminUsers() {
-    return request<any[]>('/admin/users')
+  async getAdminUsers(tenantId?: string) {
+    const query = tenantId ? `?tenantId=${tenantId}` : ''
+    return request<any[]>(`/admin/users${query}`)
+  },
+  async createUser(data: any) {
+    return request<any>('/users', { method: 'POST', body: data })
   },
   async getAdminLogs() {
     return request<any[]>('/admin/audit-logs')

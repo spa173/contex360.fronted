@@ -136,15 +136,24 @@ async function handleCreateThirdParty() {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1"><span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">Insights de IA</h3></div>
-        <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-4">
-          <div class="flex items-center gap-2 mb-2"><span class="material-symbols-outlined text-[16px] text-amber-600">gavel</span><p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">Validación legal</p></div>
-          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">Detectado RUT próximo a caducar en algunos terceros.</p>
-          <button @click="handleAction({name:'TechCorp'})" class="w-full py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold">Revisar</button>
+        <div v-if="store.aiInsights" class="bg-white border border-[#E4E4E7] rounded-[14px] p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span v-if="store.aiInsights.risk.level > 0" class="material-symbols-outlined text-[16px] text-amber-600">warning</span>
+            <span v-else class="material-symbols-outlined text-[16px] text-emerald-600">verified_user</span>
+            <p class="text-[11px] font-bold text-[#18181B] uppercase tracking-wider">{{ store.aiInsights.title || 'Análisis de Cartera' }}</p>
+          </div>
+          <p class="text-[12px] text-[#71717A] leading-[1.5] mb-3">{{ store.aiInsights.insight }}</p>
+          <button @click="handleAction({name: store.aiInsights.targetName || 'General'})" class="w-full py-1.5 bg-[#2563EB] text-white rounded-[8px] text-[11px] font-semibold">{{ store.aiInsights.actionText || 'Revisar' }}</button>
         </div>
-        <div class="bg-[#18181B] rounded-[14px] p-4 text-white">
+        <div v-if="store.aiInsights" class="bg-[#18181B] rounded-[14px] p-4 text-white">
           <p class="text-[10px] font-semibold text-white/60 uppercase tracking-wider mb-2">Riesgo de cartera</p>
-          <div class="flex items-baseline gap-2"><span class="text-[28px] font-bold tracking-[-0.02em]">12%</span><span class="text-[11px] font-semibold text-emerald-400">↓ 2.4%</span></div>
-          <p class="text-[11px] text-white/60 mt-1">Bajo riesgo</p>
+          <div class="flex items-baseline gap-2">
+            <span class="text-[28px] font-bold tracking-[-0.02em]">{{ store.aiInsights.risk.level.toFixed(1) }}%</span>
+            <span v-if="store.aiInsights.risk.trend === 'up'" class="text-[11px] font-semibold text-rose-400">↑ Riesgo al alza</span>
+            <span v-else-if="store.aiInsights.risk.trend === 'down'" class="text-[11px] font-semibold text-emerald-400">↓ Riesgo a la baja</span>
+            <span v-else class="text-[11px] font-semibold text-white/60">→ Estable</span>
+          </div>
+          <p class="text-[11px] text-white/60 mt-1">{{ store.aiInsights.risk.level > 10 ? 'Alto riesgo de impagos' : store.aiInsights.risk.level > 0 ? 'Riesgo moderado' : 'Bajo riesgo' }}</p>
         </div>
       </div>
     </div>
