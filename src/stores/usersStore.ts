@@ -213,7 +213,6 @@ export const useUsersStore = defineStore('users', () => {
         
         if (payload.tenantId && payload.role) {
           root.memberships.push({
-            id: uid('mb'),
             userId: response.user.id,
             tenantId: payload.tenantId,
             role: payload.role
