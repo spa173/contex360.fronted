@@ -401,6 +401,9 @@ export const businessApi = {
   async getAdminUsers() {
     return request<any[]>('/admin/users')
   },
+  async createUser(data: any) {
+    return request<any>('/users', { method: 'POST', body: data })
+  },
   async getAdminLogs() {
     return request<any[]>('/admin/audit-logs')
   },

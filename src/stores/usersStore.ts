@@ -205,49 +205,32 @@ export const useUsersStore = defineStore('users', () => {
   }
 
   async function createUser(payload: any) {
-    const id = uid('user')
-    const providedPassword = typeof payload.password === 'string' && payload.password.trim()
-    const tempPassword = providedPassword ? String(payload.password).trim() : generateTemporaryPassword()
-    const user = {
-      id,
-      name: payload.name,
-      email: payload.email,
-      title: payload.title || '',
-      status: 'active' as const,
-      isSystemOwner: false,
-      isDemoAccount: false,
-      lastLoginAt: null
+    try {
+      const response = await businessApi.createUser(payload)
+      if (response && response.ok && response.user) {
+        // Optimistic UI update
+        root.users.push(response.user as any)
+        
+        appendAuditEvent(root.$state, {
+          entity: 'usuario',
+          action: 'Crear',
+          description: `Usuario ${response.user.name} creado exitosamente.`,
+          actor: root.currentUser?.name || 'Sistema',
+        })
+        
+        root.saveState()
+        return {
+          ok: true,
+          message: 'Usuario creado.',
+          detail: 'Se requiere cambio de contraseña en el primer ingreso.',
+          tempPassword: response.tempPassword,
+          user: response.user
+        }
+      }
+      return { ok: false, message: response?.message || 'Error al crear usuario.' }
+    } catch (err: any) {
+      return { ok: false, message: err?.message || 'Error de red.' }
     }
-    
-    const creds = await createPasswordCredentials(tempPassword)
-    const security = {
-      userId: id,
-      passwordHash: creds.passwordHash,
-      passwordSalt: creds.passwordSalt,
-      passwordResetRequired: true,
-      twoFactorEnabled: false,
-      twoFactorRequired: false,
-      trustedFingerprints: []
-    }
-
-    root.users.push(user as any)
-    root.userSecurity.push(security as any)
-    
-    appendAuditEvent(root.$state, {
-      entity: 'usuario',
-      action: 'Crear',
-      description: `Usuario ${user.name} creado exitosamente.`,
-      actor: root.currentUser?.name || 'Sistema',
-    })
-    
-    root.saveState()
-    const result = {
-      ok: true,
-      message: 'Usuario creado.',
-      detail: 'Se requiere cambio de contraseña en el primer ingreso.',
-      tempPassword: providedPassword ? null : tempPassword,
-    }
-    return result
   }
 
   async function anonymizeUser(userId: string) {
