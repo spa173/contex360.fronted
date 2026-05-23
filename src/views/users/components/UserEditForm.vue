@@ -33,7 +33,7 @@ const form = reactive({
 })
 
 async function handleSubmit() {
-  const result = await store.createUser({ ...form })
+  const result = await store.createUser({ ...form, tenantId: store.activeTenantId })
   if (result.ok) {
     // Reset form
     form.name = ''
