@@ -252,12 +252,29 @@ export const useUsersStore = defineStore('users', () => {
     }
   }
 
+  // Store specifically for admin filtering without destroying global state
+  const adminUsers = ref<any[]>([])
+
   async function fetchUsers(tenantId?: string) {
     if (!root.currentUser?.isSystemOwner) return { ok: false, message: 'No autorizado.' }
     try {
       const fetchedUsers = await businessApi.getAdminUsers(tenantId)
-      root.users = fetchedUsers
+      
+      // Update the local list for the admin view
+      adminUsers.value = fetchedUsers
+      
+      // Merge into root.users safely to update any edited data, but DO NOT 
+      // replace root.users entirely, otherwise root.currentUser becomes null 
+      // if the superadmin is not in the fetched list (causing instant logout).
+      const newRootUsers = [...root.users]
+      fetchedUsers.forEach((fu: any) => {
+        const idx = newRootUsers.findIndex(u => u.id === fu.id)
+        if (idx >= 0) newRootUsers[idx] = fu
+        else newRootUsers.push(fu)
+      })
+      root.users = newRootUsers
       root.saveState()
+
       return { ok: true }
     } catch (err: any) {
       return { ok: false, message: err?.message || 'Error al obtener usuarios' }
@@ -267,6 +284,7 @@ export const useUsersStore = defineStore('users', () => {
   return {
     anonymizeUser,
     users,
+    adminUsers,
     tenantUsers,
     memberships,
     userSecurity,

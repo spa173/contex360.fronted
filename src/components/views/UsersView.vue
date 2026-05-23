@@ -13,7 +13,8 @@ const selectedTenantId = ref(users.activeTenantId || (users.tenants[0]?.id || ''
 
 const tenantUsers = computed(() => {
   if (users.currentUser?.isSystemOwner && selectedTenantId.value) {
-    return (users.users || []).filter(u => u.isSystemOwner || (users.memberships || []).some(m => m.userId === u.id && m.tenantId === selectedTenantId.value))
+    const listToFilter = users.adminUsers?.length ? users.adminUsers : (users.users || [])
+    return listToFilter.filter(u => u.isSystemOwner || (users.memberships || []).some(m => m.userId === u.id && m.tenantId === selectedTenantId.value))
       .map(u => {
         const m = (users.memberships || []).find(mb => mb.userId === u.id && mb.tenantId === selectedTenantId.value)
         return {
