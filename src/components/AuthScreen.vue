@@ -47,7 +47,7 @@ const newPasswordStrength = computed(() =>
 
 const isPasswordStrong = (pw: string) => PASSWORD_RULES.every(r => r.test(pw))
 
-const isFormValid = computed(() => isEmailValid.value && isPasswordStrong(password.value))
+const isFormValid = computed(() => isEmailValid.value && password.value.length > 0)
 
 onMounted(() => {
   const savedEmail = localStorage.getItem('contex360-remember-email')
@@ -365,19 +365,7 @@ const togglePassword = () => {
                 </div>
               </div>
 
-              <!-- Password strength checklist -->
-              <div v-if="password.length > 0" class="mt-2 space-y-1 animate-in fade-in duration-200">
-                <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1.5">Requisitos de seguridad</p>
-                <div
-                  v-for="rule in passwordStrength"
-                  :key="rule.id"
-                  class="flex items-center gap-2 text-[11px] font-medium"
-                  :class="rule.passed ? 'text-emerald-600' : 'text-[#A1A1AA]'"
-                >
-                  <span class="material-symbols-outlined text-[13px]">{{ rule.passed ? 'check_circle' : 'radio_button_unchecked' }}</span>
-                  {{ rule.label }}
-                </div>
-              </div>
+
 
               <!-- 2FA Block -->
               <div v-if="requiresTotp" class="p-5 bg-blue-50/30 border border-blue-100 rounded-2xl space-y-3 animate-in slide-in-from-top-2 duration-300">
