@@ -23,50 +23,19 @@ async function buildSeedUsers() {
 }
 
 export const seedState = {
-  activeTenantId: 'tenant-a',
+  activeTenantId: null,
   activeView: 'dashboard',
   session: {
-    currentUserId: 'user-admin',
-    currentSessionId: 'sess-seed-1',
-    lastLoginAt: new Date().toISOString(),
+    currentUserId: null,
+    currentSessionId: null,
+    lastLoginAt: null,
   },
   selections: {
-    invoiceId: 'inv-seed-1',
-    ocrRunId: 'ocr-seed-1',
+    invoiceId: null,
+    ocrRunId: null,
   },
   subscription: null,
-  tenants: [
-    {
-      id: 'tenant-a',
-      name: 'Andina Cargo SAS',
-      prefix: 'AC',
-      sector: 'Logística y Transporte',
-      city: 'Bogotá',
-      allowNegativeStock: false,
-      costMethod: 'Promedio ponderado',
-      dianStatus: 'Configurado',
-      securitySettings: DEFAULT_TENANT_SECURITY_SETTINGS,
-      locations: [
-        { id: 'loc-a-1', name: 'Bodega Principal' },
-        { id: 'loc-a-2', name: 'Punto de Venta Centro' }
-      ]
-    },
-    {
-      id: 'tenant-b',
-      name: 'Nova Retail SAS',
-      prefix: 'NR',
-      sector: 'Comercio minorista',
-      city: 'Medellin',
-      allowNegativeStock: true,
-      costMethod: 'FIFO',
-      dianStatus: 'Pendiente revision',
-      securitySettings: DEFAULT_TENANT_SECURITY_SETTINGS,
-      locations: [
-        { id: 'loc-b-1', name: 'Bodega Norte' },
-        { id: 'loc-b-2', name: 'Almacen Externo' }
-      ]
-    },
-  ],
+  tenants: [],
   users: await buildSeedUsers(),
   memberships: [],
   roleAccess: {}, // Will be populated by rbacStore

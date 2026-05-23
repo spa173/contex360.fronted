@@ -17,7 +17,7 @@ export function normalizeState(source: any = {}): AppState {
   const normalized: AppState = {
     ...base,
     ...source,
-    activeTenantId: source.activeTenantId || base.activeTenantId || 'tenant-a',
+    activeTenantId: source.activeTenantId || base.activeTenantId || null,
     session: { 
       currentUserId: source.session && source.session.currentUserId !== undefined ? source.session.currentUserId : null,
       currentSessionId: source.session && source.session.currentSessionId !== undefined ? source.session.currentSessionId : null,
