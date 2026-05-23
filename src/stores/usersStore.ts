@@ -211,6 +211,15 @@ export const useUsersStore = defineStore('users', () => {
         // Optimistic UI update
         root.users.push(response.user as any)
         
+        if (payload.tenantId && payload.role) {
+          root.memberships.push({
+            id: uid('mb'),
+            userId: response.user.id,
+            tenantId: payload.tenantId,
+            role: payload.role
+          })
+        }
+        
         appendAuditEvent(root.$state, {
           entity: 'usuario',
           action: 'Crear',
