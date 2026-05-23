@@ -56,7 +56,7 @@ export const useTreasuryStore = defineStore('treasury', () => {
         const newProvider = await businessApi.createThirdParty({
           name: payment.vendorName || 'Nuevo Proveedor SAS',
           documentType: 'NIT',
-          documentNumber: '900' + Math.floor(Math.random() * 1000000),
+          documentNumber: '900' + (globalThis.crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).toString().padStart(6, '0'),
           kind: 'provider',
         }, activeTenantId.value)
         providerId = newProvider.id
