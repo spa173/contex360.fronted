@@ -49,10 +49,15 @@ function handleStatusToggle(user) {
 
 const showNewUserModal = ref(false)
 const newPasswordResult = ref('')
-const newUserForm = ref({ name: '', email: '', role: 'Usuario local' })
+const newUserForm = ref({ name: '', email: '', role: 'Usuario local', tenantId: '' })
 
 function openNewUserModal() {
-  newUserForm.value = { name: '', email: '', role: 'Usuario local' }
+  newUserForm.value = { 
+    name: '', 
+    email: '', 
+    role: 'Usuario local', 
+    tenantId: users.activeTenantId || (users.tenants[0]?.id || '')
+  }
   newPasswordResult.value = ''
   showNewUserModal.value = true
 }
@@ -74,11 +79,11 @@ async function submitNewUser() {
   })
 
   if (result.ok) {
-    // Optionally create membership for role
-    if (users.activeTenantId) {
+    // Create membership for role in the selected tenant
+    if (newUserForm.value.tenantId) {
       users.upsertMembership({
         userId: result.user?.id || (users.users.value || []).find(u => u.email === newUserForm.value.email)?.id,
-        tenantId: users.activeTenantId,
+        tenantId: newUserForm.value.tenantId,
         role: newUserForm.value.role
       })
     }
@@ -266,6 +271,12 @@ async function handleAnonymize(user) {
             <div>
               <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Correo electrónico</label>
               <input v-model="newUserForm.email" type="email" placeholder="juan@empresa.com" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B]" />
+            </div>
+            <div>
+              <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Empresa / Workspace</label>
+              <select v-model="newUserForm.tenantId" class="w-full px-3 py-2 text-[13px] border border-[#E4E4E7] rounded-[8px] outline-none focus:border-[#18181B] bg-white cursor-pointer">
+                <option v-for="t in users.tenants" :key="t.id" :value="t.id">{{ t.name }}</option>
+              </select>
             </div>
             <div>
               <label class="block text-[12px] font-semibold text-[#71717A] mb-1.5">Rol en el sistema</label>
