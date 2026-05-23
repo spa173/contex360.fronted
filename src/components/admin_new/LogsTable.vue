@@ -2,8 +2,12 @@
 <template>
   <div class="space-y-6">
     <div>
-      <h2 class="text-2xl font-bold text-white mb-1">Logs de Auditoría</h2>
-      <p class="text-sm text-slate-400">Registro histórico de acciones administrativas</p>
+      <h2 class="text-2xl font-bold text-white mb-1">
+        Logs de Auditoría
+      </h2>
+      <p class="text-sm text-slate-400">
+        Registro histórico de acciones administrativas
+      </p>
     </div>
 
     <div class="bg-[#14141b] border border-white/5 rounded-xl overflow-hidden">
@@ -11,12 +15,24 @@
         <table class="w-full">
           <thead>
             <tr class="border-b border-white/5">
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Fecha</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Actor</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Entidad</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Acción</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Empresa</th>
-              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">Severidad</th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                Fecha
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                Actor
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                Entidad
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                Acción
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                Empresa
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-medium text-slate-400 uppercase tracking-wider">
+                Severidad
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800">
@@ -56,7 +72,10 @@
           </tbody>
         </table>
       </div>
-      <div v-if="!logs.length" class="p-12 text-center text-slate-500 italic">
+      <div
+        v-if="!logs.length"
+        class="p-12 text-center text-slate-500 italic"
+      >
         No hay logs registrados.
       </div>
     </div>

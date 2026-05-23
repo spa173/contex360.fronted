@@ -24,72 +24,132 @@ onMounted(async () => {
 
 <template>
   <div class="root-dashboard">
-    <h2 class="section-title">Dashboard SaaS</h2>
-    <p class="section-sub">Vista general de la plataforma Contex360</p>
+    <h2 class="section-title">
+      Dashboard SaaS
+    </h2>
+    <p class="section-sub">
+      Vista general de la plataforma Contex360
+    </p>
 
-    <div v-if="loading" class="state-loading">Cargando métricas...</div>
+    <div
+      v-if="loading"
+      class="state-loading"
+    >
+      Cargando métricas...
+    </div>
 
-    <div v-else-if="stats" class="stats-grid">
+    <div
+      v-else-if="stats"
+      class="stats-grid"
+    >
       <div class="stat-card">
-        <div class="stat-icon green">🏢</div>
+        <div class="stat-icon green">
+          🏢
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.totalTenants }}</div>
-          <div class="stat-label">Empresas totales</div>
+          <div class="stat-value">
+            {{ stats.totalTenants }}
+          </div>
+          <div class="stat-label">
+            Empresas totales
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon teal">👥</div>
+        <div class="stat-icon teal">
+          👥
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.totalUsers }}</div>
-          <div class="stat-label">Usuarios totales</div>
+          <div class="stat-value">
+            {{ stats.totalUsers }}
+          </div>
+          <div class="stat-label">
+            Usuarios totales
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon amber">📋</div>
+        <div class="stat-icon amber">
+          📋
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.totalDemoRequests }}</div>
-          <div class="stat-label">Demos solicitadas</div>
+          <div class="stat-value">
+            {{ stats.totalDemoRequests }}
+          </div>
+          <div class="stat-label">
+            Demos solicitadas
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon purple">✅</div>
+        <div class="stat-icon purple">
+          ✅
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.demoRequestsConverted }}</div>
-          <div class="stat-label">Convertidas</div>
+          <div class="stat-value">
+            {{ stats.demoRequestsConverted }}
+          </div>
+          <div class="stat-label">
+            Convertidas
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon blue">🔄</div>
+        <div class="stat-icon blue">
+          🔄
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.activeTrials }}</div>
-          <div class="stat-label">Trials activos</div>
+          <div class="stat-value">
+            {{ stats.activeTrials }}
+          </div>
+          <div class="stat-label">
+            Trials activos
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon green">📄</div>
+        <div class="stat-icon green">
+          📄
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.totalInvoices }}</div>
-          <div class="stat-label">Facturas emitidas</div>
+          <div class="stat-value">
+            {{ stats.totalInvoices }}
+          </div>
+          <div class="stat-label">
+            Facturas emitidas
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon teal">📦</div>
+        <div class="stat-icon teal">
+          📦
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.totalMovements }}</div>
-          <div class="stat-label">Movimientos inventario</div>
+          <div class="stat-value">
+            {{ stats.totalMovements }}
+          </div>
+          <div class="stat-label">
+            Movimientos inventario
+          </div>
         </div>
       </div>
       <div class="stat-card">
-        <div class="stat-icon amber">📬</div>
+        <div class="stat-icon amber">
+          📬
+        </div>
         <div class="stat-info">
-          <div class="stat-value">{{ stats.demoRequestsToday }}</div>
-          <div class="stat-label">Demos hoy</div>
+          <div class="stat-value">
+            {{ stats.demoRequestsToday }}
+          </div>
+          <div class="stat-label">
+            Demos hoy
+          </div>
         </div>
       </div>
     </div>
 
     <div class="system-status">
-      <span class="status-dot"></span>
+      <span class="status-dot" />
       Sistema: <strong>{{ stats?.systemStatus || 'desconocido' }}</strong>
       &nbsp;·&nbsp; Versión: {{ stats?.version || '—' }}
     </div>

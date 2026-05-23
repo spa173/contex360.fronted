@@ -192,10 +192,15 @@ defineExpose({ open: openModal, close: closeModal })
 </script>
 
 <template>
-  <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+  <div
+    v-if="isOpen"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300"
+  >
     <!-- Modal Container -->
-    <div @click.stop class="w-full max-w-4xl bg-white rounded-[20px] shadow-2xl border border-[#E4E4E7] flex flex-col max-h-[88vh] overflow-hidden animate-in zoom-in-95 duration-300">
-      
+    <div
+      class="w-full max-w-4xl bg-white rounded-[20px] shadow-2xl border border-[#E4E4E7] flex flex-col max-h-[88vh] overflow-hidden animate-in zoom-in-95 duration-300"
+      @click.stop
+    >
       <!-- Header -->
       <div class="px-6 py-5 border-b border-[#E4E4E7] bg-gradient-to-r from-[#FAFAFA] to-white flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
@@ -204,15 +209,25 @@ defineExpose({ open: openModal, close: closeModal })
           </div>
           <div>
             <div class="flex items-center gap-2 mb-0.5">
-              <h2 class="text-[18px] lg:text-[20px] font-extrabold text-[#18181B] tracking-tight">Centro de Alertas y Notificaciones</h2>
-              <span v-if="unreadCount > 0" class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-extrabold text-[11px] shadow-sm tracking-wider uppercase animate-pulse">
+              <h2 class="text-[18px] lg:text-[20px] font-extrabold text-[#18181B] tracking-tight">
+                Centro de Alertas y Notificaciones
+              </h2>
+              <span
+                v-if="unreadCount > 0"
+                class="px-2.5 py-0.5 rounded-full bg-rose-500 text-white font-extrabold text-[11px] shadow-sm tracking-wider uppercase animate-pulse"
+              >
                 {{ unreadCount }} nuevas
               </span>
             </div>
-            <p class="text-[13px] text-[#71717A]">Monitoreo en tiempo real de operaciones, inventario, finanzas y seguridad fiscal.</p>
+            <p class="text-[13px] text-[#71717A]">
+              Monitoreo en tiempo real de operaciones, inventario, finanzas y seguridad fiscal.
+            </p>
           </div>
         </div>
-        <button @click="closeModal" class="w-9 h-9 rounded-full bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[#71717A] hover:text-[#18181B] flex items-center justify-center transition-colors">
+        <button
+          class="w-9 h-9 rounded-full bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[#71717A] hover:text-[#18181B] flex items-center justify-center transition-colors"
+          @click="closeModal"
+        >
           <span class="material-symbols-outlined text-[20px]">close</span>
         </button>
       </div>
@@ -221,16 +236,28 @@ defineExpose({ open: openModal, close: closeModal })
       <div class="px-6 py-4 border-b border-[#F4F4F5] bg-white flex flex-col sm:flex-row items-center justify-between gap-4">
         <!-- Tabs -->
         <div class="flex items-center gap-1.5 p-1 bg-[#F4F4F5] rounded-[10px] w-full sm:w-auto overflow-x-auto">
-          <button @click="filterTab = 'todas'" :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'todas' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']">
+          <button
+            :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'todas' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']"
+            @click="filterTab = 'todas'"
+          >
             Todas
           </button>
-          <button @click="filterTab = 'dian'" :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'dian' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']">
+          <button
+            :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'dian' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']"
+            @click="filterTab = 'dian'"
+          >
             Finanzas & DIAN
           </button>
-          <button @click="filterTab = 'inventario'" :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'inventario' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']">
+          <button
+            :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'inventario' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']"
+            @click="filterTab = 'inventario'"
+          >
             Inventario
           </button>
-          <button @click="filterTab = 'seguridad'" :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'seguridad' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']">
+          <button
+            :class="['px-3.5 py-1.5 text-[12px] font-bold rounded-[8px] transition-colors whitespace-nowrap', filterTab === 'seguridad' ? 'bg-white text-[#18181B] shadow-sm font-extrabold' : 'text-[#71717A] hover:text-[#18181B]']"
+            @click="filterTab = 'seguridad'"
+          >
             Seguridad ContexAI
           </button>
         </div>
@@ -238,19 +265,34 @@ defineExpose({ open: openModal, close: closeModal })
         <!-- Search -->
         <div class="flex items-center gap-2 border border-[#D4D4D8] rounded-[10px] px-3.5 py-2 w-full sm:w-72 bg-white focus-within:border-[#18181B] transition-colors shadow-sm">
           <span class="material-symbols-outlined text-[17px] text-[#A1A1AA]">search</span>
-          <input v-model="searchQuery" placeholder="Buscar en notificaciones..." class="flex-1 bg-transparent text-[12px] outline-none text-[#18181B] placeholder:text-[#A1A1AA]" />
+          <input
+            v-model="searchQuery"
+            placeholder="Buscar en notificaciones..."
+            class="flex-1 bg-transparent text-[12px] outline-none text-[#18181B] placeholder:text-[#A1A1AA]"
+          >
         </div>
       </div>
 
       <!-- Alerts List -->
       <div class="flex-1 overflow-y-auto p-6 space-y-3.5 bg-[#FAFAFA]">
-        <div v-if="filteredAlerts.length === 0" class="text-center py-12 bg-white rounded-[14px] border border-[#E4E4E7]">
+        <div
+          v-if="filteredAlerts.length === 0"
+          class="text-center py-12 bg-white rounded-[14px] border border-[#E4E4E7]"
+        >
           <span class="material-symbols-outlined text-[48px] text-[#D4D4D8] mb-2">notifications_paused</span>
-          <h3 class="text-[16px] font-extrabold text-[#18181B]">No hay notificaciones para mostrar</h3>
-          <p class="text-[13px] text-[#71717A] mt-1">Intenta con otro término de búsqueda o cambia la pestaña de filtro.</p>
+          <h3 class="text-[16px] font-extrabold text-[#18181B]">
+            No hay notificaciones para mostrar
+          </h3>
+          <p class="text-[13px] text-[#71717A] mt-1">
+            Intenta con otro término de búsqueda o cambia la pestaña de filtro.
+          </p>
         </div>
 
-        <div v-for="alert in filteredAlerts" :key="alert.id" :class="['bg-white border rounded-[16px] p-5 shadow-sm transition-all hover:shadow-md flex items-start gap-4', alert.read ? 'border-[#E4E4E7] opacity-80' : 'border-[#2563EB] ring-2 ring-[#2563EB]/10 bg-gradient-to-r from-[#F8FAFC] to-white']">
+        <div
+          v-for="alert in filteredAlerts"
+          :key="alert.id"
+          :class="['bg-white border rounded-[16px] p-5 shadow-sm transition-all hover:shadow-md flex items-start gap-4', alert.read ? 'border-[#E4E4E7] opacity-80' : 'border-[#2563EB] ring-2 ring-[#2563EB]/10 bg-gradient-to-r from-[#F8FAFC] to-white']"
+        >
           <!-- Level icon / dot -->
           <div :class="['w-10 h-10 rounded-[12px] flex items-center justify-center flex-shrink-0 font-bold mt-0.5', alert.level === 'critico' ? 'bg-rose-100 text-rose-700' : alert.level === 'advertencia' ? 'bg-amber-100 text-amber-700' : 'bg-[#2563EB]/10 text-[#2563EB]']">
             <span class="material-symbols-outlined text-[20px]">
@@ -262,20 +304,33 @@ defineExpose({ open: openModal, close: closeModal })
           <div class="flex-1 min-w-0">
             <div class="flex items-center justify-between gap-2 mb-1">
               <div class="flex items-center gap-2 flex-wrap">
-                <span v-if="!alert.read" class="w-2 h-2 rounded-full bg-[#2563EB]"></span>
-                <h3 class="text-[15px] font-extrabold text-[#18181B] leading-tight">{{ alert.title }}</h3>
+                <span
+                  v-if="!alert.read"
+                  class="w-2 h-2 rounded-full bg-[#2563EB]"
+                />
+                <h3 class="text-[15px] font-extrabold text-[#18181B] leading-tight">
+                  {{ alert.title }}
+                </h3>
               </div>
               <span class="text-[12px] font-semibold text-[#A1A1AA] flex-shrink-0">{{ alert.time }}</span>
             </div>
-            <p class="text-[13px] text-[#52525B] leading-relaxed mb-3">{{ alert.description }}</p>
+            <p class="text-[13px] text-[#52525B] leading-relaxed mb-3">
+              {{ alert.description }}
+            </p>
             
             <!-- Actions -->
             <div class="flex items-center gap-2 pt-2 border-t border-[#F4F4F5]">
-              <button @click="handleAlertAction(alert)" class="px-3.5 py-1.5 rounded-[8px] bg-[#18181B] hover:bg-[#27272A] text-white text-[12px] font-bold transition-colors shadow-sm flex items-center gap-1.5">
+              <button
+                class="px-3.5 py-1.5 rounded-[8px] bg-[#18181B] hover:bg-[#27272A] text-white text-[12px] font-bold transition-colors shadow-sm flex items-center gap-1.5"
+                @click="handleAlertAction(alert)"
+              >
                 <span>{{ alert.actionLabel }}</span>
                 <span class="material-symbols-outlined text-[15px]">arrow_forward</span>
               </button>
-              <button @click="toggleRead(alert.id)" class="px-3 py-1.5 rounded-[8px] border border-[#E4E4E7] hover:bg-[#FAFAFA] text-[#71717A] text-[12px] font-semibold transition-colors">
+              <button
+                class="px-3 py-1.5 rounded-[8px] border border-[#E4E4E7] hover:bg-[#FAFAFA] text-[#71717A] text-[12px] font-semibold transition-colors"
+                @click="toggleRead(alert.id)"
+              >
                 {{ alert.read ? 'Marcar como no leída' : 'Marcar como leída' }}
               </button>
             </div>
@@ -285,25 +340,42 @@ defineExpose({ open: openModal, close: closeModal })
 
       <!-- Footer Actions -->
       <div class="px-6 py-4 border-t border-[#E4E4E7] bg-white flex items-center justify-between gap-4">
-        <button @click="markAllRead" class="text-[13px] font-bold text-[#71717A] hover:text-[#18181B] flex items-center gap-2">
+        <button
+          class="text-[13px] font-bold text-[#71717A] hover:text-[#18181B] flex items-center gap-2"
+          @click="markAllRead"
+        >
           <span class="material-symbols-outlined text-[18px]">done_all</span>
           Marcar todas como leídas
         </button>
-        <button @click="exportAlerts" class="px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[10px] font-extrabold text-[13px] flex items-center gap-2 transition-colors shadow-sm">
+        <button
+          class="px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white rounded-[10px] font-extrabold text-[13px] flex items-center gap-2 transition-colors shadow-sm"
+          @click="exportAlerts"
+        >
           <span class="material-symbols-outlined text-[18px]">download</span>
           Exportar historial en PDF
         </button>
       </div>
 
       <!-- XML Viewer Modal (Nested) -->
-      <div v-if="selectedXmlAlert" class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300">
-        <div @click.stop class="w-full max-w-3xl bg-[#18181B] text-[#D4D4D8] rounded-[20px] shadow-2xl border border-[#27272A] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300">
+      <div
+        v-if="selectedXmlAlert"
+        class="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-md animate-in fade-in duration-300"
+      >
+        <div
+          class="w-full max-w-3xl bg-[#18181B] text-[#D4D4D8] rounded-[20px] shadow-2xl border border-[#27272A] flex flex-col overflow-hidden animate-in zoom-in-95 duration-300"
+          @click.stop
+        >
           <div class="px-6 py-4 border-b border-[#27272A] bg-[#18181B] flex items-center justify-between gap-4">
             <div class="flex items-center gap-2.5">
               <span class="material-symbols-outlined text-[20px] text-[#2563EB]">code</span>
-              <h3 class="text-[16px] font-bold text-white">Inspección de XML Fiscal · {{ selectedXmlAlert.title }}</h3>
+              <h3 class="text-[16px] font-bold text-white">
+                Inspección de XML Fiscal · {{ selectedXmlAlert.title }}
+              </h3>
             </div>
-            <button @click="selectedXmlAlert = null" class="w-8 h-8 rounded-full bg-[#27272A] hover:bg-[#3F3F46] text-[#A1A1AA] hover:text-white flex items-center justify-center transition-colors">
+            <button
+              class="w-8 h-8 rounded-full bg-[#27272A] hover:bg-[#3F3F46] text-[#A1A1AA] hover:text-white flex items-center justify-center transition-colors"
+              @click="selectedXmlAlert = null"
+            >
               <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
           </div>
@@ -325,21 +397,26 @@ defineExpose({ open: openModal, close: closeModal })
           </div>
           <div class="p-4 bg-[#18181B] flex items-center justify-between gap-4">
             <div class="flex items-center gap-2 text-[12px] text-[#A1A1AA]">
-              <span class="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500" />
               <span>Discrepancia detectada en LegalMonetaryTotal vs Auxiliar Contable</span>
             </div>
             <div class="flex items-center gap-2">
-              <button @click="handleEmitCreditNote" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[12px] rounded-[10px] transition-colors shadow-sm">
+              <button
+                class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold text-[12px] rounded-[10px] transition-colors shadow-sm"
+                @click="handleEmitCreditNote"
+              >
                 Generar Nota Crédito Electrónica
               </button>
-              <button @click="handleResendXml" class="px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] rounded-[10px] transition-colors shadow-sm">
+              <button
+                class="px-4 py-2 bg-[#2563EB] hover:bg-[#1D4ED8] text-white font-bold text-[12px] rounded-[10px] transition-colors shadow-sm"
+                @click="handleResendXml"
+              >
                 Reenviar a DIAN
               </button>
             </div>
           </div>
         </div>
       </div>
-
     </div>
   </div>
 </template>

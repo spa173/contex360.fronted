@@ -4,8 +4,12 @@
     <!-- Header -->
     <div class="flex items-center justify-between pb-2">
       <div>
-        <h2 class="text-3xl font-bold text-slate-50 mb-1">Empresas</h2>
-        <p class="text-sm text-slate-500">{{ tenants.length }} empresas registradas en la plataforma</p>
+        <h2 class="text-3xl font-bold text-slate-50 mb-1">
+          Empresas
+        </h2>
+        <p class="text-sm text-slate-500">
+          {{ tenants.length }} empresas registradas en la plataforma
+        </p>
       </div>
       <button class="px-6 py-3 bg-gradient-to-tr from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-medium transition-all duration-200 flex items-center gap-2 shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/30 hover:-translate-y-0.5">
         <Plus class="w-5 h-5" />
@@ -21,7 +25,7 @@
         type="text"
         placeholder="Buscar empresa..."
         class="w-full bg-[#0B0F1A] border border-slate-800/50 rounded-xl pl-12 pr-4 py-3.5 text-slate-200 placeholder:text-slate-600 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500/30 transition-all"
-      />
+      >
     </div>
 
     <!-- Table -->
@@ -30,13 +34,27 @@
         <table class="w-full">
           <thead>
             <tr class="border-b border-slate-800/50 bg-[#0B0F1A]/50">
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Empresa</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Prefijo</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Usuarios</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Facturas</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Ciudad</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Estado</th>
-              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">Acciones</th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Empresa
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Prefijo
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Usuarios
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Facturas
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Ciudad
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Estado
+              </th>
+              <th class="text-left px-6 py-4 text-xs font-semibold text-slate-500 uppercase tracking-wider">
+                Acciones
+              </th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-800/30">
@@ -51,19 +69,27 @@
                     {{ tenant.name[0] }}
                   </div>
                   <div>
-                    <p class="text-sm font-medium text-slate-200">{{ tenant.name }}</p>
+                    <p class="text-sm font-medium text-slate-200">
+                      {{ tenant.name }}
+                    </p>
                   </div>
                 </div>
               </td>
               <td class="px-6 py-4">
                 <code class="text-xs text-slate-500 font-mono bg-slate-800/50 px-2.5 py-1.5 rounded-lg border border-slate-700/50">{{ tenant.prefix }}</code>
               </td>
-              <td class="px-6 py-4 text-sm text-slate-400">{{ tenant._count?.memberships || 0 }}</td>
-              <td class="px-6 py-4 text-sm text-slate-400">{{ tenant._count?.invoices || 0 }}</td>
-              <td class="px-6 py-4 text-sm text-slate-400">{{ tenant.city || '—' }}</td>
+              <td class="px-6 py-4 text-sm text-slate-400">
+                {{ tenant._count?.memberships || 0 }}
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-400">
+                {{ tenant._count?.invoices || 0 }}
+              </td>
+              <td class="px-6 py-4 text-sm text-slate-400">
+                {{ tenant.city || '—' }}
+              </td>
               <td class="px-6 py-4">
                 <span class="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                  <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2"></div>
+                  <div class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-2" />
                   {{ tenant.dianStatus || 'Activa' }}
                 </span>
               </td>
@@ -82,11 +108,16 @@
           </tbody>
         </table>
       </div>
-      <div v-if="!tenants.length" class="p-12 text-center text-slate-500">
+      <div
+        v-if="!tenants.length"
+        class="p-12 text-center text-slate-500"
+      >
         <div class="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mx-auto mb-4">
           <Building2 class="w-8 h-8 text-slate-600" />
         </div>
-        <p class="text-slate-500">No hay empresas registradas.</p>
+        <p class="text-slate-500">
+          No hay empresas registradas.
+        </p>
       </div>
     </div>
   </div>

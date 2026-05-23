@@ -16,6 +16,7 @@ export default [
       '.gemini/**',
       '.graphify/**',
       'skills/**',
+      'scripts/**',
       'tests-local/**',
       '*.json'
     ]
@@ -31,6 +32,11 @@ export default [
   {
     files: ['**/*.vue', '**/*.js', '**/*.ts'],
     languageOptions: {
+      parserOptions: {
+        parser: tseslint.parser,
+        extraFileExtensions: ['.vue'],
+        sourceType: 'module'
+      },
       globals: {
         ...globals.browser,
         ...globals.node
@@ -42,6 +48,9 @@ export default [
       'vue/multi-word-component-names': 'off', // desactiva la regla que causó el error
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-empty-object-type': 'off',
+      'no-useless-assignment': 'off',
       'no-console': 'warn',
       'eqeqeq': 'error',
       'no-var': 'error',
