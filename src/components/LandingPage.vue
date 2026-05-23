@@ -134,7 +134,9 @@ async function submitPayment() {
     const reference = `${selectedPlan.value.id}_${billing}_${tenantId}`
     
     const redirectUrl = encodeURIComponent(`${window.location.origin}/pago-exitoso?planType=${selectedPlan.value.id}`)
-    const wompiLink = `https://checkout.wompi.co/l/test_VPOS_Np7UCJ?reference=${reference}&redirect-url=${redirectUrl}`
+    const wompiPublicKey = import.meta.env.VITE_WOMPI_PUBLIC_KEY
+    if (!wompiPublicKey) throw new Error('Wompi public key not configured')
+    const wompiLink = `https://checkout.wompi.co/l/${wompiPublicKey}?reference=${reference}&redirect-url=${redirectUrl}`
     
     // Redirigir a Wompi
     window.location.href = wompiLink

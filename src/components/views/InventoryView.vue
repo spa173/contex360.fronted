@@ -47,22 +47,69 @@ const filteredProducts = computed(() => {
   return list
 })
 
+// New Product Modal State
+const showNewProductModal = ref(false)
+const isSubmitting = ref(false)
+const productForm = ref({
+  sku: '',
+  name: '',
+  category: '',
+  location: '',
+  cost: 0,
+  price: 0,
+  taxRate: 19,
+  stock: 0,
+  minStock: 5,
+  maxStock: 50
+})
+
 function handleNewProduct() {
-  const num = generateRandomDigits(4)
-  const res = inventory.createProduct({
-    sku: `SKU-${num}`,
-    name: `Teclado Mecánico K${num}`,
-    price: 350000,
-    cost: 220000,
+  productForm.value = {
+    sku: '',
+    name: '',
+    category: '',
+    location: '',
+    cost: 0,
+    price: 0,
     taxRate: 19,
-    stock: 25,
+    stock: 0,
     minStock: 5,
-    maxStock: 50,
-    category: 'Periféricos',
-    location: 'Bodega Central'
-  })
-  if (res?.ok) {
-    emit('notify', { message: 'Producto registrado', detail: res.detail || `SKU-${num} añadido correctamente.` })
+    maxStock: 50
+  }
+  showNewProductModal.value = true
+}
+
+async function submitNewProduct() {
+  if (!productForm.value.name || productForm.value.price < 0 || productForm.value.cost < 0) {
+    emit('notify', { message: 'Datos inválidos', detail: 'Verifica los campos obligatorios y valores numéricos.' })
+    return
+  }
+  
+  isSubmitting.value = true
+  try {
+    const res = await inventory.createProduct({
+      sku: productForm.value.sku || undefined,
+      name: productForm.value.name,
+      price: productForm.value.price,
+      cost: productForm.value.cost,
+      taxRate: productForm.value.taxRate,
+      stock: productForm.value.stock,
+      minStock: productForm.value.minStock,
+      maxStock: productForm.value.maxStock,
+      category: productForm.value.category || undefined,
+      location: productForm.value.location || undefined
+    })
+    
+    if (res?.ok) {
+      emit('notify', { message: 'Producto registrado', detail: `El producto ${productForm.value.name} ha sido añadido exitosamente.` })
+      showNewProductModal.value = false
+    } else {
+      emit('notify', { message: 'Error', detail: res?.message || 'Error al guardar el producto.' })
+    }
+  } catch (err) {
+    emit('notify', { message: 'Error', detail: err.message })
+  } finally {
+    isSubmitting.value = false
   }
 }
 
@@ -212,6 +259,100 @@ function statusBadge(product) {
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- New Product Modal -->
+    <div v-if="showNewProductModal" class="fixed inset-0 z-[100] flex items-center justify-center">
+      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showNewProductModal = false"></div>
+      <div class="relative bg-white rounded-[16px] w-full max-w-2xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
+        <div class="px-6 py-5 border-b border-[#F4F4F5] flex justify-between items-center bg-[#FAFAFA] shrink-0">
+          <div>
+            <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">Crear Nuevo Producto</h3>
+            <p class="text-[13px] text-[#71717A] mt-0.5">Ingresa los detalles del artículo para el inventario.</p>
+          </div>
+          <button @click="showNewProductModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors rounded-full p-1 hover:bg-[#F4F4F5]">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+        
+        <div class="overflow-y-auto p-6 space-y-6 flex-1">
+          <!-- Identificación -->
+          <div>
+            <h4 class="text-[13px] font-bold text-[#18181B] mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">inventory_2</span> Identificación
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="md:col-span-2">
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Nombre del Producto *</label>
+                <input v-model="productForm.name" placeholder="Ej. Mouse Inalámbrico Pro" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">SKU / Código</label>
+                <input v-model="productForm.sku" placeholder="Ej. SKU-12345" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Categoría</label>
+                <input v-model="productForm.category" placeholder="Ej. Periféricos" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Finanzas -->
+          <div class="pt-4 border-t border-[#F4F4F5]">
+            <h4 class="text-[13px] font-bold text-[#18181B] mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">payments</span> Precios e Impuestos
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Costo Base</label>
+                <input v-model.number="productForm.cost" type="number" min="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Precio Venta</label>
+                <input v-model.number="productForm.price" type="number" min="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Tarifa IVA (%)</label>
+                <select v-model.number="productForm.taxRate" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
+                  <option value="0">0%</option>
+                  <option value="5">5%</option>
+                  <option value="19">19%</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Control de Stock -->
+          <div class="pt-4 border-t border-[#F4F4F5]">
+            <h4 class="text-[13px] font-bold text-[#18181B] mb-3 flex items-center gap-2">
+              <span class="material-symbols-outlined text-[16px] text-[#A1A1AA]">warehouse</span> Control de Inventario
+            </h4>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="md:col-span-2">
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Ubicación / Bodega</label>
+                <input v-model="productForm.location" placeholder="Ej. Estante A1" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Stock Mínimo</label>
+                <input v-model.number="productForm.minStock" type="number" min="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+              <div>
+                <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Stock Actual</label>
+                <input v-model.number="productForm.stock" type="number" min="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer actions -->
+        <div class="px-6 py-4 border-t border-[#F4F4F5] bg-[#FAFAFA] flex justify-end gap-3 shrink-0">
+          <button @click="showNewProductModal = false" class="px-4 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold transition-colors">Cancelar</button>
+          <button @click="submitNewProduct" :disabled="isSubmitting" class="px-6 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold flex items-center gap-2 transition-colors disabled:opacity-50">
+            <span v-if="isSubmitting" class="material-symbols-outlined animate-spin text-[16px]">sync</span>
+            {{ isSubmitting ? 'Guardando...' : 'Guardar Producto' }}
+          </button>
+        </div>
       </div>
     </div>
   </section>

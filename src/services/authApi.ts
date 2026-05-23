@@ -65,9 +65,11 @@ export interface BackendMessageResponse {
 }
 
 export async function refreshAccessToken(): Promise<BackendAuthResponse | null> {
+  const rememberMe = !!localStorage.getItem('contex360-remember-email')
   try {
     return await requestJson<BackendAuthResponse>('/auth/refresh', {
       method: 'POST',
+      body: { rememberMe }
     })
   } catch {
     return null

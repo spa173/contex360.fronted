@@ -268,16 +268,19 @@ const showIntegrationsModal = ref(false)
 const integrationSearch = ref('')
 const integrationCategory = ref('todas')
 
-const INTEGRATIONS_KEY = 'contex_integrations_enabled'
+const activeIntegrationsState = ref([])
 
-function loadIntegrationStates() {
-  try { return JSON.parse(localStorage.getItem(INTEGRATIONS_KEY) || '{}') } catch { return {} }
-}
-
-function saveIntegrationState(id, enabled) {
-  const states = loadIntegrationStates()
-  states[id] = enabled
-  localStorage.setItem(INTEGRATIONS_KEY, JSON.stringify(states))
+async function saveIntegrationState(id, enabled) {
+  if (enabled) {
+    if (!activeIntegrationsState.value.includes(id)) {
+      activeIntegrationsState.value.push(id)
+    }
+  } else {
+    activeIntegrationsState.value = activeIntegrationsState.value.filter(i => i !== id)
+  }
+  if (activeTenantId.value) {
+    await businessApi.updateTenant(activeTenantId.value, { activeIntegrations: activeIntegrationsState.value })
+  }
 }
 
 async function fetchBancolombiaConfig() {
@@ -435,8 +438,9 @@ const integrationCatalog = ref([
   { id: 'whatsapp', name: 'WhatsApp Business', desc: 'Envía facturas y alertas a clientes por WhatsApp', cat: 'comunicaciones', icon: 'chat', color: '#25D366', bg: '#25D36615' },
   { id: 'slack', name: 'Slack', desc: 'Notificaciones del equipo — facturas, alertas y más', cat: 'comunicaciones', icon: 'forum', color: '#4A154B', bg: '#4A154B15' },
   { id: 'gmail', name: 'Gmail', desc: 'Envía facturas PDF directamente desde tu cuenta', cat: 'comunicaciones', icon: 'mail', color: '#EA4335', bg: '#EA433515' },
+  { id: 'smtp', name: 'Servidor SMTP Personalizado', desc: 'Envía facturas usando tu propio correo corporativo', cat: 'comunicaciones', icon: 'alternate_email', color: '#2563EB', bg: '#2563EB15' },
   { id: 'twilio', name: 'Twilio', desc: 'SMS y llamadas automáticas a clientes y proveedores', cat: 'comunicaciones', icon: 'sms', color: '#F22F46', bg: '#F22F4615' },
-].map(i => ({ ...i, enabled: loadIntegrationStates()[i.id] ?? false })))
+].map(i => ({ ...i, enabled: activeIntegrationsState.value.includes(i.id) })))
 
 const integrationCategories = [
   { id: 'todas', label: 'Todas' },
@@ -458,9 +462,16 @@ const filteredIntegrations = computed(() => {
   return list
 })
 
+const activeCatalogIntegrations = computed(() => {
+  return integrationCatalog.value.filter(i => i.enabled && i.id !== 'bancolombia')
+})
+
 function toggleIntegration(integration) {
-  integration.enabled = !integration.enabled
-  saveIntegrationState(integration.id, integration.enabled)
+  const willBeEnabled = !integration.enabled
+  // We don't manually mutate integration.enabled because it's computed now! Wait, integrationCatalog is still a ref!
+  // If it's still a ref, we mutate it and then save the state.
+  integration.enabled = willBeEnabled
+  saveIntegrationState(integration.id, willBeEnabled)
   emit('notify', {
     message: integration.enabled ? `${integration.name} activado` : `${integration.name} desactivado`,
     detail: integration.enabled
@@ -474,10 +485,44 @@ function configureIntegration(integration) {
     openGmailOAuth()
     return
   }
+  if (integration.id === 'smtp') {
+    showSmtpModal.value = true
+    return
+  }
   emit('notify', {
     message: `Configurar ${integration.name}`,
     detail: `Abre el panel de credenciales para conectar ${integration.name} con Contex360.`,
   })
+}
+
+// SMTP Custom Config
+const showSmtpModal = ref(false)
+const smtpConfig = ref({
+  smtpHost: '',
+  smtpPort: 587,
+  smtpUser: '',
+  smtpPassword: '',
+  smtpFromEmail: ''
+})
+const smtpSaving = ref(false)
+
+async function saveSmtpConfig() {
+  if (!activeTenantId.value) return
+  smtpSaving.value = true
+  try {
+    await businessApi.updateTenant(activeTenantId.value, smtpConfig.value)
+    emit('notify', { message: 'SMTP Configurado', detail: 'Credenciales de correo personalizadas guardadas con éxito.' })
+    showSmtpModal.value = false
+    const smtpIntg = integrationCatalog.value.find(i => i.id === 'smtp')
+    if (smtpIntg) {
+      smtpIntg.enabled = true
+      saveIntegrationState('smtp', true)
+    }
+  } catch (e) {
+    emit('notify', { message: 'Error', detail: e?.message || 'No se pudo guardar la configuración SMTP.' })
+  } finally {
+    smtpSaving.value = false
+  }
 }
 
 // Gmail OAuth
@@ -546,8 +591,25 @@ async function disconnectGmail() {
   }
   emit('notify', { message: 'Gmail desconectado', detail: 'La cuenta de Gmail fue desvinculada del workspace.' })
 }
+
+async function loadActiveIntegrations() {
+  if (!activeTenantId.value) return
+  try {
+    const tenant = await businessApi.getTenantDetails(activeTenantId.value)
+    if (tenant && tenant.activeIntegrations) {
+      activeIntegrationsState.value = tenant.activeIntegrations
+      // Update the integration catalog
+      integrationCatalog.value.forEach(i => {
+        i.enabled = activeIntegrationsState.value.includes(i.id)
+      })
+    }
+  } catch (e) {
+    console.error('Error loading active integrations:', e)
+  }
+}
 onMounted(async () => {
-  adminStore.loadSettings()
+  await adminStore.loadSettings()
+  loadActiveIntegrations()
   if (activeTab.value === 'logs') {
     fetchAuditLogs()
   } else if (activeTab.value === 'cumplimiento') {
@@ -1037,6 +1099,26 @@ async function saveBancolombiaConfig() {
         <p v-else class="mt-2 text-[11px] text-[#71717A]">
           La autorización se completa en el backend antes de sincronizar movimientos.
         </p>
+      </div>
+
+      <div v-for="intg in activeCatalogIntegrations" :key="intg.id" class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm">
+        <div class="flex items-start justify-between mb-5">
+          <div class="flex items-center gap-3.5">
+            <div class="w-12 h-12 rounded-[12px] flex items-center justify-center text-[24px] shadow-sm border" :style="{ backgroundColor: intg.bg, color: intg.color, borderColor: `${intg.color}30` }">
+              <span class="material-symbols-outlined">{{ intg.icon }}</span>
+            </div>
+            <div>
+              <p class="text-[15px] font-extrabold tracking-tight text-[#18181B]">{{ intg.name }}</p>
+              <p class="text-[12px] text-[#71717A] mt-0.5">{{ intg.desc }}</p>
+            </div>
+          </div>
+          <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-extrabold border border-emerald-200 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>Activa
+          </span>
+        </div>
+        <button @click="configureIntegration(intg)" class="w-full py-2.5 border border-[#E4E4E7] rounded-[10px] text-[13px] font-bold text-[#18181B] hover:bg-[#FAFAFA] transition-colors shadow-sm">
+          Configurar credenciales
+        </button>
       </div>
 
       <div @click="showIntegrationsModal = true" class="bg-white border-2 border-dashed border-[#E4E4E7] rounded-[16px] p-6 flex flex-col items-center justify-center text-center min-h-[190px] hover:border-[#2563EB] hover:bg-[#FAFAFA]/50 cursor-pointer transition-all group">
@@ -1679,6 +1761,72 @@ async function saveBancolombiaConfig() {
           <p class="text-[11px] text-[#A1A1AA]">Los cambios se guardan automáticamente en este dispositivo.</p>
           <button @click="showIntegrationsModal = false" class="px-4 py-2 bg-[#18181B] text-white rounded-[8px] text-[12px] font-bold hover:bg-[#27272A] transition-colors">
             Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+    <!-- Modal SMTP -->
+    <div v-if="showSmtpModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-[300] flex items-center justify-center p-4">
+      <div class="bg-white rounded-[20px] w-full max-w-lg shadow-2xl overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="px-6 py-5 border-b border-[#E4E4E7] flex justify-between items-center bg-[#FAFAFA]">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-full bg-[#2563EB]/10 flex items-center justify-center">
+              <span class="material-symbols-outlined text-[20px] text-[#2563EB]">alternate_email</span>
+            </div>
+            <div>
+              <h2 class="text-[18px] font-bold text-[#18181B] tracking-tight">Servidor SMTP Propio</h2>
+              <p class="text-[13px] text-[#71717A]">Envía facturas desde tu correo corporativo</p>
+            </div>
+          </div>
+          <button @click="showSmtpModal = false" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-black/5 text-[#A1A1AA] hover:text-[#18181B] transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
+        </div>
+
+        <div class="p-6 space-y-5">
+          <!-- Tutorial -->
+          <div class="bg-[#2563EB]/5 border border-[#2563EB]/20 rounded-[12px] p-4 text-[#18181B]">
+            <h4 class="text-[13px] font-bold mb-2 flex items-center gap-1.5 text-[#2563EB]">
+              <span class="material-symbols-outlined text-[16px]">help</span>
+              ¿Cómo configurar mi correo corporativo?
+            </h4>
+            <ol class="text-[12px] space-y-1.5 ml-5 list-decimal marker:text-[#2563EB] marker:font-bold text-[#71717A]">
+              <li>Ingresa a la configuración de seguridad de tu proveedor (Workspace, Office365).</li>
+              <li>Activa la verificación en dos pasos (2FA).</li>
+              <li>Genera una <strong>Contraseña de Aplicación</strong> específica para Contex360.</li>
+              <li>Usa esa contraseña generada en lugar de tu clave habitual.</li>
+            </ol>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div class="col-span-2">
+              <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Servidor SMTP (Host)</label>
+              <input v-model="smtpConfig.smtpHost" placeholder="ej. smtp.office365.com" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+            </div>
+            <div>
+              <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Puerto</label>
+              <input v-model.number="smtpConfig.smtpPort" type="number" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+            </div>
+            <div class="col-span-2">
+              <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Correo Electrónico (Remitente)</label>
+              <input v-model="smtpConfig.smtpFromEmail" placeholder="facturacion@miempresa.com" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+            </div>
+            <div class="col-span-2">
+              <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Usuario de Autenticación</label>
+              <input v-model="smtpConfig.smtpUser" placeholder="usualmente tu correo" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+            </div>
+            <div class="col-span-2">
+              <label class="text-[12px] font-semibold text-[#18181B] mb-1.5 block">Contraseña / App Password</label>
+              <input v-model="smtpConfig.smtpPassword" type="password" placeholder="••••••••" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] outline-none focus:border-[#2563EB] focus:ring-2 focus:ring-[#2563EB]/20 transition-all bg-[#FAFAFA] focus:bg-white" />
+            </div>
+          </div>
+        </div>
+
+        <div class="px-6 py-4 border-t border-[#E4E4E7] flex justify-end gap-3 bg-[#FAFAFA]">
+          <button @click="showSmtpModal = false" class="px-4 py-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors">Cancelar</button>
+          <button @click="saveSmtpConfig" :disabled="smtpSaving" class="px-5 py-2 bg-[#2563EB] text-white text-[13px] font-semibold rounded-[10px] hover:bg-[#1D4ED8] transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+            <span v-if="smtpSaving" class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+            <span>Guardar y Conectar</span>
           </button>
         </div>
       </div>

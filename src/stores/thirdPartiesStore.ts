@@ -8,10 +8,7 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
   const root = useStateStore()
 
   // State
-  const thirdParties = ref<any[]>([
-    { id: 'tp-1', tenantId: root.activeTenantId || 'tenant-a', name: 'Constructora Altos SAS', nit: '900123456-7', idNumber: '900123456-7', kind: 'client', type: 'Cliente', balance: 14500000 },
-    { id: 'tp-2', tenantId: root.activeTenantId || 'tenant-a', name: 'Suministros Andinos SAS', nit: '830456789-1', idNumber: '830456789-1', kind: 'provider', type: 'Proveedor', balance: 3200000 },
-  ])
+  const thirdParties = ref<any[]>([])
 
   // Getters
   const activeTenantId = computed(() => root.activeTenantId)
@@ -46,6 +43,15 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     }
   }
 
+  async function addThirdParty(data: any) {
+    if (!activeTenantId.value) throw new Error('No active tenant')
+    const res = await businessApi.createThirdParty(data, activeTenantId.value)
+    if (res) {
+      thirdParties.value.push(res)
+    }
+    return res
+  }
+
   // Sync back to root
   watch(thirdParties, (newVal) => {
     (root.$state as any).thirdParties = newVal
@@ -59,5 +65,6 @@ export const useThirdPartiesStore = defineStore('thirdParties', () => {
     tenantEmployees,
     canManageThirdParties,
     fetchThirdParties,
+    addThirdParty,
   }
 })

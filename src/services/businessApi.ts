@@ -362,6 +362,12 @@ export const businessApi = {
   async getAdminTenants() {
     return request<any[]>('/admin/tenants')
   },
+  async getTenantDetails(tenantId: string) {
+    return request<any>(`/admin/tenants/${tenantId}`)
+  },
+  async updateTenant(tenantId: string, data: any) {
+    return request<any>(`/admin/tenants/${tenantId}`, { method: 'PATCH', body: data })
+  },
   async getAdminUsers() {
     return request<any[]>('/admin/users')
   },
@@ -455,6 +461,14 @@ export const businessApi = {
   async cancelSubscription(tenantId?: string | null) {
     return request<{ ok: boolean; message: string }>('/subscriptions/cancel', {
       method: 'POST',
+      tenantId,
+    })
+  },
+
+  async createProduct(data: any, tenantId: string) {
+    return request<any>('/products', {
+      method: 'POST',
+      body: data,
       tenantId,
     })
   },

@@ -8,10 +8,7 @@ import { businessApi } from '../services/businessApi'
 export const useInventoryStore = defineStore('inventory', () => {
   const root = useStateStore()
 
-  const products = ref<Product[]>([
-    { id: 'prod-1', tenantId: root.activeTenantId || 'tenant-a', sku: 'SKU-001', name: 'MacBook Pro 16"', price: 12500000, cost: 9800000, taxRate: 19, stock: 15, stockByLocation: { default: 15 }, minStock: 5, maxStock: 50, location: 'Bodega Norte', category: 'Electrónica', barcode: '7701234567890', isInventoriable: true, productType: 'standard', unit: 'unidad' },
-    { id: 'prod-2', tenantId: root.activeTenantId || 'tenant-a', sku: 'SKU-002', name: 'Monitor UltraSharp 27"', price: 2800000, cost: 2100000, taxRate: 19, stock: 3, stockByLocation: { default: 3 }, minStock: 5, maxStock: 20, location: 'Bodega Sur', category: 'Electrónica', barcode: '7709876543210', isInventoriable: true, productType: 'standard', unit: 'unidad' },
-  ])
+  const products = ref<Product[]>([])
 
   const inventoryMovements = ref<InventoryMovement[]>([])
 
@@ -104,35 +101,35 @@ export const useInventoryStore = defineStore('inventory', () => {
   const canManageInventory = computed(() => root.can('manage_inventory'))
 
   // Actions
-  function createProduct(payload: Partial<Product>) {
-    if (!canManageInventory.value) return { ok: false, message: 'Tu rol actual no puede crear productos.' }
-    const defaultLocId = tenantLocations.value[0]?.id || 'default'
-    const product: Product = {
-      id: uid('prod'),
-      tenantId: activeTenantId.value || '',
+  async function createProduct(payload: Partial<Product>) {
+    if (!canManageInventory.value) return { ok: false, message: 'Permisos insuficientes.' }
+    const productData = {
       sku: (payload.sku || '').trim(),
       name: (payload.name || '').trim(),
       price: Number(payload.price || 0),
       cost: Number(payload.cost || 0),
       taxRate: Number(payload.taxRate || 0),
       stock: Number(payload.stock || 0),
-      stockByLocation: { [defaultLocId]: Number(payload.stock || 0) },
       minStock: Number(payload.minStock || 0),
       maxStock: Number(payload.maxStock || 0),
       location: (payload.location || '').trim(),
       category: (payload.category || 'General').trim(),
       barcode: (payload.barcode || '').trim(),
       isInventoriable: payload.isInventoriable !== false,
-      productType: (payload.productType as any) || 'standard',
+      productType: payload.productType || 'standard',
       kitComponents: payload.kitComponents || [],
-      unit: payload.productType === 'kit' ? 'kit' : 'unidad',
       preferredSupplier: (payload.preferredSupplier || '').trim(),
     }
-    if (!product.sku || !product.name) return { ok: false, message: 'Completa SKU y nombre del producto.' }
-    products.value.unshift(product)
-    appendAuditEvent(root.$state, { entity: 'inventario', action: 'Crear producto', description: `Se registro el producto ${product.name}.`, actor: root.currentUser?.name || 'Sistema local' })
-    root.saveState()
-    return { ok: true, message: 'Producto guardado.', detail: `${product.name} ya esta disponible.` }
+    if (!productData.name) return { ok: false, message: 'El nombre del producto es requerido.' }
+    
+    try {
+      const product = await businessApi.createProduct(productData, activeTenantId.value!)
+      products.value.unshift(product)
+      appendAuditEvent(root.$state, { entity: 'inventario', action: 'Crear producto', description: `Se registro el producto ${product.name}.`, actor: root.currentUser?.name || 'Sistema' })
+      return { ok: true, message: 'Producto guardado.', detail: `${product.name} ya está disponible.` }
+    } catch (e: any) {
+      return { ok: false, message: 'Error en servidor', detail: e.message }
+    }
   }
 
   function transferStock({ productId, fromLocId, toLocId, quantity }: any) {
@@ -248,5 +245,5 @@ export const useInventoryStore = defineStore('inventory', () => {
     if (newId && userId) fetchProducts()
   }, { immediate: true })
 
-  return { products, inventoryMovements, inventoryTransfers, tenantProducts, tenantInventoryMovements, activeTenantTransfers, tenantLocations, deadInventory, reorderSuggestions, abcAnalysis, createProduct, transferStock, receiveTransfer, auditInventory, receiveInventory, importProductsCSV, canManageInventory }
+  return { products, inventoryMovements, inventoryTransfers, tenantProducts, tenantInventoryMovements, activeTenantTransfers, tenantLocations, deadInventory, reorderSuggestions, abcAnalysis, createProduct, transferStock, receiveTransfer, auditInventory, receiveInventory, importProductsCSV, canManageInventory, fetchProducts }
 })

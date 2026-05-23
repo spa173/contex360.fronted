@@ -9,10 +9,7 @@ import { quoteSchema } from '../schemas/quote.schema'
 export const useQuotesStore = defineStore('quotes', () => {
   const root = useStateStore()
 
-  const quotes = ref<Quote[]>([
-    { id: 'q-1', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-001', clientId: null, validUntil: new Date(Date.now() + 86400000 * 5).toISOString(), total: 15400000, subtotal: 15400000, taxTotal: 0, status: 'accepted' as QuoteStatus, items: [], createdAt: new Date().toISOString() },
-    { id: 'q-2', tenantId: root.activeTenantId || 'tenant-a', number: 'COT-2026-002', clientId: null, validUntil: new Date(Date.now() + 86400000 * 12).toISOString(), total: 8900000, subtotal: 8900000, taxTotal: 0, status: 'sent' as QuoteStatus, items: [], createdAt: new Date(Date.now() - 3600000).toISOString() },
-  ])
+  const quotes = ref<Quote[]>([])
 
   const selections = ref({
     quoteId: null as string | null,

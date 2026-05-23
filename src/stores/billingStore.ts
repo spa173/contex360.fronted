@@ -104,7 +104,10 @@ export const useBillingStore = defineStore('billing', () => {
         invoice.tenantId,
       ).catch((err) => console.warn('[ledger] sync failed (non-blocking):', safeLogMessage(err)))
       appendAuditEvent(root.$state, { tenantId: invoice.tenantId, entity: 'factura', action: 'Emitir', description: `Se emitió la factura ${invoice.number} por ${invoice.total}.`, actor: root.currentUser?.name || 'Sistema', severity: 'info' })
-      scheduleDianUpdates(invoice.id, invoice.tenantId)
+      
+      // Llamada real al backend para transmitir la factura a la DIAN (en segundo plano)
+      sendToDian(invoice.id).catch(err => console.error('Error enviando a DIAN en segundo plano:', safeLogMessage(err)))
+      
       return { ok: true, message: 'Factura emitida correctamente.', invoice }
     } catch (error) { 
       if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {

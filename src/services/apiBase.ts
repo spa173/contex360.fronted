@@ -3,6 +3,7 @@ function normalizeApiBaseUrl(value: string) {
 }
 
 export function getApiBaseUrl() {
-  const raw = String(import.meta.env.VITE_API_BASE_URL || 'http://localhost:3001')
+  const raw = import.meta.env.VITE_API_BASE_URL
+  if (!raw) throw new Error('VITE_API_BASE_URL environment variable is required')
   return normalizeApiBaseUrl(raw)
 }
