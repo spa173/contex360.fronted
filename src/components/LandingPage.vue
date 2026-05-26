@@ -296,7 +296,7 @@ function closeWompi() {
             <img
               alt="Dashboard Contex360"
               class="rounded-[18px] w-full object-cover grayscale-[0.15] group-hover:grayscale-0 transition-all duration-700"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuBDevAbrAx6NG9DC4ljVlLz6U4hQtD34h0rbeGnn7sBe9MDCDpYEpB12WaJ2cLbAoyd398F5r0V1Dz6JDX9FJNiyK-j6rvnkyqe5KFT13O5PUy1nliG-EeION4WvPzneGzXs3Y22ANd7Ou6lGtNQeysqaXBGsqthigNPEJo9xASXe8NBY_W5GwgplryWlmnwtwtRhpOmcd-Cqz38--JKokTS9-ADDLn4Ark4GAkmeQ7NsXtepFFRmxVQKJ6wy3jazfpnh23T8hvsUgq"
+              src="/dashboard_preview.png"
             />
           </div>
 
