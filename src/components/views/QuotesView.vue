@@ -499,7 +499,9 @@ async function submitNewQuote() {
                 </div>
               </div>
               <div class="w-full md:w-1/2 max-w-[280px] bg-[#FAFAFA] rounded-[10px] p-4 border border-[#E4E4E7]">
-                <p class="text-[11px] text-[#A1A1AA] text-center">Los totales se calculan automáticamente en el backend.</p>
+                <p class="text-[11px] text-[#A1A1AA] text-center">
+                  Los totales se calculan automáticamente en el backend.
+                </p>
               </div>
             </div>
           </div>

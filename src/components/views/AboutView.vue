@@ -48,33 +48,56 @@ const stats = [
       aria-hidden="true"
       class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
       style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
-    ></div>
+    />
 
     <!-- Nav -->
     <header class="relative sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#F4F4F5]">
       <div class="max-w-6xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
         <button
-          @click="emit('back')"
           class="flex items-center gap-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors"
+          @click="emit('back')"
         >
           <span class="material-symbols-outlined text-[18px]">arrow_back</span>
           Volver
         </button>
 
         <div class="flex items-center gap-2.5">
-          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56" aria-hidden="true">
-            <rect width="56" height="56" rx="12" fill="#18181B"/>
+          <svg
+            class="c360-mark flex-shrink-0"
+            width="28"
+            height="28"
+            viewBox="0 0 56 56"
+            aria-hidden="true"
+          >
+            <rect
+              width="56"
+              height="56"
+              rx="12"
+              fill="#18181B"
+            />
             <g class="rotor">
-              <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-              <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+              <path
+                d="M44 18 A 16 16 0 1 0 44 38"
+                stroke="#fff"
+                stroke-width="5.5"
+                stroke-linecap="round"
+                fill="none"
+              />
+              <path
+                d="M44 18 A 16 16 0 0 1 44 38"
+                stroke="#2563EB"
+                stroke-width="5.5"
+                stroke-linecap="round"
+                fill="none"
+              />
             </g>
           </svg>
           <span class="text-[16px] font-bold tracking-tight text-[#18181B]">Contex360</span>
         </div>
 
         <button
-          @click="emit('login')"
           class="text-[13px] font-semibold text-[#18181B] px-3.5 py-2 rounded-lg hover:bg-[#F4F4F5] transition-colors"
+          @click="emit('login')"
         >
           Iniciar sesión
         </button>
@@ -103,8 +126,13 @@ const stats = [
     <!-- Values -->
     <section class="py-16 lg:py-20 bg-white border-t border-[#F4F4F5]">
       <div class="max-w-5xl mx-auto px-6 lg:px-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-3 text-center">Nuestros valores</p>
-        <h2 class="text-[32px] lg:text-[40px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-12 text-center" style="text-wrap: balance;">
+        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-3 text-center">
+          Nuestros valores
+        </p>
+        <h2
+          class="text-[32px] lg:text-[40px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-12 text-center"
+          style="text-wrap: balance;"
+        >
           Cuatro principios que guían cada decisión.
         </h2>
 
@@ -118,8 +146,12 @@ const stats = [
               <span class="material-symbols-outlined text-[20px]">{{ v.icon }}</span>
             </div>
             <div>
-              <h3 class="text-[15px] font-bold text-[#18181B] tracking-tight mb-1.5">{{ v.title }}</h3>
-              <p class="text-[13px] text-[#71717A] leading-[1.55] font-medium">{{ v.desc }}</p>
+              <h3 class="text-[15px] font-bold text-[#18181B] tracking-tight mb-1.5">
+                {{ v.title }}
+              </h3>
+              <p class="text-[13px] text-[#71717A] leading-[1.55] font-medium">
+                {{ v.desc }}
+              </p>
             </div>
           </div>
         </div>
@@ -129,21 +161,32 @@ const stats = [
     <!-- Timeline -->
     <section class="py-16 lg:py-20 bg-[#FAFAFA] border-y border-[#F4F4F5]">
       <div class="max-w-2xl mx-auto px-6 lg:px-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-3 text-center">Nuestra historia</p>
-        <h2 class="text-[32px] lg:text-[40px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-12 text-center" style="text-wrap: balance;">
+        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-3 text-center">
+          Nuestra historia
+        </p>
+        <h2
+          class="text-[32px] lg:text-[40px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-12 text-center"
+          style="text-wrap: balance;"
+        >
           Cinco años construyendo el back-office colombiano.
         </h2>
 
         <div class="relative">
-          <div class="absolute left-[27px] top-2 bottom-2 w-px bg-[#E4E4E7]"></div>
-          <div v-for="m in milestones" :key="m.year" class="flex gap-5 mb-7 last:mb-0">
+          <div class="absolute left-[27px] top-2 bottom-2 w-px bg-[#E4E4E7]" />
+          <div
+            v-for="m in milestones"
+            :key="m.year"
+            class="flex gap-5 mb-7 last:mb-0"
+          >
             <div class="flex-shrink-0 w-[55px] flex justify-start">
               <div class="w-[55px] h-[55px] rounded-full bg-white border border-[#E4E4E7] flex items-center justify-center z-10 shadow-sm">
                 <span class="text-[11px] font-bold text-[#18181B] tracking-tight">{{ m.year }}</span>
               </div>
             </div>
             <div class="pt-4">
-              <p class="text-[14px] text-[#18181B] leading-[1.55] font-medium">{{ m.event }}</p>
+              <p class="text-[14px] text-[#18181B] leading-[1.55] font-medium">
+                {{ m.event }}
+              </p>
             </div>
           </div>
         </div>
@@ -153,9 +196,17 @@ const stats = [
     <!-- Stats -->
     <section class="py-14 lg:py-16 bg-white">
       <div class="max-w-5xl mx-auto px-6 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-8">
-        <div v-for="s in stats" :key="s.value" class="border-t border-[#E4E4E7] pt-4">
-          <p class="text-[28px] lg:text-[32px] font-bold text-[#18181B] tracking-[-0.025em] mb-1">{{ s.value }}</p>
-          <p class="text-[11px] uppercase tracking-wider font-semibold text-[#A1A1AA]">{{ s.label }}</p>
+        <div
+          v-for="s in stats"
+          :key="s.value"
+          class="border-t border-[#E4E4E7] pt-4"
+        >
+          <p class="text-[28px] lg:text-[32px] font-bold text-[#18181B] tracking-[-0.025em] mb-1">
+            {{ s.value }}
+          </p>
+          <p class="text-[11px] uppercase tracking-wider font-semibold text-[#A1A1AA]">
+            {{ s.label }}
+          </p>
         </div>
       </div>
     </section>
@@ -163,7 +214,10 @@ const stats = [
     <!-- CTA -->
     <section class="py-20 lg:py-24 border-t border-[#F4F4F5]">
       <div class="max-w-xl mx-auto px-6 lg:px-8 text-center">
-        <h2 class="text-[32px] lg:text-[40px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-4" style="text-wrap: balance;">
+        <h2
+          class="text-[32px] lg:text-[40px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-4"
+          style="text-wrap: balance;"
+        >
           ¿Listo para <em class="not-italic text-[#2563EB]">unirte</em>?
         </h2>
         <p class="text-[16px] text-[#71717A] mb-9 font-medium">
@@ -171,15 +225,15 @@ const stats = [
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <button
-            @click="emit('request-demo')"
             class="bg-[#18181B] text-white text-[14px] font-semibold px-7 py-3.5 rounded-[10px] shadow-lg shadow-black/5 hover:bg-[#27272A] transition-all flex items-center justify-center gap-2.5"
+            @click="emit('request-demo')"
           >
             Solicitar demo gratuita
             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
           <button
-            @click="emit('login')"
             class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-7 py-3.5 rounded-[10px] hover:bg-[#FAFAFA] transition-all"
+            @click="emit('login')"
           >
             Ya tengo cuenta
           </button>
@@ -189,9 +243,16 @@ const stats = [
 
     <!-- Footer -->
     <footer class="border-t border-[#F4F4F5] py-8 text-center">
-      <p class="text-[12px] text-[#A1A1AA] font-medium">© 2026 Contex360. Todos los derechos reservados.</p>
+      <p class="text-[12px] text-[#A1A1AA] font-medium">
+        © 2026 Contex360. Todos los derechos reservados.
+      </p>
       <div class="flex justify-center gap-3 mt-2 text-[12px] text-[#A1A1AA]">
-        <button @click="emit('back')" class="hover:text-[#18181B] transition-colors font-medium">Inicio</button>
+        <button
+          class="hover:text-[#18181B] transition-colors font-medium"
+          @click="emit('back')"
+        >
+          Inicio
+        </button>
         <span>·</span>
         <span class="font-medium">Bogotá, Colombia</span>
       </div>

@@ -502,107 +502,112 @@ onUnmounted(() => {
     </div>
 
     <!-- KPI cards (Image 1 style) -->
-    <section class="kpi-grid" aria-label="Indicadores clave"><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
-      <!-- Sales -->
-      <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
-        <div class="flex items-start justify-between mb-6">
-          <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
-            <span class="material-symbols-outlined text-[22px]">payments</span>
+    <section
+      class="kpi-grid"
+      aria-label="Indicadores clave"
+    >
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+        <!-- Sales -->
+        <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
+              <span class="material-symbols-outlined text-[22px]">payments</span>
+            </div>
+            <span
+              v-if="dashboardData.totalSales > 0"
+              class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-tight"
+            >
+              <span class="material-symbols-outlined text-[12px]">arrow_upward</span>15%
+            </span>
           </div>
-          <span
-            v-if="dashboardData.totalSales > 0"
-            class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-bold tracking-tight"
-          >
-            <span class="material-symbols-outlined text-[12px]">arrow_upward</span>15%
-          </span>
-        </div>
-        <div>
-          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
-            Ventas del día
-          </h3>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
-            $ {{ formatCompact(dashboardData.totalSales) }}
-          </p>
-          <p class="text-[12px] font-medium text-[#71717A]">
-            {{ dashboardData.totalSales > 0 ? 'Operación activa' : 'Sin ventas registradas' }}
-          </p>
-        </div>
-      </article>
+          <div>
+            <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Ventas del día
+            </h3>
+            <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+              $ {{ formatCompact(dashboardData.totalSales) }}
+            </p>
+            <p class="text-[12px] font-medium text-[#71717A]">
+              {{ dashboardData.totalSales > 0 ? 'Operación activa' : 'Sin ventas registradas' }}
+            </p>
+          </div>
+        </article>
 
-      <!-- Pending Invoices -->
-      <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
-        <div class="flex items-start justify-between mb-6">
-          <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
-            <span class="material-symbols-outlined text-[22px]">receipt_long</span>
+        <!-- Pending Invoices -->
+        <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
+              <span class="material-symbols-outlined text-[22px]">receipt_long</span>
+            </div>
+            <span
+              v-if="dashboardData.pendingInvoices > 0"
+              class="inline-flex px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold tracking-tight"
+            >Por cobrar</span>
           </div>
-          <span
-            v-if="dashboardData.pendingInvoices > 0"
-            class="inline-flex px-2 py-0.5 rounded-md bg-amber-50 text-amber-700 text-[11px] font-bold tracking-tight"
-          >Por cobrar</span>
-        </div>
-        <div>
-          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
-            Facturas pendientes
-          </h3>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
-            {{ dashboardData.pendingInvoices }}
-          </p>
-          <p class="text-[12px] font-medium text-[#71717A]">
-            {{ dashboardData.pendingInvoices > 0 ? 'Documentos pendientes' : 'Al día con las cuentas' }}
-          </p>
-        </div>
-      </article>
+          <div>
+            <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Facturas pendientes
+            </h3>
+            <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+              {{ dashboardData.pendingInvoices }}
+            </p>
+            <p class="text-[12px] font-medium text-[#71717A]">
+              {{ dashboardData.pendingInvoices > 0 ? 'Documentos pendientes' : 'Al día con las cuentas' }}
+            </p>
+          </div>
+        </article>
 
-      <!-- Low Stock -->
-      <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
-        <div class="flex items-start justify-between mb-6">
-          <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
-            <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+        <!-- Low Stock -->
+        <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
+              <span class="material-symbols-outlined text-[22px]">inventory_2</span>
+            </div>
+            <span
+              v-if="dashboardData.lowStockAlerts > 0"
+              class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold tracking-tight"
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-rose-500" />Stock bajo
+            </span>
           </div>
-          <span
-            v-if="dashboardData.lowStockAlerts > 0"
-            class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-rose-50 text-rose-700 text-[11px] font-bold tracking-tight"
-          >
-            <span class="w-1.5 h-1.5 rounded-full bg-rose-500" />Stock bajo
-          </span>
-        </div>
-        <div>
-          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
-            Stock bajo
-          </h3>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
-            {{ dashboardData.lowStockAlerts }} SKUs
-          </p>
-          <p class="text-[12px] font-medium text-[#71717A]">
-            {{ dashboardData.lowStockAlerts > 0 ? 'Requieren reabastecer' : 'Nivel de inventario óptimo' }}
-          </p>
-        </div>
-      </article>
+          <div>
+            <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Stock bajo
+            </h3>
+            <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+              {{ dashboardData.lowStockAlerts }} SKUs
+            </p>
+            <p class="text-[12px] font-medium text-[#71717A]">
+              {{ dashboardData.lowStockAlerts > 0 ? 'Requieren reabastecer' : 'Nivel de inventario óptimo' }}
+            </p>
+          </div>
+        </article>
 
-      <!-- AI Tasks -->
-      <article
-        class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors cursor-pointer group"
-        @click="openOcrModal"
-      >
-        <div class="flex items-start justify-between mb-6">
-          <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] group-hover:bg-[#18181B] group-hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-[22px]">document_scanner</span>
+        <!-- AI Tasks -->
+        <article
+          class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors cursor-pointer group"
+          @click="openOcrModal"
+        >
+          <div class="flex items-start justify-between mb-6">
+            <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B] group-hover:bg-[#18181B] group-hover:text-white transition-colors">
+              <span class="material-symbols-outlined text-[22px]">document_scanner</span>
+            </div>
+            <span class="inline-flex px-2 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[11px] font-bold tracking-tight">OCR listo</span>
           </div>
-          <span class="inline-flex px-2 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[11px] font-bold tracking-tight">OCR listo</span>
-        </div>
-        <div>
-          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
-            Tareas de IA
-          </h3>
-          <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
-            {{ dashboardData.ocrRunsCount }}
-          </p>
-          <p class="text-[12px] font-medium text-[#71717A]">
-            {{ dashboardData.ocrRunsCount > 0 ? 'listas para revisar' : 'sin documentos pendientes' }}
-          </p>
-        </div>
-      </article>
-    </div></section>
+          <div>
+            <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Tareas de IA
+            </h3>
+            <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
+              {{ dashboardData.ocrRunsCount }}
+            </p>
+            <p class="text-[12px] font-medium text-[#71717A]">
+              {{ dashboardData.ocrRunsCount > 0 ? 'listas para revisar' : 'sin documentos pendientes' }}
+            </p>
+          </div>
+        </article>
+      </div>
+    </section>
 
     <!-- Main Section: Charts and Alerts (Image 1 style) -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6 mb-6">

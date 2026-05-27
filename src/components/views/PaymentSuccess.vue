@@ -43,8 +43,8 @@ onMounted(() => {
       </p>
 
       <button 
-        @click="emit('continue')"
         class="w-full py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[14px] font-extrabold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+        @click="emit('continue')"
       >
         Ir al Dashboard
         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>

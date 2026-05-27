@@ -115,19 +115,46 @@ onMounted(fetchCompanies)
   <div class="companies-view">
     <div class="companies-header">
       <div>
-        <h2 class="section-title">Empresas</h2>
-        <p class="section-sub">{{ companies.length }} empresas registradas en la plataforma</p>
+        <h2 class="section-title">
+          Empresas
+        </h2>
+        <p class="section-sub">
+          {{ companies.length }} empresas registradas en la plataforma
+        </p>
       </div>
-      <button class="btn-primary" @click="showModal = true">+ Registrar nuevo Tenant</button>
+      <button
+        class="btn-primary"
+        @click="showModal = true"
+      >
+        + Registrar nuevo Tenant
+      </button>
     </div>
 
     <div class="search-bar">
-      <input v-model="searchQuery" class="search-input" placeholder="Buscar empresa..." type="text" />
+      <input
+        v-model="searchQuery"
+        class="search-input"
+        placeholder="Buscar empresa..."
+        type="text"
+      >
     </div>
 
-    <div v-if="loading" class="state-empty">Cargando empresas...</div>
-    <div v-else-if="error" class="state-empty error-text">{{ error }}</div>
-    <div v-else class="companies-table-wrap">
+    <div
+      v-if="loading"
+      class="state-empty"
+    >
+      Cargando empresas...
+    </div>
+    <div
+      v-else-if="error"
+      class="state-empty error-text"
+    >
+      {{ error }}
+    </div>
+    <div
+      v-else
+      class="companies-table-wrap"
+    >
       <table class="companies-table">
         <thead>
           <tr>
@@ -145,15 +172,27 @@ onMounted(fetchCompanies)
         </thead>
         <tbody>
           <tr v-if="filteredCompanies.length === 0">
-            <td colspan="8" class="state-empty">No se encontraron empresas</td>
+            <td
+              colspan="8"
+              class="state-empty"
+            >
+              No se encontraron empresas
+            </td>
           </tr>
-          <tr v-for="c in filteredCompanies" :key="c.id">
+          <tr
+            v-for="c in filteredCompanies"
+            :key="c.id"
+          >
             <td>
               <div class="company-name-cell">
                 <span class="company-avatar">{{ getInitials(c.name) }}</span>
                 <div>
-                  <div class="company-name">{{ c.name }}</div>
-                  <div class="company-id">{{ c.prefix || c.id }}</div>
+                  <div class="company-name">
+                    {{ c.name }}
+                  </div>
+                  <div class="company-id">
+                    {{ c.prefix || c.id }}
+                  </div>
                 </div>
               </div>
             </td>
@@ -171,7 +210,10 @@ onMounted(fetchCompanies)
             <td>{{ new Date(c.createdAt).toLocaleDateString('es-CO') }}</td>
             <td>
               <div class="action-row">
-                <button class="btn-action btn-configure" @click="openSettings(c.id)">
+                <button
+                  class="btn-action btn-configure"
+                  @click="openSettings(c.id)"
+                >
                   ⚙️ Configurar
                 </button>
                 <button
@@ -189,80 +231,160 @@ onMounted(fetchCompanies)
     </div>
 
     <!-- Modal crear empresa -->
-    <div v-if="showModal" class="modal-overlay" @click.self="resetForm">
+    <div
+      v-if="showModal"
+      class="modal-overlay"
+      @click.self="resetForm"
+    >
       <div class="modal-box">
         <div class="modal-header">
           <h3>Nueva Empresa</h3>
-          <button class="modal-close" @click="resetForm">✕</button>
+          <button
+            class="modal-close"
+            @click="resetForm"
+          >
+            ✕
+          </button>
         </div>
-        <form class="modal-form" @submit.prevent="handleCreate">
+        <form
+          class="modal-form"
+          @submit.prevent="handleCreate"
+        >
           <div class="field-group">
             <label>Nombre de la empresa *</label>
-            <input v-model="form.name" required placeholder="Ej: Fuego Burger SAS" />
+            <input
+              v-model="form.name"
+              required
+              placeholder="Ej: Fuego Burger SAS"
+            >
           </div>
           <div class="field-row">
             <div class="field-group">
               <label>NIT</label>
-              <input v-model="form.nit" placeholder="Ej: 900.123.456-1" />
+              <input
+                v-model="form.nit"
+                placeholder="Ej: 900.123.456-1"
+              >
             </div>
             <div class="field-group">
               <label>Prefijo (3-4 letras) *</label>
-              <input v-model="form.prefix" required maxlength="4" placeholder="Ej: FGB" />
+              <input
+                v-model="form.prefix"
+                required
+                maxlength="4"
+                placeholder="Ej: FGB"
+              >
             </div>
           </div>
           <div class="field-row">
             <div class="field-group">
               <label>Ubicación / Ciudad</label>
-              <input v-model="form.city" placeholder="Ej: Sogamoso" />
+              <input
+                v-model="form.city"
+                placeholder="Ej: Sogamoso"
+              >
             </div>
             <div class="field-group">
               <label>Teléfono</label>
-              <input v-model="form.phone" placeholder="Ej: 601 234 5678" />
+              <input
+                v-model="form.phone"
+                placeholder="Ej: 601 234 5678"
+              >
             </div>
           </div>
           <div class="field-group">
             <label>Dirección</label>
-            <input v-model="form.address" placeholder="Ej: Calle 11 #15-20, Sogamoso" />
+            <input
+              v-model="form.address"
+              placeholder="Ej: Calle 11 #15-20, Sogamoso"
+            >
           </div>
           <div class="field-row">
             <div class="field-group">
               <label>Sector / Industria</label>
               <select v-model="form.sector">
-                <option value="">Sin especificar</option>
-                <option value="comercio">Comercio</option>
-                <option value="servicios">Servicios</option>
-                <option value="manufactura">Manufactura</option>
-                <option value="construccion">Construcción</option>
-                <option value="salud">Salud</option>
-                <option value="educacion">Educación</option>
-                <option value="tecnologia">Tecnología</option>
-                <option value="agropecuario">Agropecuario</option>
-                <option value="otro">Otro</option>
+                <option value="">
+                  Sin especificar
+                </option>
+                <option value="comercio">
+                  Comercio
+                </option>
+                <option value="servicios">
+                  Servicios
+                </option>
+                <option value="manufactura">
+                  Manufactura
+                </option>
+                <option value="construccion">
+                  Construcción
+                </option>
+                <option value="salud">
+                  Salud
+                </option>
+                <option value="educacion">
+                  Educación
+                </option>
+                <option value="tecnologia">
+                  Tecnología
+                </option>
+                <option value="agropecuario">
+                  Agropecuario
+                </option>
+                <option value="otro">
+                  Otro
+                </option>
               </select>
             </div>
           </div>
           <div class="field-row">
             <div class="field-group">
               <label>Nombre del administrador *</label>
-              <input v-model="form.adminName" required placeholder="Ej: Carlos García" />
+              <input
+                v-model="form.adminName"
+                required
+                placeholder="Ej: Carlos García"
+              >
             </div>
             <div class="field-group">
               <label>Plan</label>
               <select v-model="form.plan">
-                <option value="trial">Trial (30 días)</option>
-                <option value="starter">Starter</option>
-                <option value="pro">Pro</option>
-                <option value="enterprise">Enterprise</option>
+                <option value="trial">
+                  Trial (30 días)
+                </option>
+                <option value="starter">
+                  Starter
+                </option>
+                <option value="pro">
+                  Pro
+                </option>
+                <option value="enterprise">
+                  Enterprise
+                </option>
               </select>
             </div>
           </div>
           <div class="field-group">
             <label>Correo del administrador *</label>
-            <input v-model="form.adminEmail" required type="email" placeholder="admin@empresa.com" />
+            <input
+              v-model="form.adminEmail"
+              required
+              type="email"
+              placeholder="admin@empresa.com"
+            >
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn-ghost" @click="resetForm">Cancelar</button>
-            <button type="submit" class="btn-primary" :disabled="saving">
+            <button
+              type="button"
+              class="btn-ghost"
+              @click="resetForm"
+            >
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn-primary"
+              :disabled="saving"
+            >
               {{ saving ? 'Creando...' : 'Crear Empresa' }}
             </button>
           </div>
@@ -271,18 +393,40 @@ onMounted(fetchCompanies)
     </div>
 
     <!-- Credenciales creadas -->
-    <div v-if="createdCredentials" class="modal-overlay" @click.self="closeCredentials">
+    <div
+      v-if="createdCredentials"
+      class="modal-overlay"
+      @click.self="closeCredentials"
+    >
       <div class="modal-box credentials-box">
         <div class="modal-header">
           <h3>✅ Empresa creada</h3>
-          <button class="modal-close" @click="closeCredentials">✕</button>
+          <button
+            class="modal-close"
+            @click="closeCredentials"
+          >
+            ✕
+          </button>
         </div>
-        <p class="cred-intro">Comparte estas credenciales con el administrador de <strong>{{ createdCredentials.name }}</strong>:</p>
-        <div class="cred-row"><span>Email</span><code>{{ createdCredentials.email }}</code></div>
-        <div class="cred-row"><span>Contraseña temporal</span><code>{{ createdCredentials.password }}</code></div>
-        <p class="cred-warning">⚠️ El usuario deberá cambiar su contraseña en el primer inicio de sesión.</p>
+        <p class="cred-intro">
+          Comparte estas credenciales con el administrador de <strong>{{ createdCredentials.name }}</strong>:
+        </p>
+        <div class="cred-row">
+          <span>Email</span><code>{{ createdCredentials.email }}</code>
+        </div>
+        <div class="cred-row">
+          <span>Contraseña temporal</span><code>{{ createdCredentials.password }}</code>
+        </div>
+        <p class="cred-warning">
+          ⚠️ El usuario deberá cambiar su contraseña en el primer inicio de sesión.
+        </p>
         <div class="modal-footer">
-          <button class="btn-primary" @click="closeCredentials">Entendido</button>
+          <button
+            class="btn-primary"
+            @click="closeCredentials"
+          >
+            Entendido
+          </button>
         </div>
       </div>
     </div>

@@ -118,7 +118,10 @@ async function handleCancel() {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500"
+  >
     <!-- Header -->
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
@@ -127,13 +130,20 @@ async function handleCancel() {
           <span class="material-symbols-outlined text-[14px]">chevron_right</span>
           <span class="text-[#71717A]">Mi Suscripción</span>
         </div>
-        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Mi Suscripción</h1>
-        <p class="text-[14px] text-[#71717A]">Gestiona tu plan, pagos y facturas.</p>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">
+          Mi Suscripción
+        </h1>
+        <p class="text-[14px] text-[#71717A]">
+          Gestiona tu plan, pagos y facturas.
+        </p>
       </div>
     </div>
 
     <!-- Loading -->
-    <div v-if="isLoading" class="flex items-center justify-center py-20">
+    <div
+      v-if="isLoading"
+      class="flex items-center justify-center py-20"
+    >
       <span class="material-symbols-outlined animate-spin text-[32px] text-[#2563EB]">progress_activity</span>
     </div>
 
@@ -143,18 +153,26 @@ async function handleCancel() {
         <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div>
             <div class="flex items-center gap-3 mb-2">
-              <h2 class="text-[20px] font-bold text-[#18181B]">Plan {{ currentPlan?.name || 'Starter' }}</h2>
+              <h2 class="text-[20px] font-bold text-[#18181B]">
+                Plan {{ currentPlan?.name || 'Starter' }}
+              </h2>
               <span :class="['inline-flex px-2.5 py-0.5 rounded-md text-[11px] font-semibold', statusBadge.class]">
                 {{ statusBadge.label }}
               </span>
             </div>
             <p class="text-[13px] text-[#71717A]">
               {{ currentPlan?.billing === 'annual' ? 'Facturación anual' : 'Facturación mensual' }}
-              <span v-if="currentPlan?.renewsAt" class="ml-2">
+              <span
+                v-if="currentPlan?.renewsAt"
+                class="ml-2"
+              >
                 · Renueva el {{ formatDate(currentPlan.renewsAt) }}
               </span>
             </p>
-            <p v-if="currentPlan?.cancelAt" class="text-[12px] text-amber-600 mt-1">
+            <p
+              v-if="currentPlan?.cancelAt"
+              class="text-[12px] text-amber-600 mt-1"
+            >
               Se cancelará el {{ formatDate(currentPlan.cancelAt) }}
             </p>
           </div>
@@ -171,25 +189,33 @@ async function handleCancel() {
         <!-- Plan Limits -->
         <div class="mt-6 pt-6 border-t border-[#F4F4F5] grid grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Usuarios</p>
+            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Usuarios
+            </p>
             <p class="text-[14px] font-bold text-[#18181B]">
               {{ currentPlan?.limits?.maxUsers || 'Ilimitados' }}
             </p>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Facturas/mes</p>
+            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Facturas/mes
+            </p>
             <p class="text-[14px] font-bold text-[#18181B]">
               {{ currentPlan?.limits?.maxInvoicesPerMonth || 'Ilimitadas' }}
             </p>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Facturas este mes</p>
+            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Facturas este mes
+            </p>
             <p class="text-[14px] font-bold text-[#18181B]">
               {{ subscription?.invoicesThisMonth || 0 }}
             </p>
           </div>
           <div>
-            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">Módulos</p>
+            <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
+              Módulos
+            </p>
             <p class="text-[14px] font-bold text-[#18181B]">
               {{ currentPlan?.limits?.modules?.includes('*') ? 'Todos' : currentPlan?.limits?.modules?.length || 0 }}
             </p>
@@ -200,31 +226,57 @@ async function handleCancel() {
       <!-- Payment History -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden mb-6">
         <div class="px-5 py-4 border-b border-[#F4F4F5]">
-          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Historial de Pagos</h2>
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            Historial de Pagos
+          </h2>
         </div>
-        <div v-if="payments.length === 0" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">
+        <div
+          v-if="payments.length === 0"
+          class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+        >
           No hay pagos registrados aún.
         </div>
-        <div v-else class="overflow-x-auto">
+        <div
+          v-else
+          class="overflow-x-auto"
+        >
           <table class="w-full text-left min-w-[500px]">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-                <th class="px-5 py-3">Fecha</th>
-                <th class="px-5 py-3">Descripción</th>
-                <th class="px-5 py-3">Estado</th>
-                <th class="px-5 py-3 text-right">Monto</th>
+                <th class="px-5 py-3">
+                  Fecha
+                </th>
+                <th class="px-5 py-3">
+                  Descripción
+                </th>
+                <th class="px-5 py-3">
+                  Estado
+                </th>
+                <th class="px-5 py-3 text-right">
+                  Monto
+                </th>
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="p in payments" :key="p.id" class="hover:bg-[#FAFAFA]">
-                <td class="px-5 py-3.5 text-[#71717A]">{{ formatDateTime(p.paidAt || p.createdAt) }}</td>
-                <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ p.description || 'Pago de suscripción' }}</td>
+              <tr
+                v-for="p in payments"
+                :key="p.id"
+                class="hover:bg-[#FAFAFA]"
+              >
+                <td class="px-5 py-3.5 text-[#71717A]">
+                  {{ formatDateTime(p.paidAt || p.createdAt) }}
+                </td>
+                <td class="px-5 py-3.5 font-semibold text-[#18181B]">
+                  {{ p.description || 'Pago de suscripción' }}
+                </td>
                 <td class="px-5 py-3.5">
                   <span :class="['inline-flex px-2 py-0.5 rounded-md text-[11px] font-semibold', paymentStatusBadge(p.status).class]">
                     {{ paymentStatusBadge(p.status).label }}
                   </span>
                 </td>
-                <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(p.amount) }}</td>
+                <td class="px-5 py-3.5 text-right font-mono font-semibold">
+                  {{ formatCurrency(p.amount) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -234,26 +286,52 @@ async function handleCancel() {
       <!-- Invoices -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden mb-6">
         <div class="px-5 py-4 border-b border-[#F4F4F5]">
-          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Facturas de Suscripción</h2>
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            Facturas de Suscripción
+          </h2>
         </div>
-        <div v-if="invoices.length === 0" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">
+        <div
+          v-if="invoices.length === 0"
+          class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+        >
           No hay facturas generadas aún.
         </div>
-        <div v-else class="overflow-x-auto">
+        <div
+          v-else
+          class="overflow-x-auto"
+        >
           <table class="w-full text-left min-w-[600px]">
             <thead>
               <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-                <th class="px-5 py-3">N° Factura</th>
-                <th class="px-5 py-3">Período</th>
-                <th class="px-5 py-3">Estado</th>
-                <th class="px-5 py-3 text-right">Subtotal</th>
-                <th class="px-5 py-3 text-right">IVA</th>
-                <th class="px-5 py-3 text-right">Total</th>
+                <th class="px-5 py-3">
+                  N° Factura
+                </th>
+                <th class="px-5 py-3">
+                  Período
+                </th>
+                <th class="px-5 py-3">
+                  Estado
+                </th>
+                <th class="px-5 py-3 text-right">
+                  Subtotal
+                </th>
+                <th class="px-5 py-3 text-right">
+                  IVA
+                </th>
+                <th class="px-5 py-3 text-right">
+                  Total
+                </th>
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-              <tr v-for="inv in invoices" :key="inv.id" class="hover:bg-[#FAFAFA]">
-                <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">{{ inv.invoiceNumber }}</td>
+              <tr
+                v-for="inv in invoices"
+                :key="inv.id"
+                class="hover:bg-[#FAFAFA]"
+              >
+                <td class="px-5 py-3.5 font-mono text-[#2563EB] font-semibold">
+                  {{ inv.invoiceNumber }}
+                </td>
                 <td class="px-5 py-3.5 text-[#71717A]">
                   {{ formatDate(inv.periodStart) }} — {{ formatDate(inv.periodEnd) }}
                 </td>
@@ -262,9 +340,15 @@ async function handleCancel() {
                     {{ inv.status === 'paid' ? 'Pagada' : 'Pendiente' }}
                   </span>
                 </td>
-                <td class="px-5 py-3.5 text-right font-mono">{{ formatCurrency(inv.amount) }}</td>
-                <td class="px-5 py-3.5 text-right font-mono">{{ formatCurrency(inv.tax) }}</td>
-                <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(inv.total) }}</td>
+                <td class="px-5 py-3.5 text-right font-mono">
+                  {{ formatCurrency(inv.amount) }}
+                </td>
+                <td class="px-5 py-3.5 text-right font-mono">
+                  {{ formatCurrency(inv.tax) }}
+                </td>
+                <td class="px-5 py-3.5 text-right font-mono font-semibold">
+                  {{ formatCurrency(inv.total) }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -275,8 +359,8 @@ async function handleCancel() {
       <div class="flex justify-end">
         <button
           v-if="!subscription?.cancelAt && subscription?.active"
-          @click="showCancelModal = true"
           class="px-4 py-2 text-[13px] font-semibold text-rose-600 hover:text-rose-700 hover:bg-rose-50 rounded-[10px] transition-colors"
+          @click="showCancelModal = true"
         >
           Cancelar suscripción
         </button>
@@ -284,10 +368,15 @@ async function handleCancel() {
     </template>
 
     <!-- Cancel Modal -->
-    <div v-if="showCancelModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+    <div
+      v-if="showCancelModal"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm"
+    >
       <div class="bg-white w-[90%] max-w-[400px] rounded-[16px] shadow-2xl border border-[#E4E4E7] overflow-hidden animate-in zoom-in-95 duration-200">
         <div class="px-6 py-5 border-b border-[#F4F4F5]">
-          <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">Cancelar Suscripción</h3>
+          <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">
+            Cancelar Suscripción
+          </h3>
         </div>
         <div class="p-6">
           <p class="text-[14px] text-[#71717A] leading-relaxed">
@@ -297,17 +386,20 @@ async function handleCancel() {
         </div>
         <div class="px-6 py-4 bg-[#FAFAFA] border-t border-[#F4F4F5] flex justify-end gap-3">
           <button
-            @click="showCancelModal = false"
             class="px-4 py-2 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold"
+            @click="showCancelModal = false"
           >
             Mantener plan
           </button>
           <button
-            @click="handleCancel"
             :disabled="isCancelling"
             class="px-4 py-2 bg-rose-600 text-white rounded-[10px] text-[13px] font-semibold hover:bg-rose-700 disabled:opacity-50 flex items-center gap-2"
+            @click="handleCancel"
           >
-            <span v-if="isCancelling" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+            <span
+              v-if="isCancelling"
+              class="material-symbols-outlined animate-spin text-[16px]"
+            >progress_activity</span>
             {{ isCancelling ? 'Cancelando...' : 'Confirmar cancelación' }}
           </button>
         </div>

@@ -93,15 +93,37 @@ onMounted(fetchRequests)
   <div class="demo-requests">
     <div class="view-header">
       <div>
-        <h2 class="section-title">Solicitudes de Demo</h2>
-        <p class="section-sub">Gestiona los leads y prospectos interesados en Contex360</p>
+        <h2 class="section-title">
+          Solicitudes de Demo
+        </h2>
+        <p class="section-sub">
+          Gestiona los leads y prospectos interesados en Contex360
+        </p>
       </div>
-      <button class="btn-refresh" @click="fetchRequests">🔄 Actualizar</button>
+      <button
+        class="btn-refresh"
+        @click="fetchRequests"
+      >
+        🔄 Actualizar
+      </button>
     </div>
 
-    <div v-if="loading" class="state-loading">Cargando solicitudes...</div>
-    <div v-else-if="error" class="state-error">{{ error }}</div>
-    <div v-else class="table-wrap">
+    <div
+      v-if="loading"
+      class="state-loading"
+    >
+      Cargando solicitudes...
+    </div>
+    <div
+      v-else-if="error"
+      class="state-error"
+    >
+      {{ error }}
+    </div>
+    <div
+      v-else
+      class="table-wrap"
+    >
       <table class="data-table">
         <thead>
           <tr>
@@ -116,10 +138,20 @@ onMounted(fetchRequests)
         </thead>
         <tbody>
           <tr v-if="requests.length === 0">
-            <td colspan="5" class="state-empty">No hay solicitudes pendientes</td>
+            <td
+              colspan="5"
+              class="state-empty"
+            >
+              No hay solicitudes pendientes
+            </td>
           </tr>
-          <tr v-for="r in requests" :key="r.id">
-            <td class="date-cell">{{ new Date(r.createdAt).toLocaleDateString('es-CO') }}</td>
+          <tr
+            v-for="r in requests"
+            :key="r.id"
+          >
+            <td class="date-cell">
+              {{ new Date(r.createdAt).toLocaleDateString('es-CO') }}
+            </td>
             <td>
               <div class="prospect-info">
                 <span class="prospect-name">{{ r.empresa }}</span>
@@ -128,7 +160,10 @@ onMounted(fetchRequests)
             </td>
             <td>
               <div class="contact-links">
-                <a :href="'mailto:' + r.correo" class="link">{{ r.correo }}</a>
+                <a
+                  :href="'mailto:' + r.correo"
+                  class="link"
+                >{{ r.correo }}</a>
                 <span class="phone">{{ r.telefono || 'Sin teléfono' }}</span>
               </div>
             </td>
@@ -148,13 +183,21 @@ onMounted(fetchRequests)
               <div class="actions">
                 <select 
                   :value="r.estado" 
-                  @change="(e) => updateStatus(r.id, (e.target as HTMLSelectElement).value)"
                   class="status-select"
+                  @change="(e) => updateStatus(r.id, (e.target as HTMLSelectElement).value)"
                 >
-                  <option value="nuevo">Nuevo</option>
-                  <option value="contactado">Contactado</option>
-                  <option value="aprobado">Aprobado</option>
-                  <option value="rechazado">Rechazado</option>
+                  <option value="nuevo">
+                    Nuevo
+                  </option>
+                  <option value="contactado">
+                    Contactado
+                  </option>
+                  <option value="aprobado">
+                    Aprobado
+                  </option>
+                  <option value="rechazado">
+                    Rechazado
+                  </option>
                 </select>
                 <button 
                   v-if="r.estado === 'aprobado'" 
@@ -171,19 +214,29 @@ onMounted(fetchRequests)
     </div>
 
     <!-- Modal de Éxito de Conversión -->
-    <div v-if="showSuccessModal" class="modal-overlay" @click.self="closeSuccessModal">
+    <div
+      v-if="showSuccessModal"
+      class="modal-overlay"
+      @click.self="closeSuccessModal"
+    >
       <div class="modal-card">
         <div class="modal-header">
           <div class="success-icon-wrap">
             <span class="success-icon">✓</span>
           </div>
-          <h3 class="modal-title">¡Cliente Creado Exitosamente!</h3>
-          <p class="modal-subtitle">Se ha configurado la empresa y el usuario administrador en el sistema.</p>
+          <h3 class="modal-title">
+            ¡Cliente Creado Exitosamente!
+          </h3>
+          <p class="modal-subtitle">
+            Se ha configurado la empresa y el usuario administrador en el sistema.
+          </p>
         </div>
 
         <div class="modal-body">
           <div class="info-group">
-            <h4 class="info-group-title">🏢 Datos de la Empresa</h4>
+            <h4 class="info-group-title">
+              🏢 Datos de la Empresa
+            </h4>
             <div class="info-row">
               <span class="info-label">Nombre:</span>
               <span class="info-value">{{ convertedInfo?.tenant?.name }}</span>
@@ -195,7 +248,9 @@ onMounted(fetchRequests)
           </div>
 
           <div class="info-group">
-            <h4 class="info-group-title">👤 Administrador Inicial</h4>
+            <h4 class="info-group-title">
+              👤 Administrador Inicial
+            </h4>
             <div class="info-row">
               <span class="info-label">Nombre:</span>
               <span class="info-value">{{ convertedInfo?.user?.name }}</span>
@@ -214,8 +269,11 @@ onMounted(fetchRequests)
                 readonly 
                 :value="convertedInfo?.tempPassword" 
                 class="password-input"
-              />
-              <button class="btn-copy" @click="copyPassword">
+              >
+              <button
+                class="btn-copy"
+                @click="copyPassword"
+              >
                 <span v-if="copied">Copiado ✓</span>
                 <span v-else>📋 Copiar</span>
               </button>
@@ -227,7 +285,12 @@ onMounted(fetchRequests)
         </div>
 
         <div class="modal-footer">
-          <button class="btn-close-modal" @click="closeSuccessModal">Entendido</button>
+          <button
+            class="btn-close-modal"
+            @click="closeSuccessModal"
+          >
+            Entendido
+          </button>
         </div>
       </div>
     </div>

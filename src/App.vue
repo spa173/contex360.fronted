@@ -201,85 +201,85 @@ onMounted(() => {
   <div class="app-root">
     <ErrorBoundary>
       <!-- Initial load skeleton -->
-    <AppLoading
-      v-if="isLoading || loadError"
-      :error="loadError"
-      @retry="initApp"
-    />
+      <AppLoading
+        v-if="isLoading || loadError"
+        :error="loadError"
+        @retry="initApp"
+      />
 
-    <!-- App ready -->
-    <template v-else>
-      <!-- Authenticated states -->
-      <template v-if="store.currentUser">
-        <RootShell
-          v-if="showRootPanel"
-          @enter-erp="viewingAdminPanel = false"
-        />
-        <AppShell
-          v-else
-          @open-admin-panel="viewingAdminPanel = true"
-        />
-      </template>
-
-      <!-- Public states (unauthenticated) -->
+      <!-- App ready -->
       <template v-else>
-        <PaymentSuccess
-          v-if="showPaymentSuccess"
-          :plan-type="paymentSuccessPlan"
-          @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)"
-        />
-        <DemoRequestView
-          v-else-if="showDemo"
-          @back="showDemo = false"
-        />
-        <ForgotPasswordView
-          v-else-if="showForgotPassword"
-          @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)"
-        />
-        <ResetPasswordView
-          v-else-if="showResetPassword"
-          @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)"
-        />
-        <PricingView
-          v-else-if="showPricing"
-          @back="showPricing = false"
-          @request-demo="showDemo = true; showPricing = false"
-          @login="showAuth = true; showPricing = false"
-          @purchase-plan="handlePurchasePlan"
-        />
-        <AuthScreen
-          v-else-if="showAuth"
-          @request-demo="showDemo = true; showAuth = false"
-          @show-privacy="showPrivacy = true; showAuth = false"
-          @forgot-password="showForgotPassword = true; showAuth = false"
-          @back="showAuth = false"
-        />
-        <AboutView
-          v-else-if="showAbout"
-          @back="showAbout = false"
-          @request-demo="showDemo = true"
-          @login="showAuth = true"
-        />
-        <PrivacyPolicyView
-          v-else-if="showPrivacy"
-          @back="handleCustomBack"
-        />
-        <TermsOfUseView
-          v-else-if="showTerms"
-          @back="showTerms = false"
-        />
-        <LandingPage
-          v-else
-          @login="showAuth = true"
-          @request-demo="showDemo = true"
-          @show-privacy="showPrivacy = true"
-          @show-terms="showTerms = true"
-          @show-about="showAbout = true"
-          @show-pricing="showPricing = true"
-          @purchase-plan="handlePurchasePlan"
-        />
+        <!-- Authenticated states -->
+        <template v-if="store.currentUser">
+          <RootShell
+            v-if="showRootPanel"
+            @enter-erp="viewingAdminPanel = false"
+          />
+          <AppShell
+            v-else
+            @open-admin-panel="viewingAdminPanel = true"
+          />
+        </template>
+
+        <!-- Public states (unauthenticated) -->
+        <template v-else>
+          <PaymentSuccess
+            v-if="showPaymentSuccess"
+            :plan-type="paymentSuccessPlan"
+            @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)"
+          />
+          <DemoRequestView
+            v-else-if="showDemo"
+            @back="showDemo = false"
+          />
+          <ForgotPasswordView
+            v-else-if="showForgotPassword"
+            @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)"
+          />
+          <ResetPasswordView
+            v-else-if="showResetPassword"
+            @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)"
+          />
+          <PricingView
+            v-else-if="showPricing"
+            @back="showPricing = false"
+            @request-demo="showDemo = true; showPricing = false"
+            @login="showAuth = true; showPricing = false"
+            @purchase-plan="handlePurchasePlan"
+          />
+          <AuthScreen
+            v-else-if="showAuth"
+            @request-demo="showDemo = true; showAuth = false"
+            @show-privacy="showPrivacy = true; showAuth = false"
+            @forgot-password="showForgotPassword = true; showAuth = false"
+            @back="showAuth = false"
+          />
+          <AboutView
+            v-else-if="showAbout"
+            @back="showAbout = false"
+            @request-demo="showDemo = true"
+            @login="showAuth = true"
+          />
+          <PrivacyPolicyView
+            v-else-if="showPrivacy"
+            @back="handleCustomBack"
+          />
+          <TermsOfUseView
+            v-else-if="showTerms"
+            @back="showTerms = false"
+          />
+          <LandingPage
+            v-else
+            @login="showAuth = true"
+            @request-demo="showDemo = true"
+            @show-privacy="showPrivacy = true"
+            @show-terms="showTerms = true"
+            @show-about="showAbout = true"
+            @show-pricing="showPricing = true"
+            @purchase-plan="handlePurchasePlan"
+          />
+        </template>
       </template>
-    </template>
     </ErrorBoundary>
 
     <SessionRecoveryModal />

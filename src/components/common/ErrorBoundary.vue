@@ -50,14 +50,19 @@ function reloadPage() {
 </script>
 
 <template>
-  <div v-if="hasError" class="error-boundary flex items-center justify-center min-h-screen bg-[#0a0f18] p-4 text-center">
+  <div
+    v-if="hasError"
+    class="error-boundary flex items-center justify-center min-h-screen bg-[#0a0f18] p-4 text-center"
+  >
     <div class="bg-[#131926] p-8 rounded-2xl max-w-md w-full shadow-2xl border border-rose-500/20">
       <div class="flex justify-center mb-6">
         <div class="p-4 bg-rose-500/10 rounded-full">
           <AlertTriangle class="w-12 h-12 text-rose-500" />
         </div>
       </div>
-      <h2 class="text-2xl font-black text-white mb-2 tracking-tight">Algo salió mal</h2>
+      <h2 class="text-2xl font-black text-white mb-2 tracking-tight">
+        Algo salió mal
+      </h2>
       <p class="text-slate-400 text-sm mb-6 leading-relaxed">
         Ocurrió un error inesperado al intentar cargar esta sección. Hemos registrado el problema para solucionarlo.
       </p>
@@ -68,12 +73,14 @@ function reloadPage() {
         </p>
       </div>
 
-      <button @click="reloadPage" 
-        class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition-all">
+      <button
+        class="w-full flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded-xl transition-all" 
+        @click="reloadPage"
+      >
         <RefreshCcw class="w-4 h-4" />
         Recargar aplicación
       </button>
     </div>
   </div>
-  <slot v-else></slot>
+  <slot v-else />
 </template>

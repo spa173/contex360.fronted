@@ -21,12 +21,12 @@ describe('ErrorBoundary', () => {
     const consoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
 
     const ChildComponent = defineComponent({
-      template: '<button class="trigger-error" @click="throwError">Throw Error</button>',
       methods: {
         throwError() {
           throw new Error('Test Error')
         }
-      }
+      },
+      template: '<button class="trigger-error" @click="throwError">Throw Error</button>'
     })
 
     const wrapper = mount(ErrorBoundary, {
@@ -54,12 +54,12 @@ describe('ErrorBoundary', () => {
     ;(window as any).location = { ...originalLocation, reload: vi.fn() } as any
 
     const ChildComponent = defineComponent({
-      template: '<button class="trigger-error" @click="throwError">Throw Error</button>',
       methods: {
         throwError() {
           throw new Error('Test Error')
         }
-      }
+      },
+      template: '<button class="trigger-error" @click="throwError">Throw Error</button>'
     })
 
     const wrapper = mount(ErrorBoundary, {

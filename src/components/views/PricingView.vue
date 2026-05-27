@@ -148,19 +148,42 @@ function closeWompi() {
     <!-- Header -->
     <header class="h-20 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-6 lg:px-8 sticky top-0 z-30 shadow-sm">
       <div class="flex items-center gap-2.5">
-        <svg class="c360-mark flex-shrink-0" width="32" height="32" viewBox="0 0 56 56" aria-hidden="true">
-          <rect width="56" height="56" rx="12" fill="#18181B"/>
+        <svg
+          class="c360-mark flex-shrink-0"
+          width="32"
+          height="32"
+          viewBox="0 0 56 56"
+          aria-hidden="true"
+        >
+          <rect
+            width="56"
+            height="56"
+            rx="12"
+            fill="#18181B"
+          />
           <g class="rotor">
-            <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-            <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path
+              d="M44 18 A 16 16 0 1 0 44 38"
+              stroke="#fff"
+              stroke-width="5.5"
+              stroke-linecap="round"
+              fill="none"
+            />
+            <path
+              d="M44 18 A 16 16 0 0 1 44 38"
+              stroke="#2563EB"
+              stroke-width="5.5"
+              stroke-linecap="round"
+              fill="none"
+            />
           </g>
         </svg>
         <span class="text-[18px] font-bold tracking-tight text-[#18181B]">Contex360</span>
       </div>
 
       <button 
-        @click="emit('back')" 
-        class="flex items-center gap-1.5 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors"
+        class="flex items-center gap-1.5 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors" 
+        @click="emit('back')"
       >
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         Volver al inicio
@@ -182,14 +205,14 @@ function closeWompi() {
         <div class="flex items-center justify-center gap-3.5 mt-8">
           <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">Mensual</span>
           <button 
-            @click="isAnnual = !isAnnual"
             class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200 outline-none"
             :class="{ 'bg-[#18181B]': isAnnual }"
+            @click="isAnnual = !isAnnual"
           >
             <span 
               class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
               :class="{ 'translate-x-5.5': isAnnual }"
-            ></span>
+            />
           </button>
           <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">
             Anual
@@ -221,8 +244,12 @@ function closeWompi() {
           <div>
             <!-- Plan Header -->
             <div class="mb-5">
-              <h3 class="text-[22px] font-black text-[#18181B] tracking-tight mb-2">{{ plan.name }}</h3>
-              <p class="text-[13px] text-[#71717A] leading-[1.5]">{{ plan.desc }}</p>
+              <h3 class="text-[22px] font-black text-[#18181B] tracking-tight mb-2">
+                {{ plan.name }}
+              </h3>
+              <p class="text-[13px] text-[#71717A] leading-[1.5]">
+                {{ plan.desc }}
+              </p>
             </div>
 
             <!-- Price -->
@@ -235,7 +262,10 @@ function closeWompi() {
                   / {{ isAnnual ? 'año' : 'mes' }}
                 </span>
               </div>
-              <p v-if="isAnnual" class="text-[11.5px] text-emerald-600 font-bold mt-1">
+              <p
+                v-if="isAnnual"
+                class="text-[11.5px] text-emerald-600 font-bold mt-1"
+              >
                 Equivale a {{ formatCurrency(Math.round(plan.priceAnnual / 12)) }} al mes
               </p>
             </div>
@@ -252,26 +282,26 @@ function closeWompi() {
               </div>
             </div>
 
-            <div class="h-px bg-[#F4F4F5] mb-6"></div>
+            <div class="h-px bg-[#F4F4F5] mb-6" />
           </div>
 
           <!-- Buttons -->
           <div class="space-y-2.5 mt-auto">
             <button 
-              @click="openCheckout(plan)"
               :class="[
                 'w-full py-3.5 rounded-[12px] text-[13px] font-extrabold transition-colors text-center shadow-sm flex items-center justify-center gap-2',
                 plan.popular 
                   ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]' 
                   : 'bg-[#18181B] text-white hover:bg-[#27272A]'
               ]"
+              @click="openCheckout(plan)"
             >
               <span class="material-symbols-outlined text-[16px]">credit_card</span>
               Comprar ahora
             </button>
             <button 
-              @click="emit('request-demo')"
               class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-[12px] text-[13px] font-extrabold hover:bg-[#FAFAFA] transition-colors"
+              @click="emit('request-demo')"
             >
               Comenzar prueba gratis
             </button>
@@ -282,18 +312,30 @@ function closeWompi() {
       <!-- Feature Comparison Table -->
       <div class="bg-white border border-[#E4E4E7] rounded-[20px] overflow-hidden shadow-sm mb-16">
         <div class="p-6 border-b border-[#E4E4E7] bg-white">
-          <h3 class="text-[18px] font-black text-[#18181B] tracking-tight">Tabla comparativa de características</h3>
-          <p class="text-[13px] text-[#71717A] mt-1">Conoce al detalle lo que incluye cada uno de nuestros planes.</p>
+          <h3 class="text-[18px] font-black text-[#18181B] tracking-tight">
+            Tabla comparativa de características
+          </h3>
+          <p class="text-[13px] text-[#71717A] mt-1">
+            Conoce al detalle lo que incluye cada uno de nuestros planes.
+          </p>
         </div>
 
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr class="bg-[#F8F9FA] border-b border-[#E4E4E7] text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider">
-                <th class="py-4 px-6">Característica</th>
-                <th class="py-4 px-6 text-center w-[20%]">Starter</th>
-                <th class="py-4 px-6 text-center w-[20%]">Pyme</th>
-                <th class="py-4 px-6 text-center w-[20%]">Enterprise</th>
+                <th class="py-4 px-6">
+                  Característica
+                </th>
+                <th class="py-4 px-6 text-center w-[20%]">
+                  Starter
+                </th>
+                <th class="py-4 px-6 text-center w-[20%]">
+                  Pyme
+                </th>
+                <th class="py-4 px-6 text-center w-[20%]">
+                  Enterprise
+                </th>
               </tr>
             </thead>
             <tbody class="divide-y divide-[#E4E4E7] text-[13px]">
@@ -302,10 +344,18 @@ function closeWompi() {
                 :key="feat.name"
                 class="hover:bg-[#FAFAFA] transition-colors"
               >
-                <td class="py-4 px-6 font-semibold text-[#18181B]">{{ feat.name }}</td>
-                <td class="py-4 px-6 text-center font-semibold text-[#475569]">{{ feat.starter }}</td>
-                <td class="py-4 px-6 text-center font-semibold text-[#475569]">{{ feat.pyme }}</td>
-                <td class="py-4 px-6 text-center font-semibold text-[#475569]">{{ feat.enterprise }}</td>
+                <td class="py-4 px-6 font-semibold text-[#18181B]">
+                  {{ feat.name }}
+                </td>
+                <td class="py-4 px-6 text-center font-semibold text-[#475569]">
+                  {{ feat.starter }}
+                </td>
+                <td class="py-4 px-6 text-center font-semibold text-[#475569]">
+                  {{ feat.pyme }}
+                </td>
+                <td class="py-4 px-6 text-center font-semibold text-[#475569]">
+                  {{ feat.enterprise }}
+                </td>
               </tr>
             </tbody>
           </table>
@@ -326,17 +376,21 @@ function closeWompi() {
               <!-- Simulated Wompi logo -->
               <div class="bg-[#FE5F55] text-white font-black px-2.5 py-1.5 rounded-lg text-[14px] tracking-tighter flex items-center gap-0.5">
                 <span>w</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-white self-end mb-1"></span>
+                <span class="w-1.5 h-1.5 rounded-full bg-white self-end mb-1" />
                 <span>mpi</span>
               </div>
               <div>
-                <h4 class="text-[14px] font-black text-[#3D405B] tracking-tight">Checkout Seguro</h4>
-                <p class="text-[11px] text-[#3D405B]/70 font-semibold">Pasarela de pagos enlazada</p>
+                <h4 class="text-[14px] font-black text-[#3D405B] tracking-tight">
+                  Checkout Seguro
+                </h4>
+                <p class="text-[11px] text-[#3D405B]/70 font-semibold">
+                  Pasarela de pagos enlazada
+                </p>
               </div>
             </div>
             <button 
-              @click="closeWompi" 
-              class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors"
+              class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors" 
+              @click="closeWompi"
             >
               <span class="material-symbols-outlined text-[18px]">close</span>
             </button>
@@ -359,10 +413,13 @@ function closeWompi() {
             </div>
 
             <!-- Payment process step 1: details -->
-            <div v-if="paymentStep === 'details'" class="space-y-4">
+            <div
+              v-if="paymentStep === 'details'"
+              class="space-y-4"
+            >
               <button 
-                @click="submitPaymentReal"
                 class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
+                @click="submitPaymentReal"
               >
                 <span class="material-symbols-outlined text-[18px]">lock</span>
                 Pagar con Wompi
@@ -370,27 +427,37 @@ function closeWompi() {
             </div>
 
             <!-- Processing step -->
-            <div v-else-if="paymentStep === 'processing'" class="py-12 flex flex-col items-center justify-center text-center">
-              <span class="animate-spin w-10 h-10 border-4 border-[#FE5F55] border-t-transparent rounded-full mb-4"></span>
-              <h4 class="text-[15px] font-black text-[#18181B]">Procesando transacción</h4>
+            <div
+              v-else-if="paymentStep === 'processing'"
+              class="py-12 flex flex-col items-center justify-center text-center"
+            >
+              <span class="animate-spin w-10 h-10 border-4 border-[#FE5F55] border-t-transparent rounded-full mb-4" />
+              <h4 class="text-[15px] font-black text-[#18181B]">
+                Procesando transacción
+              </h4>
               <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1.5">
                 Por favor no cierres la ventana. Estamos validando la transacción con la red bancaria.
               </p>
             </div>
 
             <!-- Success step -->
-            <div v-else-if="paymentStep === 'success'" class="py-8 flex flex-col items-center justify-center text-center">
+            <div
+              v-else-if="paymentStep === 'success'"
+              class="py-8 flex flex-col items-center justify-center text-center"
+            >
               <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
                 <span class="material-symbols-outlined text-[32px] fill-current">check_circle</span>
               </div>
-              <h4 class="text-[18px] font-black text-[#18181B]">¡Pago exitoso!</h4>
+              <h4 class="text-[18px] font-black text-[#18181B]">
+                ¡Pago exitoso!
+              </h4>
               <p class="text-[13px] text-[#71717A] max-w-[320px] mt-2 leading-relaxed">
                 Tu transacción ha sido aprobada. Recibirás el comprobante de compra y los accesos por correo electrónico.
               </p>
               
               <button 
-                @click="closeWompi"
                 class="w-full py-3.5 bg-[#18181B] hover:bg-[#27272A] text-white text-[13px] font-extrabold rounded-xl transition-all shadow-md mt-8"
+                @click="closeWompi"
               >
                 Finalizar
               </button>
