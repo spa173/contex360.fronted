@@ -144,9 +144,10 @@ export async function loginWithBackend(credentials: {
   privacyAccepted?: boolean;
   rememberMe?: boolean;
 }) {
+  const { privacyAccepted, ...rest } = credentials
   const response = await requestJson<BackendAuthResponse>('/auth/login', {
     method: 'POST',
-    body: credentials,
+    body: rest,
   })
 
   return response
