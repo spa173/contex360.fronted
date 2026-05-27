@@ -162,16 +162,12 @@ const privacyConsentLoading = ref(false)
 const handleAcceptPrivacy = async () => {
   privacyConsentLoading.value = true
   try {
-    const result = await authStore.acceptPrivacyPolicy('v1.0')
-    if (result.ok) {
-      showPrivacyConsentModal.value = false
-      toast.success('Política de privacidad aceptada.')
-      await handleSubmit()
-    } else {
-      toast.error(result.message || 'Error al aceptar la política.')
-    }
+    hasAcceptedPrivacy.value = true
+    showPrivacyConsentModal.value = false
+    toast.success('Política de privacidad aceptada.')
+    await handleSubmit()
   } catch (err) {
-    toast.error('Error al aceptar la política.')
+    toast.error('Error al procesar la política.')
   } finally {
     privacyConsentLoading.value = false
   }
