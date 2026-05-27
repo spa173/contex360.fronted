@@ -5,14 +5,14 @@ import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { useAdminStore } from '../../stores/adminStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { useHead } from '@unhead/vue'
 
-interface Tax {
-  id: string
-  name: string
-  rate: string | number
-  type: 'Suma' | 'Resta'
-  active: boolean
-}
+useHead({
+  title: 'Facturación',
+  meta: [
+    { name: 'description', content: 'Gestión de facturación electrónica DIAN y documentos soporte.' },
+  ]
+})
 
 interface Invoice {
   id: string
@@ -41,59 +41,6 @@ onMounted(() => {
   adminStore.loadSettings()
 })
 
-function parseRate(rateStr: string | number | undefined): number {
-  const clean = String(rateStr || '').trim()
-  const isPerMille = clean.includes('‰')
-  const num = Number.parseFloat(clean.replace(/[^0-9.]/g, ''))
-  if (Number.isNaN(num)) return 0
-  if (isPerMille) {
-    return num / 1000
-  }
-  return num / 100
-}
-
-const subtotal = computed(() => Number(newInvoice.value.amount) || 0)
-
-const activeTaxes = computed((): Tax[] => {
-  return ((adminStore.taxes as Tax[]) || []).filter(t => t.active)
-})
-
-const taxBreakdown = computed(() => {
-  const base = subtotal.value
-  return activeTaxes.value.map(t => ({
-    id: t.id,
-    name: t.name,
-    rateStr: t.rate,
-    type: t.type as 'Suma' | 'Resta',
-    amount: base * parseRate(t.rate)
-  }))
-})
-
-const effectiveTaxRate = computed(() => {
-  let rateSum = 0
-  for (const t of activeTaxes.value) {
-    const rateVal = parseRate(t.rate) * 100
-    if (t.type === 'Suma') {
-      rateSum += rateVal
-    } else {
-      rateSum -= rateVal
-    }
-  }
-  return Math.max(0, rateSum)
-})
-
-const totalNeto = computed(() => {
-  let total = subtotal.value
-  for (const item of taxBreakdown.value) {
-    if (item.type === 'Suma') {
-      total += item.amount
-    } else {
-      total -= item.amount
-    }
-  }
-  return total
-})
-
 const filteredInvoices = computed(() => {
   let list = tenantInvoices.value
   if (statusFilter.value !== 'todas') {
@@ -114,22 +61,21 @@ async function handleCreateInvoice() {
     emit('notify', { message: 'Faltan datos', detail: 'Selecciona un cliente y asigna un valor.' })
     return
   }
-  
-  const dynamicTaxAmount = subtotal.value * (effectiveTaxRate.value / 100)
-  
+  const amount = Number(newInvoice.value.amount)
+  if (isNaN(amount) || amount <= 0) {
+    emit('notify', { message: 'Monto inválido', detail: 'El monto debe ser un número positivo.' })
+    return
+  }
   const res = await billing.emitInvoice({
     clientId: newInvoice.value.customerId,
     paymentTermDays: 30,
     notes: 'Factura generada comercialmente',
     items: [
       {
-        productName: newInvoice.value.concept || 'Servicios y Consultoría',
+        productName: newInvoice.value.concept?.trim() || 'Servicios y Consultoría',
         quantity: 1,
-        unitPrice: Number(newInvoice.value.amount),
-        taxRate: effectiveTaxRate.value,
-        subtotal: subtotal.value,
-        taxAmount: dynamicTaxAmount,
-        total: subtotal.value + dynamicTaxAmount
+        unitPrice: amount,
+        taxRate: 0,
       }
     ]
   })
@@ -256,7 +202,7 @@ function statusBadge(status: string | undefined): BadgeStyle {
 
       <!-- New invoice form -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 h-fit sticky top-6">
-        <h3 class="text-[18px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h3>
+        <h2 class="text-[18px] font-bold tracking-tight text-[#18181B] mb-1">Crear factura</h2>
         <p class="text-[13px] text-[#71717A] mb-6">Se enviará automáticamente a la DIAN.</p>
 
         <form @submit.prevent="handleCreateInvoice" class="space-y-5">
@@ -282,24 +228,10 @@ function statusBadge(status: string | undefined): BadgeStyle {
             <input id="invoice-amount" v-model="newInvoice.amount" type="number" placeholder="0" class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-3 text-[14px] font-mono font-semibold text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] transition-all" />
           </div>
 
-          <!-- Tax breakdown -->
-          <div class="bg-[#FAFAFA] rounded-[10px] p-4 border border-[#F4F4F5]">
-            <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-3">Cálculo automático</p>
-            <div class="space-y-2 text-[12px] font-mono">
-              <div class="flex justify-between text-[#18181B]"><span>Subtotal</span><span class="font-semibold">{{ formatCurrency(subtotal) }}</span></div>
-              <div v-for="t in taxBreakdown" :key="t.id" :class="['flex justify-between', t.type === 'Suma' ? 'text-[#71717A]' : 'text-rose-600']">
-                <span>{{ t.name }} ({{ t.rateStr }})</span>
-                <span>{{ t.type === 'Suma' ? '' : '-' }}{{ formatCurrency(t.amount) }}</span>
-              </div>
-              <div class="h-px bg-[#E4E4E7] my-2"></div>
-              <div class="flex justify-between text-[13px] font-bold text-[#18181B]"><span>Total neto</span><span class="text-[#2563EB]">{{ formatCurrency(totalNeto) }}</span></div>
-            </div>
-          </div>
-
           <div class="flex gap-2.5 p-3 rounded-[10px] border border-[#E4E4E7] bg-white">
             <span class="material-symbols-outlined text-[18px] text-[#2563EB] flex-shrink-0">auto_awesome</span>
             <p class="text-[11px] text-[#18181B] leading-[1.5]">
-              <strong class="font-semibold">ContexAI:</strong> Retenciones aplicadas automáticamente según el perfil del cliente.
+              <strong class="font-semibold">ContexAI:</strong> Los impuestos se calculan automáticamente en el backend.
             </p>
           </div>
 

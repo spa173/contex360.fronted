@@ -5,17 +5,20 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run sitemap && vite build",
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "sitemap": "node scripts/generate-sitemap.cjs",
     "lint": "eslint . --ext .vue,.js,.ts",
     "lint:fix": "eslint . --ext .vue,.js,.ts --fix",
-    "postinstall": "node scripts/patch-lockfile.cjs"
+    "postinstall": "node scripts/patch-lockfile.cjs",
+    "sitemap": "node scripts/generate-sitemap.cjs"
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",
+    "@unhead/vue": "^3.1.1",
     "@vueuse/core": "^14.3.0",
     "axios": "^1.8.4",
     "chart.js": "^4.5.1",

@@ -3,6 +3,14 @@ import { ref, computed } from 'vue'
 import { useAccountingStore } from '../../stores/accountingStore'
 import { useTreasuryStore } from '../../stores/treasuryStore'
 import { formatCurrency } from '../../utils/ui'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Contabilidad',
+  meta: [
+    { name: 'description', content: 'Libros contables, asientos y reportes financieros.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -144,9 +152,9 @@ function handleReconcileAi() {
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-4">
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-          <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
             Transacciones recientes
-          </h3>
+          </h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left min-w-[580px]">
@@ -255,9 +263,9 @@ function handleReconcileAi() {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1">
-          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">
+          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h2 class="text-[13px] font-bold tracking-tight text-[#18181B]">
             Reconciliación IA
-          </h3>
+          </h2>
         </div>
         <div
           v-if="showAiDiscrepancy"

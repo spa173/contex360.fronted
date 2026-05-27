@@ -4,6 +4,18 @@ import { useAuthStore } from '../stores/authStore'
 import { businessApi } from '../services/businessApi'
 import { decryptData } from '../utils/security'
 import { toast } from 'vue-sonner'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Iniciar Sesión',
+  meta: [
+    { name: 'description', content: 'Accede a tu panel de facturación electrónica, inventario y contabilidad en Contex360.' },
+    { property: 'og:title', content: 'Iniciar Sesión' },
+    { property: 'og:description', content: 'Accede a tu panel de facturación electrónica, inventario y contabilidad en Contex360.' },
+    { name: 'twitter:title', content: 'Iniciar Sesión' },
+    { name: 'twitter:description', content: 'Accede a tu panel de facturación electrónica, inventario y contabilidad en Contex360.' },
+  ]
+})
 
 const authStore = useAuthStore()
 
@@ -49,11 +61,11 @@ const isPasswordStrong = (pw: string) => PASSWORD_RULES.every(r => r.test(pw))
 
 const isFormValid = computed(() => isEmailValid.value && password.value.length > 0)
 
-onMounted(() => {
+onMounted(async () => {
   const savedEmail = localStorage.getItem('contex360-remember-email')
   if (savedEmail) {
     try {
-      email.value = decryptData(savedEmail)
+      email.value = await decryptData(savedEmail)
     } catch {
       email.value = savedEmail
     }
@@ -99,6 +111,12 @@ const handleSubmit = async () => {
       return
     }
 
+    if (result?.requiresPrivacyConsent) {
+      showPrivacyConsentModal.value = true
+      errorMessage.value = ''
+      return
+    }
+
     if (!result.ok) {
       errorMessage.value = result.message || 'Credenciales inválidas. Por favor, verifica tus datos.'
       return
@@ -138,6 +156,27 @@ const handleChangePassword = async () => {
   }
 }
 
+const showPrivacyConsentModal = ref(false)
+const privacyConsentLoading = ref(false)
+
+const handleAcceptPrivacy = async () => {
+  privacyConsentLoading.value = true
+  try {
+    const result = await authStore.acceptPrivacyPolicy('v1.0')
+    if (result.ok) {
+      showPrivacyConsentModal.value = false
+      toast.success('Política de privacidad aceptada.')
+      await handleSubmit()
+    } else {
+      toast.error(result.message || 'Error al aceptar la política.')
+    }
+  } catch (err) {
+    toast.error('Error al aceptar la política.')
+  } finally {
+    privacyConsentLoading.value = false
+  }
+}
+
 const togglePassword = () => {
   showPassword.value = !showPassword.value
 }
@@ -171,7 +210,7 @@ const togglePassword = () => {
       <section class="max-w-[640px] animate-in fade-in slide-in-from-left-4 duration-700">
         <!-- Brand -->
         <div class="inline-flex items-center gap-3 mb-7">
-          <svg class="c360-mark flex-shrink-0" width="44" height="44" viewBox="0 0 56 56">
+          <svg class="c360-mark flex-shrink-0" width="44" height="44" viewBox="0 0 56 56" aria-hidden="true">
             <rect width="56" height="56" rx="12" fill="#18181B"/>
             <g class="rotor">
               <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
@@ -418,6 +457,35 @@ const togglePassword = () => {
           </div>
         </div>
       </main>
+    </div>
+
+    <!-- Modal de Consentimiento Ley 1581 -->
+    <div v-if="showPrivacyConsentModal" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div class="bg-white w-[90%] max-w-[480px] rounded-[16px] shadow-2xl border border-[#E4E4E7] overflow-hidden animate-in zoom-in-95 duration-200">
+        <div class="px-6 py-5 border-b border-[#F4F4F5]">
+          <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">Política de Privacidad</h3>
+          <p class="text-[13px] text-[#71717A] mt-1">Ley 1581 de 2012 — Protección de datos personales</p>
+        </div>
+        <div class="p-6 max-h-[400px] overflow-y-auto">
+          <div class="text-[13px] text-[#3F3F46] leading-[1.6] space-y-4">
+            <p><strong>Contex360</strong> trata los datos personales de acuerdo con la Ley Estatutaria 1581 de 2012 y el Decreto 1377 de 2012.</p>
+            <p><strong>Finalidad:</strong> Sus datos serán utilizados exclusivamente para la prestación del servicio de facturación electrónica, contabilidad y gestión empresarial.</p>
+            <p><strong>Derechos:</strong> Usted tiene derecho a acceder, rectificar, suprimir y solicitar la portabilidad de sus datos personales, así como a oponerse a su tratamiento.</p>
+            <p><strong>Responsable:</strong> Contex360 — Datos de contacto: soporte@contex360.com</p>
+            <p class="text-[12px] text-[#A1A1AA]">Al aceptar, autoriza el tratamiento de sus datos personales conforme a esta política.</p>
+          </div>
+        </div>
+        <div class="px-6 py-4 bg-[#FAFAFA] border-t border-[#F4F4F5] flex justify-end gap-3">
+          <button
+            class="px-5 py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] disabled:opacity-50 flex items-center gap-2"
+            :disabled="privacyConsentLoading"
+            @click="handleAcceptPrivacy"
+          >
+            <span v-if="privacyConsentLoading" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+            {{ privacyConsentLoading ? 'Procesando...' : 'Aceptar y Continuar' }}
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>

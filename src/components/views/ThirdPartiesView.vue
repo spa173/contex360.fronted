@@ -3,12 +3,24 @@ import { computed, ref } from 'vue'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { validateNit } from '../../utils/nitValidation'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Terceros',
+  meta: [
+    { name: 'description', content: 'Administración de clientes, proveedores y socios comerciales.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const store = useThirdPartiesStore()
 const tenantThirdParties = computed(() => store.tenantThirdParties || [])
+
+const NIT_RE = /^\d{8,10}-\d{1}$/
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
 function initials(name) {
   if (!name) return '—'
@@ -54,9 +66,27 @@ async function handleCreateThirdParty() {
     emit('notify', { message: 'Faltan datos', detail: 'Por favor completa todos los campos obligatorios (Nombre, NIT y Correo).' })
     return
   }
+  if (!NIT_RE.test(newThirdParty.value.nit) || !validateNit(newThirdParty.value.nit)) {
+    emit('notify', { message: 'NIT inválido', detail: 'El NIT no es válido. Verifica el formato y el dígito de verificación (módulo 11).' })
+    return
+  }
+  if (!EMAIL_RE.test(newThirdParty.value.email)) {
+    emit('notify', { message: 'Correo inválido', detail: 'El correo electrónico no tiene un formato válido.' })
+    return
+  }
+  if (newThirdParty.value.name.trim().length < 2) {
+    emit('notify', { message: 'Nombre inválido', detail: 'El nombre debe tener al menos 2 caracteres.' })
+    return
+  }
   isSubmitting.value = true
   try {
-    await store.addThirdParty({ ...newThirdParty.value })
+    await store.addThirdParty({
+      name: newThirdParty.value.name.trim(),
+      nit: newThirdParty.value.nit.trim(),
+      email: newThirdParty.value.email.trim(),
+      kind: newThirdParty.value.kind,
+      taxProfile: newThirdParty.value.taxProfile
+    })
     emit('notify', { message: 'Tercero Creado', detail: `El tercero ${newThirdParty.value.name} ha sido guardado exitosamente.` })
     showNewThirdPartyModal.value = false
     newThirdParty.value = { name: '', nit: '', email: '', kind: 'client', taxProfile: 'RegimenComun' }
@@ -181,9 +211,9 @@ async function handleCreateThirdParty() {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1">
-          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">
+          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h2 class="text-[13px] font-bold tracking-tight text-[#18181B]">
             Insights de IA
-          </h3>
+          </h2>
         </div>
         <div
           v-if="store.aiInsights"

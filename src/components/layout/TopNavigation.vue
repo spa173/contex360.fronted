@@ -220,7 +220,7 @@ function handleViewAllAlerts() {
 </script>
 
 <template>
-  <div class="sticky top-0 z-30 w-full flex flex-col">
+  <header class="sticky top-0 z-30 w-full flex flex-col">
     <!-- Trial Banner -->
     <div
       v-if="showTrialBanner"
@@ -236,9 +236,14 @@ function handleViewAllAlerts() {
           Ver planes
         </button>
       </span>
+      <button
+        class="ml-2 w-5 h-5 rounded-full bg-amber-200 hover:bg-amber-300 flex items-center justify-center text-[11px] font-bold text-amber-800 transition-colors"
+        @click="showTrialBanner = false"
+      >
+        ✕
+      </button>
     </div>
-
-    <header class="topbar w-full h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 gap-3">
+    <div class="topbar w-full h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 gap-3">
       <!-- Hamburger (mobile only) -->
       <button
         class="lg:hidden w-8 h-8 rounded-[8px] hover:bg-[#FAFAFA] flex items-center justify-center text-[#71717A] flex-shrink-0"
@@ -811,8 +816,8 @@ function handleViewAllAlerts() {
           </Teleport>
         </div>
       </div>
-    </header>
-  </div>
+    </div>
+  </header>
 
   <!-- Keyboard Shortcuts Modal -->
   <Teleport to="body">

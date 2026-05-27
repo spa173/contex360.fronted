@@ -23,6 +23,7 @@ const TwoFactorView     = defineAsyncComponent(() => import('./views/TwoFactorVi
 const ProfileView       = defineAsyncComponent(() => import('./views/ProfileView.vue'))
 const AiView            = defineAsyncComponent(() => import('./views/AiView.vue'))
 const HelpCenterView    = defineAsyncComponent(() => import('./views/HelpCenterView.vue'))
+const SubscriptionView  = defineAsyncComponent(() => import('./views/SubscriptionView.vue'))
 const PlansView         = defineAsyncComponent(() => import('./views/PlansView.vue'))
 const ChatAssistant     = defineAsyncComponent(() => import('./ai/ChatAssistant.vue'))
 const SpotlightCommand  = defineAsyncComponent(() => import('./layout/SpotlightCommand.vue'))
@@ -194,6 +195,11 @@ function toggleSidebar() {
         />
         <HelpCenterView
           v-if="store.activeView === 'help-center'"
+          :is-active="true"
+          @notify="handleNotify"
+        />
+        <SubscriptionView
+          v-if="store.activeView === 'subscription'"
           :is-active="true"
           @notify="handleNotify"
         />

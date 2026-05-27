@@ -2,6 +2,18 @@
 import { ref, computed, onMounted } from 'vue'
 import { resetPassword } from '@/services/authApi'
 import { toast } from 'vue-sonner'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Restablecer Contraseña',
+  meta: [
+    { name: 'description', content: 'Crea una nueva contraseña para tu cuenta de Contex360.' },
+    { property: 'og:title', content: 'Restablecer Contraseña' },
+    { property: 'og:description', content: 'Crea una nueva contraseña para tu cuenta de Contex360.' },
+    { name: 'twitter:title', content: 'Restablecer Contraseña' },
+    { name: 'twitter:description', content: 'Crea una nueva contraseña para tu cuenta de Contex360.' },
+  ]
+})
 
 const emit = defineEmits(['back'])
 
@@ -71,7 +83,7 @@ const handleSubmit = async () => {
       <!-- ============ LEFT: brand + info ============ -->
       <section class="max-w-[640px] animate-in fade-in slide-in-from-left-4 duration-700">
         <div class="inline-flex items-center gap-3 mb-7">
-          <svg class="c360-mark flex-shrink-0" width="44" height="44" viewBox="0 0 56 56">
+          <svg class="c360-mark flex-shrink-0" width="44" height="44" viewBox="0 0 56 56" aria-hidden="true">
             <rect width="56" height="56" rx="12" fill="#18181B"/>
             <g class="rotor">
               <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>

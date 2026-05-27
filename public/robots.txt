@@ -1,0 +1,33 @@
+User-agent: *
+Allow: /
+Allow: /login
+Allow: /demo
+Allow: /nosotros
+Allow: /privacidad
+Allow: /terminos
+Allow: /precios
+Allow: /forgot-password
+Allow: /reset-password
+Allow: /pago-exitoso
+
+Disallow: /dashboard
+Disallow: /billing
+Disallow: /purchases
+Disallow: /treasury
+Disallow: /inventory
+Disallow: /third-parties
+Disallow: /accounting
+Disallow: /users
+Disallow: /reports
+Disallow: /quotes
+Disallow: /profile
+Disallow: /two-factor
+Disallow: /admin-console
+Disallow: /admin
+Disallow: /help-center
+Disallow: /plans
+Disallow: /ai
+Disallow: /api/
+Disallow: /auth/
+
+Sitemap: https://contex360.co/sitemap.xml

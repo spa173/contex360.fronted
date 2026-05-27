@@ -7,8 +7,6 @@ export const quoteItemSchema = z.object({
   quantity:    z.number().positive('La cantidad debe ser mayor a 0'),
   unitPrice:   z.number().nonnegative('El precio no puede ser negativo'),
   taxRate:     z.number().min(0).max(100),
-  subtotal:    z.number().nonnegative(),
-  taxAmount:   z.number().nonnegative(),
 })
 
 // ── Cotización (cabecera) ─────────────────────────────────────────────────────

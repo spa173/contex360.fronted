@@ -2,6 +2,14 @@
 import { ref } from 'vue'
 import { businessApi } from '@/services/businessApi'
 import { useAuthStore } from '@/stores/authStore'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Autenticación de Dos Factores',
+  meta: [
+    { name: 'description', content: 'Configura la verificación en dos pasos para tu cuenta Contex360.' },
+  ]
+})
 
 const authStore = useAuthStore()
 
@@ -74,7 +82,7 @@ function reset() {
       <div class="w-14 h-14 mx-auto rounded-full bg-emerald-50 flex items-center justify-center text-emerald-700 mb-4">
         <span class="material-symbols-outlined text-[28px]">check_circle</span>
       </div>
-      <h3 class="text-[18px] font-bold tracking-tight text-[#18181B] mb-1">{{ message }}</h3>
+      <h2 class="text-[18px] font-bold tracking-tight text-[#18181B] mb-1">{{ message }}</h2>
       <p class="text-[13px] text-[#71717A] mb-5">Necesitarás tu app autenticadora al iniciar sesión.</p>
       <button @click="reset" class="px-5 py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A]">Entendido</button>
     </div>
@@ -120,10 +128,10 @@ function reset() {
     <!-- Setup -->
     <div v-else-if="step === 'setup'" class="bg-white border border-[#E4E4E7] rounded-[14px] p-6">
       <p class="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider mb-1">Paso 1 de 2</p>
-      <h3 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-2">Escanea el código QR</h3>
+      <h2 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-2">Escanea el código QR</h2>
       <p class="text-[13px] text-[#71717A] mb-5">Abre <strong class="font-semibold text-[#18181B]">Google Authenticator</strong> o cualquier app TOTP.</p>
       <div class="flex justify-center py-4 mb-5">
-        <img :src="qrCodeUrl" alt="QR" class="w-44 h-44 rounded-[12px] border border-[#E4E4E7]" />
+        <img :src="qrCodeUrl" alt="Código QR de verificación en dos pasos para Google Authenticator" width="176" height="176" loading="eager" decoding="async" class="w-44 h-44 rounded-[12px] border border-[#E4E4E7]" />
       </div>
       <div class="bg-[#FAFAFA] rounded-[10px] p-3 border border-[#F4F4F5] mb-5">
         <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">O código manual</p>
@@ -135,7 +143,7 @@ function reset() {
     <!-- Confirm -->
     <div v-else-if="step === 'confirm'" class="bg-white border border-[#E4E4E7] rounded-[14px] p-6">
       <p class="text-[11px] font-bold text-[#2563EB] uppercase tracking-wider mb-1">Paso 2 de 2</p>
-      <h3 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-2">Confirma el código</h3>
+      <h2 class="text-[16px] font-bold tracking-tight text-[#18181B] mb-2">Confirma el código</h2>
       <p class="text-[13px] text-[#71717A] mb-5">Ingresa el código de 6 dígitos que muestra tu app.</p>
       <input v-model="code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" @keyup.enter="confirmCode" class="w-full text-center text-[24px] tracking-[0.4em] font-mono border border-[#E4E4E7] rounded-[10px] px-4 py-3 text-[#18181B] outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] mb-5" />
       <button @click="confirmCode" :disabled="loading || code.length < 6" class="w-full py-2.5 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] mb-2 disabled:opacity-50">{{ loading ? 'Verificando...' : 'Activar 2FA' }}</button>
@@ -144,7 +152,7 @@ function reset() {
 
     <!-- Disable -->
     <div v-else-if="step === 'disable'" class="bg-white border border-rose-200 rounded-[14px] p-6">
-      <h3 class="text-[16px] font-bold tracking-tight text-rose-700 mb-2">Desactivar 2FA</h3>
+      <h2 class="text-[16px] font-bold tracking-tight text-rose-700 mb-2">Desactivar 2FA</h2>
       <p class="text-[13px] text-[#71717A] mb-5">Ingresa el código actual de tu app autenticadora.</p>
       <input v-model="code" type="text" inputmode="numeric" maxlength="6" placeholder="000000" @keyup.enter="disableTotp" class="w-full text-center text-[24px] tracking-[0.4em] font-mono border border-[#E4E4E7] rounded-[10px] px-4 py-3 text-[#18181B] outline-none focus:border-rose-400 focus:ring-4 focus:ring-rose-100 mb-5" />
       <button @click="disableTotp" :disabled="loading || code.length < 6" class="w-full py-2.5 bg-rose-600 text-white rounded-[10px] text-[13px] font-semibold hover:bg-rose-700 mb-2 disabled:opacity-50">{{ loading ? 'Desactivando...' : 'Confirmar desactivación' }}</button>

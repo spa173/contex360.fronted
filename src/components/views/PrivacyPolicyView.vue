@@ -1,5 +1,17 @@
 <script setup lang="ts">
 import DOMPurify from 'dompurify'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Política de Privacidad',
+  meta: [
+    { name: 'description', content: 'Política de tratamiento de datos personales de Contex360.' },
+    { property: 'og:title', content: 'Política de Privacidad' },
+    { property: 'og:description', content: 'Política de tratamiento de datos personales de Contex360.' },
+    { name: 'twitter:title', content: 'Política de Privacidad' },
+    { name: 'twitter:description', content: 'Política de tratamiento de datos personales de Contex360.' },
+  ]
+})
 
 const lastUpdated = '12 de mayo de 2026'
 const emit = defineEmits<{ (e: 'back'): void }>()
@@ -99,7 +111,7 @@ const finalSections = [
           Volver
         </button>
         <div class="flex items-center gap-2.5">
-          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56">
+          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56" aria-hidden="true">
             <rect width="56" height="56" rx="12" fill="#18181B"/>
             <g class="rotor">
               <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>

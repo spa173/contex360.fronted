@@ -1,6 +1,14 @@
 <script setup>
 import { computed, reactive, watch } from 'vue'
 import { useAiStore } from '../../stores/aiStore'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'ContexAI',
+  meta: [
+    { name: 'description', content: 'Asistente de inteligencia artificial para análisis empresarial.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -44,9 +52,9 @@ function handleSubmit() {
             <p class="text-[11px] font-semibold text-[#2563EB] uppercase tracking-wider mb-1">
               RF-27 · RF-28
             </p>
-            <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+            <h2 class="text-[16px] font-bold tracking-tight text-[#18181B]">
               OCR y sugerencias contables
-            </h3>
+            </h2>
           </div>
           <span :class="['inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold', canOcr ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700']">
             {{ canOcr ? 'Acceso autorizado' : 'Solo lectura' }}
@@ -82,9 +90,9 @@ function handleSubmit() {
               <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
                 Extracción
               </p>
-              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+              <h2 class="text-[16px] font-bold tracking-tight text-[#18181B]">
                 Campos detectados
-              </h3>
+              </h2>
             </div>
             <span
               v-if="store.selectedOcrRun"
@@ -124,9 +132,9 @@ function handleSubmit() {
             <p class="text-[11px] font-semibold text-[#A1A1AA] uppercase tracking-wider mb-1">
               Asistente
             </p>
-            <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+            <h2 class="text-[16px] font-bold tracking-tight text-[#18181B]">
               Sugerencias
-            </h3>
+            </h2>
           </div>
           <div class="space-y-3">
             <div class="p-4 rounded-[10px] border border-[#E4E4E7]">

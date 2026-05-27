@@ -3,13 +3,23 @@ import { ref, computed } from 'vue'
 import { useQuotesStore } from '../../stores/quotesStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { useInventoryStore } from '../../stores/inventoryStore'
+import { useAdminStore } from '../../stores/adminStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Cotizaciones',
+  meta: [
+    { name: 'description', content: 'Creación y gestión de cotizaciones para clientes.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
 const quotes = useQuotesStore()
+const adminSettings = useAdminStore()
 const tenantQuotes = computed(() => quotes.tenantQuotes || [])
 const selectedQuote = ref(null)
 const searchQuery = ref('')
@@ -83,7 +93,7 @@ const quoteForm = ref({
   clientId: '',
   validUntil: new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 10),
   notes: '',
-  terms: 'Válido por 30 días. Pago del 50% al aceptar y 50% al entregar.',
+  terms: adminSettings.defaultPaymentTerms,
   items: [
     { productId: '', productName: '', quantity: 1, unitPrice: 0, taxRate: 19 }
   ]
@@ -96,7 +106,7 @@ function handleNewQuote() {
     clientId: '',
     validUntil: new Date(Date.now() + 86400000 * 30).toISOString().slice(0, 10),
     notes: '',
-    terms: 'Válido por 30 días. Pago del 50% al aceptar y 50% al entregar.',
+    terms: adminSettings.defaultPaymentTerms,
     items: [{ productId: '', productName: '', quantity: 1, unitPrice: 0, taxRate: 19 }]
   }
   showNewQuoteModal.value = true
@@ -121,10 +131,6 @@ function onProductSelect(item) {
     item.taxRate = product.taxRate || 19
   }
 }
-
-const quoteSubtotal = computed(() => quoteForm.value.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0))
-const quoteTax = computed(() => quoteForm.value.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice * (item.taxRate / 100)), 0))
-const quoteTotal = computed(() => quoteSubtotal.value + quoteTax.value)
 
 async function submitNewQuote() {
   if (!quoteForm.value.clientId) {
@@ -151,8 +157,6 @@ async function submitNewQuote() {
         quantity: i.quantity,
         unitPrice: i.unitPrice,
         taxRate: i.taxRate,
-        subtotal: i.quantity * i.unitPrice,
-        taxAmount: i.quantity * i.unitPrice * (i.taxRate / 100)
       }))
     }
     const res = await quotes.createQuote(payload)
@@ -495,18 +499,7 @@ async function submitNewQuote() {
                 </div>
               </div>
               <div class="w-full md:w-1/2 max-w-[280px] bg-[#FAFAFA] rounded-[10px] p-4 border border-[#E4E4E7]">
-                <div class="flex justify-between mb-2 text-[12px] text-[#71717A]">
-                  <span>Subtotal</span>
-                  <span class="font-mono font-semibold">{{ formatCurrency(quoteSubtotal) }}</span>
-                </div>
-                <div class="flex justify-between mb-3 text-[12px] text-[#71717A]">
-                  <span>Impuestos (IVA)</span>
-                  <span class="font-mono font-semibold">{{ formatCurrency(quoteTax) }}</span>
-                </div>
-                <div class="flex justify-between pt-3 border-t border-[#E4E4E7] text-[14px] font-bold text-[#18181B]">
-                  <span>Gran Total</span>
-                  <span class="font-mono text-[#2563EB]">{{ formatCurrency(quoteTotal) }}</span>
-                </div>
+                <p class="text-[11px] text-[#A1A1AA] text-center">Los totales se calculan automáticamente en el backend.</p>
               </div>
             </div>
           </div>

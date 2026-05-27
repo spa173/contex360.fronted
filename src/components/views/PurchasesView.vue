@@ -5,6 +5,14 @@ import { useAiStore } from '../../stores/aiStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
 import { useInventoryStore } from '../../stores/inventoryStore'
 import { formatCurrency } from '../../utils/ui'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Compras',
+  meta: [
+    { name: 'description', content: 'Registro y gestión de compras y órdenes de compra.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -107,10 +115,6 @@ function onProductSelect(item: any) {
   }
 }
 
-const manualSubtotal = computed(() => manualForm.value.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice), 0))
-const manualTax = computed(() => manualForm.value.items.reduce((sum, item) => sum + (item.quantity * item.unitPrice * (item.taxRate / 100)), 0))
-const manualTotal = computed(() => manualSubtotal.value + manualTax.value)
-
 async function submitManualPurchase() {
   // Validaciones inline
   const errors = { provider: '', items: [] as string[] }
@@ -143,8 +147,6 @@ async function submitManualPurchase() {
         quantity: i.quantity,
         unitPrice: i.unitPrice,
         taxRate: i.taxRate,
-        subtotal: i.quantity * i.unitPrice,
-        taxAmount: i.quantity * i.unitPrice * (i.taxRate / 100)
       }))
     }
     const res = await purchases.registerPurchase(payload)
@@ -203,7 +205,7 @@ async function submitManualPurchase() {
           <div class="w-14 h-14 mx-auto rounded-[12px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] mb-4">
             <span class="material-symbols-outlined text-[28px]">document_scanner</span>
           </div>
-          <h3 class="text-[16px] font-bold text-[#18181B] mb-1">Arrastra tus facturas o haz clic para subir</h3>
+          <h2 class="text-[16px] font-bold text-[#18181B] mb-1">Arrastra tus facturas o haz clic para subir</h2>
           <p class="text-[12px] text-[#71717A] mb-4">PDF, JPG, PNG · Máx 10MB</p>
           <div v-if="isProcessing" class="mt-2">
             <div class="w-32 h-1 mx-auto bg-[#E4E4E7] rounded-full overflow-hidden">
@@ -224,7 +226,7 @@ async function submitManualPurchase() {
     <!-- Recent processed -->
     <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
       <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">Historial de compras</h3>
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Historial de compras</h2>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left min-w-[580px]">
@@ -353,23 +355,7 @@ async function submitManualPurchase() {
               </table>
             </div>
             
-            <!-- Totals -->
-            <div class="mt-4 flex justify-end">
-              <div class="w-full max-w-[280px] bg-[#FAFAFA] rounded-[10px] p-4 border border-[#E4E4E7]">
-                <div class="flex justify-between mb-2 text-[12px] text-[#71717A]">
-                  <span>Subtotal</span>
-                  <span class="font-mono font-semibold">{{ formatCurrency(manualSubtotal) }}</span>
-                </div>
-                <div class="flex justify-between mb-3 text-[12px] text-[#71717A]">
-                  <span>Impuestos (IVA)</span>
-                  <span class="font-mono font-semibold">{{ formatCurrency(manualTax) }}</span>
-                </div>
-                <div class="flex justify-between pt-3 border-t border-[#E4E4E7] text-[14px] font-bold text-[#18181B]">
-                  <span>Total Compra</span>
-                  <span class="font-mono text-[#2563EB]">{{ formatCurrency(manualTotal) }}</span>
-                </div>
-              </div>
-            </div>
+            <p class="mt-3 text-[11px] text-[#A1A1AA] text-right">Los totales se calculan automáticamente en el backend.</p>
           </div>
         </div>
 

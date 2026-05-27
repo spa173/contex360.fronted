@@ -6,6 +6,14 @@ import { useDashboardStats } from '../../composables/useDashboardStats'
 import { useTranslationStore } from '../../stores/translationStore'
 import { businessApi } from '../../services/businessApi'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Dashboard',
+  meta: [
+    { name: 'description', content: 'Panel principal de Contex360 con resumen de facturación, inventario y contabilidad.' },
+  ]
+})
 
 const props = defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -494,9 +502,9 @@ onUnmounted(() => {
     </div>
 
     <!-- KPI cards (Image 1 style) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
+    <section class="kpi-grid" aria-label="Indicadores clave"><div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mb-6">
       <!-- Sales -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+      <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
         <div class="flex items-start justify-between mb-6">
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">payments</span>
@@ -509,9 +517,9 @@ onUnmounted(() => {
           </span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
             Ventas del día
-          </p>
+          </h3>
           <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
             $ {{ formatCompact(dashboardData.totalSales) }}
           </p>
@@ -519,10 +527,10 @@ onUnmounted(() => {
             {{ dashboardData.totalSales > 0 ? 'Operación activa' : 'Sin ventas registradas' }}
           </p>
         </div>
-      </div>
+      </article>
 
       <!-- Pending Invoices -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+      <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
         <div class="flex items-start justify-between mb-6">
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">receipt_long</span>
@@ -533,9 +541,9 @@ onUnmounted(() => {
           >Por cobrar</span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
             Facturas pendientes
-          </p>
+          </h3>
           <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
             {{ dashboardData.pendingInvoices }}
           </p>
@@ -543,10 +551,10 @@ onUnmounted(() => {
             {{ dashboardData.pendingInvoices > 0 ? 'Documentos pendientes' : 'Al día con las cuentas' }}
           </p>
         </div>
-      </div>
+      </article>
 
       <!-- Low Stock -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
+      <article class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors">
         <div class="flex items-start justify-between mb-6">
           <div class="w-10 h-10 rounded-[10px] bg-[#F4F4F5] flex items-center justify-center text-[#18181B]">
             <span class="material-symbols-outlined text-[22px]">inventory_2</span>
@@ -559,9 +567,9 @@ onUnmounted(() => {
           </span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
             Stock bajo
-          </p>
+          </h3>
           <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
             {{ dashboardData.lowStockAlerts }} SKUs
           </p>
@@ -569,10 +577,10 @@ onUnmounted(() => {
             {{ dashboardData.lowStockAlerts > 0 ? 'Requieren reabastecer' : 'Nivel de inventario óptimo' }}
           </p>
         </div>
-      </div>
+      </article>
 
       <!-- AI Tasks -->
-      <div
+      <article
         class="bg-white border border-[#E4E4E7] rounded-[14px] p-5 shadow-sm flex flex-col justify-between hover:border-[#D4D4D8] transition-colors cursor-pointer group"
         @click="openOcrModal"
       >
@@ -583,9 +591,9 @@ onUnmounted(() => {
           <span class="inline-flex px-2 py-0.5 rounded-md bg-[#2563EB]/10 text-[#2563EB] text-[11px] font-bold tracking-tight">OCR listo</span>
         </div>
         <div>
-          <p class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
+          <h3 class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider mb-1">
             Tareas de IA
-          </p>
+          </h3>
           <p class="text-[26px] sm:text-[28px] font-extrabold text-[#18181B] tracking-[-0.03em] leading-none mb-1.5">
             {{ dashboardData.ocrRunsCount }}
           </p>
@@ -593,13 +601,13 @@ onUnmounted(() => {
             {{ dashboardData.ocrRunsCount > 0 ? 'listas para revisar' : 'sin documentos pendientes' }}
           </p>
         </div>
-      </div>
-    </div>
+      </article>
+    </div></section>
 
     <!-- Main Section: Charts and Alerts (Image 1 style) -->
     <div class="grid grid-cols-1 xl:grid-cols-[1fr_400px] gap-6 mb-6">
       <!-- Flujo de caja Chart -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 shadow-sm flex flex-col justify-between">
+      <section class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 shadow-sm flex flex-col justify-between">
         <div>
           <div class="flex items-center justify-between mb-1.5">
             <span class="text-[11px] font-bold text-[#A1A1AA] uppercase tracking-wider">Flujo de caja</span>
@@ -608,9 +616,9 @@ onUnmounted(() => {
               <span class="flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-[#2563EB]" />Proyección</span>
             </div>
           </div>
-          <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight">
+          <h2 class="text-[20px] font-extrabold text-[#18181B] tracking-tight">
             Histórico vs Predicción IA
-          </h3>
+          </h2>
           <p class="text-[13px] text-[#71717A] mb-8 font-medium">
             Últimos 30 días + 15 días proyectados
           </p>
@@ -728,33 +736,33 @@ onUnmounted(() => {
             <span>{{ dateLabels.end }}</span>
           </div>
         </div>
-      </div>
+      </section>
 
       <!-- Alertas Column -->
-      <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 shadow-sm flex flex-col justify-between self-start w-full">
+      <section class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 shadow-sm flex flex-col justify-between self-start w-full">
         <div>
-          <h3 class="text-[18px] font-extrabold text-[#18181B] tracking-tight mb-6">
+          <h2 class="text-[18px] font-extrabold text-[#18181B] tracking-tight mb-6">
             Alertas
-          </h3>
+          </h2>
           <div
             v-if="alertsList.length > 0"
             class="space-y-4 divide-y divide-[#F4F4F5]"
           >
-            <div
+            <article
               v-for="alert in alertsList"
               :key="alert.id"
               class="pt-4 first:pt-0"
             >
               <div class="flex items-center gap-2.5 mb-1">
                 <span :class="['w-2 h-2 rounded-full flex-shrink-0', alert.color]" />
-                <p class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">
+                <h3 class="text-[14px] font-bold text-[#18181B] leading-tight tracking-tight">
                   {{ alert.title }}
-                </p>
+                </h3>
               </div>
               <p class="text-[13px] text-[#71717A] pl-4.5 font-medium">
                 {{ alert.description }} <span class="text-[#A1A1AA] ml-1 font-normal">{{ alert.time }}</span>
               </p>
-            </div>
+            </article>
           </div>
           <div
             v-else
@@ -778,7 +786,7 @@ onUnmounted(() => {
             Ver todas las alertas <span class="material-symbols-outlined text-[16px] group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
           </button>
         </div>
-      </div>
+      </section>
     </div>
 
     <!-- AI OCR Runs Modal -->

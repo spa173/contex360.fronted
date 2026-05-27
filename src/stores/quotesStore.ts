@@ -2,9 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
-import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import type { Quote, CreateQuotePayload, QuoteStatus } from '../types/quotes'
-import { quoteSchema } from '../schemas/quote.schema'
 
 export const useQuotesStore = defineStore('quotes', () => {
   const root = useStateStore()
@@ -55,29 +53,15 @@ export const useQuotesStore = defineStore('quotes', () => {
     }
 
     try {
-      quoteSchema.parse(payload)
-
       const response = await businessApi.createQuote(
         payload,
         activeTenantId.value,
       )
       const quote = response as Quote
       quotes.value.unshift(quote)
-      
-      appendAuditEvent(root.$state, { 
-        tenantId: quote.tenantId, 
-        entity: 'cotización', 
-        action: 'Crear', 
-        description: `Se creó la cotización ${quote.number} para ${quote.client?.name || quote.clientId}.`,
-        actor: root.currentUser?.name || 'Sistema', 
-        severity: 'info' 
-      })
 
       return { ok: true, message: 'Cotización creada correctamente.', quote }
     } catch (error) {
-      if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
-        return { ok: false, message: 'Datos de cotización inválidos. Revisa los campos obligatorios.' }
-      }
       return {
         ok: false,
         message:
@@ -89,20 +73,10 @@ export const useQuotesStore = defineStore('quotes', () => {
   async function convertToInvoice(quoteId: string) {
     try {
       const result = await businessApi.convertQuoteToInvoice(quoteId, activeTenantId.value)
-      // Update local state
       const index = quotes.value.findIndex(q => q.id === quoteId)
       if (index !== -1) {
         quotes.value[index].status = 'converted'
       }
-      
-      appendAuditEvent(root.$state, { 
-        tenantId: activeTenantId.value!, 
-        entity: 'cotización', 
-        action: 'Convertir', 
-        description: `Se convirtió la cotización a la factura ${result.invoice.number}.`, 
-        actor: root.currentUser?.name || 'Sistema', 
-        severity: 'info' 
-      })
 
       return { ok: true, message: 'Conversión exitosa.', invoice: result.invoice }
     } catch (error) {

@@ -9,7 +9,7 @@ import {
 } from './rbacStore'
 import { createInitialState, normalizeState } from './stateNormalization'
 import { Product, InventoryMovement, InventoryTransfer } from '../types/inventory'
-import { encryptData, decryptData } from '../utils/security'
+import { encryptData, decryptData, initEncryptionKey } from '../utils/security'
 
 const STORAGE_KEY = ['contex360', 'mvp', 'state', 'v2'].join('-')
 
@@ -51,29 +51,8 @@ export interface AppState {
   [key: string]: any
 }
 
-function loadState() {
-  // Migración: eliminar la llave AES que versiones anteriores guardaban en localStorage
-  // junto a los datos cifrados (mismo storage = sin protección real)
-  const OLD_KEY = ['contex360', 'crypto', 'key', 'v2'].join('-')
-  if (localStorage.getItem(OLD_KEY)) {
-    localStorage.removeItem(OLD_KEY)
-  }
-
-  const raw = localStorage.getItem(STORAGE_KEY)
-  if (!raw) return createInitialState()
-  
-  try {
-    const decrypted = decryptData(raw)
-    const parsed = JSON.parse(decrypted || raw)
-    return normalizeState(parsed)
-  } catch {
-    return createInitialState()
-  }
-}
-
-
 export const useStateStore = defineStore('state', {
-  state: (): AppState => loadState(),
+  state: (): AppState => createInitialState(),
   getters: {
     currentUser(state): User | null { return state.users.find(u => u.id === state.session.currentUserId) || null },
     activeTenant(state): Tenant | null { return state.tenants.find(t => t.id === state.activeTenantId) || null },
@@ -97,27 +76,35 @@ export const useStateStore = defineStore('state', {
     }
   },
   actions: {
-    saveState() {
+    async saveState() {
       const serialized = JSON.stringify(this.$state)
-      const encrypted = encryptData(serialized)
+      const encrypted = await encryptData(serialized)
       localStorage.setItem(STORAGE_KEY, encrypted)
     },
     
-    setActiveView(view: string) {
+    async setActiveView(view: string) {
       this.activeView = view
-      this.saveState()
+      await this.saveState()
       return { ok: true }
     },
 
-    hydrateState() {
-      const state = loadState()
-      this.$patch(state as any)
+    async hydrateState() {
+      await initEncryptionKey()
+      const raw = localStorage.getItem(STORAGE_KEY)
+      if (!raw) return
+      try {
+        const decrypted = await decryptData(raw)
+        const parsed = JSON.parse(decrypted)
+        this.$patch(normalizeState(parsed) as any)
+      } catch {
+        // State is unrecoverable (e.g., new session key), start fresh
+      }
     },
 
     async setActiveTenant(tenantId: string) {
       this.activeTenantId = tenantId
       await this.fetchBusinessData()
-      this.saveState()
+      await this.saveState()
       return { ok: true }
     },
 
@@ -131,7 +118,7 @@ export const useStateStore = defineStore('state', {
         if (error.message?.includes('403') || error.message?.includes('401')) return
         console.error('Error fetching business data:', error) 
       }
-      this.saveState()
+      await this.saveState()
     },
 
     can(permission: string): boolean { 
@@ -170,7 +157,7 @@ export const useStateStore = defineStore('state', {
         this.session.currentUserId = null
         this.session.currentSessionId = null
         this.activeTenantId = null
-        this.saveState()
+        await this.saveState()
         return false
       }
     },

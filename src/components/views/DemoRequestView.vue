@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { businessApi } from '../../services/businessApi'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Solicita tu Demo',
+  meta: [
+    { name: 'description', content: 'Reserva una demostración personalizada de Contex360 para tu empresa.' },
+    { property: 'og:title', content: 'Solicita tu Demo' },
+    { property: 'og:description', content: 'Reserva una demostración personalizada de Contex360 para tu empresa.' },
+    { name: 'twitter:title', content: 'Solicita tu Demo' },
+    { name: 'twitter:description', content: 'Reserva una demostración personalizada de Contex360 para tu empresa.' },
+  ]
+})
 
 const emit = defineEmits(['back'])
 
@@ -54,7 +66,7 @@ const handleSubmit = async () => {
     <!-- Header -->
     <header class="relative h-20 px-6 lg:px-8 flex justify-between items-center sticky top-0 bg-white/80 backdrop-blur-md z-50 border-b border-transparent">
       <div class="flex items-center gap-2.5">
-        <svg class="c360-mark flex-shrink-0" width="32" height="32" viewBox="0 0 56 56">
+        <svg class="c360-mark flex-shrink-0" width="32" height="32" viewBox="0 0 56 56" aria-hidden="true">
           <rect width="56" height="56" rx="12" fill="#18181B"/>
           <g class="rotor">
             <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>

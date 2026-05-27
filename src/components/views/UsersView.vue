@@ -2,6 +2,14 @@
 import { ref, computed } from 'vue'
 import { useUsersStore } from '../../stores/usersStore'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Usuarios',
+  meta: [
+    { name: 'description', content: 'Gestión de usuarios y permisos de la plataforma.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -364,9 +372,9 @@ async function handleAnonymize(user) {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1">
-          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">
+          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h2 class="text-[13px] font-bold tracking-tight text-[#18181B]">
             Insights de IA
-          </h3>
+          </h2>
         </div>
         <div class="bg-white border border-rose-200 rounded-[14px] overflow-hidden">
           <div class="px-4 py-3 bg-rose-50 border-b border-rose-100 flex items-center gap-2">
