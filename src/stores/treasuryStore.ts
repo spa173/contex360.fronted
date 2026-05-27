@@ -101,6 +101,9 @@ export const useTreasuryStore = defineStore('treasury', () => {
   }
 
   async function createTransaction(payload: CreateTransactionPayload) {
+    if (!payload || !payload.type || !payload.amount || !payload.description) {
+      return { ok: false, message: 'Datos de movimiento inválidos o incompletos.' }
+    }
     isSaving.value = true
     try {
       const created = await businessApi.createTransaction(payload, activeTenantId.value)
