@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import {
   loginWithBackend as apiLoginWithBackend,
   revokeBackendSession,
+  acceptPrivacyPolicy as apiAcceptPrivacy,
 } from '../services/authApi'
 import { encryptData } from '../utils/security'
 import { useStateStore } from './stateStore'
@@ -14,6 +15,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isLoading = ref(false)
   const authError = ref<string | null>(null)
   const isSessionExpired = ref(false)
+  const requiresPrivacyConsent = ref(false)
 
   const currentUser = computed(() => root.currentUser)
   const isAuthenticated = computed(() => !!currentUser.value)
@@ -27,17 +29,17 @@ export const useAuthStore = defineStore('auth', () => {
 
   const visibleViews = computed(() => {
     if (isSystemOwner.value) {
-      return ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'help-center', 'profile', 'about']
+      return ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'help-center', 'subscription', 'profile', 'about']
     }
     const role = activeMembership.value?.role
-    if (!role) return ['dashboard', 'help-center', 'profile', 'about']
+    if (!role) return ['dashboard', 'help-center', 'subscription', 'profile', 'about']
     const definitions: any = {
-      'Administrador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'help-center', 'profile', 'about'],
-      'Contador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'reports', 'help-center', 'profile', 'about'],
-      'Visor': ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'accounting', 'third-parties', 'reports', 'help-center', 'profile', 'about'],
-      'Operador': ['dashboard', 'billing', 'inventory', 'third-parties', 'help-center', 'profile', 'about']
+      'Administrador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'users', 'reports', 'ai', 'admin-console', 'help-center', 'subscription', 'profile', 'about'],
+      'Contador': ['dashboard', 'billing', 'purchases', 'quotes', 'treasury', 'inventory', 'accounting', 'third-parties', 'reports', 'help-center', 'subscription', 'profile', 'about'],
+      'Visor': ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'accounting', 'third-parties', 'reports', 'help-center', 'subscription', 'profile', 'about'],
+      'Operador': ['dashboard', 'billing', 'inventory', 'third-parties', 'help-center', 'subscription', 'profile', 'about']
     }
-    return definitions[role] || ['dashboard', 'help-center', 'profile', 'about']
+    return definitions[role] || ['dashboard', 'help-center', 'subscription', 'profile', 'about']
   })
 
   async function loginWithBackend(credentials: { 
@@ -51,10 +53,10 @@ export const useAuthStore = defineStore('auth', () => {
     authError.value = null
     const activeTenantId = root.activeTenantId || 'tenant-a'
 
-    // Handle "Remember Me" persistence logic (encrypted for security)
+    // Handle "Remember Me" persistence
     if (credentials.rememberMe) {
       try {
-        const encrypted = encryptData(credentials.email)
+        const encrypted = await encryptData(credentials.email)
         localStorage.setItem('contex360-remember-email', encrypted)
       } catch {
         localStorage.removeItem('contex360-remember-email')
@@ -71,6 +73,10 @@ export const useAuthStore = defineStore('auth', () => {
       if ((response as any).requiresPasswordChange) {
         return { ok: false, requiresPasswordChange: true, message: response.message }
       }
+      if ((response as any).requiresPrivacyConsent) {
+        requiresPrivacyConsent.value = true
+        return { ok: false, requiresPrivacyConsent: true, message: response.message }
+      }
 
       if (response.user) {
         const existingIndex = root.users.findIndex(u => u.id === response.user.id)
@@ -85,7 +91,7 @@ export const useAuthStore = defineStore('auth', () => {
         if (response.memberships) root.memberships = response.memberships as any
         root.subscription = (response as any).subscription || null
         isSessionExpired.value = false
-        root.saveState()
+        await root.saveState()
         return { ok: true, user: response.user }
       }
       return { ok: false, message: response.message || 'Usuario no encontrado.' }
@@ -107,7 +113,7 @@ export const useAuthStore = defineStore('auth', () => {
       })
       if (response.user) {
         isSessionExpired.value = false
-        root.saveState()
+        await root.saveState()
         return { ok: true }
       }
       return { ok: false, message: 'Contraseña incorrecta.' }
@@ -127,8 +133,8 @@ export const useAuthStore = defineStore('auth', () => {
       root.session.currentUserId = null
       root.session.currentSessionId = null
       isSessionExpired.value = false
-      root.setActiveView('dashboard')
-      root.saveState()
+      await root.setActiveView('dashboard')
+      await root.saveState()
     }
   }
 
@@ -138,16 +144,31 @@ export const useAuthStore = defineStore('auth', () => {
     return ok
   }
 
+  async function acceptPrivacyPolicy(version: string) {
+    try {
+      const result = await apiAcceptPrivacy(version)
+      if (result.ok) {
+        requiresPrivacyConsent.value = false
+        return { ok: true, message: result.message }
+      }
+      return { ok: false, message: result.message }
+    } catch (error: any) {
+      return { ok: false, message: error.message || 'Error al aceptar la política.' }
+    }
+  }
+
   return {
     isLoading,
     authError,
     isSessionExpired,
+    requiresPrivacyConsent,
     currentUser,
     isAuthenticated,
     loginWithBackend,
     reauthenticate,
     logout,
     refreshSessionWithBackend,
+    acceptPrivacyPolicy,
     visibleViews,
     activeMembership,
     activeView,

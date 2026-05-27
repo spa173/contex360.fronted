@@ -1,3 +1,8 @@
+// ⚠️ UI-ONLY — Role-based permission checks for view-level rendering.
+// This is NOT an authoritative access control mechanism.
+// All write operations, financial actions, and data mutations
+// MUST be validated server-side regardless of these flags.
+
 import { computed } from 'vue'
 import { useStateStore } from '../stores/stateStore'
 

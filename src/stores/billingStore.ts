@@ -2,10 +2,9 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
-import { uid, appendAuditEvent } from '../utils/storeHelpers'
+import { uid } from '../utils/storeHelpers'
 import { Invoice, InvoiceStatus } from '../types/billing'
 import { useAccountingStore } from './accountingStore'
-import { invoiceSchema } from '../schemas/invoice.schema'
 
 const scheduledDianTimers = new Map<string, any[]>()
 
@@ -76,24 +75,16 @@ export const useBillingStore = defineStore('billing', () => {
     if (!canEmitInvoice.value) return { ok: false, message: 'Tu rol actual no permite emitir documentos.' }
     
     try {
-      invoiceSchema.parse(payload)
-
       const response = await businessApi.createInvoice(payload, activeTenantId.value)
       const invoice = response as Invoice
       invoices.value.unshift(invoice)
-      // We no longer create a local ledger entry mock,
-      // as the backend automatically generates the real entry.
       accounting.fetchLedgerEntries()
-      appendAuditEvent(root.$state, { tenantId: invoice.tenantId, entity: 'factura', action: 'Emitir', description: `Se emitió la factura ${invoice.number} por ${invoice.total}.`, actor: root.currentUser?.name || 'Sistema', severity: 'info' })
       
       // Llamada real al backend para transmitir la factura a la DIAN (en segundo plano)
       sendToDian(invoice.id).catch(err => console.error('Error enviando a DIAN en segundo plano:', safeLogMessage(err)))
       
       return { ok: true, message: 'Factura emitida correctamente.', invoice }
     } catch (error) { 
-      if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
-        return { ok: false, message: 'Datos de factura inválidos. Revisa los campos obligatorios.' }
-      }
       return { ok: false, message: error instanceof Error ? error.message : 'Error al emitir factura.' } 
     }
   }
@@ -107,7 +98,6 @@ export const useBillingStore = defineStore('billing', () => {
       if (index !== -1) {
         invoices.value[index] = { ...invoices.value[index], ...cancelled, status: 'cancelled' as InvoiceStatus }
       }
-      appendAuditEvent(root.$state, { tenantId: root.activeTenantId, entity: 'factura', action: 'Cancelar', description: `Se canceló la factura ${cancelled.number}. Motivo: ${reason || 'No especificado'}`, actor: root.currentUser?.name || 'Sistema', severity: 'warning' })
       return { ok: true, message: 'Factura cancelada correctamente. El inventario ha sido restaurado.' }
     } catch (error) {
       return { ok: false, message: error instanceof Error ? error.message : 'Error al cancelar factura.' }
@@ -138,14 +128,6 @@ export const useBillingStore = defineStore('billing', () => {
             status: (result.status === 'accepted' ? 'accepted' : invoices.value[index].status) as InvoiceStatus
           }
         }
-        appendAuditEvent(root.$state, { 
-          tenantId: root.activeTenantId, 
-          entity: 'dian', 
-          action: 'Enviar', 
-          description: `Factura enviada a DIAN. CUFE: ${result.cufe}`, 
-          actor: root.currentUser?.name || 'Sistema', 
-          severity: 'info' 
-        })
       }
       return { ok: result.success, message: result.message, data: result }
     } catch (error) {
@@ -187,10 +169,6 @@ export const useBillingStore = defineStore('billing', () => {
     } catch (error) {
       return { ok: false, message: error instanceof Error ? error.message : 'Error al consultar DIAN.' }
     }
-  }
-
-  function createInvoiceEntry(invoice: Invoice, clientName: string) {
-    return { id: uid('entry'), tenantId: invoice.tenantId, referenceType: 'invoice', referenceId: invoice.id, description: `Factura ${invoice.number} - ${clientName}`, amount: invoice.total, entryAt: new Date().toISOString(), createdAt: new Date().toISOString(), lines: [{ account: '130505', label: 'Clientes nacionales', debit: invoice.total, credit: 0 }, { account: '413595', label: 'Ingresos operacionales', debit: 0, credit: invoice.subtotal }, { account: '240805', label: 'IVA generado', debit: 0, credit: invoice.taxTotal }] }
   }
 
   function scheduleDianUpdates(invoiceId: string, tenantId: string) {

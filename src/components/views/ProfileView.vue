@@ -3,6 +3,14 @@ import { ref, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useToasts } from '../../composables/useToasts'
 import { businessApi } from '../../services/businessApi'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Mi Perfil',
+  meta: [
+    { name: 'description', content: 'Configura tu perfil y cambia tu contraseña en Contex360.' },
+  ]
+})
 
 defineProps({ isActive: Boolean })
 
@@ -103,9 +111,9 @@ async function handleChangePassword() {
     >
       <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
         <span class="material-symbols-outlined text-[20px] text-[#18181B]">person</span>
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
           Información personal
-        </h3>
+        </h2>
       </div>
       <div class="flex items-center gap-4 mb-5">
         <div class="w-16 h-16 rounded-full bg-[#18181B] text-white flex items-center justify-center font-bold text-[22px]">
@@ -167,9 +175,9 @@ async function handleChangePassword() {
     >
       <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
         <span class="material-symbols-outlined text-[20px] text-[#18181B]">lock</span>
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
           Cambiar contraseña
-        </h3>
+        </h2>
       </div>
       <form
         class="space-y-4"
@@ -221,9 +229,9 @@ async function handleChangePassword() {
     >
       <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
         <span class="material-symbols-outlined text-[20px] text-[#18181B]">notifications</span>
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
           Preferencias de notificación
-        </h3>
+        </h2>
       </div>
       <div class="space-y-4">
         <div class="flex items-center justify-between gap-3">

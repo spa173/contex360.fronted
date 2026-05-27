@@ -1,5 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Pago Exitoso',
+  meta: [
+    { name: 'description', content: 'Tu pago ha sido procesado exitosamente. Bienvenido a Contex360.' },
+    { property: 'og:title', content: 'Pago Exitoso' },
+    { property: 'og:description', content: 'Tu pago ha sido procesado exitosamente. Bienvenido a Contex360.' },
+    { name: 'twitter:title', content: 'Pago Exitoso' },
+    { name: 'twitter:description', content: 'Tu pago ha sido procesado exitosamente. Bienvenido a Contex360.' },
+  ]
+})
 
 const props = defineProps<{
   planType?: string

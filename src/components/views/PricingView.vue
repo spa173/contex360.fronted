@@ -3,6 +3,18 @@ import { ref, computed } from 'vue'
 import { useStateStore } from '../../stores/stateStore'
 import { businessApi } from '../../services/businessApi'
 import { toast } from 'vue-sonner'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Planes y Precios',
+  meta: [
+    { name: 'description', content: 'Elige el plan ideal para tu empresa. Desde el plan Gratuito hasta el plan Enterprise.' },
+    { property: 'og:title', content: 'Planes y Precios' },
+    { property: 'og:description', content: 'Elige el plan ideal para tu empresa. Desde el plan Gratuito hasta el plan Enterprise.' },
+    { name: 'twitter:title', content: 'Planes y Precios' },
+    { name: 'twitter:description', content: 'Elige el plan ideal para tu empresa. Desde el plan Gratuito hasta el plan Enterprise.' },
+  ]
+})
 
 const emit = defineEmits<{
   (e: 'back'): void
@@ -18,10 +30,7 @@ const paymentStep = ref('details') // details -> processing -> success
 const cardNumber = ref('')
 const cardExpiry = ref('')
 const cardCvc = ref('')
-const cardHolder = ref('')
-const cardEmail = ref('')
-const selectedPaymentMethod = ref('card') // 'card' or 'pse'
-const selectedBank = ref('')
+
 
 const plans = [
   {
@@ -91,35 +100,7 @@ function openCheckout(plan: any) {
   cardNumber.value = ''
   cardExpiry.value = ''
   cardCvc.value = ''
-  cardHolder.value = ''
-  cardEmail.value = ''
-  selectedPaymentMethod.value = 'card'
-  selectedBank.value = ''
   showWompi.value = true
-}
-
-async function submitPayment() {
-  paymentStep.value = 'processing'
-  try {
-    const store = useStateStore()
-    const tenantId = store.currentUser?.tenantId || 'demo-tenant-id'
-    const billing = isAnnual.value ? 'annual' : 'monthly'
-    const reference = `${selectedPlan.value.id}_${billing}_${tenantId}`
-    
-    const redirectUrl = encodeURIComponent(`${window.location.origin}/pago-exitoso?planType=${selectedPlan.value.id}`)
-    const wompiPublicKey = import.meta.env.VITE_WOMPI_PUBLIC_KEY
-    if (!wompiPublicKey) throw new Error('Wompi public key not configured')
-    const wompiLink = `https://checkout.wompi.co/l/${wompiPublicKey}?reference=${reference}&redirect-url=${redirectUrl}`
-    
-    // Redirigir a Wompi
-    window.location.href = wompiLink
-  } catch (e) {
-    console.error('Error creating Wompi link', e)
-    // Fallback to success UI si hay algún error
-    setTimeout(() => {
-      paymentStep.value = 'success'
-    }, 2000)
-  }
 }
 
 async function submitPaymentReal() {
@@ -167,7 +148,7 @@ function closeWompi() {
     <!-- Header -->
     <header class="h-20 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-6 lg:px-8 sticky top-0 z-30 shadow-sm">
       <div class="flex items-center gap-2.5">
-        <svg class="c360-mark flex-shrink-0" width="32" height="32" viewBox="0 0 56 56">
+        <svg class="c360-mark flex-shrink-0" width="32" height="32" viewBox="0 0 56 56" aria-hidden="true">
           <rect width="56" height="56" rx="12" fill="#18181B"/>
           <g class="rotor">
             <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
@@ -378,119 +359,15 @@ function closeWompi() {
             </div>
 
             <!-- Payment process step 1: details -->
-            <form v-if="paymentStep === 'details'" @submit.prevent="submitPaymentReal" class="space-y-4">
-              <!-- Payment method selection -->
-              <div class="grid grid-cols-2 gap-2.5 p-1 bg-[#F4F4F5] rounded-lg mb-4">
-                <button
-                  type="button"
-                  @click="selectedPaymentMethod = 'card'"
-                  :class="['py-2 text-[12px] font-bold rounded-md transition-all text-center', selectedPaymentMethod === 'card' ? 'bg-white text-[#18181B] shadow-sm' : 'text-[#71717A]']"
-                >
-                  Tarjeta de Crédito
-                </button>
-                <button
-                  type="button"
-                  @click="selectedPaymentMethod = 'pse'"
-                  :class="['py-2 text-[12px] font-bold rounded-md transition-all text-center', selectedPaymentMethod === 'pse' ? 'bg-white text-[#18181B] shadow-sm' : 'text-[#71717A]']"
-                >
-                  Débito PSE
-                </button>
-              </div>
-
-              <!-- PSE Fields -->
-              <div v-if="selectedPaymentMethod === 'pse'" class="space-y-3.5">
-                <div>
-                  <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Banco</label>
-                  <select 
-                    required 
-                    v-model="selectedBank"
-                    class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] bg-white outline-none focus:border-black"
-                  >
-                    <option value="" disabled>Selecciona tu banco...</option>
-                    <option value="davivienda">Davivienda</option>
-                    <option value="bogota">Banco de Bogotá</option>
-                    <option value="nequi">Nequi</option>
-                    <option value="daviplata">Daviplata</option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Correo Electrónico registrado</label>
-                  <input 
-                    type="email" 
-                    required 
-                    v-model="cardEmail"
-                    placeholder="ejemplo@correo.com"
-                    class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] outline-none focus:border-black"
-                  />
-                </div>
-              </div>
-
-              <!-- Credit Card Fields -->
-              <div v-else class="space-y-3.5">
-                <div>
-                  <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Nombre en la tarjeta</label>
-                  <input 
-                    type="text" 
-                    required 
-                    v-model="cardHolder"
-                    placeholder="Juan Pérez"
-                    class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] outline-none focus:border-black"
-                  />
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Correo electrónico</label>
-                  <input 
-                    type="email" 
-                    required 
-                    v-model="cardEmail"
-                    placeholder="juan@ejemplo.com"
-                    class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] outline-none focus:border-black"
-                  />
-                </div>
-                <div>
-                  <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Número de tarjeta</label>
-                  <input 
-                    type="text" 
-                    required 
-                    v-model="cardNumber"
-                    placeholder="•••• •••• •••• ••••"
-                    class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] outline-none focus:border-black"
-                  />
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                  <div>
-                    <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">Expiración</label>
-                    <input 
-                      type="text" 
-                      required 
-                      v-model="cardExpiry"
-                      placeholder="MM/AA"
-                      class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] outline-none focus:border-black"
-                    />
-                  </div>
-                  <div>
-                    <label class="block text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-1.5">CVC / CVV</label>
-                    <input 
-                      type="password" 
-                      required 
-                      v-model="cardCvc"
-                      placeholder="•••"
-                      maxlength="4"
-                      class="w-full border border-[#E4E4E7] rounded-lg px-3.5 py-2.5 text-[13px] outline-none focus:border-black"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <!-- Submit button -->
+            <div v-if="paymentStep === 'details'" class="space-y-4">
               <button 
-                type="submit"
-                class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-6 flex items-center justify-center gap-1.5"
+                @click="submitPaymentReal"
+                class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
               >
                 <span class="material-symbols-outlined text-[18px]">lock</span>
-                Pagar de Forma Segura
+                Pagar con Wompi
               </button>
-            </form>
+            </div>
 
             <!-- Processing step -->
             <div v-else-if="paymentStep === 'processing'" class="py-12 flex flex-col items-center justify-center text-center">
@@ -508,7 +385,7 @@ function closeWompi() {
               </div>
               <h4 class="text-[18px] font-black text-[#18181B]">¡Pago exitoso!</h4>
               <p class="text-[13px] text-[#71717A] max-w-[320px] mt-2 leading-relaxed">
-                Tu transacción ha sido aprobada. Se ha enviado el comprobante de compra y los accesos a tu correo <b class="text-[#18181B] font-bold">{{ cardEmail }}</b>.
+                Tu transacción ha sido aprobada. Recibirás el comprobante de compra y los accesos por correo electrónico.
               </p>
               
               <button 

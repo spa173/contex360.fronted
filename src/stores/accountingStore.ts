@@ -1,7 +1,6 @@
 import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
-import { uid, appendAuditEvent } from '../utils/storeHelpers'
 import { businessApi } from '../services/businessApi'
 import { LedgerEntry, BalanceSheet, ProfitAndLoss } from '../types/accounting'
 

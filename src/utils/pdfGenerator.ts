@@ -164,7 +164,7 @@ export function generateInvoicePdf(invoice: any, tenant: any) {
   doc.setTextColor(148, 163, 184) // Slate 400
   doc.setFont('helvetica', 'italic')
   doc.text('Este documento es una representación gráfica de una factura electrónica.', margin, 280)
-  const cufeId = invoice.cufe || 'SIMULADO-' + Array.from(crypto.getRandomValues(new Uint8Array(4))).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase()
+  const cufeId = invoice.cufe || 'PENDIENTE-DIAN'
   doc.text(`CUFE: ${cufeId}`, margin, 285)
 
   doc.save(`factura_${invoice.consecutive}.pdf`)

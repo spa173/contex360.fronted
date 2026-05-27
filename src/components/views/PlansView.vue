@@ -4,6 +4,14 @@ import { useStateStore } from '../../stores/stateStore'
 import { formatCurrency } from '../../utils/ui'
 import { businessApi } from '../../services/businessApi'
 import { toast } from 'vue-sonner'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Plan Actual',
+  meta: [
+    { name: 'description', content: 'Gestiona tu suscripción y plan de Contex360.' },
+  ]
+})
 
 defineProps({
   isActive: { type: Boolean, required: true }

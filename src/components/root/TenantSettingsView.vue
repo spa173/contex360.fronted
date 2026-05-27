@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 
 const API = import.meta.env.VITE_API_BASE_URL
 if (!API) throw new Error('VITE_API_BASE_URL environment variable is required')
@@ -16,6 +19,10 @@ const tenant = ref<any>(null)
 const loading = ref(true)
 const saving = ref(false)
 const activeTab = ref('general')
+
+const showDeleteModal = ref(false)
+const deletePassword = ref('')
+const deleteError = ref('')
 
 const tabs = [
   { id: 'general',   label: 'General',      icon: '🏢' },
@@ -124,25 +131,30 @@ async function renewTrial() {
   savePlan()
 }
 
-async function handleDeleteTenant() {
-  const password = prompt(`⚠️ ACCIÓN IRREVERSIBLE: Se eliminarán todos los datos de "${tenant.value.name}" (facturas, inventario, usuarios).\n\n🔐 Para autorizar esta acción, ingresa tu contraseña de ROOT / Administrador:`)
-  
-  if (!password) {
-    if (password !== null) alert('Se requiere la contraseña para autorizar la operación.')
+function handleDeleteTenant() {
+  deletePassword.value = ''
+  deleteError.value = ''
+  showDeleteModal.value = true
+}
+
+async function confirmDeleteTenant() {
+  if (!deletePassword.value.trim()) {
+    deleteError.value = 'Ingresa tu contraseña para autorizar.'
     return
   }
-
   saving.value = true
+  deleteError.value = ''
   try {
     await axios.post(`${API}/admin/tenants/${props.tenantId}/delete`, {
-      password: password.trim()
+      password: deletePassword.value.trim()
     }, {
       withCredentials: true,
     })
+    showDeleteModal.value = false
     alert('✅ Empresa eliminada correctamente.')
     emit('back')
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error eliminando empresa. Verifica tu contraseña.')
+    deleteError.value = e?.response?.data?.message || 'Error eliminando empresa. Verifica tu contraseña.'
   } finally {
     saving.value = false
   }
@@ -369,6 +381,40 @@ onMounted(fetchTenant)
       </div>
     </div>
   </div>
+
+  <!-- Delete confirmation modal -->
+  <Dialog v-model:open="showDeleteModal">
+    <DialogContent class="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle>⚠️ Eliminar empresa</DialogTitle>
+        <DialogDescription>
+          Esta acción es <strong>irreversible</strong>. Se eliminarán permanentemente todos los datos de
+          <strong>{{ tenant?.name }}</strong>: facturas, inventario, usuarios, movimientos contables y más.
+          <br><br>
+          Para autorizar, ingresa tu contraseña de administrador.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="space-y-3">
+        <div>
+          <label class="block text-[13px] font-semibold mb-1.5" for="delete-password">Contraseña</label>
+          <Input
+            id="delete-password"
+            v-model="deletePassword"
+            type="password"
+            placeholder="Tu contraseña de administrador"
+            @keydown.enter="confirmDeleteTenant"
+          />
+        </div>
+        <p v-if="deleteError" class="text-[13px] text-red-600 font-medium">{{ deleteError }}</p>
+      </div>
+      <DialogFooter>
+        <Button variant="outline" @click="showDeleteModal = false" :disabled="saving">Cancelar</Button>
+        <Button variant="destructive" @click="confirmDeleteTenant" :disabled="saving">
+          {{ saving ? 'Eliminando...' : 'Eliminar empresa' }}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <style scoped>

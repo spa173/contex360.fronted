@@ -1,4 +1,17 @@
 <script setup lang="ts">
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Sobre Nosotros',
+  meta: [
+    { name: 'description', content: 'Conoce más sobre Contex360 y nuestro equipo.' },
+    { property: 'og:title', content: 'Sobre Nosotros' },
+    { property: 'og:description', content: 'Conoce más sobre Contex360 y nuestro equipo.' },
+    { name: 'twitter:title', content: 'Sobre Nosotros' },
+    { name: 'twitter:description', content: 'Conoce más sobre Contex360 y nuestro equipo.' },
+  ]
+})
+
 const emit = defineEmits<{
   (e: 'back'): void
   (e: 'request-demo'): void
@@ -49,7 +62,7 @@ const stats = [
         </button>
 
         <div class="flex items-center gap-2.5">
-          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56">
+          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56" aria-hidden="true">
             <rect width="56" height="56" rx="12" fill="#18181B"/>
             <g class="rotor">
               <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>

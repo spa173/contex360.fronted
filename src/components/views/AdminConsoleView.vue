@@ -5,6 +5,15 @@ import { useTranslationStore } from '../../stores/translationStore'
 import { useStateStore } from '../../stores/stateStore'
 import { businessApi } from '@/services/businessApi'
 import SubscriptionView from './SubscriptionView.vue'
+import { useHead } from '@unhead/vue'
+import { validateNit } from '../../utils/nitValidation'
+
+useHead({
+  title: 'Administración',
+  meta: [
+    { name: 'description', content: 'Configuración avanzada de la plataforma: DIAN, impuestos, SMTP e integraciones.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -153,20 +162,29 @@ function submitNewTax() {
     emit('notify', { message: 'Campos incompletos', detail: 'Por favor ingresa un nombre y una tasa para el nuevo impuesto.' })
     return
   }
+  const rateNum = parseFloat(newTax.value.rate)
+  if (isNaN(rateNum) || rateNum < 0 || rateNum > 100) {
+    emit('notify', { message: 'Tasa inválida', detail: 'La tasa del impuesto debe ser un número entre 0 y 100.' })
+    return
+  }
+  if (newTax.value.name.trim().length < 2) {
+    emit('notify', { message: 'Nombre inválido', detail: 'El nombre del impuesto debe tener al menos 2 caracteres.' })
+    return
+  }
   adminStore.addTax({
-    name: newTax.value.name,
+    name: newTax.value.name.trim(),
     code: newTax.value.code || '01',
     type: newTax.value.type,
-    rate: newTax.value.rate
+    rate: rateNum
   })
-  emit('notify', { message: 'Impuesto configurado', detail: `El impuesto ${newTax.value.name} ha sido guardado exitosamente en el sistema.` })
+  emit('notify', { message: 'Impuesto configurado', detail: `El impuesto ${newTax.value.name.trim()} ha sido guardado exitosamente en el sistema.` })
   showTaxModal.value = false
   newTax.value = { name: '', code: '', type: 'Suma', rate: '' }
 }
 
 const showDianModal = ref(false)
 const dianConfig = ref({
-  dianEnvironment: 'test',
+  dianEnvironment: '',
   dianNit: '',
   dianSoftwareId: '',
   dianSoftwarePin: '',
@@ -183,6 +201,54 @@ const dianValidationResult = ref(null)
 const dianCertificateFileName = ref('')
 const dianHasCertificate = ref(false)
 const dianCertificateInput = ref(null)
+
+const NIT_RE = /^\d{8,10}-\d{1}$/
+const UUID_RE = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+const HOST_RE = /^[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/
+
+function validateDianForm() {
+  const errors = []
+  const cfg = dianConfig.value
+  if (!cfg.dianNit || !NIT_RE.test(cfg.dianNit) || !validateNit(cfg.dianNit)) {
+    errors.push('El NIT del transmisor no es válido. Verifica el formato y el dígito de verificación (módulo 11).')
+  }
+  if (!cfg.dianSoftwareId || !UUID_RE.test(cfg.dianSoftwareId.trim())) {
+    errors.push('El Software ID debe ser un UUID válido (ej. 550e8400-e29b-41d4-a716-446655440000)')
+  }
+  if (!cfg.dianSoftwarePin || !/^\d{5}$/.test(cfg.dianSoftwarePin)) {
+    errors.push('El Software Pin debe ser numérico de exactamente 5 dígitos')
+  }
+  if (cfg.resolutionFrom && cfg.resolutionTo && new Date(cfg.resolutionFrom) >= new Date(cfg.resolutionTo)) {
+    errors.push('La fecha "Vigencia hasta" debe ser posterior a "Vigencia desde"')
+  }
+  if (cfg.dianCertificate && !cfg.dianCertificatePassword) {
+    errors.push('Debes ingresar la contraseña del certificado digital')
+  }
+  return errors
+}
+
+function validateSmtpForm() {
+  const errors = []
+  const cfg = smtpConfig.value
+  if (!cfg.smtpHost || !HOST_RE.test(cfg.smtpHost)) {
+    errors.push('El servidor SMTP no tiene un formato de host válido')
+  }
+  const port = Number(cfg.smtpPort)
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    errors.push('El puerto SMTP debe ser un número entre 1 y 65535')
+  }
+  if (!cfg.smtpFromEmail || !EMAIL_RE.test(cfg.smtpFromEmail)) {
+    errors.push('El correo remitente no tiene un formato válido')
+  }
+  if (!cfg.smtpUser) {
+    errors.push('El usuario de autenticación es requerido')
+  }
+  if (!cfg.smtpPassword) {
+    errors.push('La contraseña / App Password es requerida')
+  }
+  return errors
+}
 
 const showBancolombiaModal = ref(false)
 const bancolombiaConnectionModes = [
@@ -508,6 +574,11 @@ const smtpSaving = ref(false)
 
 async function saveSmtpConfig() {
   if (!activeTenantId.value) return
+  const errors = validateSmtpForm()
+  if (errors.length) {
+    emit('notify', { message: 'Errores de validación', detail: errors.join(' | ') })
+    return
+  }
   smtpSaving.value = true
   try {
     await businessApi.updateTenant(activeTenantId.value, smtpConfig.value)
@@ -680,7 +751,7 @@ async function handleIntegration(name) {
       const res = await businessApi.getDianConfig()
       if (res) {
         dianConfig.value = {
-          dianEnvironment: res.dianEnvironment || 'test',
+          dianEnvironment: res.dianEnvironment || '',
           dianNit: res.dianNit || '',
           dianSoftwareId: res.dianSoftwareId || '',
           dianSoftwarePin: res.dianSoftwarePin || '',
@@ -710,13 +781,18 @@ async function handleIntegration(name) {
 }
 
 async function saveDianConfig() {
+  const errors = validateDianForm()
+  if (errors.length) {
+    emit('notify', { message: 'Errores de validación', detail: errors.join(' | ') })
+    return
+  }
   dianValidating.value = true
   try {
     const payload = {
       dianEnvironment: dianConfig.value.dianEnvironment,
-      dianNit: dianConfig.value.dianNit,
-      dianSoftwareId: dianConfig.value.dianSoftwareId,
-      dianSoftwarePin: dianConfig.value.dianSoftwarePin,
+      dianNit: dianConfig.value.dianNit.trim(),
+      dianSoftwareId: dianConfig.value.dianSoftwareId.trim(),
+      dianSoftwarePin: dianConfig.value.dianSoftwarePin.trim(),
       dianTestSetId: dianConfig.value.dianTestSetId,
       invoiceResolution: dianConfig.value.invoiceResolution,
       resolutionFrom: dianConfig.value.resolutionFrom || undefined,
@@ -884,9 +960,9 @@ async function saveBancolombiaConfig() {
         <section class="bg-white border border-[#E4E4E7] rounded-[16px] p-6 shadow-sm">
           <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
             <span class="material-symbols-outlined text-[20px] text-[#18181B]">domain</span>
-            <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
               Identidad Corporativa
-            </h3>
+            </h2>
           </div>
           <div class="grid md:grid-cols-2 gap-5">
             <div>
@@ -913,9 +989,9 @@ async function saveBancolombiaConfig() {
         <section class="bg-white border border-[#2563EB] ring-2 ring-[#2563EB]/10 rounded-[16px] p-6 shadow-sm bg-gradient-to-br from-[#F8FAFC] to-white">
           <div class="flex items-center gap-2 mb-4">
             <span class="material-symbols-outlined text-[20px] text-[#2563EB]">auto_awesome</span>
-            <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+            <h2 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
               ContexAI Global
-            </h3>
+            </h2>
           </div>
           <div class="space-y-4">
             <div class="flex items-center justify-between pt-2">
@@ -955,9 +1031,9 @@ async function saveBancolombiaConfig() {
     >
       <div class="flex items-center gap-2 mb-5 pb-3 border-b border-[#F4F4F5]">
         <span class="material-symbols-outlined text-[20px] text-[#18181B]">tune</span>
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
           Preferencias regionales
-        </h3>
+        </h2>
       </div>
       <div class="grid md:grid-cols-2 gap-5">
         <div>
@@ -1009,9 +1085,9 @@ async function saveBancolombiaConfig() {
     >
       <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <span class="material-symbols-outlined text-[20px] text-[#18181B]">percent</span><h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+          <span class="material-symbols-outlined text-[20px] text-[#18181B]">percent</span><h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
             Impuestos configurados
-          </h3>
+          </h2>
         </div>
         <button
           class="flex items-center gap-2 px-3.5 py-2 bg-[#18181B] hover:bg-[#27272A] text-white rounded-[10px] text-[12px] font-semibold transition-colors"
@@ -1347,6 +1423,7 @@ async function saveBancolombiaConfig() {
                 v-model="dianConfig.dianEnvironment"
                 class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white"
               >
+                <option value="" disabled>Seleccionar ambiente...</option>
                 <option value="test">
                   Pruebas / Habilitación
                 </option>
@@ -1517,9 +1594,9 @@ async function saveBancolombiaConfig() {
       class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm"
     >
       <div class="px-6 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-        <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+        <h2 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
           Auditoría del Sistema y Cambios Globales
-        </h3>
+        </h2>
         <button
           v-if="!logsLoading"
           class="text-[#71717A] hover:text-[#18181B] flex items-center gap-1 text-[12px] font-semibold"
@@ -1678,9 +1755,9 @@ async function saveBancolombiaConfig() {
           <div>
             <div class="flex items-center gap-2 mb-3">
               <span class="material-symbols-outlined text-[#2563EB] text-[20px]">verified</span>
-              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+              <h2 class="text-[16px] font-bold tracking-tight text-[#18181B]">
                 Revisión de Accesos Corporativos (CC6.3)
-              </h3>
+              </h2>
             </div>
             <p class="text-[13px] text-[#71717A] leading-[1.6] mb-4">
               SOC 2 exige la revisión periódica manual de los accesos y privilegios otorgados en la plataforma. Este proceso audita que cada cuenta cumpla con el principio del menor privilegio (*Least Privilege*) y documenta la revisión para los auditores externos.
@@ -1721,9 +1798,9 @@ async function saveBancolombiaConfig() {
           <div>
             <div class="flex items-center gap-2 mb-3">
               <span class="material-symbols-outlined text-rose-600 text-[20px]">notifications_active</span>
-              <h3 class="text-[16px] font-bold tracking-tight text-[#18181B]">
+              <h2 class="text-[16px] font-bold tracking-tight text-[#18181B]">
                 Simulacro y Respuesta a Brechas (CC7.3)
-              </h3>
+              </h2>
             </div>
             <p class="text-[13px] text-[#71717A] leading-[1.6] mb-4">
               Cumpla con el criterio de preparación para incidentes probando anualmente el Plan de Respuesta a Incidentes (IRP). Puede simular una alerta y notificar por correo a los administradores del sistema, generando trazabilidad inmutable.
@@ -1753,9 +1830,9 @@ async function saveBancolombiaConfig() {
       <!-- Real-time Alerts Table (CC7.3) -->
       <div class="bg-white border border-[#E4E4E7] rounded-[16px] overflow-hidden shadow-sm">
         <div class="px-6 py-4 border-b border-[#F4F4F5]">
-          <h3 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
+          <h2 class="text-[15px] font-extrabold tracking-tight text-[#18181B]">
             Centro de Incidentes de Seguridad Activos
-          </h3>
+          </h2>
         </div>
         <div
           v-if="!breachAlerts.length"

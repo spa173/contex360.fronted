@@ -3,7 +3,6 @@ import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
 import type { Transaction, TreasuryBalance, CreateTransactionPayload, ProgrammedPayment } from '../types/treasury'
-import { transactionSchema } from '../schemas/transaction.schema'
 
 export const useTreasuryStore = defineStore('treasury', () => {
   const root = useStateStore()
@@ -49,34 +48,15 @@ export const useTreasuryStore = defineStore('treasury', () => {
     if (!activeTenantId.value) return
     isSaving.value = true
     try {
-      const providers = await businessApi.getThirdParties('provider', activeTenantId.value)
-      let providerId = providers.length > 0 ? providers[0].id : null
-      
-      if (!providerId) {
-        const newProvider = await businessApi.createThirdParty({
-          name: payment.vendorName || 'Nuevo Proveedor SAS',
-          documentType: 'NIT',
-          documentNumber: '900' + (globalThis.crypto.getRandomValues(new Uint32Array(1))[0] % 1000000).toString().padStart(6, '0'),
-          kind: 'provider',
-        }, activeTenantId.value)
-        providerId = newProvider.id
+      const payload: CreateTransactionPayload = {
+        type: 'EXPENSE',
+        amount: Number(payment.amount) || 1000000,
+        description: `Pago programado: ${payment.vendorName || 'Proveedor'}`,
+        category: 'BANCO',
+        date: payment.dueDate || new Date().toISOString(),
       }
-
-      await businessApi.createPurchase({
-        providerId,
-        paymentTermDays: 15,
-        items: [
-          {
-            productId: 'temp-service',
-            productName: 'Pago programado desde Tesorería',
-            quantity: 1,
-            unitPrice: Number(payment.amount) || 1000000,
-            taxRate: 0,
-          }
-        ]
-      }, activeTenantId.value)
-
-      await fetchAll()
+      const result = await businessApi.createTransaction(payload, activeTenantId.value)
+      if (result) await fetchAll()
     } catch (err) {
       console.error('[treasury] schedule payment failed:', err)
     } finally {
@@ -107,7 +87,7 @@ export const useTreasuryStore = defineStore('treasury', () => {
         id: p.id,
         vendorName: p.provider?.name || 'Proveedor General',
         dueDate: p.dueAt || p.issuedAt || new Date().toISOString(),
-        priority: p.total > 10000000 ? 'Alta' : p.total > 2000000 ? 'Media' : 'Baja',
+        priority: p.priority || 'Media',
         amount: Number(p.total),
         status: 'Programado',
       }))
@@ -121,10 +101,11 @@ export const useTreasuryStore = defineStore('treasury', () => {
   }
 
   async function createTransaction(payload: CreateTransactionPayload) {
+    if (!payload || !payload.type || !payload.amount || !payload.description) {
+      return { ok: false, message: 'Datos de movimiento inválidos o incompletos.' }
+    }
     isSaving.value = true
     try {
-      transactionSchema.parse(payload)
-
       const created = await businessApi.createTransaction(payload, activeTenantId.value)
       transactions.value.unshift(created)
       // Refresh balance from backend
@@ -132,9 +113,6 @@ export const useTreasuryStore = defineStore('treasury', () => {
       balance.value = bal
       return { ok: true, message: 'Movimiento registrado y asiento contable creado.' }
     } catch (err) {
-      if (err && typeof err === 'object' && 'name' in err && err.name === 'ZodError') {
-        return { ok: false, message: 'Datos del movimiento inválidos. Revisa los campos obligatorios.' }
-      }
       return { ok: false, message: err instanceof Error ? err.message : 'Error al registrar movimiento.' }
     } finally {
       isSaving.value = false

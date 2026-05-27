@@ -1,18 +1,17 @@
 import { computed } from 'vue'
 import { useStateStore } from '../stores/stateStore'
 
-const PLAN_MODULES: Record<string, string[]> = {
-  starter: ['dashboard', 'billing', 'quotes', 'third-parties'],
-  pyme: ['dashboard', 'billing', 'purchases', 'quotes', 'inventory', 'third-parties', 'treasury', 'reports', 'users', 'ai'],
-  enterprise: ['*'],
-}
-
+/**
+ * COMENTARIO DE SEGURIDAD: Este composable es SOLO para hints de UI (deshabilitar botones, mostrar badges).
+ * La validación REAL de suscripción y límites está en el backend (PlanGuard + @CheckPlanLimit).
+ * NUNCA confiar en estas funciones para seguridad - el backend es la fuente de verdad.
+ */
 export function usePlanAccess() {
   const store = useStateStore()
   
   const isBypassed = computed(() => {
     const user = store.currentUser
-    return user?.isSystemOwner === true || user?.email === 'root@contex360.local'
+    return user?.isSystemOwner === true
   })
 
   const plan = computed(() => {
@@ -22,7 +21,8 @@ export function usePlanAccess() {
   
   function canAccessModule(moduleId: string): boolean {
     if (isBypassed.value) return true
-    const modules = store.subscription?.limits?.modules || PLAN_MODULES[plan.value] || []
+    const modules = store.subscription?.limits?.modules
+    if (!modules) return true
     if (modules.includes('*')) return true
     return modules.includes(moduleId)
   }
@@ -39,10 +39,7 @@ export function usePlanAccess() {
     if (isBypassed.value) return true
     const limit = store.subscription?.limits?.maxUsers
     if (limit === null || limit === undefined) return true
-    
-    // Count memberships for active tenant
-    const activeTenantId = store.activeTenantId
-    const current = store.memberships?.filter(m => m.tenantId === activeTenantId)?.length ?? 0
+    const current = store.memberships?.filter(m => m.tenantId === store.activeTenantId)?.length ?? 0
     return current < limit
   }
   

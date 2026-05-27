@@ -181,3 +181,23 @@ export async function resetPassword(token: string, newPassword: string) {
     body: { token, newPassword }
   })
 }
+
+export async function acceptPrivacyPolicy(version: string) {
+  return requestJson<BackendMessageResponse>('/auth/accept-privacy', {
+    method: 'POST',
+    body: { version }
+  })
+}
+
+export async function verifyEmail(token: string) {
+  return requestJson<BackendMessageResponse>('/auth/verify-email', {
+    method: 'POST',
+    body: { token }
+  })
+}
+
+export async function resendVerification() {
+  return requestJson<BackendMessageResponse>('/auth/resend-verification', {
+    method: 'POST',
+  })
+}

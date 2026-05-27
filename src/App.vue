@@ -1,5 +1,6 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
+import { useHead } from '@unhead/vue'
 import { useStateStore } from './stores/stateStore'
 import { useThemeStore } from './stores/themeStore'
 import AppShell from './components/AppShell.vue'
@@ -20,6 +21,23 @@ import PaymentSuccess from './components/views/PaymentSuccess.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
+
+const SITE_NAME = 'Contex360'
+const DEFAULT_DESC = 'ERP inteligente para empresas colombianas. Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar.'
+const DEFAULT_OG_IMAGE = '/og-image.png'
+
+useHead({
+  title: SITE_NAME,
+  titleTemplate: `%s — ${SITE_NAME}`,
+  meta: [
+    { name: 'description', content: DEFAULT_DESC },
+    { property: 'og:site_name', content: SITE_NAME },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:image', content: DEFAULT_OG_IMAGE },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: DEFAULT_OG_IMAGE },
+  ]
+})
 
 const store = useStateStore()
 const themeStore = useThemeStore()

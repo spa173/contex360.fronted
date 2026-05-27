@@ -1,75 +1,68 @@
-import CryptoJS from 'crypto-js'
+let encryptionKey: CryptoKey | null = null
+let keyPromise: Promise<CryptoKey> | null = null
 
-const ENCRYPTION_KEY_STORAGE = ['contex360', 'crypto', 'key', 'v2'].join('-')
-const ENCRYPTED_VALUE_PREFIX = 'enc:'
-
-function bytesToHex(bytes: Uint8Array) {
-  return Array.from(bytes, (value) => value.toString(16).padStart(2, '0')).join('')
+export async function initEncryptionKey() {
+  if (encryptionKey) return
+  if (keyPromise) return keyPromise
+  keyPromise = crypto.subtle.generateKey(
+    { name: 'AES-GCM', length: 256 },
+    true,
+    ['encrypt', 'decrypt']
+  ).then(k => { encryptionKey = k; return k })
+  return keyPromise
 }
 
-function getEncryptionKey() {
-  if (typeof globalThis === 'undefined' || !globalThis.sessionStorage || !globalThis.crypto?.getRandomValues) {
-    return ''
-  }
-
-  // ⚠️ Llave en sessionStorage (no localStorage):
-  // — Separada de los datos cifrados que viven en localStorage
-  // — Se borra al cerrar la pestaña → los datos cifrados quedan ilegibles sin ella
-  // — No accesible desde otras pestañas/ventanas, reduciendo la superficie de ataque XSS
-  const storedKey = globalThis.sessionStorage.getItem(ENCRYPTION_KEY_STORAGE)?.trim()
-  if (storedKey) {
-    return storedKey
-  }
-
-  const keyBytes = new Uint8Array(32)
-  globalThis.crypto.getRandomValues(keyBytes)
-  const generatedKey = bytesToHex(keyBytes)
-  globalThis.sessionStorage.setItem(ENCRYPTION_KEY_STORAGE, generatedKey)
-  return generatedKey
+export function clearEncryptionKey() {
+  encryptionKey = null
+  keyPromise = null
 }
 
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = ''
+  const chunk = 8192
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.slice(i, i + chunk))
+  }
+  return btoa(binary)
+}
 
-/**
- * Encrypts a string using AES
- */
-export function encryptData(data: string): string {
+function base64ToUint8(base64: string): Uint8Array {
+  const binary = atob(base64)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
+}
+
+export async function encryptData(data: string): Promise<string> {
+  if (!encryptionKey) return data
+  const iv = crypto.getRandomValues(new Uint8Array(12))
+  const encoded = new TextEncoder().encode(data)
+  const ciphertext = await crypto.subtle.encrypt(
+    { name: 'AES-GCM', iv },
+    encryptionKey,
+    encoded
+  )
+  const combined = new Uint8Array(iv.length + ciphertext.byteLength)
+  combined.set(iv, 0)
+  combined.set(new Uint8Array(ciphertext), iv.length)
+  return uint8ToBase64(combined)
+}
+
+export async function decryptData(encoded: string): Promise<string> {
+  if (!encryptionKey) return encoded
   try {
-    const key = getEncryptionKey()
-    if (!key) {
-      return data
-    }
-
-    return `${ENCRYPTED_VALUE_PREFIX}${CryptoJS.AES.encrypt(data, key).toString()}`
-  } catch (error) {
-    console.error('Encryption failed:', error)
-    return data
-  }
-}
-
-/**
- * Decrypts a string using AES
- */
-export function decryptData(ciphertext: string): string {
-  try {
-    const value = String(ciphertext || '')
-    if (!value) {
-      return ''
-    }
-
-    if (!value.startsWith(ENCRYPTED_VALUE_PREFIX) && !value.startsWith('U2FsdGVkX1')) {
-      return value
-    }
-
-    const key = getEncryptionKey()
-    if (!key) {
-      return ''
-    }
-
-    const encryptedValue = value.startsWith(ENCRYPTED_VALUE_PREFIX) ? value.slice(ENCRYPTED_VALUE_PREFIX.length) : value
-    const bytes = CryptoJS.AES.decrypt(encryptedValue, key)
-    return bytes.toString(CryptoJS.enc.Utf8)
-  } catch (error) {
-    console.error('Decryption failed:', error)
+    const combined = base64ToUint8(encoded)
+    const iv = combined.slice(0, 12)
+    const ciphertext = combined.slice(12)
+    const decrypted = await crypto.subtle.decrypt(
+      { name: 'AES-GCM', iv },
+      encryptionKey,
+      ciphertext
+    )
+    return new TextDecoder().decode(decrypted)
+  } catch {
     return ''
   }
 }
