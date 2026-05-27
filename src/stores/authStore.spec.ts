@@ -49,13 +49,13 @@ describe('Auth Store', () => {
 
     const result = await authStore.loginWithBackend({
       email: 'test-user@contex360.test',
-      password: 'C0rr3ct-H0rs3-Batt3ry-St4pl3!'
+      password: 'test-password-123'
     })
 
     expect(result.ok).toBe(true)
     expect(authApi.loginWithBackend).toHaveBeenCalledWith({
       email: 'test-user@contex360.test',
-      password: 'C0rr3ct-H0rs3-Batt3ry-St4pl3!'
+      password: 'test-password-123'
     })
     
     expect(stateStore.session.currentUserId).toBe('u1')
