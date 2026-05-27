@@ -53,13 +53,13 @@ const handleSubmit = async () => {
       aria-hidden="true"
       class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
       style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
-    ></div>
+    />
 
     <!-- Top bar: back button -->
     <div class="relative max-w-[1440px] mx-auto px-6 lg:px-12 pt-8">
       <button
-        @click="$emit('back')"
         class="flex items-center gap-2 text-[#71717A] hover:text-[#18181B] transition-colors font-semibold text-sm"
+        @click="$emit('back')"
       >
         <span class="material-symbols-outlined text-[18px]">arrow_back</span>
         Volver al inicio
@@ -70,17 +70,43 @@ const handleSubmit = async () => {
       <!-- ============ LEFT: brand + info ============ -->
       <section class="max-w-[640px] animate-in fade-in slide-in-from-left-4 duration-700">
         <div class="inline-flex items-center gap-3 mb-7">
-          <svg class="c360-mark flex-shrink-0" width="44" height="44" viewBox="0 0 56 56" aria-hidden="true">
-            <rect width="56" height="56" rx="12" fill="#18181B"/>
+          <svg
+            class="c360-mark flex-shrink-0"
+            width="44"
+            height="44"
+            viewBox="0 0 56 56"
+            aria-hidden="true"
+          >
+            <rect
+              width="56"
+              height="56"
+              rx="12"
+              fill="#18181B"
+            />
             <g class="rotor">
-              <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-              <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+              <path
+                d="M44 18 A 16 16 0 1 0 44 38"
+                stroke="#fff"
+                stroke-width="5.5"
+                stroke-linecap="round"
+                fill="none"
+              />
+              <path
+                d="M44 18 A 16 16 0 0 1 44 38"
+                stroke="#2563EB"
+                stroke-width="5.5"
+                stroke-linecap="round"
+                fill="none"
+              />
             </g>
           </svg>
           <span class="font-bold text-[20px] tracking-tight text-[#18181B]">Contex360</span>
         </div>
 
-        <h1 class="text-[40px] lg:text-[52px] leading-[1.02] tracking-[-0.03em] font-bold text-[#18181B] mb-4" style="text-wrap: balance;">
+        <h1
+          class="text-[40px] lg:text-[52px] leading-[1.02] tracking-[-0.03em] font-bold text-[#18181B] mb-4"
+          style="text-wrap: balance;"
+        >
           Recuperación de <em class="not-italic text-[#2563EB]">Acceso</em>.
         </h1>
         <p class="text-[16px] lg:text-[17px] leading-[1.55] text-[#71717A] max-w-[460px] mb-9">
@@ -96,13 +122,15 @@ const handleSubmit = async () => {
               <div class="w-16 h-16 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4">
                 <span class="material-symbols-outlined text-[32px]">mark_email_read</span>
               </div>
-              <h2 class="text-[22px] font-bold tracking-tight text-[#18181B] mb-2">Revisa tu correo</h2>
+              <h2 class="text-[22px] font-bold tracking-tight text-[#18181B] mb-2">
+                Revisa tu correo
+              </h2>
               <p class="text-[14px] text-[#71717A] mb-8 leading-relaxed">
                 Si <strong>{{ email }}</strong> está registrado en nuestro sistema, recibirás un enlace seguro para restablecer tu contraseña en breve.
               </p>
               <button
-                @click="$emit('back')"
                 class="w-full py-3 bg-[#F4F4F5] text-[#18181B] font-semibold text-[14px] rounded-[10px] hover:bg-[#E4E4E7] transition-all"
+                @click="$emit('back')"
               >
                 Regresar al Inicio de Sesión
               </button>
@@ -110,28 +138,41 @@ const handleSubmit = async () => {
           </template>
           
           <template v-else>
-            <h2 class="text-[22px] font-bold tracking-[-0.02em] text-[#18181B] mb-1">¿Olvidaste tu contraseña?</h2>
-            <p class="text-[13px] text-[#71717A] mb-7">Ingresa tu correo electrónico corporativo y te enviaremos un enlace de acceso temporal.</p>
+            <h2 class="text-[22px] font-bold tracking-[-0.02em] text-[#18181B] mb-1">
+              ¿Olvidaste tu contraseña?
+            </h2>
+            <p class="text-[13px] text-[#71717A] mb-7">
+              Ingresa tu correo electrónico corporativo y te enviaremos un enlace de acceso temporal.
+            </p>
 
-            <div v-if="errorMessage" class="mb-5 p-3 bg-red-50 border border-red-100 text-red-600 text-[12px] font-bold rounded-xl text-center">
+            <div
+              v-if="errorMessage"
+              class="mb-5 p-3 bg-red-50 border border-red-100 text-red-600 text-[12px] font-bold rounded-xl text-center"
+            >
               {{ errorMessage }}
             </div>
 
-            <form @submit.prevent="handleSubmit" class="space-y-5">
+            <form
+              class="space-y-5"
+              @submit.prevent="handleSubmit"
+            >
               <div>
-                <label class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block" for="email">Correo Electrónico</label>
+                <label
+                  class="text-[11px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block"
+                  for="email"
+                >Correo Electrónico</label>
                 <div class="flex items-center gap-2.5 border border-[#E4E4E7] rounded-[10px] px-3.5 bg-white focus-within:border-[#18181B] focus-within:ring-4 focus-within:ring-black/[0.04] transition-all">
                   <span class="material-symbols-outlined text-[18px] text-[#A1A1AA]">mail</span>
                   <input
                     id="email"
+                    v-model="email"
                     name="email"
                     autocomplete="username"
-                    v-model="email"
                     type="email"
                     required
                     placeholder="nombre@empresa.com"
                     class="flex-1 py-3 bg-transparent outline-none text-[14px] font-medium text-[#18181B] placeholder:text-[#A1A1AA] border-0"
-                  />
+                  >
                 </div>
               </div>
 
@@ -141,8 +182,14 @@ const handleSubmit = async () => {
                 :disabled="isLoading || !isFormValid"
               >
                 <span>{{ isLoading ? 'Enviando enlace...' : 'Enviar Enlace de Recuperación' }}</span>
-                <span v-if="!isLoading" class="material-symbols-outlined text-[18px]">send</span>
-                <span v-else class="material-symbols-outlined animate-spin text-[18px]">progress_activity</span>
+                <span
+                  v-if="!isLoading"
+                  class="material-symbols-outlined text-[18px]"
+                >send</span>
+                <span
+                  v-else
+                  class="material-symbols-outlined animate-spin text-[18px]"
+                >progress_activity</span>
               </button>
             </form>
           </template>

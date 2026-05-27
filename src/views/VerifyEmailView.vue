@@ -47,49 +47,90 @@ const goToLogin = () => {
     <div class="max-w-[400px] w-full px-6 text-center">
       <!-- Logo -->
       <div class="inline-flex items-center gap-3 mb-8">
-        <svg class="c360-mark" width="44" height="44" viewBox="0 0 56 56">
-          <rect width="56" height="56" rx="12" fill="#18181B"/>
+        <svg
+          class="c360-mark"
+          width="44"
+          height="44"
+          viewBox="0 0 56 56"
+        >
+          <rect
+            width="56"
+            height="56"
+            rx="12"
+            fill="#18181B"
+          />
           <g class="rotor">
-            <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-            <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+            <path
+              d="M44 18 A 16 16 0 1 0 44 38"
+              stroke="#fff"
+              stroke-width="5.5"
+              stroke-linecap="round"
+              fill="none"
+            />
+            <path
+              d="M44 18 A 16 16 0 0 1 44 38"
+              stroke="#2563EB"
+              stroke-width="5.5"
+              stroke-linecap="round"
+              fill="none"
+            />
           </g>
         </svg>
         <span class="font-bold text-[20px] tracking-tight text-[#18181B]">Contex360</span>
       </div>
 
       <!-- Loading -->
-      <div v-if="status === 'loading'" class="space-y-4">
+      <div
+        v-if="status === 'loading'"
+        class="space-y-4"
+      >
         <div class="w-12 h-12 mx-auto rounded-full bg-[#F4F4F5] flex items-center justify-center">
           <span class="material-symbols-outlined animate-spin text-[24px] text-[#2563EB]">progress_activity</span>
         </div>
-        <p class="text-[14px] text-[#71717A]">Verificando tu correo electrónico...</p>
+        <p class="text-[14px] text-[#71717A]">
+          Verificando tu correo electrónico...
+        </p>
       </div>
 
       <!-- Success -->
-      <div v-else-if="status === 'success'" class="space-y-4">
+      <div
+        v-else-if="status === 'success'"
+        class="space-y-4"
+      >
         <div class="w-16 h-16 mx-auto rounded-full bg-emerald-50 flex items-center justify-center">
           <span class="material-symbols-outlined text-[32px] text-emerald-600">check_circle</span>
         </div>
-        <h1 class="text-[24px] font-bold text-[#18181B]">Correo verificado</h1>
-        <p class="text-[14px] text-[#71717A] leading-relaxed">{{ message }}</p>
+        <h1 class="text-[24px] font-bold text-[#18181B]">
+          Correo verificado
+        </h1>
+        <p class="text-[14px] text-[#71717A] leading-relaxed">
+          {{ message }}
+        </p>
         <button
-          @click="goToLogin"
           class="mt-4 px-6 py-3 bg-[#18181B] text-white rounded-[10px] text-[14px] font-semibold hover:bg-[#27272A] transition-colors"
+          @click="goToLogin"
         >
           Ir al inicio de sesión
         </button>
       </div>
 
       <!-- Error -->
-      <div v-else class="space-y-4">
+      <div
+        v-else
+        class="space-y-4"
+      >
         <div class="w-16 h-16 mx-auto rounded-full bg-rose-50 flex items-center justify-center">
           <span class="material-symbols-outlined text-[32px] text-rose-600">error</span>
         </div>
-        <h1 class="text-[24px] font-bold text-[#18181B]">Error de verificación</h1>
-        <p class="text-[14px] text-[#71717A] leading-relaxed">{{ message }}</p>
+        <h1 class="text-[24px] font-bold text-[#18181B]">
+          Error de verificación
+        </h1>
+        <p class="text-[14px] text-[#71717A] leading-relaxed">
+          {{ message }}
+        </p>
         <button
-          @click="goToLogin"
           class="mt-4 px-6 py-3 bg-[#18181B] text-white rounded-[10px] text-[14px] font-semibold hover:bg-[#27272A] transition-colors"
+          @click="goToLogin"
         >
           Ir al inicio de sesión
         </button>

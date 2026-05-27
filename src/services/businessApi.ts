@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { getApiBaseUrl } from './apiBase'
 import { getCsrfToken } from './csrf'
 

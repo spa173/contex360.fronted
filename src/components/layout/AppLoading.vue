@@ -7,29 +7,56 @@ defineProps<{ error?: string | null }>()
     <!-- Sidebar skeleton -->
     <aside class="loading-sidebar">
       <div class="loading-logo">
-        <div class="skel skel-logo animate-pulse"></div>
+        <div class="skel skel-logo animate-pulse" />
         <div class="skel-text-group">
-          <div class="skel skel-line w-20 animate-pulse"></div>
-          <div class="skel skel-line w-14 animate-pulse" style="margin-top:4px; opacity:0.5"></div>
+          <div class="skel skel-line w-20 animate-pulse" />
+          <div
+            class="skel skel-line w-14 animate-pulse"
+            style="margin-top:4px; opacity:0.5"
+          />
         </div>
       </div>
 
       <div class="loading-nav">
-        <div class="skel skel-label animate-pulse"></div>
-        <div v-for="i in 2" :key="'a'+i" class="skel skel-nav-item animate-pulse"></div>
+        <div class="skel skel-label animate-pulse" />
+        <div
+          v-for="i in 2"
+          :key="'a'+i"
+          class="skel skel-nav-item animate-pulse"
+        />
 
-        <div class="skel skel-label animate-pulse" style="margin-top:16px"></div>
-        <div v-for="i in 4" :key="'b'+i" class="skel skel-nav-item animate-pulse"></div>
+        <div
+          class="skel skel-label animate-pulse"
+          style="margin-top:16px"
+        />
+        <div
+          v-for="i in 4"
+          :key="'b'+i"
+          class="skel skel-nav-item animate-pulse"
+        />
 
-        <div class="skel skel-label animate-pulse" style="margin-top:16px"></div>
-        <div v-for="i in 2" :key="'c'+i" class="skel skel-nav-item animate-pulse"></div>
+        <div
+          class="skel skel-label animate-pulse"
+          style="margin-top:16px"
+        />
+        <div
+          v-for="i in 2"
+          :key="'c'+i"
+          class="skel skel-nav-item animate-pulse"
+        />
       </div>
 
       <div class="loading-user">
-        <div class="skel skel-avatar animate-pulse"></div>
-        <div class="skel-text-group" style="flex:1">
-          <div class="skel skel-line w-24 animate-pulse"></div>
-          <div class="skel skel-line w-16 animate-pulse" style="margin-top:4px; opacity:0.5"></div>
+        <div class="skel skel-avatar animate-pulse" />
+        <div
+          class="skel-text-group"
+          style="flex:1"
+        >
+          <div class="skel skel-line w-24 animate-pulse" />
+          <div
+            class="skel skel-line w-16 animate-pulse"
+            style="margin-top:4px; opacity:0.5"
+          />
         </div>
       </div>
     </aside>
@@ -39,15 +66,15 @@ defineProps<{ error?: string | null }>()
       <!-- Topbar skeleton -->
       <header class="loading-topbar">
         <div class="flex items-center gap-4">
-          <div class="skel skel-icon animate-pulse"></div>
-          <div class="skel skel-line w-28 animate-pulse"></div>
-          <div class="skel-divider"></div>
-          <div class="skel skel-line w-20 animate-pulse"></div>
+          <div class="skel skel-icon animate-pulse" />
+          <div class="skel skel-line w-28 animate-pulse" />
+          <div class="skel-divider" />
+          <div class="skel skel-line w-20 animate-pulse" />
         </div>
         <div class="flex items-center gap-3">
-          <div class="skel skel-badge animate-pulse"></div>
-          <div class="skel skel-icon animate-pulse"></div>
-          <div class="skel skel-icon animate-pulse"></div>
+          <div class="skel skel-badge animate-pulse" />
+          <div class="skel skel-icon animate-pulse" />
+          <div class="skel skel-icon animate-pulse" />
         </div>
       </header>
 
@@ -55,37 +82,81 @@ defineProps<{ error?: string | null }>()
       <div class="loading-content">
         <!-- Page header -->
         <div class="mb-8">
-          <div class="skel skel-line w-24 animate-pulse" style="height:10px; margin-bottom:8px"></div>
-          <div class="skel skel-line w-52 animate-pulse" style="height:22px; margin-bottom:8px"></div>
-          <div class="skel skel-line w-72 animate-pulse" style="height:12px"></div>
+          <div
+            class="skel skel-line w-24 animate-pulse"
+            style="height:10px; margin-bottom:8px"
+          />
+          <div
+            class="skel skel-line w-52 animate-pulse"
+            style="height:22px; margin-bottom:8px"
+          />
+          <div
+            class="skel skel-line w-72 animate-pulse"
+            style="height:12px"
+          />
         </div>
 
         <!-- KPI cards row -->
         <div class="skel-grid-4 mb-8">
-          <div v-for="i in 4" :key="'kpi'+i" class="skel skel-card animate-pulse" style="height:110px"></div>
+          <div
+            v-for="i in 4"
+            :key="'kpi'+i"
+            class="skel skel-card animate-pulse"
+            style="height:110px"
+          />
         </div>
 
         <!-- Chart + side panel -->
         <div class="skel-grid-3">
-          <div class="skel skel-card animate-pulse" style="height:280px; grid-column: span 2"></div>
+          <div
+            class="skel skel-card animate-pulse"
+            style="height:280px; grid-column: span 2"
+          />
           <div class="flex flex-col gap-5">
-            <div class="skel skel-card animate-pulse" style="height:170px"></div>
-            <div class="skel skel-card animate-pulse" style="height:100px"></div>
+            <div
+              class="skel skel-card animate-pulse"
+              style="height:170px"
+            />
+            <div
+              class="skel skel-card animate-pulse"
+              style="height:100px"
+            />
           </div>
         </div>
       </div>
 
       <!-- Error overlay -->
       <Transition name="fade">
-        <div v-if="error" class="loading-error">
+        <div
+          v-if="error"
+          class="loading-error"
+        >
           <div class="error-box">
-            <svg class="error-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            <svg
+              class="error-icon"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="1.5"
+                d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z"
+              />
             </svg>
-            <p class="error-title">No se pudo conectar</p>
-            <p class="error-msg">{{ error }}</p>
-            <button class="error-btn" @click="$emit('retry')">Reintentar</button>
+            <p class="error-title">
+              No se pudo conectar
+            </p>
+            <p class="error-msg">
+              {{ error }}
+            </p>
+            <button
+              class="error-btn"
+              @click="$emit('retry')"
+            >
+              Reintentar
+            </button>
           </div>
         </div>
       </Transition>

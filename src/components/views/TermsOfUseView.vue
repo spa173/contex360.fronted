@@ -105,40 +105,70 @@ const finalSections = [
       aria-hidden="true"
       class="pointer-events-none absolute -top-40 -right-40 w-[900px] h-[600px] rounded-full opacity-60"
       style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
-    ></div>
+    />
 
     <!-- Nav -->
     <header class="relative sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-[#F4F4F5]">
       <div class="max-w-3xl mx-auto px-6 lg:px-8 h-16 flex items-center justify-between">
         <button
-          @click="emit('back')"
           class="flex items-center gap-2 text-[13px] font-semibold text-[#71717A] hover:text-[#18181B] transition-colors"
+          @click="emit('back')"
         >
           <span class="material-symbols-outlined text-[18px]">arrow_back</span>
           Volver
         </button>
         <div class="flex items-center gap-2.5">
-          <svg class="c360-mark flex-shrink-0" width="28" height="28" viewBox="0 0 56 56" aria-hidden="true">
-            <rect width="56" height="56" rx="12" fill="#18181B"/>
+          <svg
+            class="c360-mark flex-shrink-0"
+            width="28"
+            height="28"
+            viewBox="0 0 56 56"
+            aria-hidden="true"
+          >
+            <rect
+              width="56"
+              height="56"
+              rx="12"
+              fill="#18181B"
+            />
             <g class="rotor">
-              <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-              <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
+              <path
+                d="M44 18 A 16 16 0 1 0 44 38"
+                stroke="#fff"
+                stroke-width="5.5"
+                stroke-linecap="round"
+                fill="none"
+              />
+              <path
+                d="M44 18 A 16 16 0 0 1 44 38"
+                stroke="#2563EB"
+                stroke-width="5.5"
+                stroke-linecap="round"
+                fill="none"
+              />
             </g>
           </svg>
           <span class="text-[16px] font-bold tracking-tight text-[#18181B]">Contex360</span>
         </div>
-        <div class="w-[60px]"></div>
+        <div class="w-[60px]" />
       </div>
     </header>
 
     <!-- Hero -->
     <section class="relative pt-14 pb-10">
       <div class="max-w-3xl mx-auto px-6 lg:px-8">
-        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">Legal</p>
-        <h1 class="text-[36px] lg:text-[48px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-3" style="text-wrap: balance;">
+        <p class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+          Legal
+        </p>
+        <h1
+          class="text-[36px] lg:text-[48px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-3"
+          style="text-wrap: balance;"
+        >
           Términos de Uso
         </h1>
-        <p class="text-[13px] text-[#71717A] font-medium">Última actualización: {{ lastUpdated }}</p>
+        <p class="text-[13px] text-[#71717A] font-medium">
+          Última actualización: {{ lastUpdated }}
+        </p>
       </div>
     </section>
 
@@ -159,16 +189,37 @@ const finalSections = [
     <!-- Sections 1-5 -->
     <section class="relative pb-2">
       <div class="max-w-3xl mx-auto px-6 lg:px-8 space-y-10">
-        <article v-for="s in sections" :key="s.n">
+        <article
+          v-for="s in sections"
+          :key="s.n"
+        >
           <div class="flex items-baseline gap-3 mb-3">
             <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
-            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
+            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">
+              {{ s.title }}
+            </h2>
           </div>
-          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="sanitizeHtml(s.body)"></p>
-          <p v-if="s.intro" class="text-[14px] text-[#71717A] leading-[1.65] font-medium mb-3">{{ s.intro }}</p>
-          <ul v-if="s.list" class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
-            <li v-for="item in s.list" :key="item" class="relative pl-5">
-              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+          <p
+            v-if="s.body"
+            class="text-[14px] text-[#71717A] leading-[1.65] font-medium"
+            v-html="sanitizeHtml(s.body)"
+          />
+          <p
+            v-if="s.intro"
+            class="text-[14px] text-[#71717A] leading-[1.65] font-medium mb-3"
+          >
+            {{ s.intro }}
+          </p>
+          <ul
+            v-if="s.list"
+            class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium"
+          >
+            <li
+              v-for="item in s.list"
+              :key="item"
+              class="relative pl-5"
+            >
+              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
               {{ item }}
             </li>
           </ul>
@@ -181,7 +232,9 @@ const finalSections = [
       <div class="max-w-3xl mx-auto px-6 lg:px-8">
         <div class="flex items-baseline gap-3 mb-3">
           <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">06</span>
-          <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">Disponibilidad del servicio</h2>
+          <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">
+            Disponibilidad del servicio
+          </h2>
         </div>
         <div class="grid sm:grid-cols-2 gap-3 mb-5">
           <div
@@ -189,8 +242,12 @@ const finalSections = [
             :key="c.label"
             class="p-4 rounded-[10px] border border-[#E4E4E7] bg-white"
           >
-            <p class="text-[10px] font-bold text-[#18181B] uppercase tracking-wider mb-1.5">{{ c.label }}</p>
-            <p class="text-[13px] text-[#71717A] leading-[1.55] font-medium">{{ c.body }}</p>
+            <p class="text-[10px] font-bold text-[#18181B] uppercase tracking-wider mb-1.5">
+              {{ c.label }}
+            </p>
+            <p class="text-[13px] text-[#71717A] leading-[1.55] font-medium">
+              {{ c.body }}
+            </p>
           </div>
         </div>
         <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium">
@@ -202,15 +259,31 @@ const finalSections = [
     <!-- Final sections 7-10 -->
     <section class="relative pt-2 pb-12">
       <div class="max-w-3xl mx-auto px-6 lg:px-8 space-y-10">
-        <article v-for="s in finalSections" :key="s.n">
+        <article
+          v-for="s in finalSections"
+          :key="s.n"
+        >
           <div class="flex items-baseline gap-3 mb-3">
             <span class="text-[11px] font-bold text-[#A1A1AA] tracking-wider">{{ s.n.padStart(2, '0') }}</span>
-            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">{{ s.title }}</h2>
+            <h2 class="text-[19px] font-bold tracking-tight text-[#18181B]">
+              {{ s.title }}
+            </h2>
           </div>
-          <p v-if="s.body" class="text-[14px] text-[#71717A] leading-[1.65] font-medium" v-html="sanitizeHtml(s.body)"></p>
-          <ul v-if="s.list" class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium">
-            <li v-for="item in s.list" :key="item" class="relative pl-5">
-              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]"></span>
+          <p
+            v-if="s.body"
+            class="text-[14px] text-[#71717A] leading-[1.65] font-medium"
+            v-html="sanitizeHtml(s.body)"
+          />
+          <ul
+            v-if="s.list"
+            class="space-y-2 text-[14px] text-[#71717A] leading-[1.55] font-medium"
+          >
+            <li
+              v-for="item in s.list"
+              :key="item"
+              class="relative pl-5"
+            >
+              <span class="absolute left-0 top-[10px] w-1.5 h-1.5 rounded-full bg-[#2563EB]" />
               {{ item }}
             </li>
           </ul>
@@ -231,7 +304,9 @@ const finalSections = [
 
     <!-- Footer -->
     <footer class="border-t border-[#F4F4F5] py-7 text-center">
-      <p class="text-[12px] text-[#A1A1AA] font-medium">© 2026 Contex360. Todos los derechos reservados.</p>
+      <p class="text-[12px] text-[#A1A1AA] font-medium">
+        © 2026 Contex360. Todos los derechos reservados.
+      </p>
     </footer>
   </div>
 </template>

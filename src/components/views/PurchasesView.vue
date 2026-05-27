@@ -170,17 +170,27 @@ async function submitManualPurchase() {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500"
+  >
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
         <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
           <span>Operaciones</span><span class="material-symbols-outlined text-[14px]">chevron_right</span><span class="text-[#71717A]">Compras</span>
         </div>
-        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">Compras</h1>
-        <p class="text-[14px] text-[#71717A]">Procesa facturas de proveedores con IA. Sube un PDF y extraemos los datos automáticamente.</p>
+        <h1 class="text-[28px] lg:text-[32px] font-bold tracking-[-0.025em] text-[#18181B] mb-1">
+          Compras
+        </h1>
+        <p class="text-[14px] text-[#71717A]">
+          Procesa facturas de proveedores con IA. Sube un PDF y extraemos los datos automáticamente.
+        </p>
       </div>
       <div class="flex gap-2">
-        <button @click="openManualModal" class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">
+        <button
+          class="flex items-center gap-2 px-3.5 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold"
+          @click="openManualModal"
+        >
           <span class="material-symbols-outlined text-[18px]">edit_document</span>Ingreso manual
         </button>
       </div>
@@ -188,7 +198,10 @@ async function submitManualPurchase() {
 
     <!-- Upload hero -->
     <div class="bg-white border border-[#E4E4E7] rounded-[14px] p-6 sm:p-10 mb-6 relative overflow-hidden">
-      <div class="absolute -top-20 -right-20 w-[400px] h-[300px] rounded-full opacity-50 pointer-events-none" style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"></div>
+      <div
+        class="absolute -top-20 -right-20 w-[400px] h-[300px] rounded-full opacity-50 pointer-events-none"
+        style="background: radial-gradient(closest-side, rgba(37,99,235,0.08), transparent 70%);"
+      />
       <div class="relative grid lg:grid-cols-[1fr_320px] gap-8 items-center">
         <!-- Input real oculto -->
         <input
@@ -197,28 +210,75 @@ async function submitManualPurchase() {
           accept=".pdf,.jpg,.jpeg,.png"
           class="hidden"
           @change="handleFileUpload"
-        />
+        >
         <div
-          @click="triggerFileSelect"
           class="border-2 border-dashed border-[#E4E4E7] rounded-[14px] p-8 text-center hover:border-[#2563EB] hover:bg-[#FAFAFA] transition-all cursor-pointer"
+          @click="triggerFileSelect"
         >
           <div class="w-14 h-14 mx-auto rounded-[12px] bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] mb-4">
             <span class="material-symbols-outlined text-[28px]">document_scanner</span>
           </div>
-          <h2 class="text-[16px] font-bold text-[#18181B] mb-1">Arrastra tus facturas o haz clic para subir</h2>
-          <p class="text-[12px] text-[#71717A] mb-4">PDF, JPG, PNG · Máx 10MB</p>
-          <div v-if="isProcessing" class="mt-2">
+          <h2 class="text-[16px] font-bold text-[#18181B] mb-1">
+            Arrastra tus facturas o haz clic para subir
+          </h2>
+          <p class="text-[12px] text-[#71717A] mb-4">
+            PDF, JPG, PNG · Máx 10MB
+          </p>
+          <div
+            v-if="isProcessing"
+            class="mt-2"
+          >
             <div class="w-32 h-1 mx-auto bg-[#E4E4E7] rounded-full overflow-hidden">
-              <div class="h-full bg-[#2563EB] animate-pulse" style="width: 60%"></div>
+              <div
+                class="h-full bg-[#2563EB] animate-pulse"
+                style="width: 60%"
+              />
             </div>
-            <p class="text-[11px] font-semibold text-[#2563EB] mt-2 uppercase tracking-wider">Analizando con ContexAI…</p>
+            <p class="text-[11px] font-semibold text-[#2563EB] mt-2 uppercase tracking-wider">
+              Analizando con ContexAI…
+            </p>
           </div>
-          <button v-else class="px-4 py-2 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A]">Seleccionar archivos</button>
+          <button
+            v-else
+            class="px-4 py-2 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A]"
+          >
+            Seleccionar archivos
+          </button>
         </div>
         <div class="space-y-3">
-          <div class="flex items-start gap-3"><div class="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-[16px]">looks_one</span></div><div><p class="text-[13px] font-semibold text-[#18181B]">Sube el documento</p><p class="text-[11px] text-[#71717A]">PDF de la factura del proveedor</p></div></div>
-          <div class="flex items-start gap-3"><div class="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-[16px]">looks_two</span></div><div><p class="text-[13px] font-semibold text-[#18181B]">IA extrae los campos</p><p class="text-[11px] text-[#71717A]">Proveedor, NIT, fecha, monto</p></div></div>
-          <div class="flex items-start gap-3"><div class="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0 mt-0.5"><span class="material-symbols-outlined text-[16px]">looks_3</span></div><div><p class="text-[13px] font-semibold text-[#18181B]">Apruebas y se contabiliza</p><p class="text-[11px] text-[#71717A]">Asiento generado automáticamente</p></div></div>
+          <div class="flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0 mt-0.5">
+              <span class="material-symbols-outlined text-[16px]">looks_one</span>
+            </div><div>
+              <p class="text-[13px] font-semibold text-[#18181B]">
+                Sube el documento
+              </p><p class="text-[11px] text-[#71717A]">
+                PDF de la factura del proveedor
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0 mt-0.5">
+              <span class="material-symbols-outlined text-[16px]">looks_two</span>
+            </div><div>
+              <p class="text-[13px] font-semibold text-[#18181B]">
+                IA extrae los campos
+              </p><p class="text-[11px] text-[#71717A]">
+                Proveedor, NIT, fecha, monto
+              </p>
+            </div>
+          </div>
+          <div class="flex items-start gap-3">
+            <div class="w-7 h-7 rounded-full bg-[#2563EB]/10 flex items-center justify-center text-[#2563EB] flex-shrink-0 mt-0.5">
+              <span class="material-symbols-outlined text-[16px]">looks_3</span>
+            </div><div>
+              <p class="text-[13px] font-semibold text-[#18181B]">
+                Apruebas y se contabiliza
+              </p><p class="text-[11px] text-[#71717A]">
+                Asiento generado automáticamente
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -226,31 +286,66 @@ async function submitManualPurchase() {
     <!-- Recent processed -->
     <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
       <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Historial de compras</h2>
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+          Historial de compras
+        </h2>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left min-w-[580px]">
           <thead>
             <tr class="bg-[#FAFAFA] text-[10px] font-bold uppercase tracking-wider text-[#71717A] border-b border-[#F4F4F5]">
-              <th class="px-5 py-3">ID</th>
-              <th class="px-5 py-3">Proveedor</th>
-              <th class="px-5 py-3">Fecha</th>
-              <th class="px-5 py-3">IA</th>
-              <th class="px-5 py-3 text-right">Monto</th>
-              <th class="px-5 py-3"></th>
+              <th class="px-5 py-3">
+                ID
+              </th>
+              <th class="px-5 py-3">
+                Proveedor
+              </th>
+              <th class="px-5 py-3">
+                Fecha
+              </th>
+              <th class="px-5 py-3">
+                IA
+              </th>
+              <th class="px-5 py-3 text-right">
+                Monto
+              </th>
+              <th class="px-5 py-3" />
             </tr>
           </thead>
           <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
-            <tr v-for="purchase in tenantPurchases" :key="purchase.id" class="hover:bg-[#FAFAFA]">
-              <td class="px-5 py-3.5 font-mono text-[#A1A1AA] text-[12px]">{{ purchase.number }}</td>
-              <td class="px-5 py-3.5 font-semibold text-[#18181B]">{{ purchase.vendorName }}</td>
-              <td class="px-5 py-3.5 text-[#71717A]">{{ new Date(purchase.date).toLocaleDateString() }}</td>
-              <td class="px-5 py-3.5"><span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold"><span class="material-symbols-outlined text-[12px]">verified</span>Procesada</span></td>
-              <td class="px-5 py-3.5 text-right font-mono font-semibold">{{ formatCurrency(purchase.total) }}</td>
-              <td class="px-5 py-3.5 text-right"><button class="text-[#A1A1AA] hover:text-[#18181B]"><span class="material-symbols-outlined text-[18px]">more_horiz</span></button></td>
+            <tr
+              v-for="purchase in tenantPurchases"
+              :key="purchase.id"
+              class="hover:bg-[#FAFAFA]"
+            >
+              <td class="px-5 py-3.5 font-mono text-[#A1A1AA] text-[12px]">
+                {{ purchase.number }}
+              </td>
+              <td class="px-5 py-3.5 font-semibold text-[#18181B]">
+                {{ purchase.vendorName }}
+              </td>
+              <td class="px-5 py-3.5 text-[#71717A]">
+                {{ new Date(purchase.date).toLocaleDateString() }}
+              </td>
+              <td class="px-5 py-3.5">
+                <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-700 text-[11px] font-semibold"><span class="material-symbols-outlined text-[12px]">verified</span>Procesada</span>
+              </td>
+              <td class="px-5 py-3.5 text-right font-mono font-semibold">
+                {{ formatCurrency(purchase.total) }}
+              </td>
+              <td class="px-5 py-3.5 text-right">
+                <button class="text-[#A1A1AA] hover:text-[#18181B]">
+                  <span class="material-symbols-outlined text-[18px]">more_horiz</span>
+                </button>
+              </td>
             </tr>
             <tr v-if="tenantPurchases.length === 0">
-              <td colspan="6" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">No hay compras registradas.</td>
+              <td
+                colspan="6"
+                class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+              >
+                No hay compras registradas.
+              </td>
             </tr>
           </tbody>
         </table>
@@ -258,15 +353,28 @@ async function submitManualPurchase() {
     </div>
 
     <!-- Manual Purchase Modal -->
-    <div v-if="showManualModal" class="fixed inset-0 z-[100] flex items-center justify-center">
-      <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showManualModal = false"></div>
+    <div
+      v-if="showManualModal"
+      class="fixed inset-0 z-[100] flex items-center justify-center"
+    >
+      <div
+        class="absolute inset-0 bg-black/40 backdrop-blur-sm"
+        @click="showManualModal = false"
+      />
       <div class="relative bg-white rounded-[16px] w-full max-w-4xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200">
         <div class="px-6 py-5 border-b border-[#F4F4F5] flex justify-between items-center bg-[#FAFAFA] shrink-0">
           <div>
-            <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">Registro Manual de Compra</h3>
-            <p class="text-[13px] text-[#71717A] mt-0.5">Ingresa los datos de la factura del proveedor.</p>
+            <h3 class="text-[18px] font-bold text-[#18181B] tracking-tight">
+              Registro Manual de Compra
+            </h3>
+            <p class="text-[13px] text-[#71717A] mt-0.5">
+              Ingresa los datos de la factura del proveedor.
+            </p>
           </div>
-          <button @click="showManualModal = false" class="text-[#A1A1AA] hover:text-[#18181B] transition-colors rounded-full p-1 hover:bg-[#F4F4F5]">
+          <button
+            class="text-[#A1A1AA] hover:text-[#18181B] transition-colors rounded-full p-1 hover:bg-[#F4F4F5]"
+            @click="showManualModal = false"
+          >
             <span class="material-symbols-outlined text-[20px]">close</span>
           </button>
         </div>
@@ -276,23 +384,57 @@ async function submitManualPurchase() {
           <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
             <div>
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Proveedor *</label>
-              <select v-model="manualForm.providerId" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
-                <option value="" disabled>Selecciona un proveedor</option>
-                <option v-for="tp in tenantProviders" :key="tp.id" :value="tp.id">{{ tp.name }} ({{ tp.nit }})</option>
+              <select
+                v-model="manualForm.providerId"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+              >
+                <option
+                  value=""
+                  disabled
+                >
+                  Selecciona un proveedor
+                </option>
+                <option
+                  v-for="tp in tenantProviders"
+                  :key="tp.id"
+                  :value="tp.id"
+                >
+                  {{ tp.name }} ({{ tp.nit }})
+                </option>
               </select>
-              <p v-if="validationErrors.provider" class="text-[11px] text-red-600 mt-1">{{ validationErrors.provider }}</p>
+              <p
+                v-if="validationErrors.provider"
+                class="text-[11px] text-red-600 mt-1"
+              >
+                {{ validationErrors.provider }}
+              </p>
             </div>
             <div>
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Fecha de Emisión *</label>
-              <input v-model="manualForm.issuedAt" type="date" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="manualForm.issuedAt"
+                type="date"
+                required
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+              >
             </div>
             <div>
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Plazo de Pago (Días)</label>
-              <input v-model.number="manualForm.paymentTermDays" type="number" min="0" required class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              <input
+                v-model.number="manualForm.paymentTermDays"
+                type="number"
+                min="0"
+                required
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+              >
             </div>
             <div class="md:col-span-3">
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider mb-2 block">Notas / Observaciones</label>
-              <input v-model="manualForm.notes" placeholder="Opcional. Ej. Factura física 12345" class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+              <input
+                v-model="manualForm.notes"
+                placeholder="Opcional. Ej. Factura física 12345"
+                class="w-full border border-[#E4E4E7] rounded-[10px] px-3 py-2.5 text-[13px] font-medium text-[#18181B] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+              >
             </div>
           </div>
 
@@ -300,7 +442,10 @@ async function submitManualPurchase() {
           <div>
             <div class="flex items-center justify-between mb-3">
               <label class="text-[12px] font-bold text-[#71717A] uppercase tracking-wider block">Líneas de la Compra *</label>
-              <button @click="addItem" class="text-[12px] font-bold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1">
+              <button
+                class="text-[12px] font-bold text-[#2563EB] hover:text-[#1D4ED8] flex items-center gap-1"
+                @click="addItem"
+              >
                 <span class="material-symbols-outlined text-[14px]">add</span> Añadir fila
               </button>
             </div>
@@ -309,44 +454,105 @@ async function submitManualPurchase() {
               <table class="w-full text-left">
                 <thead class="bg-[#FAFAFA] border-b border-[#E4E4E7]">
                   <tr>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A]">Producto / Detalle</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">Cant</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px]">Costo Unit.</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">% IVA</th>
-                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px] text-right">Subtotal</th>
-                    <th class="px-3 py-2 w-[40px]"></th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A]">
+                      Producto / Detalle
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">
+                      Cant
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px]">
+                      Costo Unit.
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[100px]">
+                      % IVA
+                    </th>
+                    <th class="px-3 py-2 text-[11px] font-bold uppercase tracking-wider text-[#71717A] w-[140px] text-right">
+                      Subtotal
+                    </th>
+                    <th class="px-3 py-2 w-[40px]" />
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-[#F4F4F5]">
-                  <tr v-for="(item, idx) in manualForm.items" :key="idx" class="bg-white">
+                  <tr
+                    v-for="(item, idx) in manualForm.items"
+                    :key="idx"
+                    class="bg-white"
+                  >
                     <td class="px-3 py-2">
                       <div class="flex flex-col gap-1">
-                        <select v-model="item.productId" @change="onProductSelect(item)" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
-                          <option value="">-- Sin producto de inventario --</option>
-                          <option v-for="p in tenantProducts" :key="p.id" :value="p.id">{{ p.name }}</option>
+                        <select
+                          v-model="item.productId"
+                          class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                          @change="onProductSelect(item)"
+                        >
+                          <option value="">
+                            -- Sin producto de inventario --
+                          </option>
+                          <option
+                            v-for="p in tenantProducts"
+                            :key="p.id"
+                            :value="p.id"
+                          >
+                            {{ p.name }}
+                          </option>
                         </select>
-                        <input v-if="!item.productId" v-model="item.productName" placeholder="Descripción libre" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
-<p v-if="validationErrors.items[idx]" class="text-[11px] text-red-600 mt-1">{{ validationErrors.items[idx] }}</p>
+                        <input
+                          v-if="!item.productId"
+                          v-model="item.productName"
+                          placeholder="Descripción libre"
+                          class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                        >
+                        <p
+                          v-if="validationErrors.items[idx]"
+                          class="text-[11px] text-red-600 mt-1"
+                        >
+                          {{ validationErrors.items[idx] }}
+                        </p>
                       </div>
                     </td>
                     <td class="px-3 py-2">
-                      <input v-model.number="item.quantity" type="number" min="1" step="any" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+                      <input
+                        v-model.number="item.quantity"
+                        type="number"
+                        min="1"
+                        step="any"
+                        class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                      >
                     </td>
                     <td class="px-3 py-2">
-                      <input v-model.number="item.unitPrice" type="number" min="0" step="any" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]" />
+                      <input
+                        v-model.number="item.unitPrice"
+                        type="number"
+                        min="0"
+                        step="any"
+                        class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                      >
                     </td>
                     <td class="px-3 py-2">
-                      <select v-model.number="item.taxRate" class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]">
-                        <option value="0">0%</option>
-                        <option value="5">5%</option>
-                        <option value="19">19%</option>
+                      <select
+                        v-model.number="item.taxRate"
+                        class="w-full border border-[#E4E4E7] rounded-[6px] px-2 py-1.5 text-[12px] bg-[#FAFAFA] outline-none focus:border-[#18181B]"
+                      >
+                        <option value="0">
+                          0%
+                        </option>
+                        <option value="5">
+                          5%
+                        </option>
+                        <option value="19">
+                          19%
+                        </option>
                       </select>
                     </td>
                     <td class="px-3 py-2 text-right font-mono text-[12px] font-semibold text-[#18181B]">
                       {{ formatCurrency(item.quantity * item.unitPrice) }}
                     </td>
                     <td class="px-3 py-2 text-right">
-                      <button @click="removeItem(idx)" :disabled="manualForm.items.length <= 1" class="text-[#A1A1AA] hover:text-red-500 disabled:opacity-30">
+                      <button
+                        :disabled="manualForm.items.length <= 1"
+                        class="text-[#A1A1AA] hover:text-red-500 disabled:opacity-30"
+                        @click="removeItem(idx)"
+                      >
                         <span class="material-symbols-outlined text-[18px]">delete</span>
                       </button>
                     </td>
@@ -355,15 +561,29 @@ async function submitManualPurchase() {
               </table>
             </div>
             
-            <p class="mt-3 text-[11px] text-[#A1A1AA] text-right">Los totales se calculan automáticamente en el backend.</p>
+            <p class="mt-3 text-[11px] text-[#A1A1AA] text-right">
+              Los totales se calculan automáticamente en el backend.
+            </p>
           </div>
         </div>
 
         <!-- Footer actions -->
         <div class="px-6 py-4 border-t border-[#F4F4F5] bg-[#FAFAFA] flex justify-end gap-3 shrink-0">
-          <button @click="showManualModal = false" class="px-4 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold">Cancelar</button>
-          <button @click="submitManualPurchase" :disabled="isSubmitting" class="px-6 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold flex items-center gap-2 disabled:opacity-50">
-            <span v-if="isSubmitting" class="material-symbols-outlined animate-spin text-[16px]">sync</span>
+          <button
+            class="px-4 py-2.5 border border-[#E4E4E7] rounded-[10px] bg-white text-[#18181B] hover:bg-[#FAFAFA] text-[13px] font-semibold"
+            @click="showManualModal = false"
+          >
+            Cancelar
+          </button>
+          <button
+            :disabled="isSubmitting"
+            class="px-6 py-2.5 bg-[#18181B] text-white rounded-[10px] hover:bg-[#27272A] text-[13px] font-semibold flex items-center gap-2 disabled:opacity-50"
+            @click="submitManualPurchase"
+          >
+            <span
+              v-if="isSubmitting"
+              class="material-symbols-outlined animate-spin text-[16px]"
+            >sync</span>
             {{ isSubmitting ? 'Guardando...' : 'Guardar Compra' }}
           </button>
         </div>

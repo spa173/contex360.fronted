@@ -75,7 +75,7 @@ function handleSelectRow(userId: string) {
               :indeterminate="someSelected"
               class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500/20"
               @change="handleToggleAll"
-            />
+            >
           </th>
           <th class="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-slate-500">
             Usuario
@@ -110,13 +110,16 @@ function handleSelectRow(userId: string) {
           ]"
           @click="handleSelectRow(row.user.id)"
         >
-          <td class="px-4 py-3" @click.stop>
+          <td
+            class="px-4 py-3"
+            @click.stop
+          >
             <input
               :checked="isSelected(row.user.id)"
               type="checkbox"
               class="h-4 w-4 rounded border-slate-600 bg-slate-800 text-emerald-500 focus:ring-emerald-500/20"
               @change="handleToggleRow(row.user.id)"
-            />
+            >
           </td>
           <td class="px-4 py-3">
             <div class="flex flex-col">
@@ -197,8 +200,13 @@ function handleSelectRow(userId: string) {
         </tr>
       </tbody>
     </table>
-    <div v-if="rows.length === 0" class="p-8 text-center">
-      <p class="text-sm text-slate-500">No hay usuarios que coincidan con los filtros.</p>
+    <div
+      v-if="rows.length === 0"
+      class="p-8 text-center"
+    >
+      <p class="text-sm text-slate-500">
+        No hay usuarios que coincidan con los filtros.
+      </p>
     </div>
   </div>
 </template>

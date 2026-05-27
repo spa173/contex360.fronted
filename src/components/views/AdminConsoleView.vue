@@ -1423,7 +1423,12 @@ async function saveBancolombiaConfig() {
                 v-model="dianConfig.dianEnvironment"
                 class="w-full border border-[#E4E4E7] rounded-[10px] px-3.5 py-2.5 text-[13px] font-semibold outline-none focus:border-[#18181B] bg-white"
               >
-                <option value="" disabled>Seleccionar ambiente...</option>
+                <option
+                  value=""
+                  disabled
+                >
+                  Seleccionar ambiente...
+                </option>
                 <option value="test">
                   Pruebas / Habilitación
                 </option>
