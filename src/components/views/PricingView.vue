@@ -27,6 +27,9 @@ const isAnnual = ref(false)
 const selectedPlan = ref<any>(null)
 const showWompi = ref(false)
 const paymentStep = ref('details') // details -> processing -> success
+const cardNumber = ref('')
+const cardExpiry = ref('')
+const cardCvc = ref('')
 
 
 const plans = [
