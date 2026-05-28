@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useBillingStore } from '../../stores/billingStore'
 import { useThirdPartiesStore } from '../../stores/thirdPartiesStore'
+import { businessApi } from '../../services/businessApi'
 import { useAdminStore } from '../../stores/adminStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
@@ -82,10 +83,78 @@ async function handleCreateInvoice() {
   if (res.ok) {
     emit('notify', { message: 'Factura generada', detail: `La factura ${res.invoice?.number || 'FE'} fue enviada y transmitida a la DIAN.` })
     newInvoice.value = { customerId: '', concept: '', amount: 0 }
+    taxPreview.value = null
   } else {
     emit('notify', { message: 'Error', detail: res.message })
   }
 }
+
+// Lógica de estimación de impuestos en tiempo real desde el backend (Single Source of Truth)
+interface TaxResult {
+  base: number
+  iva: number
+  ica: number
+  retefuente: number
+  total: number
+  ivaRate: number
+  icaRate: number
+  retefuenteRate: number
+  regime: string
+  city?: string
+}
+
+const taxPreview = ref<TaxResult | null>(null)
+const isCalculatingTaxes = ref(false)
+let taxDebounceTimeout: any = null
+
+async function updateTaxPreview() {
+  const amount = Number(newInvoice.value.amount)
+  if (!amount || amount <= 0 || !newInvoice.value.customerId) {
+    taxPreview.value = null
+    return
+  }
+
+  isCalculatingTaxes.value = true
+  try {
+    const selectedClient = thirdParties.tenantThirdParties.find(
+      (tp) => tp.id === newInvoice.value.customerId
+    )
+    
+    // Mapeo dinámico del perfil tributario a los regímenes esperados por el backend (simplificado | comun | especial)
+    let regime = 'comun'
+    const profile = selectedClient?.taxProfile || ''
+    if (profile === 'RegimenSimplificado') {
+      regime = 'simplificado'
+    } else if (profile === 'GranContribuyente' || profile === 'RegimenComun') {
+      regime = 'comun'
+    }
+
+    const clientCity = selectedClient?.city || ''
+
+    const res = await businessApi.calcularImpuestos({
+      subtotal: amount,
+      regime,
+      clientCity,
+    })
+    taxPreview.value = res
+  } catch (err) {
+    console.error('Error al estimar impuestos en tiempo real:', err)
+    taxPreview.value = null
+  } finally {
+    isCalculatingTaxes.value = false
+  }
+}
+
+watch(
+  () => [newInvoice.value.customerId, newInvoice.value.amount],
+  () => {
+    if (taxDebounceTimeout) clearTimeout(taxDebounceTimeout)
+    taxDebounceTimeout = setTimeout(() => {
+      updateTaxPreview()
+    }, 450) // Debounce para no inundar el servidor al escribir el monto
+  },
+  { deep: true }
+)
 
 async function handleExport(): Promise<void> {
   emit('notify', { message: 'Generando PDF DIAN', detail: 'ContexAI está analizando los comprobantes electrónicos emitidos...' })
@@ -322,10 +391,45 @@ function statusBadge(status: string | undefined): BadgeStyle {
             >
           </div>
 
-          <div class="flex gap-2.5 p-3 rounded-[10px] border border-[#E4E4E7] bg-white">
+          <!-- Proyección de Impuestos Real-time (Backend Single Source of Truth) -->
+          <div v-if="taxPreview" class="p-4 rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] space-y-2.5 transition-all duration-300">
+            <div class="flex items-center justify-between text-[#2563EB]">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[16px] animate-spin" v-if="isCalculatingTaxes">sync</span>
+                <span class="material-symbols-outlined text-[16px]" v-else>auto_awesome</span>
+                <span class="text-[11px] font-bold uppercase tracking-wider">Proyección de Impuestos</span>
+              </div>
+              <span class="text-[10px] text-[#71717A] bg-white px-2 py-0.5 border border-[#E4E4E7] rounded-full font-semibold">Backend</span>
+            </div>
+            
+            <div class="space-y-1.5 text-[12px] font-medium text-[#71717A]">
+              <div class="flex justify-between">
+                <span>Subtotal (Base)</span>
+                <span class="font-mono text-[#18181B]">{{ formatCurrency(taxPreview.base) }}</span>
+              </div>
+              <div class="flex justify-between" v-if="taxPreview.iva > 0">
+                <span>IVA ({{ (taxPreview.ivaRate * 100).toFixed(0) }}%)</span>
+                <span class="font-mono text-[#18181B]">+{{ formatCurrency(taxPreview.iva) }}</span>
+              </div>
+              <div class="flex justify-between" v-if="taxPreview.ica > 0">
+                <span>ICA ({{ taxPreview.city || 'ICA' }} {{ (taxPreview.icaRate * 1000).toFixed(1) }}‰)</span>
+                <span class="font-mono text-[#18181B]">+{{ formatCurrency(taxPreview.ica) }}</span>
+              </div>
+              <div class="flex justify-between" v-if="taxPreview.retefuente > 0">
+                <span>ReteFuente ({{ (taxPreview.retefuenteRate * 100).toFixed(1) }}%)</span>
+                <span class="font-mono text-rose-600">-{{ formatCurrency(taxPreview.retefuente) }}</span>
+              </div>
+              <div class="border-t border-[#E4E4E7] pt-2 mt-2 flex justify-between text-[13px] font-bold text-[#18181B]">
+                <span>Total Neto Estimado</span>
+                <span class="font-mono text-[#2563EB]">{{ formatCurrency(taxPreview.total) }}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div v-else class="flex gap-2.5 p-3 rounded-[10px] border border-[#E4E4E7] bg-white transition-all duration-300">
             <span class="material-symbols-outlined text-[18px] text-[#2563EB] flex-shrink-0">auto_awesome</span>
             <p class="text-[11px] text-[#18181B] leading-[1.5]">
-              <strong class="font-semibold">ContexAI:</strong> Los impuestos se calculan automáticamente en el backend.
+              <strong class="font-semibold">ContexAI:</strong> Selecciona un cliente e ingresa un monto para proyectar impuestos en tiempo real.
             </p>
           </div>
 
