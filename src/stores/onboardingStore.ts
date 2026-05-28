@@ -12,11 +12,11 @@ export const useOnboardingStore = defineStore('onboarding', () => {
   
   // Checklist tracking for recommended onboarding improvements
   const checklist = ref({
-    companyData: false,     # Configuración básica de empresa
-    dianSetup: false,       # Configuración DIAN (facturación electrónica)
-    firstProduct: false,    # Primer producto/servicio configurado
-    welcomeEmail: false,    # Email de bienvenida enviado
-    planSelected: false,    # Plan seleccionado
+    companyData: false,     // Configuración básica de empresa
+    dianSetup: false,       // Configuración DIAN (facturación electrónica)
+    firstProduct: false,    // Primer producto/servicio configurado
+    welcomeEmail: false,    // Email de bienvenida enviado
+    planSelected: false,    // Plan seleccionado
   })
 
   const isOnboardingRequired = computed(() => {
@@ -38,14 +38,14 @@ export const useOnboardingStore = defineStore('onboarding', () => {
       const status = await onboardingApi.getStatus()
       isOnboardingCompleted.value = status.completed
       
-      # Also update individual checklist items based on status
+      // Also update individual checklist items based on status
       if (status.checklist) {
         checklist.value = { ...checklist.value, ...status.checklist }
       }
     } catch {
-      # If the user doesn't have a membership/tenant yet, onboarding is needed
+      // If the user doesn't have a membership/tenant yet, onboarding is needed
       isOnboardingCompleted.value = false
-      # Reset checklist for new users
+      // Reset checklist for new users
       checklist.value = {
         companyData: false,
         dianSetup: false,
@@ -70,9 +70,9 @@ export const useOnboardingStore = defineStore('onboarding', () => {
       const result = await onboardingApi.complete(data)
       if (result.success) {
         isOnboardingCompleted.value = true
-        # Mark company data as complete
+        // Mark company data as complete
         checklist.value.companyData = true
-        # Mark plan as selected if provided in the completion data (we'd need to enhance this)
+        // Mark plan as selected if provided in the completion data (we'd need to enhance this)
         if (data.planType) {
           checklist.value.planSelected = true
         }
@@ -83,11 +83,11 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     }
   }
 
-  # Update individual checklist items
+  // Update individual checklist items
   function updateChecklistItem(item: keyof typeof checklist.value, value: boolean) {
     checklist.value = { ...checklist.value, [item]: value }
     
-    # If all items are complete, mark onboarding as complete
+    // If all items are complete, mark onboarding as complete
     if (isChecklistComplete.value) {
       isOnboardingCompleted.value = true
     }
