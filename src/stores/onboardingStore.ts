@@ -66,6 +66,9 @@ export const useOnboardingStore = defineStore('onboarding', () => {
     city?: string
     sector?: string
     planType?: string
+    acceptedTerms?: boolean
+    acceptedPrivacy?: boolean
+    acceptedDataProcessing?: boolean
   }): Promise<{ success: boolean; message?: string }> {
     try {
       const result = await onboardingApi.complete(data)

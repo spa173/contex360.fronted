@@ -116,21 +116,12 @@ async function handleComplete() {
       phone: form.value.phone || undefined,
       city: form.value.city || undefined,
       sector: form.value.sector || undefined,
+      planType: selectedPlan.value,
+      acceptedTerms: acceptedTerms.value,
+      acceptedPrivacy: acceptedPrivacy.value,
+      acceptedDataProcessing: acceptedDataProcessing.value,
     })
     if (result.success) {
-      // Registrar consentimientos
-      const userId = state.currentUser?.id
-      if (userId && state.activeTenantId) {
-        try {
-          await Promise.all([
-            businessApi.registrarConsentimiento({ userId, type: 'terminosCondiciones', estado: 'aceptado' }, state.activeTenantId),
-            businessApi.registrarConsentimiento({ userId, type: 'politicaPrivacidad', estado: 'aceptado' }, state.activeTenantId),
-            businessApi.registrarConsentimiento({ userId, type: 'procesamientoDatos', estado: 'aceptado' }, state.activeTenantId),
-          ])
-        } catch (e) {
-          console.warn('Consentimientos no registrados:', e)
-        }
-      }
       pushToast('¡Bienvenido!', 'Tu empresa ha sido configurada exitosamente.')
     } else {
       pushToast('Error', result.message || 'No se pudo completar la configuración.')
