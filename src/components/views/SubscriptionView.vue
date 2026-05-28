@@ -514,7 +514,7 @@ async function handleCancel() {
            Problema con tu pago
          </h3>
          <p class="text-[14px] text-[#71717A] max-w-md">
-           {{ paymentFailureStatus.value?.message || 'Hubo un problema procesando tu último pago.' }}
+           {{ paymentFailureStatus?.message || 'Hubo un problema procesando tu último pago.' }}
          </p>
          <div class="flex gap-3">
            <button

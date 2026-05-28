@@ -21,10 +21,10 @@ const emit = defineEmits<{
   (e: 'back'): void
   (e: 'request-demo'): void
   (e: 'purchase-plan', payload: { planType: string; billing: 'monthly' | 'annual' }): void
+  (e: 'login'): void
 }>()
 
 const router = useRouter()
-
 const isAnnual = ref(false)
 const selectedPlan = ref<any>(null)
 const showWompi = ref(false)
