@@ -76,7 +76,6 @@ async function handleCreateInvoice() {
         productName: newInvoice.value.concept?.trim() || 'Servicios y Consultoría',
         quantity: 1,
         unitPrice: amount,
-        taxRate: 0,
       }
     ]
   })
