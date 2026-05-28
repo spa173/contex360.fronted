@@ -518,4 +518,43 @@ export const businessApi = {
   async getSubscriptionInvoices(tenantId?: string | null) {
     return request<any[]>('/subscriptions/invoices', { tenantId })
   },
+  async getAvailableCurrencies() {
+    return request<{ code: string; symbol: string; name: string; rateToCop: number; decimals: number }[]>('/subscriptions/currencies')
+  },
+
+  // ── GDPR / Privacy ──────────────────────────────────────────────────────
+  async registrarConsentimiento(data: { userId: string; type: string; estado: string }, tenantId?: string | null) {
+    return request<any>('/privacy/consent', { method: 'POST', body: data, tenantId })
+  },
+  async getConsentimientos(userId: string, tenantId?: string | null) {
+    return request<any[]>(`/privacy/consents/${userId}`, { tenantId })
+  },
+  async crearSolicitudDerechos(data: { userId: string; tipo: string; solicitante: string; email: string; ip?: string }, tenantId?: string | null) {
+    return request<any>('/privacy/solicitud-derechos', { method: 'POST', body: data, tenantId })
+  },
+
+  // ── Contratos ───────────────────────────────────────────────────────────
+  async getContratosActivos(tenantId?: string | null) {
+    return request<any[]>('/contratos', { tenantId })
+  },
+  async getContratoActivo(tipo: string, tenantId?: string | null) {
+    return request<any>(`/contratos/activo/${tipo}`, { tenantId })
+  },
+  async aceptarContrato(contratoId: string, data?: { ip?: string; dispositivo?: string }, tenantId?: string | null) {
+    return request<any>(`/contratos/${contratoId}/aceptar`, { method: 'POST', body: data, tenantId })
+  },
+  async verificarAceptacionContrato(contratoId: string, tenantId?: string | null) {
+    return request<{ aceptado: boolean }>(`/contratos/${contratoId}/verificar`, { tenantId })
+  },
+  async seedContratos(tenantId?: string | null) {
+    return request<any>('/contratos/seed', { method: 'POST', tenantId })
+  },
+  async getContratosPendientes(tenantId?: string | null) {
+    return request<any[]>('/contratos/pendientes', { tenantId })
+  },
+
+  // ── Taxes ───────────────────────────────────────────────────────────────
+  async calcularImpuestos(data: { subtotal: number; regime?: string; clientCity?: string }) {
+    return request<any>('/taxes/calculate', { method: 'POST', body: data })
+  },
 }

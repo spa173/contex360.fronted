@@ -3,6 +3,7 @@ import { onMounted, ref, computed } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useStateStore } from './stores/stateStore'
 import { useThemeStore } from './stores/themeStore'
+import CookieConsentBanner from './components/common/CookieConsentBanner.vue'
 import AppShell from './components/AppShell.vue'
 import RootShell from './components/RootShell.vue'
 import AuthScreen from './components/AuthScreen.vue'
@@ -12,6 +13,8 @@ import LandingPage from './components/LandingPage.vue'
 import AboutView from './components/views/AboutView.vue'
 import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
 import TermsOfUseView from './components/views/TermsOfUseView.vue'
+import DataProcessingView from './components/views/DataProcessingView.vue'
+import BusinessContinuityView from './components/views/BusinessContinuityView.vue'
 import ForgotPasswordView from './components/views/ForgotPasswordView.vue'
 import ResetPasswordView from './components/views/ResetPasswordView.vue'
 import ToastStack from './components/common/ToastStack.vue'
@@ -46,6 +49,8 @@ const showDemo = ref(false)
 const showAuth = ref(false)
 const showPrivacy = ref(false)
 const showTerms = ref(false)
+const showDPA = ref(false)
+const showBCP = ref(false)
 const showAbout = ref(false)
 const showPricing = ref(false)
 const showPaymentSuccess = ref(false)
@@ -89,6 +94,8 @@ watch(showDemo, (val) => val && syncUrlWithState('/demo'))
 watch(showAbout, (val) => val && syncUrlWithState('/nosotros'))
 watch(showPrivacy, (val) => val && syncUrlWithState('/privacidad'))
 watch(showTerms, (val) => val && syncUrlWithState('/terminos'))
+watch(showDPA, (val) => val && syncUrlWithState('/dpa'))
+watch(showBCP, (val) => val && syncUrlWithState('/continuidad'))
 watch(showPricing, (val) => val && syncUrlWithState('/precios'))
 watch(showForgotPassword, (val) => val && syncUrlWithState('/forgot-password'))
 watch(showResetPassword, (val) => val && syncUrlWithState('/reset-password'))
@@ -102,6 +109,8 @@ const handlePopState = (event) => {
   showDemo.value = false
   showPrivacy.value = false
   showTerms.value = false
+  showDPA.value = false
+  showBCP.value = false
   showAbout.value = false
   showPricing.value = false
   showPaymentSuccess.value = false
@@ -113,6 +122,8 @@ const handlePopState = (event) => {
   else if (path === '/nosotros') showAbout.value = true
   else if (path === '/privacidad') showPrivacy.value = true
   else if (path === '/terminos') showTerms.value = true
+  else if (path === '/dpa') showDPA.value = true
+  else if (path === '/continuidad') showBCP.value = true
   else if (path === '/precios') showPricing.value = true
   else if (path === '/forgot-password') showForgotPassword.value = true
   else if (path.startsWith('/reset-password')) showResetPassword.value = true
@@ -129,6 +140,8 @@ const handleCustomBack = () => {
   } else {
     showPrivacy.value = false
     showTerms.value = false
+    showDPA.value = false
+    showBCP.value = false
     showDemo.value = false
     showAbout.value = false
     showAuth.value = false
@@ -263,10 +276,30 @@ onMounted(() => {
           <PrivacyPolicyView
             v-else-if="showPrivacy"
             @back="handleCustomBack"
+            @show-terms="showTerms = true; showPrivacy = false"
+            @show-dpa="showDPA = true; showPrivacy = false"
+            @show-bcp="showBCP = true; showPrivacy = false"
           />
           <TermsOfUseView
             v-else-if="showTerms"
             @back="showTerms = false"
+            @show-privacy="showPrivacy = true; showTerms = false"
+            @show-dpa="showDPA = true; showTerms = false"
+            @show-bcp="showBCP = true; showTerms = false"
+          />
+          <DataProcessingView
+            v-else-if="showDPA"
+            @back="showDPA = false"
+            @show-privacy="showPrivacy = true; showDPA = false"
+            @show-terms="showTerms = true; showDPA = false"
+            @show-bcp="showBCP = true; showDPA = false"
+          />
+          <BusinessContinuityView
+            v-else-if="showBCP"
+            @back="showBCP = false"
+            @show-privacy="showPrivacy = true; showBCP = false"
+            @show-terms="showTerms = true; showBCP = false"
+            @show-dpa="showDPA = true; showBCP = false"
           />
           <LandingPage
             v-else
@@ -274,6 +307,8 @@ onMounted(() => {
             @request-demo="showDemo = true"
             @show-privacy="showPrivacy = true"
             @show-terms="showTerms = true"
+            @show-dpa="showDPA = true"
+            @show-bcp="showBCP = true"
             @show-about="showAbout = true"
             @show-pricing="showPricing = true"
             @purchase-plan="handlePurchasePlan"
@@ -288,5 +323,6 @@ onMounted(() => {
       rich-colors
     />
     <ToastStack :toasts="toasts" />
+    <CookieConsentBanner />
   </div>
 </template>

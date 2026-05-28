@@ -21,6 +21,8 @@ const emit = defineEmits<{
   (e: 'request-demo'): void
   (e: 'show-privacy'): void
   (e: 'show-terms'): void
+  (e: 'show-dpa'): void
+  (e: 'show-bcp'): void
   (e: 'show-about'): void
   (e: 'show-pricing'): void
   (e: 'show-login'): void
@@ -720,6 +722,14 @@ function closeWompi() {
               class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('show-privacy')"
             >Privacidad</a>
+            <a
+              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              @click="emit('show-dpa')"
+            >DPA</a>
+            <a
+              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              @click="emit('show-bcp')"
+            >Continuidad</a>
           </div>
         </div>
         <p class="text-[12px] text-[#A1A1AA] font-medium">

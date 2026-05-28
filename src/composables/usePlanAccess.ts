@@ -18,9 +18,40 @@ export function usePlanAccess() {
     if (isBypassed.value) return 'enterprise'
     return store.subscription?.planType ?? 'starter'
   })
+
+  const isTrial = computed(() => {
+    if (isBypassed.value) return false
+    const sub = store.subscription
+    return sub?.planType === 'trial' && !!sub?.trialEndsAt
+  })
+
+  const trialDaysLeft = computed(() => {
+    if (isBypassed.value) return null
+    const sub = store.subscription
+    if (!sub || !sub.trialEndsAt) return null
+    const end = new Date(sub.trialEndsAt)
+    const now = new Date()
+    const diffTime = end.getTime() - now.getTime()
+    return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)))
+  })
+
+  const isTrialExpired = computed(() => {
+    if (isBypassed.value) return false
+    if (!isTrial.value) return false
+    return trialDaysLeft.value !== null && trialDaysLeft.value <= 0
+  })
+
+  const isSubscriptionActive = computed(() => {
+    if (isBypassed.value) return true
+    const sub = store.subscription
+    if (!sub) return true
+    if (isTrial.value) return !isTrialExpired.value
+    return sub.active === true
+  })
   
   function canAccessModule(moduleId: string): boolean {
     if (isBypassed.value) return true
+    if (isTrialExpired.value) return false
     const modules = store.subscription?.limits?.modules
     if (!modules) return true
     if (modules.includes('*')) return true
@@ -29,6 +60,7 @@ export function usePlanAccess() {
   
   function canCreateInvoice(): boolean {
     if (isBypassed.value) return true
+    if (isTrialExpired.value) return false
     const limit = store.subscription?.limits?.maxInvoicesPerMonth
     if (limit === null || limit === undefined) return true
     const current = store.subscription?.invoicesThisMonth ?? 0
@@ -37,6 +69,7 @@ export function usePlanAccess() {
   
   function canAddUser(): boolean {
     if (isBypassed.value) return true
+    if (isTrialExpired.value) return false
     const limit = store.subscription?.limits?.maxUsers
     if (limit === null || limit === undefined) return true
     const current = store.memberships?.filter(m => m.tenantId === store.activeTenantId)?.length ?? 0
@@ -45,8 +78,19 @@ export function usePlanAccess() {
   
   function isFeatureLocked(feature: string): boolean {
     if (isBypassed.value) return false
+    if (isTrialExpired.value) return true
     return !canAccessModule(feature)
   }
   
-  return { plan, canAccessModule, canCreateInvoice, canAddUser, isFeatureLocked }
+  return {
+    plan,
+    isTrial,
+    trialDaysLeft,
+    isTrialExpired,
+    isSubscriptionActive,
+    canAccessModule,
+    canCreateInvoice,
+    canAddUser,
+    isFeatureLocked,
+  }
 }

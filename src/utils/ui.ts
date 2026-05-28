@@ -22,12 +22,6 @@ const moduleRows: Array<[string, string, string]> = [
   ['IA / OCR', 'Operativo', 'Lectura documental y sugerencias'],
 ]
 
-const currencyFormatter = new Intl.NumberFormat('es-CO', {
-  style: 'currency',
-  currency: 'COP',
-  maximumFractionDigits: 0,
-})
-
 const dateTimeFormatter = new Intl.DateTimeFormat('es-CO', {
   dateStyle: 'medium',
   timeStyle: 'short',
@@ -37,8 +31,36 @@ const dateFormatter = new Intl.DateTimeFormat('es-CO', {
   dateStyle: 'medium',
 })
 
-export function formatCurrency(value: number | string) {
-  return currencyFormatter.format(Number(value) || 0)
+const rateCache: Record<string, number> = { COP: 1 }
+
+export function setCurrencyRates(rates: Record<string, number>) {
+  Object.assign(rateCache, rates)
+}
+
+export function formatCurrency(value: number | string, currencyCode = 'COP') {
+  const amount = Number(value) || 0
+  const rate = rateCache[currencyCode] ?? 1
+  const converted = amount / rate
+
+  const localeMap: Record<string, string> = {
+    COP: 'es-CO',
+    USD: 'en-US',
+    EUR: 'es-ES',
+    MXN: 'es-MX',
+  }
+  const decimalsMap: Record<string, number> = {
+    COP: 0,
+    USD: 2,
+    EUR: 2,
+    MXN: 2,
+  }
+
+  return new Intl.NumberFormat(localeMap[currencyCode] || 'es-CO', {
+    style: 'currency',
+    currency: currencyCode,
+    minimumFractionDigits: decimalsMap[currencyCode] ?? 0,
+    maximumFractionDigits: decimalsMap[currencyCode] ?? 0,
+  }).format(converted)
 }
 
 export function formatDate(value: string | number | Date) {
