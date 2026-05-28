@@ -71,7 +71,7 @@ export const useAuthStore = defineStore('auth', () => {
         return { ok: false, requiresTotp: true, message: response.message }
       }
       if ((response as any).requiresPasswordChange) {
-        return { ok: false, requiresPasswordChange: true, message: response.message }
+        return { ok: false, requiresPasswordChange: true, message: response.message, resetToken: (response as any).resetToken }
       }
       if ((response as any).requiresPrivacyConsent) {
         requiresPrivacyConsent.value = true

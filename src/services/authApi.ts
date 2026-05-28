@@ -201,3 +201,10 @@ export async function resendVerification() {
     method: 'POST',
   })
 }
+
+export async function changeExpiredPassword(resetToken: string, currentPassword: string, newPassword: string) {
+  return requestJson<BackendMessageResponse>('/auth/change-expired-password', {
+    method: 'POST',
+    body: { resetToken, currentPassword, newPassword }
+  })
+}
