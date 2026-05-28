@@ -3,7 +3,6 @@ import { ref, computed } from 'vue'
 import { useOnboardingStore } from '../../stores/onboardingStore'
 import { businessApi } from '../../services/businessApi'
 import { useStateStore } from '../../stores/stateStore'
-// @ts-expect-error JS file without types
 import { useToasts } from '../../composables/useToasts'
 import { useHead } from '@unhead/vue'
 
