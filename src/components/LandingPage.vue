@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { useThrottleFn } from '@vueuse/core'
 import { useStateStore } from '../stores/stateStore'
 import { businessApi } from '../services/businessApi'
 import { toast } from 'vue-sonner'
@@ -31,9 +32,9 @@ const emit = defineEmits<{
 
 const scrolled = ref(false)
 
-const handleScroll = () => {
+const handleScroll = useThrottleFn(() => {
   scrolled.value = window.scrollY > 20
-}
+}, 200)
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
