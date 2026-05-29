@@ -319,18 +319,21 @@ function closeWompi() {
           Ver Precios
         </a>
         <button
+          type="button"
           class="text-[13px] font-semibold text-[#18181B] px-4 py-2.5 rounded-lg hover:bg-[#F4F4F5] transition-all"
           @click="emit('login')"
         >
           Iniciar Sesión
         </button>
         <button
+          type="button"
           class="bg-[#18181B] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#27272A] transition-all shadow-sm"
           @click="emit('request-demo')"
         >
           Solicitar Demo
         </button>
         <button
+          type="button"
           class="lg:hidden text-[#18181B] p-2 hover:bg-[#F4F4F5] rounded-lg transition-all flex items-center justify-center"
           @click="mobileNavOpen = true"
           aria-label="Abrir menú de navegación"
@@ -363,14 +366,18 @@ function closeWompi() {
 
           <div class="flex flex-col sm:flex-row gap-3">
             <button
+              type="button"
               class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
               @click="emit('request-demo')"
-              aria-label="Iniciar prueba gratuita de Contex360"
+              aria-label="Iniciar prueba gratuita - Sin tarjeta de crédito requerida"
             >
-              Iniciar Prueba Gratuita
-              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+              <span class="flex items-center justify-center gap-2.5">
+                Iniciar Prueba Gratuita
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+              </span>
             </button>
             <button
+              type="button"
               class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#FAFAFA] transition-all"
               @click="emit('show-about')"
               aria-label="Ver capacidades del sistema"
@@ -528,6 +535,7 @@ function closeWompi() {
           <div class="flex items-center justify-center gap-3.5 mt-8">
             <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
             <button 
+              type="button"
               class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
               :class="{ 'bg-[#18181B]': isAnnual }"
               @click="isAnnual = !isAnnual"
@@ -610,6 +618,7 @@ function closeWompi() {
             <!-- Buttons -->
             <div class="space-y-2.5 mt-auto">
               <button 
+                type="button"
                 :class="[
                   'w-full py-3 rounded-xl text-[13px] font-semibold transition-colors text-center shadow-sm flex items-center justify-center gap-2',
                   plan.popular 
@@ -623,6 +632,7 @@ function closeWompi() {
                 Comprar ahora
               </button>
               <button 
+                type="button"
                 class="w-full py-3 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
                 @click="emit('request-demo')"
                 :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
@@ -660,6 +670,7 @@ function closeWompi() {
               </div>
             </div>
             <button 
+              type="button"
               class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors" 
               @click="closeWompi"
               aria-label="Cerrar pasarela de pago"
@@ -738,6 +749,7 @@ function closeWompi() {
               </p>
               
               <button 
+                type="button"
                 class="w-full py-3.5 bg-[#18181B] hover:bg-[#27272A] text-white text-[13px] font-extrabold rounded-xl transition-all shadow-md mt-8"
                 @click="closeWompi"
               >
@@ -764,6 +776,7 @@ function closeWompi() {
           <div class="flex justify-between items-center pb-4 border-b border-[#F4F4F5]">
             <span class="text-[16px] font-bold text-[#18181B]">Menú</span>
             <button 
+              type="button"
               class="p-1 hover:bg-[#F4F4F5] rounded-lg text-[#18181B] flex items-center justify-center"
               @click="mobileNavOpen = false"
               aria-label="Cerrar menú de navegación"
@@ -812,6 +825,7 @@ function closeWompi() {
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <button
+            type="button"
             class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
             @click="emit('request-demo')"
             aria-label="Solicitar demostración de Contex360"
@@ -820,8 +834,10 @@ function closeWompi() {
             <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
           </button>
           <button
+            type="button"
             class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#FAFAFA] transition-all"
             @click="emit('login')"
+            aria-label="Iniciar sesión en la plataforma"
           >
             Iniciar Sesión
           </button>
