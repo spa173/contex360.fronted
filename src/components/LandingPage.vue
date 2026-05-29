@@ -48,6 +48,8 @@ const isAnnual = ref(false)
 const selectedPlan = ref<any>(null)
 const showWompi = ref(false)
 const paymentStep = ref('details')
+const processingMessage = ref('')
+const mobileNavOpen = ref(false)
 
 
 const plans = [
@@ -126,7 +128,34 @@ function openCheckout(plan: any) {
   showWompi.value = true
 }
 
+function isValidEmail(email: string) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+}
+
+function validateCheckout() {
+  const store = useStateStore()
+  const email = store.currentUser?.email
+  
+  if (!email) {
+    toast.error('Email requerido para continuar')
+    emit('login')
+    return false
+  }
+  
+  if (!isValidEmail(email)) {
+    toast.error('Email inválido detectado')
+    return false
+  }
+  
+  return true
+}
+
 async function submitPaymentReal() {
+  if (!validateCheckout()) {
+    return
+  }
+
+  processingMessage.value = 'Validando credenciales de usuario...'
   paymentStep.value = 'processing'
   try {
     const store = useStateStore()
@@ -139,7 +168,13 @@ async function submitPaymentReal() {
       return
     }
 
+    processingMessage.value = 'Conectando con el servidor para iniciar checkout...'
     const billing = isAnnual.value ? 'annual' : 'monthly'
+    
+    // Simular retraso para progreso visual
+    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    processingMessage.value = 'Generando enlace de pago en Wompi...'
     const { redirectUrl } = await businessApi.createSubscriptionCheckout(
       { planType: selectedPlan.value.id, billing },
       tenantId,
@@ -149,13 +184,57 @@ async function submitPaymentReal() {
       throw new Error('No se recibió el enlace de pago.')
     }
 
+    processingMessage.value = 'Redirigiendo a Wompi de forma segura...'
+    await new Promise(resolve => setTimeout(resolve, 600))
+
     toast.info('Redirigiendo a Wompi...', { description: 'Completa el pago para activar tu plan.' })
     window.location.href = redirectUrl
   } catch (e: any) {
     paymentStep.value = 'details'
     console.error('Error creating Wompi link', e)
+    
+    let userMsg = 'Intenta nuevamente en unos segundos.'
+    if (e.message?.includes('Failed to fetch') || e.message?.includes('NetworkError')) {
+      userMsg = 'Error de red detectado. Verifica tu conexión a internet.'
+    } else if (e.message?.includes('Error Wompi') || e.message?.includes('502') || e.message?.includes('504')) {
+      userMsg = 'La pasarela Wompi no responde temporalmente o no está configurada.'
+    } else if (e.message) {
+      userMsg = e.message
+    }
+
     toast.error('No se pudo iniciar el checkout', {
-      description: e?.message || 'Intenta nuevamente en unos segundos.',
+      description: userMsg,
+    })
+  }
+}
+
+async function submitPaymentSimulated() {
+  if (!validateCheckout()) {
+    return
+  }
+
+  paymentStep.value = 'processing'
+  try {
+    processingMessage.value = 'Iniciando simulación de pago...'
+    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    processingMessage.value = 'Conectando de forma segura con Wompi Sandbox...'
+    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    processingMessage.value = 'Procesando cargo de prueba (APPROVED)...'
+    await new Promise(resolve => setTimeout(resolve, 1000))
+    
+    processingMessage.value = 'Suscripción simulada correctamente...'
+    await new Promise(resolve => setTimeout(resolve, 600))
+    
+    paymentStep.value = 'success'
+    toast.success('Pago simulado con éxito', {
+      description: 'Tu plan ha sido activado simuladamente.'
+    })
+  } catch (e: any) {
+    paymentStep.value = 'details'
+    toast.error('Simulación fallida', {
+      description: e.message || 'Ocurrió un error inesperado.',
     })
   }
 }
@@ -163,6 +242,7 @@ async function submitPaymentReal() {
 function closeWompi() {
   showWompi.value = false
   selectedPlan.value = null
+  paymentStep.value = 'details'
 }
 </script>
 
@@ -216,20 +296,26 @@ function closeWompi() {
 
       <div class="hidden lg:flex items-center gap-10">
         <a
-          class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer"
+          class="text-[13px] font-medium text-[#555555] hover:text-[#18181B] transition-all cursor-pointer"
           href="#producto"
         >Plataforma</a>
         <a
-          class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer"
+          class="text-[13px] font-medium text-[#555555] hover:text-[#18181B] transition-all cursor-pointer"
           href="#beneficios"
         >Soluciones Enterprise</a>
         <a
-          class="text-[13px] font-medium text-[#71717A] hover:text-[#18181B] transition-all cursor-pointer"
+          class="text-[13px] font-medium text-[#555555] hover:text-[#18181B] transition-all cursor-pointer"
           href="#precios"
         >Precios</a>
       </div>
 
       <div class="flex items-center gap-3">
+        <a
+          href="#precios"
+          class="lg:hidden text-[13px] font-semibold text-[#555555] hover:text-[#18181B] px-3.5 py-2 rounded-lg hover:bg-[#F4F4F5] transition-all"
+        >
+          Ver Precios
+        </a>
         <button
           class="text-[13px] font-semibold text-[#18181B] px-4 py-2.5 rounded-lg hover:bg-[#F4F4F5] transition-all"
           @click="emit('login')"
@@ -242,6 +328,12 @@ function closeWompi() {
         >
           Solicitar Demo
         </button>
+        <button
+          class="lg:hidden text-[#18181B] p-2 hover:bg-[#F4F4F5] rounded-lg transition-all flex items-center justify-center"
+          @click="mobileNavOpen = true"
+        >
+          <span class="material-symbols-outlined text-[24px]">menu</span>
+        </button>
       </div>
     </nav>
 
@@ -250,7 +342,7 @@ function closeWompi() {
       <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-[1.05fr_1fr] gap-16 lg:gap-20 items-center">
         <div class="z-10">
           <!-- Chip system -->
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mb-7 border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] bg-white">
+          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mb-7 border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] bg-white">
             <span class="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse" />
             ERP de Próxima Generación
           </div>
@@ -261,39 +353,48 @@ function closeWompi() {
           >
             El cerebro <em class="not-italic text-[#2563EB]">logístico</em> de tu negocio.
           </h1>
-          <p class="text-[17px] leading-[1.55] text-[#71717A] mb-10 max-w-lg font-medium">
+          <p class="text-[17px] leading-[1.55] text-[#555555] mb-10 max-w-lg font-medium">
             Una plataforma sofisticada y ultra-rápida diseñada para corporaciones colombianas. Automatiza contabilidad, inventarios y facturación con precisión.
           </p>
 
           <div class="flex flex-col sm:flex-row gap-3">
             <button
-              class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-[10px] shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
+              class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
               @click="emit('request-demo')"
             >
               Iniciar Prueba Gratuita
               <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
             </button>
             <button
-              class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-[10px] hover:bg-[#FAFAFA] transition-all"
+              class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#FAFAFA] transition-all"
               @click="emit('show-about')"
             >
               Ver Capacidades
             </button>
           </div>
 
+          <!-- Pricing preview for mobile -->
+          <div class="md:hidden mt-6 p-4 bg-[#F4F4F5] rounded-lg text-[12px] flex items-center justify-between border border-[#E4E4E7]">
+            <span class="text-[#707070] font-medium">Planes Contex360</span>
+            <div>
+              <span class="text-[#707070] font-medium">Desde </span>
+              <span class="font-bold text-[#18181B]">$89.000 COP/mes</span>
+            </div>
+          </div>
+
           <!-- Pillars rail (V2 system) -->
           <div class="mt-14 grid grid-cols-3 gap-6 max-w-[520px]">
             <div class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">500+</b>
-              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#A1A1AA]">Clientes Activos</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#707070]">Clientes Activos</span>
             </div>
             <div class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">DIAN</b>
-              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#A1A1AA]">Partner Certificado</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#707070]">Partner Certificado</span>
             </div>
             <div class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">99.98%</b>
-              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#A1A1AA]">Uptime SLA</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#707070]">Uptime SLA</span>
             </div>
           </div>
         </div>
@@ -315,11 +416,11 @@ function closeWompi() {
 
           <!-- Floating trust chips -->
           <div class="absolute -bottom-4 left-6 flex gap-2">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] shadow-sm">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
               <span class="material-symbols-outlined text-[14px]">lock</span>
               SSL/TLS 1.3
             </span>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#71717A] shadow-sm">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
               <span class="material-symbols-outlined text-[14px]">shield</span>
               ISO 27001
             </span>
@@ -346,7 +447,7 @@ function closeWompi() {
               Estructurado para escala corporativa.
             </h3>
           </div>
-          <p class="text-[15px] leading-[1.55] text-[#71717A] max-w-sm font-medium">
+          <p class="text-[15px] leading-[1.55] text-[#555555] max-w-sm font-medium">
             Una única fuente de verdad para cada operación, desde inventarios multi-bodega hasta informes financieros en tiempo real.
           </p>
         </div>
@@ -362,7 +463,7 @@ function closeWompi() {
             <h4 class="text-[18px] font-bold text-[#18181B] mb-3 tracking-tight">
               Seguridad de Grado Bancario
             </h4>
-            <p class="text-[14px] leading-[1.55] text-[#71717A] font-medium">
+            <p class="text-[14px] leading-[1.55] text-[#555555] font-medium">
               Encriptación de nivel empresarial y copias de seguridad automáticas que aseguran que tus datos financieros estén siempre protegidos y disponibles.
             </p>
           </div>
@@ -377,7 +478,7 @@ function closeWompi() {
             <h4 class="text-[18px] font-bold text-[#18181B] mb-3 tracking-tight">
               Motor de Alta Velocidad
             </h4>
-            <p class="text-[14px] leading-[1.55] text-[#71717A] font-medium">
+            <p class="text-[14px] leading-[1.55] text-[#555555] font-medium">
               Procesamiento de datos en tiempo real para informes contables complejos y estados financieros en segundos, no horas.
             </p>
           </div>
@@ -392,7 +493,7 @@ function closeWompi() {
             <h4 class="text-[18px] font-bold text-[#18181B] mb-3 tracking-tight">
               Cumplimiento Colombiano
             </h4>
-            <p class="text-[14px] leading-[1.55] text-[#71717A] font-medium">
+            <p class="text-[14px] leading-[1.55] text-[#555555] font-medium">
               Totalmente adaptado a las regulaciones de la DIAN: facturación electrónica, nómina e informes de exógena integrados.
             </p>
           </div>
@@ -413,13 +514,13 @@ function closeWompi() {
           <h3 class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-5">
             Elige el plan ideal para tu negocio
           </h3>
-          <p class="text-[15px] leading-[1.55] text-[#71717A] max-w-lg mx-auto font-medium">
+          <p class="text-[15px] leading-[1.55] text-[#555555] max-w-lg mx-auto font-medium">
             Sin contratos a largo plazo, sin cargos ocultos. Cambia de plan o cancela cuando quieras.
           </p>
 
           <!-- Toggle mensual/anual -->
           <div class="flex items-center justify-center gap-3.5 mt-8">
-            <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">Mensual</span>
+            <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
             <button 
               class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200 outline-none"
               :class="{ 'bg-[#18181B]': isAnnual }"
@@ -430,7 +531,7 @@ function closeWompi() {
                 :class="{ 'translate-x-5.5': isAnnual }"
               />
             </button>
-            <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">
+            <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">
               Anual
               <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
                 Ahorra 25% + 2 Meses Gratis
@@ -463,7 +564,7 @@ function closeWompi() {
                 <h4 class="text-[22px] font-black text-[#18181B] tracking-tight mb-2">
                   {{ plan.name }}
                 </h4>
-                <p class="text-[13px] text-[#71717A] leading-[1.5]">
+                <p class="text-[13px] text-[#555555] leading-[1.5]">
                   {{ plan.desc }}
                 </p>
               </div>
@@ -474,7 +575,7 @@ function closeWompi() {
                   <span class="text-[38px] font-black text-[#18181B] tracking-tight">
                     {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
                   </span>
-                  <span class="text-[13px] text-[#71717A] font-semibold">
+                  <span class="text-[13px] text-[#555555] font-semibold">
                     / {{ isAnnual ? 'año' : 'mes' }}
                   </span>
                 </div>
@@ -503,7 +604,7 @@ function closeWompi() {
             <div class="space-y-2.5 mt-auto">
               <button 
                 :class="[
-                  'w-full py-3.5 rounded-[12px] text-[13px] font-extrabold transition-colors text-center shadow-sm flex items-center justify-center gap-2',
+                  'w-full py-3 rounded-xl text-[13px] font-semibold transition-colors text-center shadow-sm flex items-center justify-center gap-2',
                   plan.popular 
                     ? 'bg-[#2563EB] text-white hover:bg-[#1D4ED8]' 
                     : 'bg-[#18181B] text-white hover:bg-[#27272A]'
@@ -514,7 +615,7 @@ function closeWompi() {
                 Comprar ahora
               </button>
               <button 
-                class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-[12px] text-[13px] font-extrabold hover:bg-[#FAFAFA] transition-colors"
+                class="w-full py-3 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
                 @click="emit('request-demo')"
               >
                 Comenzar prueba gratis
@@ -561,14 +662,14 @@ function closeWompi() {
           <div class="p-6 flex-1 overflow-y-auto max-h-[80vh]">
             <!-- Order summary -->
             <div class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl p-4 mb-6">
-              <span class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider block mb-1">Resumen del pedido</span>
+              <span class="text-[10px] font-bold text-[#707070] uppercase tracking-wider block mb-1">Resumen del pedido</span>
               <div class="flex justify-between items-baseline">
                 <span class="text-[15px] font-black text-[#18181B]">{{ selectedPlan?.name }}</span>
                 <span class="text-[15px] font-black text-[#2563EB]">
                   {{ formatCurrency(isAnnual ? selectedPlan?.priceAnnual : selectedPlan?.priceMonthly) }}
                 </span>
               </div>
-              <p class="text-[11px] text-[#71717A] mt-1">
+              <p class="text-[11px] text-[#555555] mt-1">
                 Suscripción {{ isAnnual ? 'anual (con 25% desc.)' : 'mensual' }}
               </p>
             </div>
@@ -586,6 +687,15 @@ function closeWompi() {
                 <span class="material-symbols-outlined text-[18px]">lock</span>
                 Pagar con Wompi
               </button>
+              
+              <button 
+                type="button"
+                class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-bold hover:bg-[#FAFAFA] transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                @click="submitPaymentSimulated"
+              >
+                <span class="material-symbols-outlined text-[18px]">science</span>
+                Simular Pago Exitoso (Demo/Prueba)
+              </button>
             </form>
 
             <!-- Processing step -->
@@ -597,8 +707,8 @@ function closeWompi() {
               <h4 class="text-[15px] font-black text-[#18181B]">
                 Procesando transacción
               </h4>
-              <p class="text-[12px] text-[#71717A] max-w-[280px] mt-1.5">
-                Por favor no cierres la ventana. Estamos validando la transacción con la red bancaria.
+              <p class="text-[12px] text-[#555555] max-w-[280px] mt-1.5 font-medium">
+                {{ processingMessage || 'Por favor no cierres la ventana. Estamos validando la transacción con la red bancaria.' }}
               </p>
             </div>
 
@@ -613,7 +723,7 @@ function closeWompi() {
               <h4 class="text-[18px] font-black text-[#18181B]">
                 ¡Pago exitoso!
               </h4>
-              <p class="text-[13px] text-[#71717A] max-w-[320px] mt-2 leading-relaxed">
+              <p class="text-[13px] text-[#555555] max-w-[320px] mt-2 leading-relaxed">
                 Tu transacción ha sido aprobada. Recibirás el comprobante de compra y los accesos por correo electrónico.
               </p>
               
@@ -629,6 +739,54 @@ function closeWompi() {
       </div>
     </Teleport>
 
+    <!-- Drawer navigation para móvil -->
+    <Teleport to="body">
+      <div 
+        v-if="mobileNavOpen" 
+        class="fixed inset-0 z-50 bg-[#09090B]/50 backdrop-blur-sm lg:hidden"
+        @click="mobileNavOpen = false"
+      >
+        <!-- Drawer content -->
+        <div 
+          class="fixed top-0 right-0 h-full w-64 bg-white shadow-2xl p-6 flex flex-col gap-6 animate-in slide-in-from-right duration-200"
+          @click.stop
+        >
+          <div class="flex justify-between items-center pb-4 border-b border-[#F4F4F5]">
+            <span class="text-[16px] font-bold text-[#18181B]">Menú</span>
+            <button 
+              class="p-1 hover:bg-[#F4F4F5] rounded-lg text-[#18181B] flex items-center justify-center"
+              @click="mobileNavOpen = false"
+            >
+              <span class="material-symbols-outlined text-[20px]">close</span>
+            </button>
+          </div>
+          <nav class="flex flex-col gap-4">
+            <a 
+              href="#producto" 
+              class="text-[14px] font-semibold text-[#555555] hover:text-[#18181B] py-2 transition-all cursor-pointer"
+              @click="mobileNavOpen = false"
+            >
+              Plataforma
+            </a>
+            <a 
+              href="#beneficios" 
+              class="text-[14px] font-semibold text-[#555555] hover:text-[#18181B] py-2 transition-all cursor-pointer"
+              @click="mobileNavOpen = false"
+            >
+              Soluciones Enterprise
+            </a>
+            <a 
+              href="#precios" 
+              class="text-[14px] font-semibold text-[#555555] hover:text-[#18181B] py-2 transition-all cursor-pointer"
+              @click="mobileNavOpen = false"
+            >
+              Precios
+            </a>
+          </nav>
+        </div>
+      </div>
+    </Teleport>
+
     <!-- CTA strip -->
     <section class="py-20 lg:py-24 bg-white">
       <div class="max-w-5xl mx-auto px-6 lg:px-8 text-center">
@@ -638,19 +796,19 @@ function closeWompi() {
         >
           ¿Listo para llevar su back-office <em class="not-italic text-[#2563EB]">al siguiente nivel</em>?
         </h3>
-        <p class="text-[16px] text-[#71717A] mb-9 max-w-xl mx-auto font-medium">
+        <p class="text-[16px] text-[#555555] mb-9 max-w-xl mx-auto font-medium">
           Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
         </p>
         <div class="flex flex-col sm:flex-row gap-3 justify-center">
           <button
-            class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-[10px] shadow-lg shadow-black/5 hover:bg-[#27272A] transition-all flex items-center justify-center gap-2.5"
+            class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
             @click="emit('request-demo')"
           >
             Solicitar Demo
             <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
           </button>
           <button
-            class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-[10px] hover:bg-[#FAFAFA] transition-all"
+            class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#FAFAFA] transition-all"
             @click="emit('login')"
           >
             Iniciar Sesión
@@ -696,7 +854,7 @@ function closeWompi() {
             </svg>
             <span class="text-[16px] font-bold text-[#18181B]">Contex360</span>
           </div>
-          <p class="text-[12px] text-[#A1A1AA] font-medium max-w-[220px] leading-relaxed">
+          <p class="text-[12px] text-[#707070] font-medium max-w-[220px] leading-relaxed">
             Sistemas Administrativos Avanzados para la Empresa Colombiana.
           </p>
         </div>
@@ -704,35 +862,35 @@ function closeWompi() {
           <div class="flex flex-col gap-3">
             <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Plataforma</span>
             <a
-              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('show-about')"
             >Características</a>
             <a
-              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('request-demo')"
             >Demo</a>
           </div>
           <div class="flex flex-col gap-3">
             <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Legal</span>
             <a
-              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('show-terms')"
             >Términos</a>
             <a
-              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('show-privacy')"
             >Privacidad</a>
             <a
-              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('show-dpa')"
             >DPA</a>
             <a
-              class="text-[12px] text-[#71717A] hover:text-[#18181B] cursor-pointer font-medium"
+              class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
               @click="emit('show-bcp')"
             >Continuidad</a>
           </div>
         </div>
-        <p class="text-[12px] text-[#A1A1AA] font-medium">
+        <p class="text-[12px] text-[#707070] font-medium">
           © 2026 Contex360. Todos los derechos reservados.
         </p>
       </div>
