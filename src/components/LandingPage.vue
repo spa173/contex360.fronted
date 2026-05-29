@@ -333,8 +333,9 @@ function closeWompi() {
         <button
           class="lg:hidden text-[#18181B] p-2 hover:bg-[#F4F4F5] rounded-lg transition-all flex items-center justify-center"
           @click="mobileNavOpen = true"
+          aria-label="Abrir menú de navegación"
         >
-          <span class="material-symbols-outlined text-[24px]">menu</span>
+          <span class="material-symbols-outlined text-[24px]" aria-hidden="true">menu</span>
         </button>
       </div>
     </nav>
@@ -364,13 +365,15 @@ function closeWompi() {
             <button
               class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
               @click="emit('request-demo')"
+              aria-label="Iniciar prueba gratuita de Contex360"
             >
               Iniciar Prueba Gratuita
-              <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
             </button>
             <button
               class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#FAFAFA] transition-all"
               @click="emit('show-about')"
+              aria-label="Ver capacidades del sistema"
             >
               Ver Capacidades
             </button>
@@ -407,7 +410,7 @@ function closeWompi() {
           <div class="absolute inset-0 bg-[#F4F4F5] rounded-[24px] translate-x-3 translate-y-3 -z-10 border border-[#E4E4E7]" />
           <div class="bg-white p-3 rounded-[24px] border border-[#E4E4E7] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
             <img
-              alt="Dashboard Contex360 — panel principal con resumen de facturación, inventario y flujo de caja"
+              alt="Dashboard de Contex360 mostrando resumen de facturación, inventario y flujo de caja en tiempo real"
               width="1024"
               height="1024"
               loading="lazy"
@@ -597,7 +600,7 @@ function closeWompi() {
                   :key="feat" 
                   class="flex items-start gap-2.5 text-[13px] font-semibold text-[#3F3F46]"
                 >
-                  <span class="material-symbols-outlined text-[16px] text-emerald-600 mt-0.5">check_circle</span>
+                  <span class="material-symbols-outlined text-[16px] text-emerald-600 mt-0.5" aria-hidden="true">check_circle</span>
                   <span>{{ feat }}</span>
                 </div>
               </div>
@@ -613,13 +616,15 @@ function closeWompi() {
                     : 'bg-[#18181B] text-white hover:bg-[#27272A]'
                 ]"
                 @click="openCheckout(plan)"
+                :aria-label="'Comprar plan ' + plan.name + ' ahora'"
               >
-                <span class="material-symbols-outlined text-[16px]">credit_card</span>
+                <span class="material-symbols-outlined text-[16px]" aria-hidden="true">credit_card</span>
                 Comprar ahora
               </button>
               <button 
                 class="w-full py-3 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
                 @click="emit('request-demo')"
+                :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
               >
                 Comenzar prueba gratis
               </button>
@@ -656,8 +661,9 @@ function closeWompi() {
             <button 
               class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors" 
               @click="closeWompi"
+              aria-label="Cerrar pasarela de pago"
             >
-              <span class="material-symbols-outlined text-[18px]">close</span>
+              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
             </button>
           </div>
 
@@ -687,7 +693,7 @@ function closeWompi() {
                 type="submit"
                 class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
               >
-                <span class="material-symbols-outlined text-[18px]">lock</span>
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">lock</span>
                 Pagar con Wompi
               </button>
               
@@ -696,7 +702,7 @@ function closeWompi() {
                 class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-bold hover:bg-[#FAFAFA] transition-colors shadow-sm flex items-center justify-center gap-1.5"
                 @click="submitPaymentSimulated"
               >
-                <span class="material-symbols-outlined text-[18px]">science</span>
+                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">science</span>
                 Simular Pago Exitoso (Demo/Prueba)
               </button>
             </form>
@@ -759,8 +765,9 @@ function closeWompi() {
             <button 
               class="p-1 hover:bg-[#F4F4F5] rounded-lg text-[#18181B] flex items-center justify-center"
               @click="mobileNavOpen = false"
+              aria-label="Cerrar menú de navegación"
             >
-              <span class="material-symbols-outlined text-[20px]">close</span>
+              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
             </button>
           </div>
           <nav role="navigation" aria-label="Navegación móvil" class="flex flex-col gap-4">
@@ -806,9 +813,10 @@ function closeWompi() {
           <button
             class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
             @click="emit('request-demo')"
+            aria-label="Solicitar demostración de Contex360"
           >
             Solicitar Demo
-            <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
           </button>
           <button
             class="bg-white border border-[#E4E4E7] text-[#18181B] text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-[#FAFAFA] transition-all"
