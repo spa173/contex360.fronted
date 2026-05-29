@@ -124,6 +124,15 @@ function formatCurrency(val: number) {
 }
 
 function openCheckout(plan: any) {
+  const store = useStateStore()
+  const email = store.currentUser?.email
+  
+  if (!email) {
+    toast.info('Inicia sesión para continuar con la compra.')
+    emit('login')
+    return
+  }
+
   selectedPlan.value = plan
   paymentStep.value = 'details'
   showWompi.value = true
@@ -139,6 +148,7 @@ function validateCheckout() {
   
   if (!email) {
     toast.error('Email requerido para continuar')
+    closeWompi()
     emit('login')
     return false
   }
@@ -164,6 +174,7 @@ async function submitPaymentReal() {
 
     if (!tenantId) {
       paymentStep.value = 'details'
+      closeWompi()
       toast.info('Inicia sesión para continuar con la compra.')
       emit('login')
       return
@@ -551,7 +562,16 @@ function closeWompi() {
               type="button"
               class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
               :class="{ 'bg-[#18181B]': isAnnual }"
-              @click="isAnnual = !isAnnual"
+              @click="() => {
+                if (showWompi) {
+                  if (confirm('¿Cambiar modalidad de facturación y reiniciar el proceso de pago?')) {
+                    closeWompi()
+                    isAnnual = !isAnnual
+                  }
+                } else {
+                  isAnnual = !isAnnual
+                }
+              }"
               aria-label="Alternar facturación mensual o anual"
             >
               <span 
