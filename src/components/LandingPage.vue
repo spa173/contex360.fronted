@@ -7,13 +7,36 @@ import { toast } from 'vue-sonner'
 import { useHead } from '@unhead/vue'
 
 useHead({
-  title: 'Contex360 — ERP Inteligente para Colombia',
+  title: 'Contex360 - ERP para Colombia | Facturación, Inventario, Contabilidad',
   meta: [
-    { name: 'description', content: 'Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar. Prueba Contex360 gratis.' },
-    { property: 'og:title', content: 'Contex360 — ERP Inteligente' },
-    { property: 'og:description', content: 'Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar. Prueba Contex360 gratis.' },
-    { name: 'twitter:title', content: 'Contex360 — ERP Inteligente' },
-    { name: 'twitter:description', content: 'Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar. Prueba Contex360 gratis.' },
+    { 
+      name: 'description', 
+      content: 'Plataforma ERP inteligente para empresas colombianas. Facturación electrónica DIAN, inventario multi-bodega, contabilidad automática. Prueba gratis.'
+    },
+    { 
+      property: 'og:title', 
+      content: 'Contex360 - ERP Inteligente para tu Negocio' 
+    },
+    { 
+      property: 'og:description', 
+      content: 'Automatiza contabilidad, inventarios y facturación con inteligencia artificial. Para startups, PyMEs y empresas.' 
+    },
+    { 
+      name: 'keywords',
+      content: 'ERP Colombia, facturación electrónica DIAN, inventario, contabilidad digital'
+    },
+    {
+      name: 'robots',
+      content: 'index, follow'
+    },
+    {
+      property: 'og:type',
+      content: 'website'
+    },
+    {
+      property: 'og:url',
+      content: 'https://contex360.com'
+    }
   ]
 })
 
