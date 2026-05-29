@@ -416,15 +416,27 @@ function closeWompi() {
         <div class="relative">
           <div class="absolute inset-0 bg-[#F4F4F5] rounded-[24px] translate-x-3 translate-y-3 -z-10 border border-[#E4E4E7]" />
           <div class="bg-white p-3 rounded-[24px] border border-[#E4E4E7] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
-            <img
-              alt="Dashboard de Contex360 mostrando resumen de facturación, inventario y flujo de caja en tiempo real"
-              width="1024"
-              height="1024"
-              loading="lazy"
-              decoding="async"
-              class="rounded-[18px] w-full object-cover grayscale-[0.15] group-hover:grayscale-0 transition-all duration-700"
-              src="/dashboard_preview.png"
-            >
+            <picture>
+              <source 
+                srcset="/dashboard_preview-mobile.webp" 
+                type="image/webp"
+                media="(max-width: 768px)"
+              />
+              <source 
+                srcset="/dashboard_preview.webp" 
+                type="image/webp"
+                media="(min-width: 769px)"
+              />
+              <img
+                alt="Dashboard de Contex360 mostrando resumen de facturación, inventario y flujo de caja en tiempo real"
+                width="1024"
+                height="1024"
+                loading="lazy"
+                decoding="async"
+                class="rounded-[18px] w-full object-cover dashboard-image"
+                src="/dashboard_preview.png"
+              />
+            </picture>
           </div>
 
           <!-- Floating trust chips -->
@@ -943,4 +955,16 @@ a:focus-visible {
 .translate-x-5\.5 { transform: translateX(1.375rem); }
 .c360-mark .rotor { transform-origin: 28px 28px; animation: spin 8s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
+.dashboard-image {
+  filter: grayscale(15%);
+  transition: filter 0.7s ease;
+}
+.dashboard-image:hover {
+  filter: grayscale(0%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .dashboard-image {
+    transition: none;
+  }
+}
 </style>
