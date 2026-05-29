@@ -381,9 +381,9 @@ function closeWompi() {
 
           <!-- Pricing preview for mobile -->
           <div class="md:hidden mt-6 p-4 bg-[#F4F4F5] rounded-lg text-[12px] flex items-center justify-between border border-[#E4E4E7]">
-            <span class="text-[#707070] font-medium">Planes Contex360</span>
+            <span class="text-[#666666] font-medium">Planes Contex360</span>
             <div>
-              <span class="text-[#707070] font-medium">Desde </span>
+              <span class="text-[#666666] font-medium">Desde </span>
               <span class="font-bold text-[#18181B]">$89.000 COP/mes</span>
             </div>
           </div>
@@ -392,15 +392,15 @@ function closeWompi() {
           <div class="mt-14 grid grid-cols-3 gap-6 max-w-[520px]">
             <div class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">500+</b>
-              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#707070]">Clientes Activos</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666]">Clientes Activos</span>
             </div>
             <div class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">DIAN</b>
-              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#707070]">Partner Certificado</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666]">Partner Certificado</span>
             </div>
             <div class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">99.98%</b>
-              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#707070]">Uptime SLA</span>
+              <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666]">Uptime SLA</span>
             </div>
           </div>
         </div>
@@ -671,7 +671,7 @@ function closeWompi() {
           <div class="p-6 flex-1 overflow-y-auto max-h-[80vh]">
             <!-- Order summary -->
             <div class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl p-4 mb-6">
-              <span class="text-[10px] font-bold text-[#707070] uppercase tracking-wider block mb-1">Resumen del pedido</span>
+              <span class="text-[10px] font-bold text-[#666666] uppercase tracking-wider block mb-1">Resumen del pedido</span>
               <div class="flex justify-between items-baseline">
                 <span class="text-[15px] font-black text-[#18181B]">{{ selectedPlan?.name }}</span>
                 <span class="text-[15px] font-black text-[#2563EB]">
@@ -866,7 +866,7 @@ function closeWompi() {
             </svg>
             <span class="text-[16px] font-bold text-[#18181B]">Contex360</span>
           </div>
-          <p class="text-[12px] text-[#707070] font-medium max-w-[220px] leading-relaxed">
+          <p class="text-[12px] text-[#666666] font-medium max-w-[220px] leading-relaxed">
             Sistemas Administrativos Avanzados para la Empresa Colombiana.
           </p>
         </div>
@@ -902,7 +902,7 @@ function closeWompi() {
             >Continuidad</a>
           </div>
         </div>
-        <p class="text-[12px] text-[#707070] font-medium">
+        <p class="text-[12px] text-[#666666] font-medium">
           © 2026 Contex360. Todos los derechos reservados.
         </p>
       </div>
