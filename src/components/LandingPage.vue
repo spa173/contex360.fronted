@@ -390,15 +390,15 @@ function closeWompi() {
 
           <!-- Pillars rail (V2 system) -->
           <div class="mt-14 grid grid-cols-3 gap-6 max-w-[520px]">
-            <div class="border-t border-[#E4E4E7] pt-3.5">
+            <div tabindex="-1" class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">500+</b>
               <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666]">Clientes Activos</span>
             </div>
-            <div class="border-t border-[#E4E4E7] pt-3.5">
+            <div tabindex="-1" class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">DIAN</b>
               <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666]">Partner Certificado</span>
             </div>
-            <div class="border-t border-[#E4E4E7] pt-3.5">
+            <div tabindex="-1" class="border-t border-[#E4E4E7] pt-3.5">
               <b class="block font-bold text-[20px] text-[#18181B] tracking-tight">99.98%</b>
               <span class="text-[11px] uppercase tracking-wider font-semibold text-[#666666]">Uptime SLA</span>
             </div>
@@ -528,9 +528,10 @@ function closeWompi() {
           <div class="flex items-center justify-center gap-3.5 mt-8">
             <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
             <button 
-              class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200 outline-none"
+              class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
               :class="{ 'bg-[#18181B]': isAnnual }"
               @click="isAnnual = !isAnnual"
+              aria-label="Alternar facturación mensual o anual"
             >
               <span 
                 class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
@@ -911,6 +912,11 @@ function closeWompi() {
 </template>
 
 <style scoped>
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid #2563EB;
+  outline-offset: 2px;
+}
 .material-symbols-outlined {
   font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
 }
