@@ -2,7 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
-import { uid, appendAuditEvent } from '../utils/storeHelpers'
+import { uid } from '../utils/storeHelpers'
 
 export const useThirdPartiesStore = defineStore('thirdParties', () => {
   const root = useStateStore()

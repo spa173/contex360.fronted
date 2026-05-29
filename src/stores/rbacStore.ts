@@ -1,7 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
-import { uid, appendAuditEvent } from '../utils/storeHelpers'
 
 export const PERMISSION_MODULES = [
   { id: 'dashboard', label: 'Dashboard' },
@@ -22,52 +21,7 @@ export const PERMISSION_ACTIONS = [
   { id: 'configure', label: 'Configurar' },
 ]
 
-export const ROLE_DEFINITIONS = [
-  {
-    id: 'owner',
-    permissions: ['view_dashboard','export_dashboard','manage_dashboard','view_billing','create_billing','manage_billing','view_inventory','manage_inventory','view_third_parties','manage_third_parties','view_accounting','manage_accounting','run_ocr','manage_users','manage_settings'],
-    views: ['dashboard','billing','inventory','accounting','third-parties','users','ai','profile'],
-    access: { dashboard:['view','export','configure'], billing:['view','create','edit','approve','export','configure'], inventory:['view','create','edit','approve','export','configure'], accounting:['view','create','edit','approve','export','configure'], 'third-parties':['view','create','edit','export','configure'], users:['view','create','edit','approve','export','configure'], ai:['view','create','edit','export','configure'] },
-  },
-  {
-    id: 'Administrador',
-    permissions: ['view_dashboard','export_dashboard','manage_dashboard','view_billing','create_billing','manage_billing','view_inventory','manage_inventory','view_third_parties','manage_third_parties','view_accounting','manage_accounting','run_ocr','manage_users'],
-    views: ['dashboard','billing','inventory','accounting','third-parties','users','ai','profile'],
-    access: { dashboard:['view','export','configure'], billing:['view','create','edit','approve','export','configure'], inventory:['view','create','edit','approve','export','configure'], accounting:['view','create','edit','approve','export','configure'], 'third-parties':['view','create','edit','export','configure'], users:['view','create','edit','approve','export','configure'], ai:['view','create','edit','export','configure'] },
-  },
-  {
-    id: 'Contador',
-    permissions: ['view_dashboard','export_dashboard','view_billing','create_billing','manage_billing','view_inventory','manage_inventory','view_third_parties','manage_third_parties','view_accounting','manage_accounting','run_ocr'],
-    views: ['dashboard','billing','inventory','accounting','third-parties','ai','profile'],
-    access: { dashboard:['view','export'], billing:['view','create','edit','export'], inventory:['view','create','edit','export'], accounting:['view','create','edit','approve','export'], 'third-parties':['view','create','edit'], users:[], ai:['view','create'] },
-  },
-  {
-    id: 'Auxiliar contable',
-    permissions: ['view_dashboard','view_billing','create_billing','view_accounting','create_accounting','view_third_parties','manage_third_parties','run_ocr'],
-    views: ['dashboard','billing','accounting','third-parties','ai','profile'],
-    access: { dashboard:['view'], billing:['view','create'], inventory:['view'], accounting:['view','create'], 'third-parties':['view','create'], users:[], ai:['view','create'] },
-  },
-  {
-    id: 'Gerencia',
-    permissions: ['view_dashboard','export_dashboard','view_billing','export_billing','view_inventory','export_inventory','view_accounting','export_accounting','view_third_parties'],
-    views: ['dashboard','accounting','profile'],
-    access: { dashboard:['view','export'], billing:['view','export'], inventory:['view','export'], accounting:['view','export'], 'third-parties':['view'], users:[], ai:['view'] },
-  },
-  {
-    id: 'Visor',
-    permissions: ['view_dashboard','export_dashboard','view_billing','export_billing','view_inventory','export_inventory','view_accounting','export_accounting','view_third_parties'],
-    views: ['dashboard','billing','inventory','accounting','third-parties','profile'],
-    access: { dashboard:['view','export'], billing:['view','export'], inventory:['view','export'], accounting:['view','export'], 'third-parties':['view','export'], users:[], ai:[] },
-  },
-  {
-    id: 'Operador',
-    permissions: ['view_dashboard','view_billing','create_billing','view_inventory','manage_inventory','view_third_parties'],
-    views: ['dashboard','billing','inventory','third-parties','profile'],
-    access: { dashboard:['view'], billing:['view','create'], inventory:['view','create','edit'], 'third-parties':['view','create'], users:[], ai:[] },
-  },
-]
-
-export const ROLE_OPTIONS = ROLE_DEFINITIONS.map(r => r.id)
+export const ROLE_OPTIONS = ['owner', 'Administrador', 'Contador', 'Auxiliar contable', 'Gerencia', 'Visor', 'Operador']
 
 export interface RoleAccessHistoryEntry {
   id: string; at: string; actor: string; role: string; moduleId: string; 
@@ -99,14 +53,8 @@ export const useRBACStore = defineStore('rbac', () => {
     
     root.roleAccess[payload.role][payload.moduleId] = Array.from(perms)
     
-    appendAuditEvent(root.$state, {
-      entity: 'rbac',
-      action: 'Cambio Permiso',
-      description: `Rol ${payload.role} -> ${payload.moduleId}.${payload.permission} = ${payload.allowed}. Motivo: ${payload.reason}`,
-      actor: root.currentUser?.name || 'Sistema',
-    })
     root.saveState()
-    return { ok: true, message: 'Permisos actualizados.' }
+    return { ok: true, message: 'Permisos actualizados. Los cambios se sincronizarán con el backend.' }
   }
 
   function restorePreviousRoleAccessVersion() {

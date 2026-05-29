@@ -2,9 +2,7 @@ import { computed, ref, watch } from 'vue'
 import { defineStore } from 'pinia'
 import { useStateStore } from './stateStore'
 import { businessApi } from '../services/businessApi'
-import { uid } from '../utils/storeHelpers'
 import { useAccountingStore } from './accountingStore'
-import { purchaseSchema } from '../schemas/purchase.schema'
 
 export interface PurchaseItem {
   id?: string
@@ -89,8 +87,6 @@ export const usePurchasesStore = defineStore('purchases', () => {
     }
 
     try {
-      purchaseSchema.parse(payload)
-
       const response = await businessApi.createPurchase(
         payload,
         activeTenantId.value,
@@ -98,15 +94,10 @@ export const usePurchasesStore = defineStore('purchases', () => {
       const purchase = response as Purchase
       purchases.value.unshift(purchase)
 
-      // We no longer create a local ledger entry mock,
-      // as the backend automatically generates the real entry.
       accounting.fetchLedgerEntries()
 
       return { ok: true, message: 'Compra registrada correctamente.', purchase }
     } catch (error) {
-      if (error && typeof error === 'object' && 'name' in error && error.name === 'ZodError') {
-        return { ok: false, message: 'Datos de compra inválidos. Revisa los campos obligatorios.' }
-      }
       return {
         ok: false,
         message:

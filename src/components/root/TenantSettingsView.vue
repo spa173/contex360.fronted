@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import axios from 'axios'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog'
+import { Button } from '../ui/button'
+import { Input } from '../ui/input'
 
 const API = import.meta.env.VITE_API_BASE_URL
 if (!API) throw new Error('VITE_API_BASE_URL environment variable is required')
@@ -16,6 +19,10 @@ const tenant = ref<any>(null)
 const loading = ref(true)
 const saving = ref(false)
 const activeTab = ref('general')
+
+const showDeleteModal = ref(false)
+const deletePassword = ref('')
+const deleteError = ref('')
 
 const tabs = [
   { id: 'general',   label: 'General',      icon: '🏢' },
@@ -124,25 +131,30 @@ async function renewTrial() {
   savePlan()
 }
 
-async function handleDeleteTenant() {
-  const password = prompt(`⚠️ ACCIÓN IRREVERSIBLE: Se eliminarán todos los datos de "${tenant.value.name}" (facturas, inventario, usuarios).\n\n🔐 Para autorizar esta acción, ingresa tu contraseña de ROOT / Administrador:`)
-  
-  if (!password) {
-    if (password !== null) alert('Se requiere la contraseña para autorizar la operación.')
+function handleDeleteTenant() {
+  deletePassword.value = ''
+  deleteError.value = ''
+  showDeleteModal.value = true
+}
+
+async function confirmDeleteTenant() {
+  if (!deletePassword.value.trim()) {
+    deleteError.value = 'Ingresa tu contraseña para autorizar.'
     return
   }
-
   saving.value = true
+  deleteError.value = ''
   try {
     await axios.post(`${API}/admin/tenants/${props.tenantId}/delete`, {
-      password: password.trim()
+      password: deletePassword.value.trim()
     }, {
       withCredentials: true,
     })
+    showDeleteModal.value = false
     alert('✅ Empresa eliminada correctamente.')
     emit('back')
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error eliminando empresa. Verifica tu contraseña.')
+    deleteError.value = e?.response?.data?.message || 'Error eliminando empresa. Verifica tu contraseña.'
   } finally {
     saving.value = false
   }
@@ -156,20 +168,43 @@ onMounted(fetchTenant)
   <div class="tenant-settings">
     <!-- Header -->
     <div class="ts-header">
-      <button class="btn-back" @click="emit('back')">← Volver a Empresas</button>
-      <div v-if="tenant" class="ts-title-row">
-        <div class="ts-avatar">{{ tenant.prefix || tenant.name?.slice(0,2).toUpperCase() }}</div>
+      <button
+        class="btn-back"
+        @click="emit('back')"
+      >
+        ← Volver a Empresas
+      </button>
+      <div
+        v-if="tenant"
+        class="ts-title-row"
+      >
+        <div class="ts-avatar">
+          {{ tenant.prefix || tenant.name?.slice(0,2).toUpperCase() }}
+        </div>
         <div>
-          <h2 class="ts-title">{{ tenant.name }}</h2>
+          <h2 class="ts-title">
+            {{ tenant.name }}
+          </h2>
           <span :class="['ts-status', statusLabel.cls]">{{ statusLabel.text }}</span>
-          <span v-if="tenant.subscription" class="ts-plan">{{ tenant.subscription.planType }}</span>
+          <span
+            v-if="tenant.subscription"
+            class="ts-plan"
+          >{{ tenant.subscription.planType }}</span>
         </div>
       </div>
     </div>
 
-    <div v-if="loading" class="state-loading">Cargando configuración...</div>
+    <div
+      v-if="loading"
+      class="state-loading"
+    >
+      Cargando configuración...
+    </div>
 
-    <div v-else-if="tenant" class="ts-body">
+    <div
+      v-else-if="tenant"
+      class="ts-body"
+    >
       <!-- Tabs -->
       <div class="ts-tabs">
         <button
@@ -183,54 +218,102 @@ onMounted(fetchTenant)
       </div>
 
       <!-- ── GENERAL ── -->
-      <div v-if="activeTab === 'general'" class="tab-panel">
-        <h3 class="panel-title">Información general</h3>
+      <div
+        v-if="activeTab === 'general'"
+        class="tab-panel"
+      >
+        <h3 class="panel-title">
+          Información general
+        </h3>
         <div class="form-grid">
           <div class="field-group">
             <label>Nombre empresa</label>
-            <input v-model="generalForm.name" placeholder="Nombre" />
+            <input
+              v-model="generalForm.name"
+              placeholder="Nombre"
+            >
           </div>
           <div class="field-group">
             <label>Ciudad</label>
-            <input v-model="generalForm.city" placeholder="Bogotá" />
+            <input
+              v-model="generalForm.city"
+              placeholder="Bogotá"
+            >
           </div>
           <div class="field-group">
             <label>Sector</label>
-            <input v-model="generalForm.sector" placeholder="Retail, Salud..." />
+            <input
+              v-model="generalForm.sector"
+              placeholder="Retail, Salud..."
+            >
           </div>
           <div class="field-group">
             <label>Método de costeo</label>
             <select v-model="generalForm.costMethod">
-              <option value="">No definido</option>
-              <option value="FIFO">FIFO</option>
-              <option value="PEPS">PEPS</option>
-              <option value="UEPS">UEPS</option>
-              <option value="CPP">Costo promedio</option>
+              <option value="">
+                No definido
+              </option>
+              <option value="FIFO">
+                FIFO
+              </option>
+              <option value="PEPS">
+                PEPS
+              </option>
+              <option value="UEPS">
+                UEPS
+              </option>
+              <option value="CPP">
+                Costo promedio
+              </option>
             </select>
           </div>
           <div class="field-group field-group--full">
             <label class="checkbox-label">
-              <input v-model="generalForm.allowNegativeStock" type="checkbox" />
+              <input
+                v-model="generalForm.allowNegativeStock"
+                type="checkbox"
+              >
               Permitir stock negativo
             </label>
           </div>
         </div>
         <div class="info-grid">
-          <div class="info-item"><span>ID</span><code>{{ tenant.id }}</code></div>
-          <div class="info-item"><span>Prefijo</span><code>{{ tenant.prefix }}</code></div>
-          <div class="info-item"><span>Creada</span><code>{{ new Date(tenant.createdAt).toLocaleDateString('es-CO') }}</code></div>
-          <div class="info-item"><span>Facturas</span><code>{{ tenant._count?.invoices ?? 0 }}</code></div>
-          <div class="info-item"><span>Productos</span><code>{{ tenant._count?.products ?? 0 }}</code></div>
-          <div class="info-item"><span>OCR runs</span><code>{{ tenant._count?.ocrRuns ?? 0 }}</code></div>
+          <div class="info-item">
+            <span>ID</span><code>{{ tenant.id }}</code>
+          </div>
+          <div class="info-item">
+            <span>Prefijo</span><code>{{ tenant.prefix }}</code>
+          </div>
+          <div class="info-item">
+            <span>Creada</span><code>{{ new Date(tenant.createdAt).toLocaleDateString('es-CO') }}</code>
+          </div>
+          <div class="info-item">
+            <span>Facturas</span><code>{{ tenant._count?.invoices ?? 0 }}</code>
+          </div>
+          <div class="info-item">
+            <span>Productos</span><code>{{ tenant._count?.products ?? 0 }}</code>
+          </div>
+          <div class="info-item">
+            <span>OCR runs</span><code>{{ tenant._count?.ocrRuns ?? 0 }}</code>
+          </div>
         </div>
-        <button class="btn-primary" :disabled="saving" @click="saveGeneral">
+        <button
+          class="btn-primary"
+          :disabled="saving"
+          @click="saveGeneral"
+        >
           {{ saving ? 'Guardando...' : 'Guardar cambios' }}
         </button>
       </div>
 
       <!-- ── USUARIOS ── -->
-      <div v-else-if="activeTab === 'users'" class="tab-panel">
-        <h3 class="panel-title">Usuarios del tenant <span class="count-badge">{{ tenant.memberships?.length ?? 0 }}</span></h3>
+      <div
+        v-else-if="activeTab === 'users'"
+        class="tab-panel"
+      >
+        <h3 class="panel-title">
+          Usuarios del tenant <span class="count-badge">{{ tenant.memberships?.length ?? 0 }}</span>
+        </h3>
         <div class="table-scroll-wrap">
           <table class="data-table">
             <thead>
@@ -244,16 +327,28 @@ onMounted(fetchTenant)
             </thead>
             <tbody>
               <tr v-if="!tenant.memberships?.length">
-                <td colspan="5" class="empty-row">Sin usuarios</td>
+                <td
+                  colspan="5"
+                  class="empty-row"
+                >
+                  Sin usuarios
+                </td>
               </tr>
-              <tr v-for="m in tenant.memberships" :key="m.id">
+              <tr
+                v-for="m in tenant.memberships"
+                :key="m.id"
+              >
                 <td>
                   <div class="user-cell">
-                    <div class="user-mini-avatar">{{ m.user?.name?.slice(0,1)?.toUpperCase() }}</div>
+                    <div class="user-mini-avatar">
+                      {{ m.user?.name?.slice(0,1)?.toUpperCase() }}
+                    </div>
                     {{ m.user?.name }}
                   </div>
                 </td>
-                <td class="mono">{{ m.user?.email }}</td>
+                <td class="mono">
+                  {{ m.user?.email }}
+                </td>
                 <td><span class="role-pill">{{ m.role }}</span></td>
                 <td>
                   <span :class="['status-dot', m.user?.status]">{{ m.user?.status }}</span>
@@ -266,55 +361,102 @@ onMounted(fetchTenant)
       </div>
 
       <!-- ── PLAN ── -->
-      <div v-else-if="activeTab === 'plan'" class="tab-panel">
-        <h3 class="panel-title">Suscripción y plan</h3>
-        <div v-if="tenant.subscription" class="plan-summary">
+      <div
+        v-else-if="activeTab === 'plan'"
+        class="tab-panel"
+      >
+        <h3 class="panel-title">
+          Suscripción y plan
+        </h3>
+        <div
+          v-if="tenant.subscription"
+          class="plan-summary"
+        >
           <div class="plan-card">
-            <div class="plan-name">{{ tenant.subscription.planType }}</div>
+            <div class="plan-name">
+              {{ tenant.subscription.planType }}
+            </div>
             <div :class="['plan-status', tenant.subscription.active ? 'active' : 'inactive']">
               {{ tenant.subscription.active ? 'Activo' : 'Inactivo' }}
             </div>
           </div>
-          <div v-if="trialDaysLeft !== null" class="trial-alert" :class="{ warn: trialDaysLeft < 7 }">
+          <div
+            v-if="trialDaysLeft !== null"
+            class="trial-alert"
+            :class="{ warn: trialDaysLeft < 7 }"
+          >
             <span v-if="trialDaysLeft > 0">⏱ {{ trialDaysLeft }} días de trial restantes</span>
             <span v-else>⚠️ Trial expirado hace {{ Math.abs(trialDaysLeft) }} días</span>
           </div>
         </div>
-        <div v-else class="empty-plan">Sin suscripción activa</div>
+        <div
+          v-else
+          class="empty-plan"
+        >
+          Sin suscripción activa
+        </div>
 
         <div class="form-grid mt-20">
           <div class="field-group">
             <label>Plan</label>
             <select v-model="planForm.planType">
-              <option value="trial">Trial</option>
-              <option value="starter">Starter</option>
-              <option value="pro">Pro</option>
-              <option value="enterprise">Enterprise</option>
+              <option value="trial">
+                Trial
+              </option>
+              <option value="starter">
+                Starter
+              </option>
+              <option value="pro">
+                Pro
+              </option>
+              <option value="enterprise">
+                Enterprise
+              </option>
             </select>
           </div>
           <div class="field-group">
             <label>Trial expira</label>
-            <input v-model="planForm.trialEndsAt" type="date" />
+            <input
+              v-model="planForm.trialEndsAt"
+              type="date"
+            >
           </div>
           <div class="field-group field-group--full">
             <label class="checkbox-label">
-              <input v-model="planForm.active" type="checkbox" />
+              <input
+                v-model="planForm.active"
+                type="checkbox"
+              >
               Suscripción activa
             </label>
           </div>
         </div>
 
         <div class="btn-row">
-          <button class="btn-primary" :disabled="saving" @click="savePlan">
+          <button
+            class="btn-primary"
+            :disabled="saving"
+            @click="savePlan"
+          >
             {{ saving ? 'Guardando...' : 'Actualizar plan' }}
           </button>
-          <button class="btn-secondary" @click="renewTrial">🔄 Renovar trial</button>
+          <button
+            class="btn-secondary"
+            @click="renewTrial"
+          >
+            🔄 Renovar trial
+          </button>
         </div>
       </div>
 
       <!-- ── ESTADO ── -->
-      <div v-else-if="activeTab === 'status'" class="tab-panel">
-        <h3 class="panel-title">Estado del tenant</h3>
+      <div
+        v-else-if="activeTab === 'status'"
+        class="tab-panel"
+      >
+        <h3 class="panel-title">
+          Estado del tenant
+        </h3>
         <div class="status-current">
           Estado actual:
           <span :class="['ts-status', 'lg', statusLabel.cls]">{{ statusLabel.text }}</span>
@@ -327,48 +469,137 @@ onMounted(fetchTenant)
             v-if="tenant.dianStatus !== 'suspended'"
             class="btn-danger"
             @click="setStatus('suspended')"
-          >🔒 Suspender tenant</button>
+          >
+            🔒 Suspender tenant
+          </button>
           <button
             v-if="tenant.dianStatus === 'suspended'"
             class="btn-activate"
             @click="setStatus('active')"
-          >✅ Reactivar tenant</button>
+          >
+            ✅ Reactivar tenant
+          </button>
         </div>
       </div>
 
       <!-- ── DANGER ZONE ── -->
-      <div v-else-if="activeTab === 'danger'" class="tab-panel danger-panel">
-        <h3 class="panel-title danger-title">⚠️ Zona de peligro</h3>
-        <p class="danger-desc">Las acciones en esta sección son irreversibles o de alto impacto. Procede con cuidado.</p>
+      <div
+        v-else-if="activeTab === 'danger'"
+        class="tab-panel danger-panel"
+      >
+        <h3 class="panel-title danger-title">
+          ⚠️ Zona de peligro
+        </h3>
+        <p class="danger-desc">
+          Las acciones en esta sección son irreversibles o de alto impacto. Procede con cuidado.
+        </p>
 
         <div class="danger-action-card">
           <div>
-            <div class="danger-action-title">Suspender acceso</div>
-            <div class="danger-action-desc">Bloquea todos los usuarios del tenant sin eliminar datos.</div>
+            <div class="danger-action-title">
+              Suspender acceso
+            </div>
+            <div class="danger-action-desc">
+              Bloquea todos los usuarios del tenant sin eliminar datos.
+            </div>
           </div>
-          <button class="btn-danger" @click="setStatus('suspended')">Suspender</button>
+          <button
+            class="btn-danger"
+            @click="setStatus('suspended')"
+          >
+            Suspender
+          </button>
         </div>
 
         <div class="danger-action-card">
           <div>
-            <div class="danger-action-title">Entrar como administrador</div>
-            <div class="danger-action-desc">Accede al ERP del tenant para soporte (próximamente).</div>
+            <div class="danger-action-title">
+              Entrar como administrador
+            </div>
+            <div class="danger-action-desc">
+              Accede al ERP del tenant para soporte (próximamente).
+            </div>
           </div>
-          <button class="btn-ghost" disabled>🔑 Impersonar (próximo)</button>
+          <button
+            class="btn-ghost"
+            disabled
+          >
+            🔑 Impersonar (próximo)
+          </button>
         </div>
 
         <div class="danger-action-card danger-action-card--red">
           <div>
-            <div class="danger-action-title red">Eliminar empresa</div>
-            <div class="danger-action-desc">Elimina permanentemente la empresa y todos sus datos. Irreversible.</div>
+            <div class="danger-action-title red">
+              Eliminar empresa
+            </div>
+            <div class="danger-action-desc">
+              Elimina permanentemente la empresa y todos sus datos. Irreversible.
+            </div>
           </div>
-          <button class="btn-delete-active" :disabled="saving" @click="handleDeleteTenant">
+          <button
+            class="btn-delete-active"
+            :disabled="saving"
+            @click="handleDeleteTenant"
+          >
             {{ saving ? 'Eliminando...' : '🗑 Eliminar empresa definitivamente' }}
           </button>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Delete confirmation modal -->
+  <Dialog v-model:open="showDeleteModal">
+    <DialogContent class="sm:max-w-md">
+      <DialogHeader>
+        <DialogTitle>⚠️ Eliminar empresa</DialogTitle>
+        <DialogDescription>
+          Esta acción es <strong>irreversible</strong>. Se eliminarán permanentemente todos los datos de
+          <strong>{{ tenant?.name }}</strong>: facturas, inventario, usuarios, movimientos contables y más.
+          <br><br>
+          Para autorizar, ingresa tu contraseña de administrador.
+        </DialogDescription>
+      </DialogHeader>
+      <div class="space-y-3">
+        <div>
+          <label
+            class="block text-[13px] font-semibold mb-1.5"
+            for="delete-password"
+          >Contraseña</label>
+          <Input
+            id="delete-password"
+            v-model="deletePassword"
+            type="password"
+            placeholder="Tu contraseña de administrador"
+            @keydown.enter="confirmDeleteTenant"
+          />
+        </div>
+        <p
+          v-if="deleteError"
+          class="text-[13px] text-red-600 font-medium"
+        >
+          {{ deleteError }}
+        </p>
+      </div>
+      <DialogFooter>
+        <Button
+          variant="outline"
+          :disabled="saving"
+          @click="showDeleteModal = false"
+        >
+          Cancelar
+        </Button>
+        <Button
+          variant="destructive"
+          :disabled="saving"
+          @click="confirmDeleteTenant"
+        >
+          {{ saving ? 'Eliminando...' : 'Eliminar empresa' }}
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <style scoped>

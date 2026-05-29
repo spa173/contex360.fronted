@@ -1,13 +1,19 @@
 import { ref } from 'vue'
 
-const toasts = ref([])
+interface Toast {
+  id: string
+  message: string
+  detail: string
+}
 
-function pushToast(message, detail = '') {
+const toasts = ref<Toast[]>([])
+
+function pushToast(message: string, detail: string = '') {
   if (!message) {
     return
   }
 
-  const toast = {
+  const toast: Toast = {
     id: `${Date.now()}-${Date.now().toString(16).slice(-8)}`,
     message,
     detail,

@@ -3,6 +3,14 @@ import { ref, computed } from 'vue'
 import { useTreasuryStore } from '../../stores/treasuryStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Tesorería',
+  meta: [
+    { name: 'description', content: 'Gestión de pagos programados y flujo de caja.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -37,10 +45,15 @@ const newPaymentForm = ref({
 
 async function submitPayment() {
   if (!newPaymentForm.value.vendorName || !newPaymentForm.value.amount) return
+  const amount = Number(newPaymentForm.value.amount)
+  if (isNaN(amount) || amount <= 0) {
+    emit('notify', { message: 'Monto inválido', detail: 'El monto debe ser un número positivo.' })
+    return
+  }
   showPaymentModal.value = false
   await treasury.schedulePayment({
-    vendorName: newPaymentForm.value.vendorName,
-    amount: newPaymentForm.value.amount,
+    vendorName: newPaymentForm.value.vendorName.trim(),
+    amount: amount,
     priority: newPaymentForm.value.priority,
     dueDate: newPaymentForm.value.dueDate || new Date().toISOString()
   })
@@ -163,9 +176,9 @@ function priorityClass(p) {
     <div class="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-4">
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
         <div class="px-5 py-4 border-b border-[#F4F4F5]">
-          <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
             Programación de pagos
-          </h3>
+          </h2>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left min-w-[540px]">
@@ -225,9 +238,9 @@ function priorityClass(p) {
 
       <div class="space-y-3">
         <div class="flex items-center gap-2 mb-1">
-          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h3 class="text-[13px] font-bold tracking-tight text-[#18181B]">
+          <span class="material-symbols-outlined text-[18px] text-[#2563EB]">auto_awesome</span><h2 class="text-[13px] font-bold tracking-tight text-[#18181B]">
             Insights de IA
-          </h3>
+          </h2>
         </div>
         <div
           v-if="showAiInsight && programmedPayments.length > 0"

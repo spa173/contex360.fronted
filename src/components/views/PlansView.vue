@@ -4,6 +4,14 @@ import { useStateStore } from '../../stores/stateStore'
 import { formatCurrency } from '../../utils/ui'
 import { businessApi } from '../../services/businessApi'
 import { toast } from 'vue-sonner'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Plan Actual',
+  meta: [
+    { name: 'description', content: 'Gestiona tu suscripción y plan de Contex360.' },
+  ]
+})
 
 defineProps({
   isActive: { type: Boolean, required: true }
@@ -129,7 +137,10 @@ async function handleUpgradeReal(planId: string) {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-[1600px] mx-auto"
+  >
     <!-- Header -->
     <div class="text-center max-w-3xl mx-auto mb-10">
       <div class="flex items-center justify-center gap-2 mb-3">
@@ -146,14 +157,14 @@ async function handleUpgradeReal(planId: string) {
       <div class="flex items-center justify-center gap-3 mt-8">
         <span :class="['text-[13px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">Mensual</span>
         <button 
-          @click="isAnnual = !isAnnual"
           class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200 outline-none focus:ring-2 focus:ring-black/10"
           :class="{ 'bg-[#18181B]': isAnnual }"
+          @click="isAnnual = !isAnnual"
         >
           <span 
             class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
             :class="{ 'translate-x-5.5': isAnnual }"
-          ></span>
+          />
         </button>
         <span :class="['text-[13px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#71717A]']">
           Anual
@@ -193,8 +204,12 @@ async function handleUpgradeReal(planId: string) {
         <div>
           <!-- Plan Header -->
           <div class="mb-5">
-            <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight mb-1">{{ plan.name }}</h3>
-            <p class="text-[12.5px] text-[#71717A] leading-[1.5]">{{ plan.desc }}</p>
+            <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight mb-1">
+              {{ plan.name }}
+            </h3>
+            <p class="text-[12.5px] text-[#71717A] leading-[1.5]">
+              {{ plan.desc }}
+            </p>
           </div>
 
           <!-- Plan Price -->
@@ -219,11 +234,13 @@ async function handleUpgradeReal(planId: string) {
             </div>
           </div>
 
-          <div class="h-px bg-[#F4F4F5] mb-6"></div>
+          <div class="h-px bg-[#F4F4F5] mb-6" />
 
           <!-- Features list -->
           <div class="space-y-3 mb-8">
-            <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider">Incluye:</p>
+            <p class="text-[10px] font-bold text-[#A1A1AA] uppercase tracking-wider">
+              Incluye:
+            </p>
             <div 
               v-for="feat in plan.features" 
               :key="feat"
@@ -256,7 +273,6 @@ async function handleUpgradeReal(planId: string) {
         </button>
         <button 
           v-else
-          @click="handleUpgradeReal(plan.id)"
           :class="[
             'w-full py-3 rounded-[10px] text-[13px] font-semibold transition-colors text-center shadow-sm',
             plan.popular 
@@ -264,8 +280,12 @@ async function handleUpgradeReal(planId: string) {
               : 'bg-[#18181B] text-white hover:bg-[#27272A]'
           ]"
           :disabled="isCheckoutLoading"
+          @click="handleUpgradeReal(plan.id)"
         >
-          <span v-if="isCheckoutLoading" class="material-symbols-outlined text-[16px] animate-spin">progress_activity</span>
+          <span
+            v-if="isCheckoutLoading"
+            class="material-symbols-outlined text-[16px] animate-spin"
+          >progress_activity</span>
           Solicitar Upgrade
         </button>
       </div>
@@ -273,28 +293,38 @@ async function handleUpgradeReal(planId: string) {
 
     <!-- FAQ Section -->
     <div class="max-w-4xl mx-auto border-t border-[#E4E4E7] pt-12">
-      <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight text-center mb-8">Preguntas frecuentes</h3>
+      <h3 class="text-[20px] font-extrabold text-[#18181B] tracking-tight text-center mb-8">
+        Preguntas frecuentes
+      </h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-[13.5px] leading-[1.6]">
         <div>
-          <h4 class="font-bold text-[#18181B] mb-1.5">¿Qué ocurre si supero el límite de facturas mensuales del plan Starter?</h4>
+          <h4 class="font-bold text-[#18181B] mb-1.5">
+            ¿Qué ocurre si supero el límite de facturas mensuales del plan Starter?
+          </h4>
           <p class="text-[#71717A]">
             El plan Starter tiene un límite estricto de 50 facturas electrónicas por mes. Si requieres emitir más, puedes solicitar una actualización al plan Pyme de forma instantánea.
           </p>
         </div>
         <div>
-          <h4 class="font-bold text-[#18181B] mb-1.5">¿Cómo se contabilizan los límites de usuarios?</h4>
+          <h4 class="font-bold text-[#18181B] mb-1.5">
+            ¿Cómo se contabilizan los límites de usuarios?
+          </h4>
           <p class="text-[#71717A]">
             Contamos los usuarios colaboradores activos agregados a tu organización. Puedes invitar y remover miembros según los límites establecidos en tu plan actual.
           </p>
         </div>
         <div>
-          <h4 class="font-bold text-[#18181B] mb-1.5">¿Puedo cambiar de plan en cualquier momento?</h4>
+          <h4 class="font-bold text-[#18181B] mb-1.5">
+            ¿Puedo cambiar de plan en cualquier momento?
+          </h4>
           <p class="text-[#71717A]">
             Sí, puedes solicitar una actualización de plan directamente. El nuevo plan, sus características y sus límites se activarán de inmediato una vez aprobados.
           </p>
         </div>
         <div>
-          <h4 class="font-bold text-[#18181B] mb-1.5">¿El asistente IA está disponible en todos los planes?</h4>
+          <h4 class="font-bold text-[#18181B] mb-1.5">
+            ¿El asistente IA está disponible en todos los planes?
+          </h4>
           <p class="text-[#71717A]">
             El Asistente Inteligente (ContexAI) requiere del motor computacional del plan Pyme o Enterprise debido a su alto volumen de procesamiento y predicción.
           </p>

@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+ 
 import { getApiBaseUrl } from './apiBase'
 import { getCsrfToken } from './csrf'
 
@@ -453,5 +453,108 @@ export const businessApi = {
       body: data,
       tenantId,
     })
+  },
+
+  // User Management
+  async getUsers(tenantId?: string | null) {
+    return request<any[]>('/users', { tenantId })
+  },
+  async getUser(id: string, tenantId?: string | null) {
+    return request<any>(`/users/${id}`, { tenantId })
+  },
+  async toggleUserStatus(id: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/status`, { method: 'PATCH', tenantId })
+  },
+  async forcePasswordReset(id: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/force-password-reset`, { method: 'POST', tenantId })
+  },
+  async generateTempPassword(id: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string; tempPassword: string }>(`/users/${id}/temp-password`, { method: 'POST', tenantId })
+  },
+  async setTwoFactorRequirement(id: string, required: boolean, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/2fa/requirement`, { method: 'PATCH', body: { required }, tenantId })
+  },
+  async toggleTwoFactor(id: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/2fa/toggle`, { method: 'POST', tenantId })
+  },
+  async revokeUserSessions(id: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/sessions/revoke`, { method: 'POST', tenantId })
+  },
+  async revokeSession(sessionId: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/sessions/${sessionId}`, { method: 'DELETE', tenantId })
+  },
+  async panicRevokeAll(tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>('/users/sessions/panic-revoke', { method: 'POST', tenantId })
+  },
+  async upsertMembership(userId: string, tenantId: string, role: string) {
+    return request<{ ok: boolean; message: string }>('/users/memberships', { method: 'POST', body: { userId, tenantId, role } })
+  },
+  async removeMembership(userId: string, tenantId: string) {
+    return request<{ ok: boolean; message: string }>('/users/memberships', { method: 'DELETE', body: { userId, tenantId } })
+  },
+  async createInvitation(email: string, role: string, tenantId: string) {
+    return request<{ ok: boolean; message: string; invitation: any }>('/users/invitations', { method: 'POST', body: { email, role, tenantId } })
+  },
+  async resendInvitation(id: string) {
+    return request<{ ok: boolean; message: string }>(`/users/invitations/${id}/resend`, { method: 'POST' })
+  },
+  async trustSessionFingerprint(sessionId: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/sessions/${sessionId}/trust`, { method: 'POST', tenantId })
+  },
+  async generateRecoveryCodes() {
+    return request<{ ok: boolean; message: string; codes: string[] }>('/users/recovery-codes', { method: 'POST' })
+  },
+  async scheduleUserDeactivation(id: string, at: string, tenantId?: string | null) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/schedule-deactivation`, { method: 'POST', body: { at }, tenantId })
+  },
+  async anonymizeUser(id: string) {
+    return request<{ ok: boolean; message: string }>(`/users/${id}/anonymize`, { method: 'POST' })
+  },
+
+  // ── Subscription Billing ─────────────────────────────────────────────────
+  async getSubscriptionPayments(tenantId?: string | null) {
+    return request<any[]>('/subscriptions/payments', { tenantId })
+  },
+  async getSubscriptionInvoices(tenantId?: string | null) {
+    return request<any[]>('/subscriptions/invoices', { tenantId })
+  },
+  async getAvailableCurrencies() {
+    return request<{ code: string; symbol: string; name: string; rateToCop: number; decimals: number }[]>('/subscriptions/currencies')
+  },
+
+  // ── GDPR / Privacy ──────────────────────────────────────────────────────
+  async registrarConsentimiento(data: { userId: string; type: string; estado: string }, tenantId?: string | null) {
+    return request<any>('/privacy/consent', { method: 'POST', body: data, tenantId })
+  },
+  async getConsentimientos(userId: string, tenantId?: string | null) {
+    return request<any[]>(`/privacy/consents/${userId}`, { tenantId })
+  },
+  async crearSolicitudDerechos(data: { userId: string; tipo: string; solicitante: string; email: string; ip?: string }, tenantId?: string | null) {
+    return request<any>('/privacy/solicitud-derechos', { method: 'POST', body: data, tenantId })
+  },
+
+  // ── Contratos ───────────────────────────────────────────────────────────
+  async getContratosActivos(tenantId?: string | null) {
+    return request<any[]>('/contratos', { tenantId })
+  },
+  async getContratoActivo(tipo: string, tenantId?: string | null) {
+    return request<any>(`/contratos/activo/${tipo}`, { tenantId })
+  },
+  async aceptarContrato(contratoId: string, data?: { ip?: string; dispositivo?: string }, tenantId?: string | null) {
+    return request<any>(`/contratos/${contratoId}/aceptar`, { method: 'POST', body: data, tenantId })
+  },
+  async verificarAceptacionContrato(contratoId: string, tenantId?: string | null) {
+    return request<{ aceptado: boolean }>(`/contratos/${contratoId}/verificar`, { tenantId })
+  },
+  async seedContratos(tenantId?: string | null) {
+    return request<any>('/contratos/seed', { method: 'POST', tenantId })
+  },
+  async getContratosPendientes(tenantId?: string | null) {
+    return request<any[]>('/contratos/pendientes', { tenantId })
+  },
+
+  // ── Taxes ───────────────────────────────────────────────────────────────
+  async calcularImpuestos(data: { subtotal: number; regime?: string; clientCity?: string }) {
+    return request<any>('/taxes/calculate', { method: 'POST', body: data })
   },
 }

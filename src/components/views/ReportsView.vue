@@ -1,4 +1,13 @@
 <script setup>
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Reportes',
+  meta: [
+    { name: 'description', content: 'Reportes financieros y analítica empresarial.' },
+  ]
+})
+
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
 
@@ -90,9 +99,9 @@ function handleExport() {
 
     <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden">
       <div class="px-5 py-4 border-b border-[#F4F4F5]">
-        <h3 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+        <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
           Reportes generados
-        </h3>
+        </h2>
       </div>
       <div class="overflow-x-auto">
         <table class="w-full text-left min-w-[500px]">

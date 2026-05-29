@@ -1,7 +1,9 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
+import { useHead } from '@unhead/vue'
 import { useStateStore } from './stores/stateStore'
 import { useThemeStore } from './stores/themeStore'
+import CookieConsentBanner from './components/common/CookieConsentBanner.vue'
 import AppShell from './components/AppShell.vue'
 import RootShell from './components/RootShell.vue'
 import AuthScreen from './components/AuthScreen.vue'
@@ -11,6 +13,8 @@ import LandingPage from './components/LandingPage.vue'
 import AboutView from './components/views/AboutView.vue'
 import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
 import TermsOfUseView from './components/views/TermsOfUseView.vue'
+import DataProcessingView from './components/views/DataProcessingView.vue'
+import BusinessContinuityView from './components/views/BusinessContinuityView.vue'
 import ForgotPasswordView from './components/views/ForgotPasswordView.vue'
 import ResetPasswordView from './components/views/ResetPasswordView.vue'
 import ToastStack from './components/common/ToastStack.vue'
@@ -21,6 +25,23 @@ import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
 
+const SITE_NAME = 'Contex360'
+const DEFAULT_DESC = 'ERP inteligente para empresas colombianas. Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar.'
+const DEFAULT_OG_IMAGE = '/og-image.png'
+
+useHead({
+  title: SITE_NAME,
+  titleTemplate: `%s — ${SITE_NAME}`,
+  meta: [
+    { name: 'description', content: DEFAULT_DESC },
+    { property: 'og:site_name', content: SITE_NAME },
+    { property: 'og:type', content: 'website' },
+    { property: 'og:image', content: DEFAULT_OG_IMAGE },
+    { name: 'twitter:card', content: 'summary_large_image' },
+    { name: 'twitter:image', content: DEFAULT_OG_IMAGE },
+  ]
+})
+
 const store = useStateStore()
 const themeStore = useThemeStore()
 const { toasts } = useToasts()
@@ -28,6 +49,8 @@ const showDemo = ref(false)
 const showAuth = ref(false)
 const showPrivacy = ref(false)
 const showTerms = ref(false)
+const showDPA = ref(false)
+const showBCP = ref(false)
 const showAbout = ref(false)
 const showPricing = ref(false)
 const showPaymentSuccess = ref(false)
@@ -71,6 +94,8 @@ watch(showDemo, (val) => val && syncUrlWithState('/demo'))
 watch(showAbout, (val) => val && syncUrlWithState('/nosotros'))
 watch(showPrivacy, (val) => val && syncUrlWithState('/privacidad'))
 watch(showTerms, (val) => val && syncUrlWithState('/terminos'))
+watch(showDPA, (val) => val && syncUrlWithState('/dpa'))
+watch(showBCP, (val) => val && syncUrlWithState('/continuidad'))
 watch(showPricing, (val) => val && syncUrlWithState('/precios'))
 watch(showForgotPassword, (val) => val && syncUrlWithState('/forgot-password'))
 watch(showResetPassword, (val) => val && syncUrlWithState('/reset-password'))
@@ -84,6 +109,8 @@ const handlePopState = (event) => {
   showDemo.value = false
   showPrivacy.value = false
   showTerms.value = false
+  showDPA.value = false
+  showBCP.value = false
   showAbout.value = false
   showPricing.value = false
   showPaymentSuccess.value = false
@@ -95,6 +122,8 @@ const handlePopState = (event) => {
   else if (path === '/nosotros') showAbout.value = true
   else if (path === '/privacidad') showPrivacy.value = true
   else if (path === '/terminos') showTerms.value = true
+  else if (path === '/dpa') showDPA.value = true
+  else if (path === '/continuidad') showBCP.value = true
   else if (path === '/precios') showPricing.value = true
   else if (path === '/forgot-password') showForgotPassword.value = true
   else if (path.startsWith('/reset-password')) showResetPassword.value = true
@@ -111,6 +140,8 @@ const handleCustomBack = () => {
   } else {
     showPrivacy.value = false
     showTerms.value = false
+    showDPA.value = false
+    showBCP.value = false
     showDemo.value = false
     showAbout.value = false
     showAuth.value = false
@@ -183,85 +214,107 @@ onMounted(() => {
   <div class="app-root">
     <ErrorBoundary>
       <!-- Initial load skeleton -->
-    <AppLoading
-      v-if="isLoading || loadError"
-      :error="loadError"
-      @retry="initApp"
-    />
+      <AppLoading
+        v-if="isLoading || loadError"
+        :error="loadError"
+        @retry="initApp"
+      />
 
-    <!-- App ready -->
-    <template v-else>
-      <!-- Authenticated states -->
-      <template v-if="store.currentUser">
-        <RootShell
-          v-if="showRootPanel"
-          @enter-erp="viewingAdminPanel = false"
-        />
-        <AppShell
-          v-else
-          @open-admin-panel="viewingAdminPanel = true"
-        />
-      </template>
-
-      <!-- Public states (unauthenticated) -->
+      <!-- App ready -->
       <template v-else>
-        <PaymentSuccess
-          v-if="showPaymentSuccess"
-          :plan-type="paymentSuccessPlan"
-          @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)"
-        />
-        <DemoRequestView
-          v-else-if="showDemo"
-          @back="showDemo = false"
-        />
-        <ForgotPasswordView
-          v-else-if="showForgotPassword"
-          @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)"
-        />
-        <ResetPasswordView
-          v-else-if="showResetPassword"
-          @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)"
-        />
-        <PricingView
-          v-else-if="showPricing"
-          @back="showPricing = false"
-          @request-demo="showDemo = true; showPricing = false"
-          @login="showAuth = true; showPricing = false"
-          @purchase-plan="handlePurchasePlan"
-        />
-        <AuthScreen
-          v-else-if="showAuth"
-          @request-demo="showDemo = true; showAuth = false"
-          @show-privacy="showPrivacy = true; showAuth = false"
-          @forgot-password="showForgotPassword = true; showAuth = false"
-          @back="showAuth = false"
-        />
-        <AboutView
-          v-else-if="showAbout"
-          @back="showAbout = false"
-          @request-demo="showDemo = true"
-          @login="showAuth = true"
-        />
-        <PrivacyPolicyView
-          v-else-if="showPrivacy"
-          @back="handleCustomBack"
-        />
-        <TermsOfUseView
-          v-else-if="showTerms"
-          @back="showTerms = false"
-        />
-        <LandingPage
-          v-else
-          @login="showAuth = true"
-          @request-demo="showDemo = true"
-          @show-privacy="showPrivacy = true"
-          @show-terms="showTerms = true"
-          @show-about="showAbout = true"
-          @show-pricing="showPricing = true"
-          @purchase-plan="handlePurchasePlan"
-        />
+        <!-- Authenticated states -->
+        <template v-if="store.currentUser">
+          <RootShell
+            v-if="showRootPanel"
+            @enter-erp="viewingAdminPanel = false"
+          />
+          <AppShell
+            v-else
+            @open-admin-panel="viewingAdminPanel = true"
+          />
+        </template>
+
+        <!-- Public states (unauthenticated) -->
+        <template v-else>
+          <PaymentSuccess
+            v-if="showPaymentSuccess"
+            :plan-type="paymentSuccessPlan"
+            @continue="showPaymentSuccess = false; showAuth = true; syncUrlWithState('/login', true)"
+          />
+          <DemoRequestView
+            v-else-if="showDemo"
+            @back="showDemo = false"
+          />
+          <ForgotPasswordView
+            v-else-if="showForgotPassword"
+            @back="showForgotPassword = false; showAuth = true; syncUrlWithState('/login', true)"
+          />
+          <ResetPasswordView
+            v-else-if="showResetPassword"
+            @back="showResetPassword = false; showAuth = true; syncUrlWithState('/login', true)"
+          />
+          <PricingView
+            v-else-if="showPricing"
+            @back="showPricing = false"
+            @request-demo="showDemo = true; showPricing = false"
+            @login="showAuth = true; showPricing = false"
+            @purchase-plan="handlePurchasePlan"
+          />
+          <AuthScreen
+            v-else-if="showAuth"
+            @request-demo="showDemo = true; showAuth = false"
+            @show-privacy="showPrivacy = true; showAuth = false"
+            @forgot-password="showForgotPassword = true; showAuth = false"
+            @back="showAuth = false"
+          />
+          <AboutView
+            v-else-if="showAbout"
+            @back="showAbout = false"
+            @request-demo="showDemo = true"
+            @login="showAuth = true"
+          />
+          <PrivacyPolicyView
+            v-else-if="showPrivacy"
+            @back="handleCustomBack"
+            @show-terms="showTerms = true; showPrivacy = false"
+            @show-dpa="showDPA = true; showPrivacy = false"
+            @show-bcp="showBCP = true; showPrivacy = false"
+          />
+          <TermsOfUseView
+            v-else-if="showTerms"
+            @back="showTerms = false"
+            @show-privacy="showPrivacy = true; showTerms = false"
+            @show-dpa="showDPA = true; showTerms = false"
+            @show-bcp="showBCP = true; showTerms = false"
+          />
+          <DataProcessingView
+            v-else-if="showDPA"
+            @back="showDPA = false"
+            @show-privacy="showPrivacy = true; showDPA = false"
+            @show-terms="showTerms = true; showDPA = false"
+            @show-bcp="showBCP = true; showDPA = false"
+          />
+          <BusinessContinuityView
+            v-else-if="showBCP"
+            @back="showBCP = false"
+            @show-privacy="showPrivacy = true; showBCP = false"
+            @show-terms="showTerms = true; showBCP = false"
+            @show-dpa="showDPA = true; showBCP = false"
+          />
+          <LandingPage
+            v-else
+            @login="showAuth = true"
+            @request-demo="showDemo = true"
+            @show-privacy="showPrivacy = true"
+            @show-terms="showTerms = true"
+            @show-dpa="showDPA = true"
+            @show-bcp="showBCP = true"
+            @show-about="showAbout = true"
+            @show-pricing="showPricing = true"
+            @purchase-plan="handlePurchasePlan"
+          />
+        </template>
       </template>
-    </template>
     </ErrorBoundary>
 
     <SessionRecoveryModal />
@@ -270,5 +323,6 @@ onMounted(() => {
       rich-colors
     />
     <ToastStack :toasts="toasts" />
+    <CookieConsentBanner />
   </div>
 </template>

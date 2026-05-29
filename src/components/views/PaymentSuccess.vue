@@ -1,5 +1,17 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Pago Exitoso',
+  meta: [
+    { name: 'description', content: 'Tu pago ha sido procesado exitosamente. Bienvenido a Contex360.' },
+    { property: 'og:title', content: 'Pago Exitoso' },
+    { property: 'og:description', content: 'Tu pago ha sido procesado exitosamente. Bienvenido a Contex360.' },
+    { name: 'twitter:title', content: 'Pago Exitoso' },
+    { name: 'twitter:description', content: 'Tu pago ha sido procesado exitosamente. Bienvenido a Contex360.' },
+  ]
+})
 
 const props = defineProps<{
   planType?: string
@@ -31,8 +43,8 @@ onMounted(() => {
       </p>
 
       <button 
-        @click="emit('continue')"
         class="w-full py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[14px] font-extrabold rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+        @click="emit('continue')"
       >
         Ir al Dashboard
         <span class="material-symbols-outlined text-[18px]">arrow_forward</span>

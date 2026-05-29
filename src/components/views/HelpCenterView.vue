@@ -3,6 +3,14 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '../../stores/authStore'
 import { useHelpStore } from '../../stores/helpStore'
 import { businessApi } from '../../services/businessApi'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Centro de Ayuda',
+  meta: [
+    { name: 'description', content: 'Soporte técnico y centro de ayuda de Contex360.' },
+  ]
+})
 
 const auth = useAuthStore()
 const helpStore = useHelpStore()

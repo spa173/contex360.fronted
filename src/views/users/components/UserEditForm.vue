@@ -55,28 +55,55 @@ async function handleSubmit() {
   >
     <div class="card-head">
       <div>
-        <p class="eyebrow">Alta controlada</p>
+        <p class="eyebrow">
+          Alta controlada
+        </p>
         <h3>Crear usuario con clave temporal</h3>
       </div>
-      <button class="btn-sm" type="button" @click="$emit('toggle')">
+      <button
+        class="btn-sm"
+        type="button"
+        @click="$emit('toggle')"
+      >
         {{ isOpen ? 'Ocultar' : 'Mostrar' }}
       </button>
     </div>
 
-    <form class="form-layout" @submit.prevent="handleSubmit">
-      <fieldset class="form-fieldset" :disabled="!canEdit || !isOpen">
+    <form
+      class="form-layout"
+      @submit.prevent="handleSubmit"
+    >
+      <fieldset
+        class="form-fieldset"
+        :disabled="!canEdit || !isOpen"
+      >
         <div class="field-grid three">
           <label class="field">
             <span>Nombre</span>
-            <input v-model="form.name" placeholder="Ana Gomez" required type="text" />
+            <input
+              v-model="form.name"
+              placeholder="Ana Gomez"
+              required
+              type="text"
+            >
           </label>
           <label class="field">
             <span>Email</span>
-            <input v-model="form.email" placeholder="ana@contex360.local" required type="email" />
+            <input
+              v-model="form.email"
+              placeholder="ana@contex360.local"
+              required
+              type="email"
+            >
           </label>
           <label class="field">
             <span>Cargo</span>
-            <input v-model="form.title" placeholder="Analista contable" required type="text" />
+            <input
+              v-model="form.title"
+              placeholder="Analista contable"
+              required
+              type="text"
+            >
           </label>
         </div>
 
@@ -89,12 +116,16 @@ async function handleSubmit() {
               placeholder="ClaveTemporal123"
               required
               type="password"
-            />
+            >
           </label>
           <label class="field">
             <span>Rol inicial</span>
             <select v-model="form.role">
-              <option v-for="role in ROLE_OPTIONS" :key="role" :value="role">{{ role }}</option>
+              <option
+                v-for="role in ROLE_OPTIONS"
+                :key="role"
+                :value="role"
+              >{{ role }}</option>
             </select>
           </label>
           <label class="field">
@@ -108,14 +139,26 @@ async function handleSubmit() {
 
         <label class="field">
           <span>Tareas iniciales</span>
-          <select v-model="form.initialTasks" multiple>
-            <option v-for="task in ONBOARDING_TASK_OPTIONS" :key="task" :value="task">{{ task }}</option>
+          <select
+            v-model="form.initialTasks"
+            multiple
+          >
+            <option
+              v-for="task in ONBOARDING_TASK_OPTIONS"
+              :key="task"
+              :value="task"
+            >{{ task }}</option>
           </select>
           <small>Selecciona una o varias tareas para el onboarding del usuario.</small>
         </label>
 
         <div class="form-actions">
-          <button class="btn-primary" type="submit">Guardar usuario</button>
+          <button
+            class="btn-primary"
+            type="submit"
+          >
+            Guardar usuario
+          </button>
         </div>
       </fieldset>
     </form>

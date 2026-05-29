@@ -3,6 +3,14 @@ import { ref, computed } from 'vue'
 import { useInventoryStore } from '../../stores/inventoryStore'
 import { formatCurrency } from '../../utils/ui'
 import { generatePdfReport } from '../../utils/pdfExport'
+import { useHead } from '@unhead/vue'
+
+useHead({
+  title: 'Inventario',
+  meta: [
+    { name: 'description', content: 'Control de inventario, productos y stock.' },
+  ]
+})
 
 defineProps({ isActive: { type: Boolean, required: true } })
 const emit = defineEmits(['notify'])
@@ -15,8 +23,8 @@ const stockFilter = ref('todos')
 
 const totalValue = computed(() => tenantProducts.value.reduce((s, p) => s + (p.price * p.stock || 0), 0))
 const totalItems = computed(() => tenantProducts.value.reduce((s, p) => s + (p.stock || 0), 0))
-const lowStockCount = computed(() => tenantProducts.value.filter(p => p.stock <= p.minStock && p.stock > 0).length)
-const criticalStockCount = computed(() => tenantProducts.value.filter(p => p.stock === 0).length)
+const lowStockCount = computed(() => tenantProducts.value.filter(p => p.stockStatus === 'low').length)
+const criticalStockCount = computed(() => tenantProducts.value.filter(p => p.stockStatus === 'critical').length)
 
 function generateRandomDigits(length = 4) {
   const crypto = globalThis.crypto
@@ -32,9 +40,9 @@ function generateRandomDigits(length = 4) {
 const filteredProducts = computed(() => {
   let list = tenantProducts.value
   if (stockFilter.value === 'bajo') {
-    list = list.filter(p => p.stock <= p.minStock && p.stock > 0)
+    list = list.filter(p => p.stockStatus === 'low')
   } else if (stockFilter.value === 'critico') {
-    list = list.filter(p => p.stock === 0)
+    list = list.filter(p => p.stockStatus === 'critical')
   }
   const q = searchQuery.value.trim().toLowerCase()
   if (q) {
@@ -135,8 +143,8 @@ async function handleExport() {
 }
 
 function statusBadge(product) {
-  if (product.stock === 0) return { label: 'Crítico', class: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' }
-  if (product.stock <= product.minStock) return { label: 'Stock bajo', class: 'bg-amber-50 text-amber-700', dot: 'bg-amber-500' }
+  if (product.stockStatus === 'critical') return { label: 'Crítico', class: 'bg-rose-50 text-rose-700', dot: 'bg-rose-500' }
+  if (product.stockStatus === 'low') return { label: 'Stock bajo', class: 'bg-amber-50 text-amber-700', dot: 'bg-amber-500' }
   return { label: 'Óptimo', class: 'bg-emerald-50 text-emerald-700', dot: 'bg-emerald-500' }
 }
 </script>
@@ -312,11 +320,11 @@ function statusBadge(product) {
               </td>
               <td class="px-5 py-3.5">
                 <div
-                  v-if="p.stock <= p.minStock"
+                  v-if="p.stockStatus === 'low' || p.stockStatus === 'critical'"
                   class="flex items-center gap-2"
                 >
                   <span class="material-symbols-outlined text-[14px] text-[#2563EB]">auto_awesome</span>
-                  <span class="text-[11px] font-semibold text-[#2563EB]">Reabastecer {{ p.minStock * 2 }} unid.</span>
+                  <span class="text-[11px] font-semibold text-[#2563EB]">{{ p.reorderSuggestion || 'Reabastecer' }}</span>
                 </div>
                 <div
                   v-else

@@ -23,6 +23,8 @@ const menuItems = [
   { id: 'third-parties', label: 'Terceros', icon: 'groups' },
   { id: 'users', label: 'Usuarios', icon: 'manage_accounts' },
   { id: 'reports', label: 'Reportes', icon: 'bar_chart' },
+  { id: 'subscription', label: 'Mi Suscripción', icon: 'credit_card' },
+  { id: 'privacy-settings', label: 'Privacidad', icon: 'shield' },
   { id: 'admin-console', label: 'Consola Admin', icon: 'settings_applications' },
 ]
 

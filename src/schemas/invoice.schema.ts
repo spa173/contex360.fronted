@@ -10,9 +10,6 @@ export const invoiceItemSchema = z.object({
   unitPrice: z.number().nonnegative('El precio no puede ser negativo'),
   unitCost: z.number().nonnegative().optional().default(0),
   taxRate: z.number().min(0).max(100),
-  subtotal: z.number().nonnegative(),
-  taxAmount: z.number().nonnegative(),
-  total: z.number().nonnegative()
 })
 
 export const invoiceSchema = z.object({

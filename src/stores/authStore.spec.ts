@@ -11,7 +11,10 @@ vi.mock('../services/authApi', () => ({
 }))
 
 vi.mock('../utils/security', () => ({
-  encryptData: vi.fn((data) => `encrypted_${data}`),
+  encryptData: vi.fn(async (data) => `encrypted_${data}`),
+  decryptData: vi.fn(async (data) => data.replace('encrypted_', '')),
+  initEncryptionKey: vi.fn(async () => {}),
+  clearEncryptionKey: vi.fn(),
 }))
 
 describe('Auth Store', () => {
@@ -45,14 +48,14 @@ describe('Auth Store', () => {
     vi.mocked(authApi.loginWithBackend).mockResolvedValue(mockResponse as any)
 
     const result = await authStore.loginWithBackend({
-      email: 'test@example.com',
-      password: 'password123'
+      email: 'test-user@contex360.test',
+      password: 'test-password-123'
     })
 
     expect(result.ok).toBe(true)
     expect(authApi.loginWithBackend).toHaveBeenCalledWith({
-      email: 'test@example.com',
-      password: 'password123'
+      email: 'test-user@contex360.test',
+      password: 'test-password-123'
     })
     
     expect(stateStore.session.currentUserId).toBe('u1')

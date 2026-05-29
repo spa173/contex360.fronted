@@ -46,22 +46,32 @@ function handleLogout() {
       v-if="mobileSidebarOpen" 
       class="sidebar-backdrop" 
       @click="mobileSidebarOpen = false"
-    ></div>
+    />
 
     <!-- Sidebar -->
     <aside :class="['root-sidebar', { 'mobile-open': mobileSidebarOpen }]">
       <div class="root-logo">
         <div class="logo-flex-header">
-          <div class="root-logo-mark">Contex360</div>
-          <button class="btn-close-sidebar" @click="mobileSidebarOpen = false" title="Cerrar menú">
+          <div class="root-logo-mark">
+            Contex360
+          </div>
+          <button
+            class="btn-close-sidebar"
+            title="Cerrar menú"
+            @click="mobileSidebarOpen = false"
+          >
             <span class="material-symbols-outlined">close</span>
           </button>
         </div>
-        <div class="root-logo-sub">Panel Administrador</div>
+        <div class="root-logo-sub">
+          Panel Administrador
+        </div>
       </div>
 
       <nav class="root-nav">
-        <div class="nav-section-label">SAAS ADMIN</div>
+        <div class="nav-section-label">
+          SAAS ADMIN
+        </div>
         <button
           v-for="s in sections"
           :key="s.id"
@@ -75,18 +85,35 @@ function handleLogout() {
 
       <div class="root-sidebar-footer">
         <div class="erp-switch-area">
-          <button class="btn-enter-erp" @click="emit('enter-erp'); mobileSidebarOpen = false">
+          <button
+            class="btn-enter-erp"
+            @click="emit('enter-erp'); mobileSidebarOpen = false"
+          >
             ← Volver al ERP
           </button>
-          <div class="erp-hint">Regresar a la vista operativa</div>
+          <div class="erp-hint">
+            Regresar a la vista operativa
+          </div>
         </div>
         <div class="root-user-strip">
-          <div class="root-avatar">{{ userInitials }}</div>
-          <div class="root-user-info">
-            <div class="root-user-name">{{ store.currentUser?.name || 'Root' }}</div>
-            <div class="root-user-role">Super Admin</div>
+          <div class="root-avatar">
+            {{ userInitials }}
           </div>
-          <button class="logout-btn" title="Cerrar sesión" @click="handleLogout">↩</button>
+          <div class="root-user-info">
+            <div class="root-user-name">
+              {{ store.currentUser?.name || 'Root' }}
+            </div>
+            <div class="root-user-role">
+              Super Admin
+            </div>
+          </div>
+          <button
+            class="logout-btn"
+            title="Cerrar sesión"
+            @click="handleLogout"
+          >
+            ↩
+          </button>
         </div>
       </div>
     </aside>
@@ -94,19 +121,25 @@ function handleLogout() {
     <!-- Main content -->
     <main class="root-main">
       <header class="root-topbar">
-        <button class="btn-menu-trigger" @click="mobileSidebarOpen = true" title="Abrir menú">
+        <button
+          class="btn-menu-trigger"
+          title="Abrir menú"
+          @click="mobileSidebarOpen = true"
+        >
           <span class="material-symbols-outlined">menu</span>
         </button>
         <div class="root-topbar-title">
           <div class="topbar-page-title">
             {{ sections.find(s => s.id === activeSection)?.label || 'Dashboard' }}
           </div>
-          <div class="topbar-page-sub">Panel de administración SaaS — Contex360</div>
+          <div class="topbar-page-sub">
+            Panel de administración SaaS — Contex360
+          </div>
         </div>
         <div class="root-topbar-right">
           <span class="root-badge">⚡ Super Admin</span>
           <span class="root-badge green">
-            <span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;animation:pulse 2s infinite"></span>
+            <span style="width:7px;height:7px;border-radius:50%;background:#10b981;display:inline-block;animation:pulse 2s infinite" />
             Sistema activo
           </span>
         </div>
@@ -114,7 +147,10 @@ function handleLogout() {
 
       <div class="root-content">
         <RootDashboardView v-if="activeSection === 'dashboard'" />
-        <CompaniesView v-else-if="activeSection === 'companies'" @configure="handleConfigure" />
+        <CompaniesView
+          v-else-if="activeSection === 'companies'"
+          @configure="handleConfigure"
+        />
         <TenantSettingsView
           v-else-if="activeSection === 'tenant-settings' && selectedTenantId"
           :tenant-id="selectedTenantId"

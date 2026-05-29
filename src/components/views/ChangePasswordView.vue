@@ -19,8 +19,24 @@ const handleSubmit = async () => {
     error.value = 'Las contraseñas no coinciden'
     return
   }
-  if (form.value.newPassword.length < 8) {
-    error.value = 'La contraseña debe tener al menos 8 caracteres'
+  if (form.value.newPassword.length < 12) {
+    error.value = 'La contraseña debe tener al menos 12 caracteres'
+    return
+  }
+  if (!/[A-Z]/.test(form.value.newPassword)) {
+    error.value = 'La contraseña debe contener al menos una mayúscula'
+    return
+  }
+  if (!/[a-z]/.test(form.value.newPassword)) {
+    error.value = 'La contraseña debe contener al menos una minúscula'
+    return
+  }
+  if (!/\d/.test(form.value.newPassword)) {
+    error.value = 'La contraseña debe contener al menos un número'
+    return
+  }
+  if (!/[^a-zA-Z0-9]/.test(form.value.newPassword)) {
+    error.value = 'La contraseña debe contener al menos un símbolo (!@#$...)'
     return
   }
 
@@ -50,6 +66,7 @@ const handleSubmit = async () => {
           width="44"
           height="44"
           viewBox="0 0 56 56"
+          aria-hidden="true"
         >
           <rect
             width="56"

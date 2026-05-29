@@ -1,5 +1,6 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
+import { createHead } from '@unhead/vue/client'
 import './style.css'
 import './assets/styles.css'
 import App from './App.vue'
@@ -9,9 +10,11 @@ import { useThemeStore } from './stores/themeStore'
 
 const app = createApp(App)
 const pinia = createPinia()
+const head = createHead()
 
 app.use(pinia)
 app.use(router)
+app.use(head)
 
 app.config.errorHandler = (err, instance, info) => {
   console.error('Global Vue Error Handler atrapó un error:', err, 'Info:', info)
@@ -27,10 +30,8 @@ async function bootstrap() {
     const themeStore = useThemeStore(pinia)
     themeStore.initializeTheme()
     
-    // Migracion segura si el metodo existe
-    if (typeof stateStore.migrateSecrets === 'function') {
-      await stateStore.migrateSecrets()
-    }
+    // Hydrate persisted state with AES-GCM decryption
+    await stateStore.hydrateState()
   } catch (error) {
     console.warn('Bootstrap error:', error)
   }

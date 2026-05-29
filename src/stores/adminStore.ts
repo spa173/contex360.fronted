@@ -7,7 +7,7 @@ import { businessApi } from '../services/businessApi'
 const regionalRegistry = new WeakMap<Text, string>()
 let regionalObserver: MutationObserver | null = null
 
-function formatNodeText(node: Node, currencyType: string, dateFmt: string) {
+function formatNodeText(node: Node, currencyType: string, dateFmt: string, exchangeRate: number) {
   if (node.nodeType === Node.TEXT_NODE) {
     const textNode = node as Text
     let orig = regionalRegistry.get(textNode)
@@ -21,25 +21,23 @@ function formatNodeText(node: Node, currencyType: string, dateFmt: string) {
 
     let transformed = orig
 
-    // Currency FX Conversion (1 USD = 4150 COP)
+    if (exchangeRate <= 0) return
     if (currencyType.includes('USD')) {
       transformed = transformed.replace(/\$(\s*)([\d,]+(?:\.\d+)?)(?:\s*COP)?/g, (match, space, numStr) => {
         const cleanNum = parseFloat(numStr.replace(/,/g, ''))
-        if (isNaN(cleanNum) || cleanNum < 50) return match // Skip tiny non-monetary integers
-        const usdVal = cleanNum / 4150
+        if (isNaN(cleanNum) || cleanNum < 50) return match
+        const usdVal = cleanNum / exchangeRate
         return `$${space}${usdVal.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} USD`
       })
     } else {
-      // Ensure COP format if restored
       transformed = transformed.replace(/\$(\s*)([\d,]+(?:\.\d+)?)\s*USD/g, (match, space, numStr) => {
         const cleanNum = parseFloat(numStr.replace(/,/g, ''))
         if (isNaN(cleanNum)) return match
-        const copVal = cleanNum * 4150
+        const copVal = cleanNum * exchangeRate
         return `$${space}${copVal.toLocaleString('es-CO', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} COP`
       })
     }
 
-    // Date format transformation (Base dates in templates are DD/MM/YYYY e.g. 15/05/2026)
     transformed = transformed.replace(/\b(\d{2})\/(\d{2})\/(\d{4})\b/g, (match, dd, mm, yyyy) => {
       if (dateFmt === 'MM/DD/YYYY') {
         return `${mm}/${dd}/${yyyy}`
@@ -57,7 +55,7 @@ function formatNodeText(node: Node, currencyType: string, dateFmt: string) {
     if (el.tagName === 'SCRIPT' || el.tagName === 'STYLE') return
     const childNodes = Array.from(el.childNodes)
     for (let i = 0; i < childNodes.length; i++) {
-      formatNodeText(childNodes[i], currencyType, dateFmt)
+      formatNodeText(childNodes[i], currencyType, dateFmt, exchangeRate)
     }
   }
 }
@@ -70,6 +68,8 @@ export const useAdminStore = defineStore('admin', () => {
   const timezone = ref('(UTC-05) Bogotá')
   const currency = ref('COP · Peso colombiano')
   const dateFormat = ref('DD/MM/YYYY')
+  const exchangeRate = ref(0)
+  const defaultPaymentTerms = ref('Válido por 30 días. Pago del 50% al aceptar y 50% al entregar.')
   
   const taxes = ref<TaxConfig[]>([
     { id: 'iva', name: 'IVA', code: '01', type: 'Suma', rate: '19.00%', active: true },
@@ -79,14 +79,14 @@ export const useAdminStore = defineStore('admin', () => {
 
   function applyRegionalFormatting() {
     if (typeof document !== 'undefined' && document.body) {
-      formatNodeText(document.body, currency.value, dateFormat.value)
+      formatNodeText(document.body, currency.value, dateFormat.value, exchangeRate.value)
 
       if (!regionalObserver) {
         regionalObserver = new MutationObserver((mutations) => {
           for (let i = 0; i < mutations.length; i++) {
             const addedNodes = Array.from(mutations[i].addedNodes)
             for (let j = 0; j < addedNodes.length; j++) {
-              formatNodeText(addedNodes[j], currency.value, dateFormat.value)
+              formatNodeText(addedNodes[j], currency.value, dateFormat.value, exchangeRate.value)
             }
           }
         })
@@ -109,6 +109,8 @@ export const useAdminStore = defineStore('admin', () => {
       timezone.value = parsed.timezone ?? '(UTC-05) Bogotá'
       currency.value = parsed.currency ?? 'COP · Peso colombiano'
       dateFormat.value = parsed.dateFormat ?? 'DD/MM/YYYY'
+      exchangeRate.value = parsed.exchangeRate ?? 0
+      defaultPaymentTerms.value = parsed.defaultPaymentTerms ?? 'Válido por 30 días. Pago del 50% al aceptar y 50% al entregar.'
       if (parsed.taxes) taxes.value = parsed.taxes
     } catch (e) {
       console.error('Error loading admin settings', e)
@@ -125,6 +127,8 @@ export const useAdminStore = defineStore('admin', () => {
       timezone: timezone.value,
       currency: currency.value,
       dateFormat: dateFormat.value,
+      exchangeRate: exchangeRate.value,
+      defaultPaymentTerms: defaultPaymentTerms.value,
       taxes: taxes.value
     }
     try {
@@ -165,6 +169,8 @@ export const useAdminStore = defineStore('admin', () => {
     timezone,
     currency,
     dateFormat,
+    exchangeRate,
+    defaultPaymentTerms,
     taxes,
     loadSettings,
     saveSettings,
