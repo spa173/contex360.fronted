@@ -284,6 +284,17 @@ function closeWompi() {
 function trackCTAClick(source: string, plan?: string) {
   emit('cta-clicked', { source, plan })
 }
+
+function toggleBilling() {
+  if (showWompi.value) {
+    if (confirm('¿Cambiar modalidad de facturación y reiniciar el proceso de pago?')) {
+      closeWompi()
+      isAnnual.value = !isAnnual.value
+    }
+  } else {
+    isAnnual.value = !isAnnual.value
+  }
+}
 </script>
 
 <template>
@@ -590,16 +601,7 @@ function trackCTAClick(source: string, plan?: string) {
               type="button"
               class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
               :class="{ 'bg-[#18181B]': isAnnual }"
-              @click="() => {
-                if (showWompi) {
-                  if (confirm('¿Cambiar modalidad de facturación y reiniciar el proceso de pago?')) {
-                    closeWompi()
-                    isAnnual = !isAnnual
-                  }
-                } else {
-                  isAnnual = !isAnnual
-                }
-              }"
+              @click="toggleBilling"
               aria-label="Alternar facturación mensual o anual"
             >
               <span 
