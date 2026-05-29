@@ -257,6 +257,8 @@ function closeWompi() {
 
     <!-- Navegación -->
     <nav
+      role="navigation"
+      aria-label="Navegación principal"
       class="relative flex justify-between items-center h-20 px-6 lg:px-8 sticky top-0 z-40 transition-all duration-300"
       :class="scrolled ? 'bg-white/90 backdrop-blur-md border-b border-[#F4F4F5] shadow-sm' : 'bg-transparent'"
     >
@@ -337,15 +339,16 @@ function closeWompi() {
       </div>
     </nav>
 
-    <!-- Hero -->
-    <section class="relative pt-16 pb-24 lg:pt-28 lg:pb-40 border-b border-[#F4F4F5]">
-      <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-[1.05fr_1fr] gap-16 lg:gap-20 items-center">
-        <div class="z-10">
-          <!-- Chip system -->
-          <div class="inline-flex items-center gap-1.5 px-2.5 py-1 mb-7 border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] bg-white">
-            <span class="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse" />
-            ERP de Próxima Generación
-          </div>
+    <main>
+      <!-- Hero -->
+      <section id="hero" class="relative pt-16 pb-24 lg:pt-28 lg:pb-40 border-b border-[#F4F4F5]">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 grid lg:grid-cols-[1.05fr_1fr] gap-16 lg:gap-20 items-center">
+          <div class="z-10">
+            <!-- Chip system -->
+            <small class="inline-flex items-center gap-1.5 px-2.5 py-1 mb-7 border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] bg-white">
+              <span class="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse" />
+              ERP de Próxima Generación
+            </small>
 
           <h1
             class="text-[48px] lg:text-[68px] leading-[0.98] tracking-[-0.035em] font-bold text-[#18181B] mb-7"
@@ -760,7 +763,7 @@ function closeWompi() {
               <span class="material-symbols-outlined text-[20px]">close</span>
             </button>
           </div>
-          <nav class="flex flex-col gap-4">
+          <nav role="navigation" aria-label="Navegación móvil" class="flex flex-col gap-4">
             <a 
               href="#producto" 
               class="text-[14px] font-semibold text-[#555555] hover:text-[#18181B] py-2 transition-all cursor-pointer"
@@ -816,6 +819,7 @@ function closeWompi() {
         </div>
       </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <footer class="py-14 border-t border-[#F4F4F5] bg-white">
