@@ -28,6 +28,7 @@ const emit = defineEmits<{
   (e: 'show-pricing'): void
   (e: 'show-login'): void
   (e: 'purchase-plan', payload: { planType: string; billing: 'monthly' | 'annual' }): void
+  (e: 'cta-clicked', payload: { source: string; plan?: string }): void
 }>()
 
 const scrolled = ref(false)
@@ -256,6 +257,10 @@ function closeWompi() {
   selectedPlan.value = null
   paymentStep.value = 'details'
 }
+
+function trackCTAClick(source: string, plan?: string) {
+  emit('cta-clicked', { source, plan })
+}
 </script>
 
 <template>
@@ -340,7 +345,7 @@ function closeWompi() {
         <button
           type="button"
           class="bg-[#18181B] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#27272A] transition-all shadow-sm"
-          @click="emit('request-demo')"
+          @click="() => { trackCTAClick('nav'); emit('request-demo') }"
         >
           Solicitar Demo
         </button>
@@ -380,7 +385,7 @@ function closeWompi() {
             <button
               type="button"
               class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
-              @click="emit('request-demo')"
+              @click="() => { trackCTAClick('hero'); emit('request-demo') }"
               aria-label="Iniciar prueba gratuita - Sin tarjeta de crédito requerida"
             >
               <span class="flex items-center justify-center gap-2.5">
@@ -667,7 +672,7 @@ function closeWompi() {
               <button 
                 type="button"
                 class="w-full py-3 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
-                @click="emit('request-demo')"
+                @click="() => { trackCTAClick('pricing', plan.id); emit('request-demo') }"
                 :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
               >
                 Comenzar prueba gratis
@@ -860,7 +865,7 @@ function closeWompi() {
           <button
             type="button"
             class="bg-[#18181B] text-white text-[14px] font-semibold px-8 py-3.5 rounded-xl shadow-lg shadow-black/5 hover:bg-[#27272A] hover:translate-y-[-1px] transition-all flex items-center justify-center gap-2.5"
-            @click="emit('request-demo')"
+            @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
             aria-label="Solicitar demostración de Contex360"
           >
             Solicitar Demo
@@ -929,7 +934,7 @@ function closeWompi() {
             >Características</a>
             <a
               class="text-[12px] text-[#555555] hover:text-[#18181B] cursor-pointer font-medium"
-              @click="emit('request-demo')"
+              @click="() => { trackCTAClick('footer'); emit('request-demo') }"
             >Demo</a>
           </div>
           <div class="flex flex-col gap-3">
