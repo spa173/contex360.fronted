@@ -2296,11 +2296,19 @@ fieldset:disabled {
 @media (prefers-reduced-motion: reduce) {
   .c360-mark .rotor {
     animation: none !important;
+    opacity: 0.8 !important;
   }
 }
 
 @media (max-width: 768px) {
   .c360-mark .rotor {
     animation: spin 12s linear infinite !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .c360-mark,
+  .c360-mark .rotor {
+    animation-play-state: paused !important;
   }
 }
