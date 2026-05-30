@@ -33,7 +33,7 @@ class MockIntersectionObserver {
     MockIntersectionObserver.lastInstance = this
   }
 }
-global.IntersectionObserver = MockIntersectionObserver as any
+window.IntersectionObserver = MockIntersectionObserver as any
 
 describe('LandingPage.vue', () => {
   beforeEach(() => {
