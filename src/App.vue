@@ -1,29 +1,33 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, defineAsyncComponent } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useStateStore } from './stores/stateStore'
 import { useThemeStore } from './stores/themeStore'
+
+// Static layout components (loaded immediately for the landing page)
 import CookieConsentBanner from './components/common/CookieConsentBanner.vue'
-import AppShell from './components/AppShell.vue'
-import RootShell from './components/RootShell.vue'
-import AuthScreen from './components/AuthScreen.vue'
-import DemoRequestView from './components/views/DemoRequestView.vue'
-import PricingView from './components/views/PricingView.vue'
 import LandingPage from './components/LandingPage.vue'
-import AboutView from './components/views/AboutView.vue'
-import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
-import TermsOfUseView from './components/views/TermsOfUseView.vue'
-import DataProcessingView from './components/views/DataProcessingView.vue'
-import BusinessContinuityView from './components/views/BusinessContinuityView.vue'
-import ForgotPasswordView from './components/views/ForgotPasswordView.vue'
-import ResetPasswordView from './components/views/ResetPasswordView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import AppLoading from './components/layout/AppLoading.vue'
-import PaymentSuccess from './components/views/PaymentSuccess.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
+
+// Async major page/view components (lazy-loaded to prevent render-blocking initial payloads)
+const AppShell = defineAsyncComponent(() => import('./components/AppShell.vue'))
+const RootShell = defineAsyncComponent(() => import('./components/RootShell.vue'))
+const AuthScreen = defineAsyncComponent(() => import('./components/AuthScreen.vue'))
+const DemoRequestView = defineAsyncComponent(() => import('./components/views/DemoRequestView.vue'))
+const PricingView = defineAsyncComponent(() => import('./components/views/PricingView.vue'))
+const AboutView = defineAsyncComponent(() => import('./components/views/AboutView.vue'))
+const PrivacyPolicyView = defineAsyncComponent(() => import('./components/views/PrivacyPolicyView.vue'))
+const TermsOfUseView = defineAsyncComponent(() => import('./components/views/TermsOfUseView.vue'))
+const DataProcessingView = defineAsyncComponent(() => import('./components/views/DataProcessingView.vue'))
+const BusinessContinuityView = defineAsyncComponent(() => import('./components/views/BusinessContinuityView.vue'))
+const ForgotPasswordView = defineAsyncComponent(() => import('./components/views/ForgotPasswordView.vue'))
+const ResetPasswordView = defineAsyncComponent(() => import('./components/views/ResetPasswordView.vue'))
+const PaymentSuccess = defineAsyncComponent(() => import('./components/views/PaymentSuccess.vue'))
 
 const SITE_NAME = 'Contex360'
 const DEFAULT_DESC = 'ERP inteligente para empresas colombianas. Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar.'

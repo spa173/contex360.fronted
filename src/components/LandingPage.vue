@@ -474,7 +474,7 @@ function confirmBillingChange() {
         </button>
         <button
           type="button"
-          class="lg:hidden nav-hamburger"
+          class="flex lg:hidden items-center justify-center nav-hamburger"
           @click="mobileNavOpen = true"
           aria-label="Abrir menú de navegación"
         >
@@ -1783,9 +1783,6 @@ a:focus-visible {
 .nav-hamburger {
   width: 44px;
   height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 10px;
   background: transparent;
   border: none;
