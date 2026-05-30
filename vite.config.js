@@ -19,8 +19,14 @@ export default defineConfig({
     },
   },
   build: {
-    modulePreload: false,
+    // Re-enabled: Vite injects <link rel="modulepreload"> for each async chunk,
+    // eliminating waterfall loading when navigating between app modules.
+    // modulePreload: false was causing N round-trips for lazy-loaded views.
+    modulePreload: { polyfill: true },
     chunkSizeWarningLimit: 600,
+    // es2022 supports top-level await (used in stateSeed.ts) and is supported by
+    // all browsers from 2022+ (well within our audience in 2026).
+    target: 'es2022',
     rollupOptions: {
       output: {
         manualChunks(id) {
@@ -28,13 +34,25 @@ export default defineConfig({
           if (id.includes('node_modules/vue') || id.includes('node_modules/pinia') || id.includes('node_modules/@vue')) {
             return 'vendor-vue'
           }
-          // Vendor: UI / utilities
-          if (id.includes('node_modules/vue-sonner') || id.includes('node_modules/chart.js') || id.includes('node_modules/html2canvas') || id.includes('node_modules/jspdf')) {
+          // Vendor: PDF / canvas — large, only needed in billing/reports
+          if (id.includes('node_modules/jspdf') || id.includes('node_modules/html2canvas')) {
+            return 'vendor-pdf'
+          }
+          // Vendor: Chart.js — only needed in dashboard/reports
+          if (id.includes('node_modules/chart.js')) {
+            return 'vendor-chart'
+          }
+          // Vendor: UI / notifications
+          if (id.includes('node_modules/vue-sonner') || id.includes('node_modules/reka-ui') || id.includes('node_modules/@radix-ui')) {
             return 'vendor-ui'
           }
           // Vendor: everything else in node_modules
           if (id.includes('node_modules')) {
             return 'vendor-misc'
+          }
+          // Landing page — split so it doesn't block the authenticated app shell
+          if (id.includes('/LandingPage') || id.includes('/views/PricingView') || id.includes('/views/DemoRequestView') || id.includes('/views/AboutView')) {
+            return 'chunk-landing'
           }
           // App views — split into logical groups
           if (id.includes('/views/BillingView') || id.includes('/views/PurchasesView') || id.includes('/views/QuotesView')) {
@@ -51,6 +69,10 @@ export default defineConfig({
           }
           if (id.includes('/views/DashboardView') || id.includes('/views/AiView') || id.includes('/ai/')) {
             return 'chunk-dashboard'
+          }
+          // Legal pages — rarely visited, split out
+          if (id.includes('/views/PrivacyPolicyView') || id.includes('/views/TermsOfUseView') || id.includes('/views/DataProcessingView') || id.includes('/views/BusinessContinuityView')) {
+            return 'chunk-legal'
           }
         },
       },

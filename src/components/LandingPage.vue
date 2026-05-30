@@ -551,16 +551,24 @@ function confirmBillingChange() {
         <div class="relative mt-6 lg:mt-0 mb-6 lg:mb-0">
           <div class="absolute inset-0 bg-[#F4F4F5] rounded-[20px] lg:rounded-[24px] translate-x-2 translate-y-2 lg:translate-x-3 lg:translate-y-3 -z-10 border border-[#E4E4E7]" />
           <div class="bg-white p-2 lg:p-3 rounded-[20px] lg:rounded-[24px] border border-[#E4E4E7] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
+            <!-- WebP is supported by 97%+ of browsers in 2026. The PNG fallback
+                 (532KB) has been removed to avoid penalising the majority of users.
+                 The <img> src still uses the WebP directly as a safe fallback
+                 for any remaining browser that ignores <source>. -->
             <picture>
-              <source 
-                srcset="/dashboard_preview-mobile.webp" 
+              <source
+                srcset="/dashboard_preview-mobile.webp"
                 type="image/webp"
                 media="(max-width: 768px)"
+                width="768"
+                height="768"
               />
-              <source 
-                srcset="/dashboard_preview.webp" 
+              <source
+                srcset="/dashboard_preview.webp"
                 type="image/webp"
                 media="(min-width: 769px)"
+                width="1024"
+                height="1024"
               />
               <img
                 alt="Dashboard de Contex360 mostrando resumen de facturación, inventario y flujo de caja en tiempo real"
@@ -570,7 +578,7 @@ function confirmBillingChange() {
                 fetchpriority="high"
                 decoding="async"
                 class="rounded-[18px] w-full object-cover dashboard-image"
-                src="/dashboard_preview.png"
+                src="/dashboard_preview.webp"
               />
             </picture>
           </div>
