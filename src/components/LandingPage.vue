@@ -35,7 +35,7 @@ useHead({
     },
     {
       property: 'og:url',
-      content: 'https://contex360.com'
+      content: typeof window !== 'undefined' ? window.location.origin : 'https://contex360.com'
     }
   ]
 })
@@ -77,6 +77,7 @@ const showWompi = ref(false)
 const paymentStep = ref('details')
 const processingMessage = ref('')
 const mobileNavOpen = ref(false)
+const isDev = import.meta.env.DEV
 
 // FAQ state
 const openFaq = ref<number | null>(null)
@@ -1011,13 +1012,15 @@ function confirmBillingChange() {
                 Pagar con Wompi
               </button>
               
-              <button 
+              <!-- Only visible in development — never in production builds -->
+              <button
+                v-if="isDev"
                 type="button"
                 class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-bold hover:bg-[#FAFAFA] transition-colors shadow-sm flex items-center justify-center gap-1.5"
                 @click="submitPaymentSimulated"
               >
                 <span class="material-symbols-outlined text-[18px]" aria-hidden="true">science</span>
-                Simular Pago Exitoso (Demo/Prueba)
+                Simular Pago (Solo DEV)
               </button>
             </form>
 

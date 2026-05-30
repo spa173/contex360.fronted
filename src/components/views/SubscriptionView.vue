@@ -29,7 +29,7 @@ useHead({
 })
 
 defineProps({ isActive: { type: Boolean, required: true } })
-const emit = defineEmits(['notify'])
+const emit = defineEmits(['notify', 'navigate'])
 
 const auth = useAuthStore()
 const state = useStateStore()
@@ -281,22 +281,27 @@ async function handleCancel() {
     }
   }
 
+  async function initiateCheckout(planType: string, billing: 'monthly' | 'annual') {
+    const tenantId = state.activeTenantId
+    if (!tenantId) {
+      emit('notify', { message: 'Error', detail: 'No hay empresa activa seleccionada.' })
+      return
+    }
+    try {
+      const { redirectUrl } = await businessApi.createSubscriptionCheckout({ planType: planType as any, billing }, tenantId)
+      if (!redirectUrl) throw new Error('No se recibió el enlace de pago.')
+      window.location.href = redirectUrl
+    } catch (err: any) {
+      emit('notify', { message: 'Error al generar enlace de pago', detail: err.message || 'Intenta nuevamente.' })
+    }
+  }
+
   async function handleRetryPayment() {
     if (!subscription.value) return
-    
     isRetryingPayment.value = true
     try {
-      // Get the latest payment attempt to retry
-      const latestPayment = payments.value[payments.value.length - 1]
-      if (!latestPayment) {
-        emit('notify', { message: 'Error', detail: 'No hay pagos recientes para reintentar' })
-        return
-      }
-      
-      // Redirect to payment page with the same plan details
-      window.location.href = `/pricing?retry=true&plan=${subscription.value.planType}&billing=${subscription.value.billing}`
-    } catch (err: any) {
-      emit('notify', { message: 'Error', detail: err.message })
+      const billing = (subscription.value.billing || 'monthly') as 'monthly' | 'annual'
+      await initiateCheckout(subscription.value.planType, billing)
     } finally {
       isRetryingPayment.value = false
       showRetryPaymentModal.value = false
@@ -305,13 +310,10 @@ async function handleCancel() {
 
   async function handleUpdatePaymentMethod() {
     if (!subscription.value) return
-    
     isUpdatingPaymentMethod.value = true
     try {
-      // Redirect to payment method update page
-      window.location.href = `/pricing?update_method=true&plan=${subscription.value.planType}&billing=${subscription.value.billing}`
-    } catch (err: any) {
-      emit('notify', { message: 'Error', detail: err.message })
+      const billing = (subscription.value.billing || 'monthly') as 'monthly' | 'annual'
+      await initiateCheckout(subscription.value.planType, billing)
     } finally {
       isUpdatingPaymentMethod.value = false
       showUpdatePaymentMethodModal.value = false
@@ -324,26 +326,24 @@ async function handleCancel() {
   }
 
   function closeDunningAlert() {
-    // This is handled by the v-if condition, so just close any modals
     showRetryPaymentModal.value = false
     showUpdatePaymentMethodModal.value = false
   }
 
   async function handlePayOverdueInvoices() {
+    if (!subscription.value) return
     isPayingOverdue.value = true
     try {
-      // Redirect to pay overdue invoices
-      window.location.href = `/pricing?pay_overdue=true&tenantId=${state.activeTenantId}`
-    } catch (err: any) {
-      emit('notify', { message: 'Error', detail: err.message })
+      const billing = (subscription.value.billing || 'monthly') as 'monthly' | 'annual'
+      await initiateCheckout(subscription.value.planType, billing)
     } finally {
       isPayingOverdue.value = false
     }
   }
 
   function handleUpgrade() {
-    if (!nextPlanKey.value) return
-    window.location.href = `/pricing?upgrade=true&plan=${nextPlanKey.value}&billing=${subscription.value?.billing || 'monthly'}`
+    // Navigate to plans view inside the authenticated app (no /pricing redirect needed)
+    emit('navigate', 'plans')
   }
 
   function changeCurrency(code: string) {

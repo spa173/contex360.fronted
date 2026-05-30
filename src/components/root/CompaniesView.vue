@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import axios from 'axios'
-
-const API = import.meta.env.VITE_API_BASE_URL
-if (!API) throw new Error('VITE_API_BASE_URL environment variable is required')
+import { businessApi } from '../../services/businessApi'
 
 const companies = ref<any[]>([])
 const loading = ref(true)
@@ -43,12 +40,9 @@ async function fetchCompanies() {
   loading.value = true
   error.value = ''
   try {
-    const { data } = await axios.get(`${API}/admin/tenants`, {
-      withCredentials: true,
-    })
-    companies.value = data
+    companies.value = await businessApi.getAdminTenants()
   } catch (e: any) {
-    error.value = e?.response?.data?.message || 'Error cargando empresas'
+    error.value = e?.message || 'Error cargando empresas'
   } finally {
     loading.value = false
   }
@@ -57,9 +51,7 @@ async function fetchCompanies() {
 async function handleCreate() {
   saving.value = true
   try {
-    const { data } = await axios.post(`${API}/admin/companies`, form.value, {
-      withCredentials: true,
-    })
+    const data = await businessApi.createAdminTenant(form.value)
     createdCredentials.value = {
       name: data.tenant.name,
       email: data.user.email,
@@ -68,7 +60,7 @@ async function handleCreate() {
     await fetchCompanies()
     resetForm()
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error creando empresa')
+    alert(e?.message || 'Error creando empresa')
   } finally {
     saving.value = false
   }
@@ -79,14 +71,10 @@ async function handleSuspend(id: string, currentStatus: string) {
   const label = newStatus === 'suspended' ? 'suspender' : 'reactivar'
   if (!confirm(`¿Confirmas ${label} esta empresa?`)) return
   try {
-    await axios.patch(
-      `${API}/admin/tenants/${id}/status`,
-      { status: newStatus },
-      { withCredentials: true },
-    )
+    await businessApi.updateTenantStatus(id, newStatus)
     await fetchCompanies()
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error actualizando estado')
+    alert(e?.message || 'Error actualizando estado')
   }
 }
 

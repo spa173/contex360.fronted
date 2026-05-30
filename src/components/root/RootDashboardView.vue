@@ -1,19 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
-
-const API = import.meta.env.VITE_API_BASE_URL
-if (!API) throw new Error('VITE_API_BASE_URL environment variable is required')
+import { businessApi } from '../../services/businessApi'
 
 const stats = ref<any>(null)
 const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const { data } = await axios.get(`${API}/admin/stats`, {
-      withCredentials: true,
-    })
-    stats.value = data
+    stats.value = await businessApi.getAdminStats()
   } catch {
     stats.value = null
   } finally {

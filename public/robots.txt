@@ -30,4 +30,4 @@ Disallow: /ai
 Disallow: /api/
 Disallow: /auth/
 
-Sitemap: https://contex360.co/sitemap.xml
+Sitemap: https://contex360.com/sitemap.xml
