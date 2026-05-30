@@ -1,4 +1,6 @@
-import { jsPDF } from 'jspdf'
+// jspdf (~200KB) is loaded lazily via dynamic import inside generatePdfReport()
+// so it is NOT bundled into the accounting/treasury view chunk. It only loads
+// the first time a user actually exports a PDF.
 
 // Función auxiliar para convertir HEX a RGB para jsPDF por seguridad
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -33,8 +35,9 @@ export async function generatePdfReport({
   logoBase64?: string
 }) {
   try {
+    const { jsPDF } = await import('jspdf')
     const doc = new jsPDF()
-    
+
     const rgbPrimary = hexToRgb(primaryColorHex)
     const rgbAccent = hexToRgb(accentColorHex)
 
