@@ -57,17 +57,92 @@ const emit = defineEmits<{
 const scrolled = ref(false)
 const pastHero = ref(false)
 
+const showTestimonials = ref(false)
+const showPricing = ref(false)
+const showFaq = ref(false)
+const showFooter = ref(false)
+
+const testimonialsRef = ref<HTMLElement | null>(null)
+const pricingRef = ref<HTMLElement | null>(null)
+const faqRef = ref<HTMLElement | null>(null)
+const footerRef = ref<HTMLElement | null>(null)
+
+const isBot = typeof navigator !== 'undefined' && /bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex|lighthouse/i.test(navigator.userAgent)
+
+if (isBot) {
+  showTestimonials.value = true
+  showPricing.value = true
+  showFaq.value = true
+  showFooter.value = true
+}
+
+const checkHash = () => {
+  const hash = window.location.hash
+  if (hash === '#testimonios' || hash === '#beneficios') {
+    showTestimonials.value = true
+  } else if (hash === '#precios') {
+    showTestimonials.value = true
+    showPricing.value = true
+  } else if (hash === '#faq') {
+    showTestimonials.value = true
+    showPricing.value = true
+    showFaq.value = true
+  }
+}
+
 const handleScroll = useThrottleFn(() => {
   scrolled.value = window.scrollY > 20
   pastHero.value = window.scrollY > 480
 }, 100)
 
+let ioObserver: IntersectionObserver | null = null
+
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('hashchange', checkHash)
+  checkHash()
+  
+  if (!isBot && typeof IntersectionObserver !== 'undefined') {
+    ioObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const target = entry.target as HTMLElement
+          const section = target.dataset.section
+          if (section === 'testimonials') {
+            showTestimonials.value = true
+          } else if (section === 'pricing') {
+            showPricing.value = true
+          } else if (section === 'faq') {
+            showFaq.value = true
+          } else if (section === 'footer') {
+            showFooter.value = true
+          }
+          ioObserver?.unobserve(target)
+        }
+      })
+    }, {
+      rootMargin: '600px 0px',
+      threshold: 0.01
+    })
+    
+    if (testimonialsRef.value) ioObserver.observe(testimonialsRef.value)
+    if (pricingRef.value) ioObserver.observe(pricingRef.value)
+    if (faqRef.value) ioObserver.observe(faqRef.value)
+    if (footerRef.value) ioObserver.observe(footerRef.value)
+  } else {
+    showTestimonials.value = true
+    showPricing.value = true
+    showFaq.value = true
+    showFooter.value = true
+  }
 })
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('hashchange', checkHash)
+  if (ioObserver) {
+    ioObserver.disconnect()
+  }
 })
 
 // Pricing section state
@@ -717,88 +792,93 @@ function confirmBillingChange() {
       </section>
 
       <!-- Testimonials -->
-      <section
-        class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
-        aria-labelledby="testimonials-heading"
-      >
-        <div class="max-w-7xl mx-auto">
-          <div class="text-center mb-10 lg:mb-14 px-5 lg:px-8">
-            <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-              Casos de Éxito
-            </h2>
-            <h3
-              id="testimonials-heading"
-              class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
-              style="text-wrap: balance;"
-            >
-              Lo que dicen nuestros clientes
-            </h3>
-          </div>
-
-          <!-- Horizontal scroll on mobile, grid on desktop -->
-          <div class="testimonials-scroll px-5 lg:px-8">
-            <figure
-              v-for="t in testimonials"
-              :key="t.name"
-              class="testimonial-card"
-            >
-              <!-- Stars -->
-              <div
-                class="flex gap-0.5 mb-5"
-                role="img"
-                aria-label="5 de 5 estrellas"
-              >
-                <span
-                  v-for="n in 5"
-                  :key="n"
-                  class="text-[#F59E0B] text-[15px]"
-                  aria-hidden="true"
-                >★</span>
+      <div ref="testimonialsRef" data-section="testimonials" id="testimonios">
+        <template v-if="showTestimonials">
+          <section
+            class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
+            aria-labelledby="testimonials-heading"
+          >
+            <div class="max-w-7xl mx-auto">
+              <div class="text-center mb-10 lg:mb-14 px-5 lg:px-8">
+                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+                  Casos de Éxito
+                </h2>
+                <h3
+                  id="testimonials-heading"
+                  class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
+                  style="text-wrap: balance;"
+                >
+                  Lo que dicen nuestros clientes
+                </h3>
               </div>
 
-              <blockquote class="text-[14px] leading-[1.7] text-[#444444] mb-6 flex-1">
-                "{{ t.quote }}"
-              </blockquote>
-
-              <figcaption class="flex items-center gap-3 pt-5 border-t border-[#F4F4F5]">
-                <div
-                  class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black flex-shrink-0"
-                  :style="{ background: t.color }"
-                  aria-hidden="true"
+              <!-- Horizontal scroll on mobile, grid on desktop -->
+              <div class="testimonials-scroll px-5 lg:px-8">
+                <figure
+                  v-for="t in testimonials"
+                  :key="t.name"
+                  class="testimonial-card"
                 >
-                  {{ t.initials }}
-                </div>
-                <div class="min-w-0">
-                  <p class="text-[13px] font-bold text-[#18181B] leading-tight">
-                    {{ t.name }}
-                  </p>
-                  <p class="text-[11.5px] text-[#888888] leading-tight mt-0.5 truncate">
-                    {{ t.role }} · {{ t.company }}
-                  </p>
-                </div>
-              </figcaption>
-            </figure>
-          </div>
+                  <!-- Stars -->
+                  <div
+                    class="flex gap-0.5 mb-5"
+                    role="img"
+                    aria-label="5 de 5 estrellas"
+                  >
+                    <span
+                      v-for="n in 5"
+                      :key="n"
+                      class="text-[#F59E0B] text-[15px]"
+                      aria-hidden="true"
+                    >★</span>
+                  </div>
 
-          <!-- Aggregate rating -->
-          <div
-            class="flex items-center justify-center gap-2.5 mt-10 lg:mt-12 px-5 lg:px-8"
-            role="img"
-            aria-label="Valoración promedio de clientes"
-          >
-            <div class="flex gap-0.5">
-              <span
-                v-for="n in 5"
-                :key="n"
-                class="text-[#F59E0B] text-[14px]"
-                aria-hidden="true"
-              >★</span>
+                  <blockquote class="text-[14px] leading-[1.7] text-[#444444] mb-6 flex-1">
+                    "{{ t.quote }}"
+                  </blockquote>
+
+                  <figcaption class="flex items-center gap-3 pt-5 border-t border-[#F4F4F5]">
+                    <div
+                      class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black flex-shrink-0"
+                      :style="{ background: t.color }"
+                      aria-hidden="true"
+                    >
+                      {{ t.initials }}
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-[13px] font-bold text-[#18181B] leading-tight">
+                        {{ t.name }}
+                      </p>
+                      <p class="text-[11.5px] text-[#888888] leading-tight mt-0.5 truncate">
+                        {{ t.role }} · {{ t.company }}
+                      </p>
+                    </div>
+                  </figcaption>
+                </figure>
+              </div>
+
+              <!-- Aggregate rating -->
+              <div
+                class="flex items-center justify-center gap-2.5 mt-10 lg:mt-12 px-5 lg:px-8"
+                role="img"
+                aria-label="Valoración promedio de clientes"
+              >
+                <div class="flex gap-0.5">
+                  <span
+                    v-for="n in 5"
+                    :key="n"
+                    class="text-[#F59E0B] text-[14px]"
+                    aria-hidden="true"
+                  >★</span>
+                </div>
+                <span class="text-[13px] font-bold text-[#18181B]">4.9/5</span>
+                <span class="text-[12px] text-[#888888]">basado en 200+ reseñas verificadas</span>
+              </div>
             </div>
-            <span class="text-[13px] font-bold text-[#18181B]">4.9/5</span>
-            <span class="text-[12px] text-[#888888]">basado en 200+ reseñas verificadas</span>
-          </div>
-        </div>
-      </section>
+          </section>
+        </template>
+        <div v-else class="h-[600px] bg-white border-b border-[#F4F4F5]" />
+      </div>
 
       <!-- Anchor for "Soluciones Enterprise" nav link -->
       <div
@@ -807,250 +887,253 @@ function confirmBillingChange() {
       />
 
       <!-- Pricing Section -->
-      <section
-        id="precios"
-        aria-labelledby="precios-heading"
-        class="py-16 lg:py-28 bg-[#FAFAFA] border-b border-[#F4F4F5]"
-        style="scroll-margin-top: 80px;"
-      >
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-          <div class="text-center max-w-3xl mx-auto mb-16">
-            <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-              Tarifas Transparentes
-            </h2>
-            <h3
-              id="precios-heading"
-              class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-5"
-            >
-              Elige el plan ideal para tu negocio
-            </h3>
-            <p class="text-[15px] leading-[1.55] text-[#555555] max-w-lg mx-auto font-medium">
-              Sin contratos a largo plazo, sin cargos ocultos. Cambia de plan o cancela cuando quieras.
-            </p>
+      <div ref="pricingRef" data-section="pricing" id="precios" style="scroll-margin-top: 80px;">
+        <template v-if="showPricing">
+          <section
+            aria-labelledby="precios-heading"
+            class="py-16 lg:py-28 bg-[#FAFAFA] border-b border-[#F4F4F5]"
+          >
+            <div class="max-w-7xl mx-auto px-6 lg:px-8">
+              <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+                  Tarifas Transparentes
+                </h2>
+                <h3
+                  id="precios-heading"
+                  class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-5"
+                >
+                  Elige el plan ideal para tu negocio
+                </h3>
+                <p class="text-[15px] leading-[1.55] text-[#555555] max-w-lg mx-auto font-medium">
+                  Sin contratos a largo plazo, sin cargos ocultos. Cambia de plan o cancela cuando quieras.
+                </p>
 
-            <!-- Toggle mensual/anual -->
-            <div class="flex items-center justify-center gap-3.5 mt-8">
-              <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
-              <button
-                type="button"
-                role="switch"
-                :aria-checked="isAnnual"
-                class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
-                :class="{ 'bg-[#18181B]': isAnnual }"
-                aria-label="Facturación anual"
-                @click="toggleBilling"
-              >
-                <span 
-                  class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
-                  :class="{ 'translate-x-5.5': isAnnual }"
-                />
-              </button>
-              <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">
-                Anual
-                <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
-                  Ahorra 25% + 2 Meses Gratis
-                </span>
-              </span>
-            </div>
-          </div>
-
-          <!-- Pricing Grid -->
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto items-start">
-            <div
-              v-for="(plan, idx) in plans"
-              :key="plan.id"
-              :class="[
-                'pricing-card flex flex-col justify-between relative',
-                plan.popular ? 'pricing-card--popular' : 'pricing-card--default'
-              ]"
-            >
-              <!-- Badge popular -->
-              <span
-                v-if="plan.popular"
-                class="absolute -top-3.5 left-6 bg-white text-[#18181B] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-[#E4E4E7]"
-              >
-                ⚡ Más popular
-              </span>
-
-              <div>
-                <!-- Plan Header -->
-                <div class="mb-6">
-                  <div class="flex items-center justify-between mb-2">
-                    <h4 :class="['text-[20px] font-black tracking-tight', plan.popular ? 'text-white' : 'text-[#18181B]']">
-                      {{ plan.name }}
-                    </h4>
-                    <!-- Plan tier badge -->
-                    <span
-                      v-if="plan.id === 'enterprise'"
-                      class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#555555]"
-                    >SLA 99.99%</span>
-                    <span
-                      v-else-if="plan.id === 'pyme'"
-                      class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#2563EB]/15 text-[#2563EB]"
-                    >IA incluida</span>
-                  </div>
-                  <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/80' : 'text-[#555555]']">
-                    {{ plan.desc }}
-                  </p>
+                <!-- Toggle mensual/anual -->
+                <div class="flex items-center justify-center gap-3.5 mt-8">
+                  <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
+                  <button
+                    type="button"
+                    role="switch"
+                    :aria-checked="isAnnual"
+                    class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
+                    :class="{ 'bg-[#18181B]': isAnnual }"
+                    aria-label="Facturación anual"
+                    @click="toggleBilling"
+                  >
+                    <span 
+                      class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                      :class="{ 'translate-x-5.5': isAnnual }"
+                    />
+                  </button>
+                  <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">
+                    Anual
+                    <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
+                      Ahorra 25% + 2 Meses Gratis
+                    </span>
+                  </span>
                 </div>
+              </div>
 
-                <!-- Price -->
+              <!-- Pricing Grid -->
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto items-start">
                 <div
-                  class="mb-6 pb-6"
-                  :class="plan.popular ? 'border-b border-white/10' : 'border-b border-[#F4F4F5]'"
+                  v-for="(plan, idx) in plans"
+                  :key="plan.id"
+                  :class="[
+                    'pricing-card flex flex-col justify-between relative',
+                    plan.popular ? 'pricing-card--popular' : 'pricing-card--default'
+                  ]"
                 >
-                  <div class="flex items-baseline gap-1.5">
-                    <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-[#18181B]']">
-                      {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
-                    </span>
-                    <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/70' : 'text-[#71717A]']">
-                      / {{ isAnnual ? 'año' : 'mes' }}
-                    </span>
+                  <!-- Badge popular -->
+                  <span
+                    v-if="plan.popular"
+                    class="absolute -top-3.5 left-6 bg-white text-[#18181B] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-[#E4E4E7]"
+                  >
+                    ⚡ Más popular
+                  </span>
+
+                  <div>
+                    <!-- Plan Header -->
+                    <div class="mb-6">
+                      <div class="flex items-center justify-between mb-2">
+                        <h4 :class="['text-[20px] font-black tracking-tight', plan.popular ? 'text-white' : 'text-[#18181B]']">
+                          {{ plan.name }}
+                        </h4>
+                        <!-- Plan tier badge -->
+                        <span
+                          v-if="plan.id === 'enterprise'"
+                          class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#555555]"
+                        >SLA 99.99%</span>
+                        <span
+                          v-else-if="plan.id === 'pyme'"
+                          class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#2563EB]/15 text-[#2563EB]"
+                        >IA incluida</span>
+                      </div>
+                      <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/80' : 'text-[#555555]']">
+                        {{ plan.desc }}
+                      </p>
+                    </div>
+
+                    <!-- Price -->
+                    <div
+                      class="mb-6 pb-6"
+                      :class="plan.popular ? 'border-b border-white/10' : 'border-b border-[#F4F4F5]'"
+                    >
+                      <div class="flex items-baseline gap-1.5">
+                        <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-[#18181B]']">
+                          {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
+                        </span>
+                        <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/70' : 'text-[#71717A]']">
+                          / {{ isAnnual ? 'año' : 'mes' }}
+                        </span>
+                      </div>
+                      <p
+                        v-if="isAnnual"
+                        :class="['text-[11px] font-bold mt-1', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
+                      >
+                        ≈ {{ formatCurrency(Math.round(plan.priceAnnual / 12)) }}/mes · Ahorras 2 meses
+                      </p>
+                      <p
+                        v-else
+                        :class="['text-[11px] mt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
+                      >
+                        O {{ formatCurrency(Math.round((isAnnual ? plan.priceAnnual : plan.priceMonthly * 10))) }} al año con descuento
+                      </p>
+                    </div>
+
+                    <!-- Plan inheritance label -->
+                    <p
+                      v-if="idx > 0"
+                      :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
+                    >
+                      Todo {{ plans[idx - 1].name }}, más:
+                    </p>
+
+                    <!-- Features checklist -->
+                    <div class="space-y-2.5 mb-8">
+                      <div
+                        v-for="feat in plan.features"
+                        :key="feat"
+                        :class="['flex items-start gap-2.5 text-[13px]', plan.popular ? 'text-white/80' : 'text-[#444444]']"
+                      >
+                        <span
+                          :class="['material-symbols-outlined text-[15px] mt-[3px] flex-shrink-0', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
+                          aria-hidden="true"
+                        >check_circle</span>
+                        <span class="leading-[1.45]">{{ feat }}</span>
+                      </div>
+                    </div>
                   </div>
-                  <p
-                    v-if="isAnnual"
-                    :class="['text-[11px] font-bold mt-1', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
-                  >
-                    ≈ {{ formatCurrency(Math.round(plan.priceAnnual / 12)) }}/mes · Ahorras 2 meses
-                  </p>
-                  <p
-                    v-else
-                    :class="['text-[11px] mt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
-                  >
-                    O {{ formatCurrency(Math.round((isAnnual ? plan.priceAnnual : plan.priceMonthly * 10))) }} al año con descuento
-                  </p>
+
+                  <!-- Buttons + micro-copy -->
+                  <div class="space-y-2 mt-auto">
+                    <button
+                      type="button"
+                      :class="[
+                        'w-full py-3.5 rounded-xl text-[13.5px] font-semibold flex items-center justify-center gap-2 btn-transition active:scale-[0.98]',
+                        plan.popular
+                          ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
+                          : 'bg-[#18181B] text-white hover:bg-[#27272A] shadow-sm'
+                      ]"
+                      :aria-label="'Comprar ahora plan ' + plan.name"
+                      @click="openCheckout(plan)"
+                    >
+                      <span
+                        class="material-symbols-outlined text-[15px]"
+                        aria-hidden="true"
+                      >credit_card</span>
+                      Comprar ahora
+                    </button>
+                    <button
+                      type="button"
+                      :class="[
+                        'w-full py-3 rounded-xl text-[13px] font-medium btn-transition active:scale-[0.98]',
+                        plan.popular
+                          ? 'border border-white/15 text-white/70 hover:bg-white/8 hover:text-white'
+                          : 'border border-[#E4E4E7] text-[#666666] bg-white hover:bg-[#FAFAFA] hover:text-[#18181B]'
+                      ]"
+                      :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
+                      @click="() => { trackCTAClick('pricing', plan.id); emit('request-demo') }"
+                    >
+                      Comenzar prueba gratis
+                    </button>
+                    <!-- Micro-copy -->
+                    <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']">
+                      Sin tarjeta de crédito · Cancela cuando quieras
+                    </p>
+                  </div>
                 </div>
+              </div>
 
-                <!-- Plan inheritance label -->
-                <p
-                  v-if="idx > 0"
-                  :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
-                >
-                  Todo {{ plans[idx - 1].name }}, más:
-                </p>
-
-                <!-- Features checklist -->
-                <div class="space-y-2.5 mb-8">
-                  <div
-                    v-for="feat in plan.features"
-                    :key="feat"
-                    :class="['flex items-start gap-2.5 text-[13px]', plan.popular ? 'text-white/80' : 'text-[#444444]']"
+              <!-- Enterprise bottom strip -->
+              <div class="mt-10 max-w-6xl mx-auto">
+                <div class="enterprise-strip">
+                  <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center flex-shrink-0">
+                      <span
+                        class="material-symbols-outlined text-white text-[16px]"
+                        aria-hidden="true"
+                      >business</span>
+                    </div>
+                    <div class="min-w-0">
+                      <p class="text-[13.5px] font-bold text-[#18181B]">
+                        ¿Más de 20 usuarios o necesidades específicas?
+                      </p>
+                      <p class="text-[12px] text-[#666666] leading-tight">
+                        Planes corporativos con integración ERP personalizada, SLA dedicado y facturación personalizada.
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    class="enterprise-strip-btn flex-shrink-0"
+                    @click="emit('request-demo')"
                   >
+                    Hablar con ventas
                     <span
-                      :class="['material-symbols-outlined text-[15px] mt-[3px] flex-shrink-0', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
+                      class="material-symbols-outlined text-[15px]"
                       aria-hidden="true"
-                    >check_circle</span>
-                    <span class="leading-[1.45]">{{ feat }}</span>
-                  </div>
+                    >arrow_forward</span>
+                  </button>
                 </div>
               </div>
 
-              <!-- Buttons + micro-copy -->
-              <div class="space-y-2 mt-auto">
-                <button
-                  type="button"
-                  :class="[
-                    'w-full py-3.5 rounded-xl text-[13.5px] font-semibold flex items-center justify-center gap-2 btn-transition active:scale-[0.98]',
-                    plan.popular
-                      ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
-                      : 'bg-[#18181B] text-white hover:bg-[#27272A] shadow-sm'
-                  ]"
-                  :aria-label="'Comprar ahora plan ' + plan.name"
-                  @click="openCheckout(plan)"
-                >
+              <!-- Trust badges -->
+              <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 max-w-6xl mx-auto">
+                <span class="trust-badge">
                   <span
-                    class="material-symbols-outlined text-[15px]"
+                    class="material-symbols-outlined text-[14px] text-[#16a34a]"
                     aria-hidden="true"
-                  >credit_card</span>
-                  Comprar ahora
-                </button>
-                <button
-                  type="button"
-                  :class="[
-                    'w-full py-3 rounded-xl text-[13px] font-medium btn-transition active:scale-[0.98]',
-                    plan.popular
-                      ? 'border border-white/15 text-white/70 hover:bg-white/8 hover:text-white'
-                      : 'border border-[#E4E4E7] text-[#666666] bg-white hover:bg-[#FAFAFA] hover:text-[#18181B]'
-                  ]"
-                  :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
-                  @click="() => { trackCTAClick('pricing', plan.id); emit('request-demo') }"
-                >
-                  Comenzar prueba gratis
-                </button>
-                <!-- Micro-copy -->
-                <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']">
-                  Sin tarjeta de crédito · Cancela cuando quieras
-                </p>
+                  >shield</span>
+                  Datos cifrados AES-256
+                </span>
+                <span class="trust-badge">
+                  <span
+                    class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                    aria-hidden="true"
+                  >verified</span>
+                  DIAN Partner Certificado
+                </span>
+                <span class="trust-badge">
+                  <span
+                    class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                    aria-hidden="true"
+                  >replay</span>
+                  Garantía 30 días o reembolso
+                </span>
+                <span class="trust-badge">
+                  <span
+                    class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                    aria-hidden="true"
+                  >support_agent</span>
+                  Soporte en español 24/7
+                </span>
               </div>
             </div>
-          </div>
-
-          <!-- Enterprise bottom strip -->
-          <div class="mt-10 max-w-6xl mx-auto">
-            <div class="enterprise-strip">
-              <div class="flex items-center gap-3 min-w-0">
-                <div class="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center flex-shrink-0">
-                  <span
-                    class="material-symbols-outlined text-white text-[16px]"
-                    aria-hidden="true"
-                  >business</span>
-                </div>
-                <div class="min-w-0">
-                  <p class="text-[13.5px] font-bold text-[#18181B]">
-                    ¿Más de 20 usuarios o necesidades específicas?
-                  </p>
-                  <p class="text-[12px] text-[#666666] leading-tight">
-                    Planes corporativos con integración ERP personalizada, SLA dedicado y facturación personalizada.
-                  </p>
-                </div>
-              </div>
-              <button
-                type="button"
-                class="enterprise-strip-btn flex-shrink-0"
-                @click="emit('request-demo')"
-              >
-                Hablar con ventas
-                <span
-                  class="material-symbols-outlined text-[15px]"
-                  aria-hidden="true"
-                >arrow_forward</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Trust badges -->
-          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 max-w-6xl mx-auto">
-            <span class="trust-badge">
-              <span
-                class="material-symbols-outlined text-[14px] text-[#16a34a]"
-                aria-hidden="true"
-              >shield</span>
-              Datos cifrados AES-256
-            </span>
-            <span class="trust-badge">
-              <span
-                class="material-symbols-outlined text-[14px] text-[#16a34a]"
-                aria-hidden="true"
-              >verified</span>
-              DIAN Partner Certificado
-            </span>
-            <span class="trust-badge">
-              <span
-                class="material-symbols-outlined text-[14px] text-[#16a34a]"
-                aria-hidden="true"
-              >replay</span>
-              Garantía 30 días o reembolso
-            </span>
-            <span class="trust-badge">
-              <span
-                class="material-symbols-outlined text-[14px] text-[#16a34a]"
-                aria-hidden="true"
-              >support_agent</span>
-              Soporte en español 24/7
-            </span>
-          </div>
-        </div>
-      </section>
+          </section>
+        </template>
+        <div v-else class="h-[1200px] bg-[#FAFAFA] border-b border-[#F4F4F5]" />
+      </div>
 
       <!-- Simulated Wompi Checkout Overlay -->
       <Teleport to="body">
@@ -1308,115 +1391,125 @@ function confirmBillingChange() {
       </Teleport>
 
       <!-- FAQ -->
-      <section
-        class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
-        aria-labelledby="faq-heading"
-      >
-        <div class="max-w-3xl mx-auto px-5 lg:px-8">
-          <div class="text-center mb-10 lg:mb-14">
-            <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-              Preguntas Frecuentes
-            </h2>
-            <h3
-              id="faq-heading"
-              class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
-            >
-              Todo lo que necesitas saber
-            </h3>
-          </div>
+      <div ref="faqRef" data-section="faq" id="faq">
+        <template v-if="showFaq">
+          <section
+            class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
+            aria-labelledby="faq-heading"
+          >
+            <div class="max-w-3xl mx-auto px-5 lg:px-8">
+              <div class="text-center mb-10 lg:mb-14">
+                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+                  Preguntas Frecuentes
+                </h2>
+                <h3
+                  id="faq-heading"
+                  class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
+                >
+                  Todo lo que necesitas saber
+                </h3>
+              </div>
 
-          <div class="space-y-2">
-            <div
-              v-for="(faq, i) in faqs"
-              :key="i"
-              class="faq-item"
-              :class="{ 'faq-item--open': openFaq === i }"
-            >
-              <button
-                type="button"
-                class="faq-trigger"
-                :aria-expanded="openFaq === i"
-                :aria-controls="`faq-answer-${i}`"
-                @click="toggleFaq(i)"
-              >
-                <span class="text-[14.5px] font-semibold text-[#18181B] text-left">{{ faq.q }}</span>
-                <span
-                  class="faq-icon material-symbols-outlined text-[20px] text-[#888888] flex-shrink-0"
-                  :class="{ 'rotate-45': openFaq === i }"
-                  aria-hidden="true"
-                >add</span>
-              </button>
-              <div
-                :id="`faq-answer-${i}`"
-                class="faq-answer"
-                :class="{ 'faq-answer--open': openFaq === i }"
-              >
-                <p class="text-[13.5px] leading-[1.7] text-[#555555] pb-5 pr-8">
-                  {{ faq.a }}
+              <div class="space-y-2">
+                <div
+                  v-for="(faq, i) in faqs"
+                  :key="i"
+                  class="faq-item"
+                  :class="{ 'faq-item--open': openFaq === i }"
+                >
+                  <button
+                    type="button"
+                    class="faq-trigger"
+                    :aria-expanded="openFaq === i"
+                    :aria-controls="`faq-answer-${i}`"
+                    @click="toggleFaq(i)"
+                  >
+                    <span class="text-[14.5px] font-semibold text-[#18181B] text-left">{{ faq.q }}</span>
+                    <span
+                      class="faq-icon material-symbols-outlined text-[20px] text-[#888888] flex-shrink-0"
+                      :class="{ 'rotate-45': openFaq === i }"
+                      aria-hidden="true"
+                    >add</span>
+                  </button>
+                  <div
+                    :id="`faq-answer-${i}`"
+                    class="faq-answer"
+                    :class="{ 'faq-answer--open': openFaq === i }"
+                  >
+                    <p class="text-[13.5px] leading-[1.7] text-[#555555] pb-5 pr-8">
+                      {{ faq.a }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="mt-12 text-center">
+                <p class="text-[13.5px] text-[#888888] mb-4">
+                  ¿Tienes otra pregunta?
                 </p>
+                <button
+                  type="button"
+                  class="btn-secondary-landing"
+                  @click="emit('request-demo')"
+                >
+                  Hablar con el equipo
+                  <span
+                    class="material-symbols-outlined text-[16px]"
+                    aria-hidden="true"
+                  >chat</span>
+                </button>
               </div>
             </div>
-          </div>
-
-          <div class="mt-12 text-center">
-            <p class="text-[13.5px] text-[#888888] mb-4">
-              ¿Tienes otra pregunta?
-            </p>
-            <button
-              type="button"
-              class="btn-secondary-landing"
-              @click="emit('request-demo')"
-            >
-              Hablar con el equipo
-              <span
-                class="material-symbols-outlined text-[16px]"
-                aria-hidden="true"
-              >chat</span>
-            </button>
-          </div>
-        </div>
-      </section>
+          </section>
+        </template>
+        <div v-else class="h-[500px] bg-white border-b border-[#F4F4F5]" />
+      </div>
 
       <!-- CTA strip -->
-      <section class="cta-strip py-24 lg:py-28 relative overflow-hidden">
-        <div
-          aria-hidden="true"
-          class="cta-strip-grid pointer-events-none absolute inset-0"
-        />
-        <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center relative z-10">
-          <h3
-            class="text-[32px] lg:text-[46px] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-5"
-            style="text-wrap: balance;"
-          >
-            ¿Listo para llevar su back-office <em class="not-italic text-[#60A5FA]">al siguiente nivel</em>?
-          </h3>
-          <p class="text-[15.5px] text-white/60 mb-10 max-w-md mx-auto leading-[1.6]">
-            Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
-          </p>
-          <div class="flex flex-col sm:flex-row gap-3 justify-center">
-            <button
-              type="button"
-              class="btn-cta-white"
-              aria-label="Solicitar Demo de Contex360"
-              @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
-            >
-              Solicitar Demo
-              <span
-                class="material-symbols-outlined text-[18px]"
-                aria-hidden="true"
-              >arrow_forward</span>
-            </button>
-            <button
-              type="button"
-              class="border border-white/20 text-white/80 text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-white/8 hover:text-white btn-transition active:scale-[0.98]"
-              aria-label="Iniciar sesión en la plataforma"
-              @click="emit('login')"
-            >
-              Iniciar Sesión
-            </button>
-          </div>
-        </div>
-      </section>
+      <div ref="footerRef" data-section="footer">
+        <template v-if="showFooter">
+          <section class="cta-strip py-24 lg:py-28 relative overflow-hidden">
+            <div
+              aria-hidden="true"
+              class="cta-strip-grid pointer-events-none absolute inset-0"
+            />
+            <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center relative z-10">
+              <h3
+                class="text-[32px] lg:text-[46px] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-5"
+                style="text-wrap: balance;"
+              >
+                ¿Listo para llevar su back-office <em class="not-italic text-[#60A5FA]">al siguiente nivel</em>?
+              </h3>
+              <p class="text-[15.5px] text-white/60 mb-10 max-w-md mx-auto leading-[1.6]">
+                Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
+              </p>
+              <div class="flex flex-col sm:flex-row gap-3 justify-center">
+                <button
+                  type="button"
+                  class="btn-cta-white"
+                  aria-label="Solicitar Demo de Contex360"
+                  @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
+                >
+                  Solicitar Demo
+                  <span
+                    class="material-symbols-outlined text-[18px]"
+                    aria-hidden="true"
+                  >arrow_forward</span>
+                </button>
+                <button
+                  type="button"
+                  class="border border-white/20 text-white/80 text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-white/8 hover:text-white btn-transition active:scale-[0.98]"
+                  aria-label="Iniciar sesión en la plataforma"
+                  @click="emit('login')"
+                >
+                  Iniciar Sesión
+                </button>
+              </div>
+            </div>
+          </section>
+        </template>
+        <div v-else class="h-[350px] bg-[#0F0F11]" />
+      </div>
     </main>
 
     <!-- Sticky mobile CTA bar -->
@@ -1486,101 +1579,104 @@ function confirmBillingChange() {
     </Teleport>
 
     <!-- Footer -->
-    <footer class="py-10 lg:py-14 border-t border-[#F4F4F5] bg-white">
-      <div class="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 lg:gap-10">
-        <div class="flex flex-col gap-3">
-          <div class="flex items-center gap-2.5">
-            <svg
-              class="c360-mark flex-shrink-0"
-              width="24"
-              height="24"
-              viewBox="0 0 56 56"
-              aria-hidden="true"
-            >
-              <rect
-                width="56"
-                height="56"
-                rx="12"
-                fill="#18181B"
-              />
-              <g class="rotor">
-                <path
-                  d="M44 18 A 16 16 0 1 0 44 38"
-                  stroke="#fff"
-                  stroke-width="5.5"
-                  stroke-linecap="round"
-                  fill="none"
+    <template v-if="showFooter">
+      <footer class="py-10 lg:py-14 border-t border-[#F4F4F5] bg-white">
+        <div class="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 lg:gap-10">
+          <div class="flex flex-col gap-3">
+            <div class="flex items-center gap-2.5">
+              <svg
+                class="c360-mark flex-shrink-0"
+                width="24"
+                height="24"
+                viewBox="0 0 56 56"
+                aria-hidden="true"
+              >
+                <rect
+                  width="56"
+                  height="56"
+                  rx="12"
+                  fill="#18181B"
                 />
-                <path
-                  d="M44 18 A 16 16 0 0 1 44 38"
-                  stroke="#2563EB"
-                  stroke-width="5.5"
-                  stroke-linecap="round"
-                  fill="none"
-                />
-              </g>
-            </svg>
-            <span class="text-[16px] font-bold text-[#18181B]">Contex360</span>
+                <g class="rotor">
+                  <path
+                    d="M44 18 A 16 16 0 1 0 44 38"
+                    stroke="#fff"
+                    stroke-width="5.5"
+                    stroke-linecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M44 18 A 16 16 0 0 1 44 38"
+                    stroke="#2563EB"
+                    stroke-width="5.5"
+                    stroke-linecap="round"
+                    fill="none"
+                  />
+                </g>
+              </svg>
+              <span class="text-[16px] font-bold text-[#18181B]">Contex360</span>
+            </div>
+            <p class="text-[12px] text-[#666666] font-medium max-w-[220px] leading-relaxed">
+              Sistemas Administrativos Avanzados para la Empresa Colombiana.
+            </p>
           </div>
-          <p class="text-[12px] text-[#666666] font-medium max-w-[220px] leading-relaxed">
-            Sistemas Administrativos Avanzados para la Empresa Colombiana.
+          <div class="flex gap-8 lg:gap-12">
+            <div class="flex flex-col gap-3">
+              <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Plataforma</span>
+              <button
+                type="button"
+                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                @click="emit('show-about')"
+              >
+                Características
+              </button>
+              <button
+                type="button"
+                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                @click="() => { trackCTAClick('footer'); emit('request-demo') }"
+              >
+                Demo
+              </button>
+            </div>
+            <div class="flex flex-col gap-3">
+              <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Legal</span>
+              <button
+                type="button"
+                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                @click="emit('show-terms')"
+              >
+                Términos
+              </button>
+              <button
+                type="button"
+                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                @click="emit('show-privacy')"
+              >
+                Privacidad
+              </button>
+              <button
+                type="button"
+                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                @click="emit('show-dpa')"
+              >
+                DPA
+              </button>
+              <button
+                type="button"
+                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                @click="emit('show-bcp')"
+              >
+                Continuidad
+              </button>
+            </div>
+          </div>
+          <p class="text-[12px] text-[#666666] font-medium">
+            © 2026 Contex360. Todos los derechos reservados.
           </p>
         </div>
-        <div class="flex gap-8 lg:gap-12">
-          <div class="flex flex-col gap-3">
-            <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Plataforma</span>
-            <button
-              type="button"
-              class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
-              @click="emit('show-about')"
-            >
-              Características
-            </button>
-            <button
-              type="button"
-              class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
-              @click="() => { trackCTAClick('footer'); emit('request-demo') }"
-            >
-              Demo
-            </button>
-          </div>
-          <div class="flex flex-col gap-3">
-            <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Legal</span>
-            <button
-              type="button"
-              class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
-              @click="emit('show-terms')"
-            >
-              Términos
-            </button>
-            <button
-              type="button"
-              class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
-              @click="emit('show-privacy')"
-            >
-              Privacidad
-            </button>
-            <button
-              type="button"
-              class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
-              @click="emit('show-dpa')"
-            >
-              DPA
-            </button>
-            <button
-              type="button"
-              class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
-              @click="emit('show-bcp')"
-            >
-              Continuidad
-            </button>
-          </div>
-        </div>
-        <p class="text-[12px] text-[#666666] font-medium">
-          © 2026 Contex360. Todos los derechos reservados.
-        </p>
-      </div>
-    </footer>
+      </footer>
+    </template>
+    <div v-else class="h-[250px] bg-white border-t border-[#F4F4F5]" />
   </div>
 </template>
 
