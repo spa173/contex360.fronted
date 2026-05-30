@@ -9,6 +9,37 @@ Este documento establece las directrices, reglas y buenas prácticas obligatoria
 
 ---
 
+## Reglas de Optimización Obligatorias
+
+Para cualquier optimización de rendimiento o cambio en el código frontend, se deben respetar de forma estricta las siguientes restricciones:
+
+### 1. Compilación y Build
+- El comando `npm run build` debe finalizar siempre sin advertencias graves ni errores.
+- `vite build` debe compilar de forma limpia.
+- **Sin errores de TypeScript:** No introducir ningún fallo de tipado estático (`tsc` / `vue-tsc`).
+
+### 2. Estándares de SonarQube / SonarCloud
+- **No duplicar código:** Evitar patrones repetitivos o bloques de lógica copiados.
+- **Complejidad Ciclomática:** No aumentar la complejidad ciclomática del código.
+- **Tamaño de Funciones:** Ninguna función nueva o modificada debe superar las **50 líneas de código**.
+- **Sin Code Smells:** Resolver problemas de mantenibilidad señalados por el análisis estático.
+- **Limpieza de Código:** No dejar variables no usadas (`no-unused-vars`) ni importaciones sin utilizar.
+
+### 3. Vercel y Despliegue
+- La aplicación debe compilar e implementarse correctamente en Vercel.
+- No modificar archivos de configuración crítica de despliegue (`vercel.json`, etc.).
+- No romper las directivas de seguridad de contenido (**CSP**) ni alterar las rutas existentes.
+
+### 4. Integridad Funcional
+- **Sin cambios de UX/UI:** Mantener el diseño visual, espaciados y comportamiento estético exactamente igual al diseño aprobado.
+- **Mantener Funcionalidad:** No eliminar ninguna característica del sistema, en especial el flujo de pagos de **Wompi** ni la autenticación de usuarios.
+
+### 5. Priorización de Rendimiento
+- Enfocar esfuerzos y priorizar métricas en este orden: **1. LCP**, **2. TBT**, **3. INP**, **4. CLS**.
+- Solo aplicar cambios con **Retorno de Inversión (ROI) alto**. Evitar optimizaciones teóricas o cosméticas de bajo impacto.
+
+---
+
 ## 1. Lazy Rendering de Componentes Debajo del Pliegue (Below-the-Fold)
 
 Para mantener un tamaño de DOM inicial reducido y optimizar el FCP/TBT, todos los componentes o secciones que no sean visibles inmediatamente en el primer pantallazo (above-the-fold) deben cargarse de forma diferida (lazy rendering).
