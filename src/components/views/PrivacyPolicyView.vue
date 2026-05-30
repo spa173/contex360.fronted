@@ -75,7 +75,7 @@ const finalSections = [
   {
     n: '6',
     title: 'Transferencia de datos',
-    body: 'Los datos son almacenados en servidores de <strong>Neon (AWS us-east-1)</strong> y servidos desde <strong>Render</strong>. Ambos proveedores cuentan con certificaciones <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>. No se venden ni comparten datos con terceros con fines comerciales.',
+    body: 'Los datos son almacenados en servidores de <strong>Neon (AWS us-east-1)</strong> y servidos desde <strong>Hugging Face</strong>. Ambos proveedores cuentan con certificaciones <strong>SOC 2 Type II</strong> e <strong>ISO 27001</strong>. No se venden ni comparten datos con terceros con fines comerciales.',
   },
   {
     n: '7',
@@ -313,9 +313,24 @@ const finalSections = [
     <section class="relative pb-6">
       <div class="max-w-3xl mx-auto px-6 lg:px-8">
         <div class="flex flex-wrap gap-2 justify-center">
-          <button class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors" @click="emit('show-terms')">Términos de Uso</button>
-          <button class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors" @click="emit('show-dpa')">Acuerdo de Datos</button>
-          <button class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors" @click="emit('show-bcp')">Plan de Continuidad</button>
+          <button
+            class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
+            @click="emit('show-terms')"
+          >
+            Términos de Uso
+          </button>
+          <button
+            class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
+            @click="emit('show-dpa')"
+          >
+            Acuerdo de Datos
+          </button>
+          <button
+            class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors"
+            @click="emit('show-bcp')"
+          >
+            Plan de Continuidad
+          </button>
         </div>
       </div>
     </section>

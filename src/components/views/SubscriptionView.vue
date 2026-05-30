@@ -376,8 +376,8 @@ async function handleCancel() {
         <label class="text-[12px] text-[#71717A] font-medium">Moneda:</label>
         <select
           :value="selectedCurrency"
-          @change="changeCurrency(($event.target as HTMLSelectElement).value)"
           class="px-3 py-1.5 border border-[#E4E4E7] rounded-[8px] text-[13px] font-medium bg-white text-[#18181B] focus:outline-none focus:ring-2 focus:ring-[#2563EB]"
+          @change="changeCurrency(($event.target as HTMLSelectElement).value)"
         >
           <option
             v-for="c in currencies"
@@ -390,160 +390,175 @@ async function handleCancel() {
       </div>
     </div>
 
-     <!-- Loading -->
-     <div
-       v-if="isLoading"
-       class="flex items-center justify-center py-20"
-     >
-       <span class="material-symbols-outlined animate-spin text-[32px] text-[#2563EB]">progress_activity</span>
-     </div>
+    <!-- Loading -->
+    <div
+      v-if="isLoading"
+      class="flex items-center justify-center py-20"
+    >
+      <span class="material-symbols-outlined animate-spin text-[32px] text-[#2563EB]">progress_activity</span>
+    </div>
 
-     <!-- Dunning Status Alert -->
-     <div
-       v-if="dunningStatus"
-       :class="[
-         'border rounded-[14px] p-6 mb-6',
-         dunningStatus.type === 'payment_failed' ? 'bg-rose-50 border-[#FCE7E7]' : 'bg-amber-50 border-[#FEF3C7]'
-       ]"
-     >
-       <div class="flex flex-col items-center text-center space-y-4">
-         <div class="flex items-center justify-center w-12 h-12">
-           <span
-             class="material-symbols-outlined text-[24px]"
-             :class="[
-               dunningStatus.type === 'payment_failed' ? 'text-rose-600' : 'text-amber-600',
-               dunningStatus.type === 'payment_failed' ? 'bg-rose-100' : 'bg-amber-100',
-               'rounded-full'
-             ]"
-           >
-             {{ dunningStatus.type === 'payment_failed' ? 'error' : 'warning' }}
-           </span>
-         </div>
-         <h3 class="text-[18px] font-bold text-[#18181B]">
-           {{ dunningStatus.type === 'payment_failed' ? 'Problema con tu pago' : 'Facturas vencidas' }}
-         </h3>
-         <p class="text-[14px] text-[#71717A] max-w-md">
-           {{ dunningStatus.message }}
-         </p>
-         <div class="flex gap-3">
-           <template v-if="dunningStatus.type === 'payment_failed'">
-             <button
-               @click="handleRetryPayment"
-               :disabled="isRetryingPayment"
-               class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
-             >
-               <span v-if="isRetryingPayment" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
-               <span v-else>Reintentar pago</span>
-             </button>
-             <button
-               @click="handleUpdatePaymentMethod"
-               :disabled="isUpdatingPaymentMethod"
-               class="px-4 py-2 border border-[#E4E4E7] rounded-[10px] text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
-             >
-               <span v-if="isUpdatingPaymentMethod" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
-               <span v-else>Actualizar método de pago</span>
-             </button>
-           </template>
-           <template v-else>
-             <button
-               @click="handlePayOverdueInvoices"
-               :disabled="isPayingOverdue"
-               class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
-             >
-               <span v-if="isPayingOverdue" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
-               <span v-else>Pagar facturas vencidas</span>
-             </button>
-           </template>
-         </div>
-         <div class="text-[12px] text-[#A1A1AA]">
-           <button
-             @click="closeDunningAlert"
-             class="text-[#2563EB] underline hover:text-[#1D4ED8]"
-           >
-             Entendido
-           </button>
-         </div>
-       </div>
-     </div>
+    <!-- Dunning Status Alert -->
+    <div
+      v-if="dunningStatus"
+      :class="[
+        'border rounded-[14px] p-6 mb-6',
+        dunningStatus.type === 'payment_failed' ? 'bg-rose-50 border-[#FCE7E7]' : 'bg-amber-50 border-[#FEF3C7]'
+      ]"
+    >
+      <div class="flex flex-col items-center text-center space-y-4">
+        <div class="flex items-center justify-center w-12 h-12">
+          <span
+            class="material-symbols-outlined text-[24px]"
+            :class="[
+              dunningStatus.type === 'payment_failed' ? 'text-rose-600' : 'text-amber-600',
+              dunningStatus.type === 'payment_failed' ? 'bg-rose-100' : 'bg-amber-100',
+              'rounded-full'
+            ]"
+          >
+            {{ dunningStatus.type === 'payment_failed' ? 'error' : 'warning' }}
+          </span>
+        </div>
+        <h3 class="text-[18px] font-bold text-[#18181B]">
+          {{ dunningStatus.type === 'payment_failed' ? 'Problema con tu pago' : 'Facturas vencidas' }}
+        </h3>
+        <p class="text-[14px] text-[#71717A] max-w-md">
+          {{ dunningStatus.message }}
+        </p>
+        <div class="flex gap-3">
+          <template v-if="dunningStatus.type === 'payment_failed'">
+            <button
+              :disabled="isRetryingPayment"
+              class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
+              @click="handleRetryPayment"
+            >
+              <span
+                v-if="isRetryingPayment"
+                class="material-symbols-outlined animate-spin text-[16px]"
+              >progress_activity</span>
+              <span v-else>Reintentar pago</span>
+            </button>
+            <button
+              :disabled="isUpdatingPaymentMethod"
+              class="px-4 py-2 border border-[#E4E4E7] rounded-[10px] text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
+              @click="handleUpdatePaymentMethod"
+            >
+              <span
+                v-if="isUpdatingPaymentMethod"
+                class="material-symbols-outlined animate-spin text-[16px]"
+              >progress_activity</span>
+              <span v-else>Actualizar método de pago</span>
+            </button>
+          </template>
+          <template v-else>
+            <button
+              :disabled="isPayingOverdue"
+              class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
+              @click="handlePayOverdueInvoices"
+            >
+              <span
+                v-if="isPayingOverdue"
+                class="material-symbols-outlined animate-spin text-[16px]"
+              >progress_activity</span>
+              <span v-else>Pagar facturas vencidas</span>
+            </button>
+          </template>
+        </div>
+        <div class="text-[12px] text-[#A1A1AA]">
+          <button
+            class="text-[#2563EB] underline hover:text-[#1D4ED8]"
+            @click="closeDunningAlert"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
 
-     <!-- Upgrade Banner -->
-     <div
-       v-if="upgradeBanner"
-       :class="[
-         'border rounded-[14px] p-6 mb-6',
-         upgradeBanner.variant === 'danger' ? 'bg-rose-50 border-[#FCE7E7]' : 'bg-amber-50 border-[#FEF3C7]'
-       ]"
-     >
-       <div class="flex flex-col items-center text-center space-y-4">
-         <div class="flex items-center justify-center w-12 h-12">
-           <span
-             class="material-symbols-outlined text-[24px]"
-             :class="[
-               upgradeBanner.variant === 'danger' ? 'text-rose-600' : 'text-amber-600',
-               'rounded-full'
-             ]"
-           >
-             {{ upgradeBanner.variant === 'danger' ? 'error' : 'warning' }}
-           </span>
-         </div>
-         <h3 class="text-[18px] font-bold text-[#18181B]">
-           {{ upgradeBanner.title }}
-         </h3>
-         <p class="text-[14px] text-[#71717A] max-w-md">
-           {{ upgradeBanner.message }}
-         </p>
-         <button
-           @click="handleUpgrade"
-           class="px-5 py-2.5 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
-         >
-           Mejorar a {{ planNames[nextPlanKey || ''] || nextPlanKey }}
-         </button>
-       </div>
-     </div>
+    <!-- Upgrade Banner -->
+    <div
+      v-if="upgradeBanner"
+      :class="[
+        'border rounded-[14px] p-6 mb-6',
+        upgradeBanner.variant === 'danger' ? 'bg-rose-50 border-[#FCE7E7]' : 'bg-amber-50 border-[#FEF3C7]'
+      ]"
+    >
+      <div class="flex flex-col items-center text-center space-y-4">
+        <div class="flex items-center justify-center w-12 h-12">
+          <span
+            class="material-symbols-outlined text-[24px]"
+            :class="[
+              upgradeBanner.variant === 'danger' ? 'text-rose-600' : 'text-amber-600',
+              'rounded-full'
+            ]"
+          >
+            {{ upgradeBanner.variant === 'danger' ? 'error' : 'warning' }}
+          </span>
+        </div>
+        <h3 class="text-[18px] font-bold text-[#18181B]">
+          {{ upgradeBanner.title }}
+        </h3>
+        <p class="text-[14px] text-[#71717A] max-w-md">
+          {{ upgradeBanner.message }}
+        </p>
+        <button
+          class="px-5 py-2.5 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
+          @click="handleUpgrade"
+        >
+          Mejorar a {{ planNames[nextPlanKey || ''] || nextPlanKey }}
+        </button>
+      </div>
+    </div>
 
-     <!-- Payment Failure Alert -->
-     <div
-       v-if="hasRecentPaymentFailure"
-       class="bg-rose-50 border border-[#FCE7E7] rounded-[14px] p-6 mb-6"
-     >
-       <div class="flex flex-col items-center text-center space-y-4">
-         <div class="flex items-center justify-center w-12 h-12 bg-rose-100 rounded-full mb-2">
-           <span class="material-symbols-outlined text-[24px] text-rose-600">error</span>
-         </div>
-         <h3 class="text-[18px] font-bold text-[#18181B]">
-           Problema con tu pago
-         </h3>
-         <p class="text-[14px] text-[#71717A] max-w-md">
-           {{ paymentFailureStatus?.message || 'Hubo un problema procesando tu último pago.' }}
-         </p>
-         <div class="flex gap-3">
-           <button
-             @click="handleRetryPayment"
-             :disabled="isRetryingPayment"
-             class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
-           >
-             <span v-if="isRetryingPayment" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
-             <span v-else>Reintentar pago</span>
-           </button>
-           <button
-             @click="handleUpdatePaymentMethod"
-             :disabled="isUpdatingPaymentMethod"
-             class="px-4 py-2 border border-[#E4E4E7] rounded-[10px] text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
-           >
-             <span v-if="isUpdatingPaymentMethod" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
-             <span v-else>Actualizar método de pago</span>
-           </button>
-         </div>
-         <div class="text-[12px] text-[#A1A1AA]">
-           <button
-             @click="closePaymentFailureModal"
-             class="text-[#2563EB] underline hover:text-[#1D4ED8]"
-           >
-             Entendido
-           </button>
-         </div>
-       </div>
-     </div>
+    <!-- Payment Failure Alert -->
+    <div
+      v-if="hasRecentPaymentFailure"
+      class="bg-rose-50 border border-[#FCE7E7] rounded-[14px] p-6 mb-6"
+    >
+      <div class="flex flex-col items-center text-center space-y-4">
+        <div class="flex items-center justify-center w-12 h-12 bg-rose-100 rounded-full mb-2">
+          <span class="material-symbols-outlined text-[24px] text-rose-600">error</span>
+        </div>
+        <h3 class="text-[18px] font-bold text-[#18181B]">
+          Problema con tu pago
+        </h3>
+        <p class="text-[14px] text-[#71717A] max-w-md">
+          {{ paymentFailureStatus?.message || 'Hubo un problema procesando tu último pago.' }}
+        </p>
+        <div class="flex gap-3">
+          <button
+            :disabled="isRetryingPayment"
+            class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] transition-colors"
+            @click="handleRetryPayment"
+          >
+            <span
+              v-if="isRetryingPayment"
+              class="material-symbols-outlined animate-spin text-[16px]"
+            >progress_activity</span>
+            <span v-else>Reintentar pago</span>
+          </button>
+          <button
+            :disabled="isUpdatingPaymentMethod"
+            class="px-4 py-2 border border-[#E4E4E7] rounded-[10px] text-[13px] font-semibold hover:bg-[#FAFAFA] transition-colors"
+            @click="handleUpdatePaymentMethod"
+          >
+            <span
+              v-if="isUpdatingPaymentMethod"
+              class="material-symbols-outlined animate-spin text-[16px]"
+            >progress_activity</span>
+            <span v-else>Actualizar método de pago</span>
+          </button>
+        </div>
+        <div class="text-[12px] text-[#A1A1AA]">
+          <button
+            class="text-[#2563EB] underline hover:text-[#1D4ED8]"
+            @click="closePaymentFailureModal"
+          >
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>
 
     <template v-else>
       <!-- Current Plan Card -->
@@ -722,8 +737,7 @@ async function handleCancel() {
                 <th class="px-5 py-3 text-right">
                   Total
                 </th>
-                <th class="px-5 py-3 w-12">
-                </th>
+                <th class="px-5 py-3 w-12" />
               </tr>
             </thead>
             <tbody class="text-[13px] divide-y divide-[#F4F4F5]">
@@ -744,10 +758,17 @@ async function handleCancel() {
                   </span>
                 </td>
                 <td class="px-5 py-3.5">
-                  <span v-if="inv.dianStatus" :title="inv.cufe ? `CUFE: ${inv.cufe}` : ''" :class="['inline-flex px-2 py-0.5 rounded-md text-[11px] font-semibold', inv.dianStatus === 'sent' || inv.dianStatus === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700']">
+                  <span
+                    v-if="inv.dianStatus"
+                    :title="inv.cufe ? `CUFE: ${inv.cufe}` : ''"
+                    :class="['inline-flex px-2 py-0.5 rounded-md text-[11px] font-semibold', inv.dianStatus === 'sent' || inv.dianStatus === 'accepted' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700']"
+                  >
                     {{ inv.dianStatus === 'sent' || inv.dianStatus === 'accepted' ? 'Enviada' : inv.dianStatus === 'rejected' ? 'Rechazada' : inv.dianStatus }}
                   </span>
-                  <span v-else class="text-[11px] text-[#A1A1AA]">—</span>
+                  <span
+                    v-else
+                    class="text-[11px] text-[#A1A1AA]"
+                  >—</span>
                 </td>
                 <td class="px-5 py-3.5 text-right font-mono">
                   {{ formatCurrency(inv.amount, selectedCurrency) }}

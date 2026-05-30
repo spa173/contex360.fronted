@@ -111,6 +111,8 @@ tsconfig.tsbuildinfo
 *.tsbuildinfo
 .eslintcache
 .prettiercache
+.scannerwork/
+coverage/
 
 # --- 6. PRIVATE CONTEXTS & LOCAL TESTING (Contextos Privados) ---
 # Archivos de pruebas locales y notas de desarrollo personales

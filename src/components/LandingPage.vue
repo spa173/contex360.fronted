@@ -379,7 +379,10 @@ function confirmBillingChange() {
 <template>
   <div class="landing-root min-h-screen bg-white text-[#09090B] font-['Inter'] relative overflow-hidden">
     <!-- Hero background: grid + radial -->
-    <div aria-hidden="true" class="landing-hero-bg pointer-events-none absolute inset-0 -z-10" />
+    <div
+      aria-hidden="true"
+      class="landing-hero-bg pointer-events-none absolute inset-0 -z-10"
+    />
     <div
       aria-hidden="true"
       class="pointer-events-none absolute -top-60 right-[-10%] w-[900px] h-[900px] rounded-full -z-10"
@@ -475,784 +478,943 @@ function confirmBillingChange() {
         <button
           type="button"
           class="flex lg:hidden items-center justify-center nav-hamburger"
-          @click="mobileNavOpen = true"
           aria-label="Abrir menú de navegación"
+          @click="mobileNavOpen = true"
         >
-          <span class="material-symbols-outlined text-[22px]" aria-hidden="true">menu</span>
+          <span
+            class="material-symbols-outlined text-[22px]"
+            aria-hidden="true"
+          >menu</span>
         </button>
       </div>
     </nav>
 
     <main>
       <!-- Hero -->
-      <section id="hero" aria-labelledby="hero-heading" class="relative pt-10 pb-14 lg:pt-28 lg:pb-40 border-b border-[#F4F4F5]">
+      <section
+        id="hero"
+        aria-labelledby="hero-heading"
+        class="relative pt-10 pb-14 lg:pt-28 lg:pb-40 border-b border-[#F4F4F5]"
+      >
         <div class="max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-20 items-center">
           <div class="z-10">
             <!-- Chip system -->
             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 mb-5 lg:mb-8 border border-[#E4E4E7] rounded-full text-[11px] lg:text-[11.5px] text-[#555555] bg-white/80 backdrop-blur-sm font-medium shadow-[0_1px_4px_rgba(0,0,0,0.04)] select-none">
-              <span class="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse flex-shrink-0" aria-hidden="true" />
+              <span
+                class="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse flex-shrink-0"
+                aria-hidden="true"
+              />
               ERP de Próxima Generación
             </span>
 
-          <h1
-            id="hero-heading"
-            class="text-[38px] sm:text-[48px] lg:text-[68px] leading-[1.0] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] font-bold text-[#18181B] mb-5 lg:mb-7"
-            style="text-wrap: balance;"
-          >
-            El cerebro <em class="not-italic text-[#2563EB]">logístico</em> de tu negocio.
-          </h1>
-          <p class="text-[15px] lg:text-[17px] leading-[1.6] lg:leading-[1.55] text-[#555555] mb-7 lg:mb-10 max-w-lg">
-            Una plataforma sofisticada y ultra-rápida diseñada para corporaciones colombianas. Automatiza contabilidad, inventarios y facturación con precisión.
-          </p>
+            <h1
+              id="hero-heading"
+              class="text-[38px] sm:text-[48px] lg:text-[68px] leading-[1.0] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] font-bold text-[#18181B] mb-5 lg:mb-7"
+              style="text-wrap: balance;"
+            >
+              El cerebro <em class="not-italic text-[#2563EB]">logístico</em> de tu negocio.
+            </h1>
+            <p class="text-[15px] lg:text-[17px] leading-[1.6] lg:leading-[1.55] text-[#555555] mb-7 lg:mb-10 max-w-lg">
+              Una plataforma sofisticada y ultra-rápida diseñada para corporaciones colombianas. Automatiza contabilidad, inventarios y facturación con precisión.
+            </p>
 
-          <div class="flex flex-col sm:flex-row gap-2.5 lg:gap-3">
-            <button
-              type="button"
-              class="btn-primary-landing"
-              @click="() => { trackCTAClick('hero'); emit('request-demo') }"
-              aria-label="Iniciar prueba gratuita - Sin tarjeta de crédito requerida"
-            >
-              Iniciar Prueba Gratuita
-              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
-            </button>
-            <button
-              type="button"
-              class="btn-secondary-landing hidden sm:inline-flex"
-              @click="emit('show-about')"
-              aria-label="Ver capacidades del sistema"
-            >
-              Ver Capacidades
-            </button>
+            <div class="flex flex-col sm:flex-row gap-2.5 lg:gap-3">
+              <button
+                type="button"
+                class="btn-primary-landing"
+                aria-label="Iniciar prueba gratuita - Sin tarjeta de crédito requerida"
+                @click="() => { trackCTAClick('hero'); emit('request-demo') }"
+              >
+                Iniciar Prueba Gratuita
+                <span
+                  class="material-symbols-outlined text-[18px]"
+                  aria-hidden="true"
+                >arrow_forward</span>
+              </button>
+              <button
+                type="button"
+                class="btn-secondary-landing hidden sm:inline-flex"
+                aria-label="Ver capacidades del sistema"
+                @click="emit('show-about')"
+              >
+                Ver Capacidades
+              </button>
+            </div>
+
+            <!-- Mobile micro-copy under CTA -->
+            <p class="text-[11.5px] text-[#AAAAAA] mt-3 lg:hidden">
+              Sin tarjeta de crédito · Cancela cuando quieras
+            </p>
+
+            <!-- Pillars rail -->
+            <div class="mt-8 lg:mt-14 grid grid-cols-3 gap-0 max-w-full lg:max-w-[520px]">
+              <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4 pr-4 lg:pr-6">
+                <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight tabular-nums">500+</b>
+                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Clientes Activos</span>
+              </div>
+              <div class="border-t-2 border-[#2563EB] pt-3 lg:pt-4 pr-4 lg:pr-6">
+                <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight">DIAN</b>
+                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Partner Certificado</span>
+              </div>
+              <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4">
+                <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight tabular-nums">99.98%</b>
+                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Uptime SLA</span>
+              </div>
+            </div>
           </div>
 
-          <!-- Mobile micro-copy under CTA -->
-          <p class="text-[11.5px] text-[#AAAAAA] mt-3 lg:hidden">
-            Sin tarjeta de crédito · Cancela cuando quieras
-          </p>
-
-          <!-- Pillars rail -->
-          <div class="mt-8 lg:mt-14 grid grid-cols-3 gap-0 max-w-full lg:max-w-[520px]">
-            <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4 pr-4 lg:pr-6">
-              <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight tabular-nums">500+</b>
-              <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Clientes Activos</span>
-            </div>
-            <div class="border-t-2 border-[#2563EB] pt-3 lg:pt-4 pr-4 lg:pr-6">
-              <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight">DIAN</b>
-              <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Partner Certificado</span>
-            </div>
-            <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4">
-              <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight tabular-nums">99.98%</b>
-              <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Uptime SLA</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Dashboard preview card -->
-        <div class="relative mt-6 lg:mt-0 mb-6 lg:mb-0">
-          <div class="absolute inset-0 bg-[#F4F4F5] rounded-[20px] lg:rounded-[24px] translate-x-2 translate-y-2 lg:translate-x-3 lg:translate-y-3 -z-10 border border-[#E4E4E7]" />
-          <div class="bg-white p-2 lg:p-3 rounded-[20px] lg:rounded-[24px] border border-[#E4E4E7] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
-            <!-- WebP is supported by 97%+ of browsers in 2026. The PNG fallback
+          <!-- Dashboard preview card -->
+          <div class="relative mt-6 lg:mt-0 mb-6 lg:mb-0">
+            <div class="absolute inset-0 bg-[#F4F4F5] rounded-[20px] lg:rounded-[24px] translate-x-2 translate-y-2 lg:translate-x-3 lg:translate-y-3 -z-10 border border-[#E4E4E7]" />
+            <div class="bg-white p-2 lg:p-3 rounded-[20px] lg:rounded-[24px] border border-[#E4E4E7] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
+              <!-- WebP is supported by 97%+ of browsers in 2026. The PNG fallback
                  (532KB) has been removed to avoid penalising the majority of users.
                  The <img> src still uses the WebP directly as a safe fallback
                  for any remaining browser that ignores <source>. -->
-            <picture>
-              <source
-                srcset="/dashboard_preview-mobile.webp"
-                type="image/webp"
-                media="(max-width: 768px)"
-                width="768"
-                height="768"
-              />
-              <source
-                srcset="/dashboard_preview.webp"
-                type="image/webp"
-                media="(min-width: 769px)"
-                width="1024"
-                height="1024"
-              />
-              <img
-                alt="Dashboard de Contex360 mostrando resumen de facturación, inventario y flujo de caja en tiempo real"
-                width="1024"
-                height="1024"
-                loading="eager"
-                fetchpriority="high"
-                decoding="async"
-                class="rounded-[18px] w-full object-cover dashboard-image"
-                src="/dashboard_preview.webp"
-              />
-            </picture>
-          </div>
+              <picture>
+                <source
+                  srcset="/dashboard_preview-mobile.webp"
+                  type="image/webp"
+                  media="(max-width: 768px)"
+                  width="768"
+                  height="768"
+                >
+                <source
+                  srcset="/dashboard_preview.webp"
+                  type="image/webp"
+                  media="(min-width: 769px)"
+                  width="1024"
+                  height="1024"
+                >
+                <img
+                  alt="Dashboard de Contex360 mostrando resumen de facturación, inventario y flujo de caja en tiempo real"
+                  width="1024"
+                  height="1024"
+                  loading="eager"
+                  fetchpriority="high"
+                  decoding="async"
+                  class="rounded-[18px] w-full object-cover dashboard-image"
+                  src="/dashboard_preview.webp"
+                >
+              </picture>
+            </div>
 
-          <!-- Floating trust chips — desktop only to avoid overflow on mobile -->
-          <div class="hidden lg:flex absolute -bottom-4 left-6 gap-2">
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
-              <span class="material-symbols-outlined text-[14px]" aria-hidden="true">lock</span>
-              SSL/TLS 1.3
-            </span>
-            <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
-              <span class="material-symbols-outlined text-[14px]" aria-hidden="true">shield</span>
-              ISO 27001
-            </span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Social proof bar -->
-    <section class="py-8 lg:py-12 border-b border-[#F4F4F5] bg-white" aria-label="Clientes que confían en Contex360">
-      <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-[#CCCCCC] mb-8">
-          Más de 500 empresas colombianas ya operan con Contex360
-        </p>
-        <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 lg:gap-x-12">
-          <div
-            v-for="logo in clientLogos"
-            :key="logo.abbr"
-            class="client-logo-item group"
-            :title="logo.name"
-          >
-            <span class="client-logo-abbr">{{ logo.abbr }}</span>
-            <span class="client-logo-name">{{ logo.name }}</span>
+            <!-- Floating trust chips — desktop only to avoid overflow on mobile -->
+            <div class="hidden lg:flex absolute -bottom-4 left-6 gap-2">
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
+                <span
+                  class="material-symbols-outlined text-[14px]"
+                  aria-hidden="true"
+                >lock</span>
+                SSL/TLS 1.3
+              </span>
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
+                <span
+                  class="material-symbols-outlined text-[14px]"
+                  aria-hidden="true"
+                >shield</span>
+                ISO 27001
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- Features -->
-    <section
-      id="producto"
-      class="py-16 lg:py-32 bg-[#FAFAFA] border-b border-[#F4F4F5]"
-      style="scroll-margin-top: 80px;"
-    >
-      <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 lg:mb-16 gap-5 lg:gap-8">
-          <div class="max-w-2xl">
+      <!-- Social proof bar -->
+      <section
+        class="py-8 lg:py-12 border-b border-[#F4F4F5] bg-white"
+        aria-label="Clientes que confían en Contex360"
+      >
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+          <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-[#CCCCCC] mb-8">
+            Más de 500 empresas colombianas ya operan con Contex360
+          </p>
+          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 lg:gap-x-12">
+            <div
+              v-for="logo in clientLogos"
+              :key="logo.abbr"
+              class="client-logo-item group"
+              :title="logo.name"
+            >
+              <span class="client-logo-abbr">{{ logo.abbr }}</span>
+              <span class="client-logo-name">{{ logo.name }}</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features -->
+      <section
+        id="producto"
+        class="py-16 lg:py-32 bg-[#FAFAFA] border-b border-[#F4F4F5]"
+        style="scroll-margin-top: 80px;"
+      >
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 lg:mb-16 gap-5 lg:gap-8">
+            <div class="max-w-2xl">
+              <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+                Infraestructura Central
+              </h2>
+              <h3
+                class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B]"
+                style="text-wrap: balance;"
+              >
+                Estructurado para escala corporativa.
+              </h3>
+            </div>
+            <p class="text-[15px] leading-[1.55] text-[#555555] max-w-sm font-medium">
+              Una única fuente de verdad para cada operación, desde inventarios multi-bodega hasta informes financieros en tiempo real.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div class="feature-card group">
+              <div class="feature-icon-wrap feature-icon-dark group-hover:scale-[1.06]">
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  translate="no"
+                >verified_user</span>
+              </div>
+              <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
+                Seguridad de Grado Bancario
+              </h4>
+              <p class="text-[13.5px] leading-[1.6] text-[#666666]">
+                Encriptación de nivel empresarial y copias de seguridad automáticas que aseguran que tus datos financieros estén siempre protegidos y disponibles.
+              </p>
+            </div>
+
+            <div class="feature-card group">
+              <div class="feature-icon-wrap feature-icon-blue group-hover:scale-[1.06]">
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  translate="no"
+                >bolt</span>
+              </div>
+              <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
+                Motor de Alta Velocidad
+              </h4>
+              <p class="text-[13.5px] leading-[1.6] text-[#666666]">
+                Procesamiento de datos en tiempo real para informes contables complejos y estados financieros en segundos, no horas.
+              </p>
+            </div>
+
+            <div class="feature-card group">
+              <div class="feature-icon-wrap feature-icon-dark group-hover:scale-[1.06]">
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  translate="no"
+                >apartment</span>
+              </div>
+              <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
+                Cumplimiento Colombiano
+              </h4>
+              <p class="text-[13.5px] leading-[1.6] text-[#666666]">
+                Totalmente adaptado a las regulaciones de la DIAN: facturación electrónica, nómina e informes de exógena integrados.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Testimonials -->
+      <section
+        class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
+        aria-labelledby="testimonials-heading"
+      >
+        <div class="max-w-7xl mx-auto">
+          <div class="text-center mb-10 lg:mb-14 px-5 lg:px-8">
             <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-              Infraestructura Central
+              Casos de Éxito
             </h2>
             <h3
-              class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B]"
+              id="testimonials-heading"
+              class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
               style="text-wrap: balance;"
             >
-              Estructurado para escala corporativa.
+              Lo que dicen nuestros clientes
             </h3>
           </div>
-          <p class="text-[15px] leading-[1.55] text-[#555555] max-w-sm font-medium">
-            Una única fuente de verdad para cada operación, desde inventarios multi-bodega hasta informes financieros en tiempo real.
-          </p>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-          <div class="feature-card group">
-            <div class="feature-icon-wrap feature-icon-dark group-hover:scale-[1.06]">
-              <span class="material-symbols-outlined text-[20px]" translate="no">verified_user</span>
-            </div>
-            <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
-              Seguridad de Grado Bancario
-            </h4>
-            <p class="text-[13.5px] leading-[1.6] text-[#666666]">
-              Encriptación de nivel empresarial y copias de seguridad automáticas que aseguran que tus datos financieros estén siempre protegidos y disponibles.
-            </p>
-          </div>
-
-          <div class="feature-card group">
-            <div class="feature-icon-wrap feature-icon-blue group-hover:scale-[1.06]">
-              <span class="material-symbols-outlined text-[20px]" translate="no">bolt</span>
-            </div>
-            <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
-              Motor de Alta Velocidad
-            </h4>
-            <p class="text-[13.5px] leading-[1.6] text-[#666666]">
-              Procesamiento de datos en tiempo real para informes contables complejos y estados financieros en segundos, no horas.
-            </p>
-          </div>
-
-          <div class="feature-card group">
-            <div class="feature-icon-wrap feature-icon-dark group-hover:scale-[1.06]">
-              <span class="material-symbols-outlined text-[20px]" translate="no">apartment</span>
-            </div>
-            <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
-              Cumplimiento Colombiano
-            </h4>
-            <p class="text-[13.5px] leading-[1.6] text-[#666666]">
-              Totalmente adaptado a las regulaciones de la DIAN: facturación electrónica, nómina e informes de exógena integrados.
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Testimonials -->
-    <section class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]" aria-labelledby="testimonials-heading">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-10 lg:mb-14 px-5 lg:px-8">
-          <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-            Casos de Éxito
-          </h2>
-          <h3
-            id="testimonials-heading"
-            class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
-            style="text-wrap: balance;"
-          >
-            Lo que dicen nuestros clientes
-          </h3>
-        </div>
-
-        <!-- Horizontal scroll on mobile, grid on desktop -->
-        <div class="testimonials-scroll px-5 lg:px-8">
-          <figure
-            v-for="t in testimonials"
-            :key="t.name"
-            class="testimonial-card"
-          >
-            <!-- Stars -->
-            <div class="flex gap-0.5 mb-5" aria-label="5 de 5 estrellas">
-              <span v-for="n in 5" :key="n" class="text-[#F59E0B] text-[15px]" aria-hidden="true">★</span>
-            </div>
-
-            <blockquote class="text-[14px] leading-[1.7] text-[#444444] mb-6 flex-1">
-              "{{ t.quote }}"
-            </blockquote>
-
-            <figcaption class="flex items-center gap-3 pt-5 border-t border-[#F4F4F5]">
+          <!-- Horizontal scroll on mobile, grid on desktop -->
+          <div class="testimonials-scroll px-5 lg:px-8">
+            <figure
+              v-for="t in testimonials"
+              :key="t.name"
+              class="testimonial-card"
+            >
+              <!-- Stars -->
               <div
-                class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black flex-shrink-0"
-                :style="{ background: t.color }"
-                aria-hidden="true"
-              >{{ t.initials }}</div>
-              <div class="min-w-0">
-                <p class="text-[13px] font-bold text-[#18181B] leading-tight">{{ t.name }}</p>
-                <p class="text-[11.5px] text-[#888888] leading-tight mt-0.5 truncate">
-                  {{ t.role }} · {{ t.company }}
-                </p>
-              </div>
-            </figcaption>
-          </figure>
-        </div>
-
-        <!-- Aggregate rating -->
-        <div class="flex items-center justify-center gap-2.5 mt-10 lg:mt-12 px-5 lg:px-8" aria-label="Valoración promedio de clientes">
-          <div class="flex gap-0.5">
-            <span v-for="n in 5" :key="n" class="text-[#F59E0B] text-[14px]" aria-hidden="true">★</span>
-          </div>
-          <span class="text-[13px] font-bold text-[#18181B]">4.9/5</span>
-          <span class="text-[12px] text-[#888888]">basado en 200+ reseñas verificadas</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Anchor for "Soluciones Enterprise" nav link -->
-    <div id="beneficios" aria-hidden="true" />
-
-    <!-- Pricing Section -->
-    <section
-      id="precios"
-      aria-labelledby="precios-heading"
-      class="py-16 lg:py-28 bg-[#FAFAFA] border-b border-[#F4F4F5]"
-      style="scroll-margin-top: 80px;"
-    >
-      <div class="max-w-7xl mx-auto px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-16">
-          <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-            Tarifas Transparentes
-          </h2>
-          <h3 id="precios-heading" class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-5">
-            Elige el plan ideal para tu negocio
-          </h3>
-          <p class="text-[15px] leading-[1.55] text-[#555555] max-w-lg mx-auto font-medium">
-            Sin contratos a largo plazo, sin cargos ocultos. Cambia de plan o cancela cuando quieras.
-          </p>
-
-          <!-- Toggle mensual/anual -->
-          <div class="flex items-center justify-center gap-3.5 mt-8">
-            <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
-            <button
-              type="button"
-              role="switch"
-              :aria-checked="isAnnual"
-              class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
-              :class="{ 'bg-[#18181B]': isAnnual }"
-              @click="toggleBilling"
-              aria-label="Facturación anual"
-            >
-              <span 
-                class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
-                :class="{ 'translate-x-5.5': isAnnual }"
-              />
-            </button>
-            <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">
-              Anual
-              <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
-                Ahorra 25% + 2 Meses Gratis
-              </span>
-            </span>
-          </div>
-        </div>
-
-        <!-- Pricing Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto items-start">
-          <div
-            v-for="(plan, idx) in plans"
-            :key="plan.id"
-            :class="[
-              'pricing-card flex flex-col justify-between relative',
-              plan.popular ? 'pricing-card--popular' : 'pricing-card--default'
-            ]"
-          >
-            <!-- Badge popular -->
-            <span
-              v-if="plan.popular"
-              class="absolute -top-3.5 left-6 bg-white text-[#18181B] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-[#E4E4E7]"
-            >
-              ⚡ Más popular
-            </span>
-
-            <div>
-              <!-- Plan Header -->
-              <div class="mb-6">
-                <div class="flex items-center justify-between mb-2">
-                  <h4 :class="['text-[20px] font-black tracking-tight', plan.popular ? 'text-white' : 'text-[#18181B]']">
-                    {{ plan.name }}
-                  </h4>
-                  <!-- Plan tier badge -->
-                  <span
-                    v-if="plan.id === 'enterprise'"
-                    class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#555555]"
-                  >SLA 99.99%</span>
-                  <span
-                    v-else-if="plan.id === 'pyme'"
-                    class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#2563EB]/15 text-[#2563EB]"
-                  >IA incluida</span>
-                </div>
-                <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/55' : 'text-[#777777]']">
-                  {{ plan.desc }}
-                </p>
-              </div>
-
-              <!-- Price -->
-              <div class="mb-6 pb-6" :class="plan.popular ? 'border-b border-white/10' : 'border-b border-[#F4F4F5]'">
-                <div class="flex items-baseline gap-1.5">
-                  <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-[#18181B]']">
-                    {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
-                  </span>
-                  <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/45' : 'text-[#999999]']">
-                    / {{ isAnnual ? 'año' : 'mes' }}
-                  </span>
-                </div>
-                <p
-                  v-if="isAnnual"
-                  :class="['text-[11px] font-bold mt-1', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
-                >
-                  ≈ {{ formatCurrency(Math.round(plan.priceAnnual / 12)) }}/mes · Ahorras 2 meses
-                </p>
-                <p v-else :class="['text-[11px] mt-1', plan.popular ? 'text-white/30' : 'text-[#BBBBBB]']">
-                  O {{ formatCurrency(Math.round((isAnnual ? plan.priceAnnual : plan.priceMonthly * 10))) }} al año con descuento
-                </p>
-              </div>
-
-              <!-- Plan inheritance label -->
-              <p
-                v-if="idx > 0"
-                :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/35' : 'text-[#AAAAAA]']"
+                class="flex gap-0.5 mb-5"
+                aria-label="5 de 5 estrellas"
               >
-                Todo {{ plans[idx - 1].name }}, más:
-              </p>
+                <span
+                  v-for="n in 5"
+                  :key="n"
+                  class="text-[#F59E0B] text-[15px]"
+                  aria-hidden="true"
+                >★</span>
+              </div>
 
-              <!-- Features checklist -->
-              <div class="space-y-2.5 mb-8">
+              <blockquote class="text-[14px] leading-[1.7] text-[#444444] mb-6 flex-1">
+                "{{ t.quote }}"
+              </blockquote>
+
+              <figcaption class="flex items-center gap-3 pt-5 border-t border-[#F4F4F5]">
                 <div
-                  v-for="feat in plan.features"
-                  :key="feat"
-                  :class="['flex items-start gap-2.5 text-[13px]', plan.popular ? 'text-white/80' : 'text-[#444444]']"
+                  class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black flex-shrink-0"
+                  :style="{ background: t.color }"
+                  aria-hidden="true"
                 >
-                  <span
-                    :class="['material-symbols-outlined text-[15px] mt-[3px] flex-shrink-0', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
-                    aria-hidden="true"
-                  >check_circle</span>
-                  <span class="leading-[1.45]">{{ feat }}</span>
+                  {{ t.initials }}
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[13px] font-bold text-[#18181B] leading-tight">
+                    {{ t.name }}
+                  </p>
+                  <p class="text-[11.5px] text-[#888888] leading-tight mt-0.5 truncate">
+                    {{ t.role }} · {{ t.company }}
+                  </p>
+                </div>
+              </figcaption>
+            </figure>
+          </div>
+
+          <!-- Aggregate rating -->
+          <div
+            class="flex items-center justify-center gap-2.5 mt-10 lg:mt-12 px-5 lg:px-8"
+            aria-label="Valoración promedio de clientes"
+          >
+            <div class="flex gap-0.5">
+              <span
+                v-for="n in 5"
+                :key="n"
+                class="text-[#F59E0B] text-[14px]"
+                aria-hidden="true"
+              >★</span>
+            </div>
+            <span class="text-[13px] font-bold text-[#18181B]">4.9/5</span>
+            <span class="text-[12px] text-[#888888]">basado en 200+ reseñas verificadas</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Anchor for "Soluciones Enterprise" nav link -->
+      <div
+        id="beneficios"
+        aria-hidden="true"
+      />
+
+      <!-- Pricing Section -->
+      <section
+        id="precios"
+        aria-labelledby="precios-heading"
+        class="py-16 lg:py-28 bg-[#FAFAFA] border-b border-[#F4F4F5]"
+        style="scroll-margin-top: 80px;"
+      >
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+          <div class="text-center max-w-3xl mx-auto mb-16">
+            <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+              Tarifas Transparentes
+            </h2>
+            <h3
+              id="precios-heading"
+              class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-5"
+            >
+              Elige el plan ideal para tu negocio
+            </h3>
+            <p class="text-[15px] leading-[1.55] text-[#555555] max-w-lg mx-auto font-medium">
+              Sin contratos a largo plazo, sin cargos ocultos. Cambia de plan o cancela cuando quieras.
+            </p>
+
+            <!-- Toggle mensual/anual -->
+            <div class="flex items-center justify-center gap-3.5 mt-8">
+              <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
+              <button
+                type="button"
+                role="switch"
+                :aria-checked="isAnnual"
+                class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
+                :class="{ 'bg-[#18181B]': isAnnual }"
+                aria-label="Facturación anual"
+                @click="toggleBilling"
+              >
+                <span 
+                  class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                  :class="{ 'translate-x-5.5': isAnnual }"
+                />
+              </button>
+              <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">
+                Anual
+                <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
+                  Ahorra 25% + 2 Meses Gratis
+                </span>
+              </span>
+            </div>
+          </div>
+
+          <!-- Pricing Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5 max-w-6xl mx-auto items-start">
+            <div
+              v-for="(plan, idx) in plans"
+              :key="plan.id"
+              :class="[
+                'pricing-card flex flex-col justify-between relative',
+                plan.popular ? 'pricing-card--popular' : 'pricing-card--default'
+              ]"
+            >
+              <!-- Badge popular -->
+              <span
+                v-if="plan.popular"
+                class="absolute -top-3.5 left-6 bg-white text-[#18181B] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-[#E4E4E7]"
+              >
+                ⚡ Más popular
+              </span>
+
+              <div>
+                <!-- Plan Header -->
+                <div class="mb-6">
+                  <div class="flex items-center justify-between mb-2">
+                    <h4 :class="['text-[20px] font-black tracking-tight', plan.popular ? 'text-white' : 'text-[#18181B]']">
+                      {{ plan.name }}
+                    </h4>
+                    <!-- Plan tier badge -->
+                    <span
+                      v-if="plan.id === 'enterprise'"
+                      class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#555555]"
+                    >SLA 99.99%</span>
+                    <span
+                      v-else-if="plan.id === 'pyme'"
+                      class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#2563EB]/15 text-[#2563EB]"
+                    >IA incluida</span>
+                  </div>
+                  <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/55' : 'text-[#777777]']">
+                    {{ plan.desc }}
+                  </p>
+                </div>
+
+                <!-- Price -->
+                <div
+                  class="mb-6 pb-6"
+                  :class="plan.popular ? 'border-b border-white/10' : 'border-b border-[#F4F4F5]'"
+                >
+                  <div class="flex items-baseline gap-1.5">
+                    <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-[#18181B]']">
+                      {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
+                    </span>
+                    <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/45' : 'text-[#999999]']">
+                      / {{ isAnnual ? 'año' : 'mes' }}
+                    </span>
+                  </div>
+                  <p
+                    v-if="isAnnual"
+                    :class="['text-[11px] font-bold mt-1', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
+                  >
+                    ≈ {{ formatCurrency(Math.round(plan.priceAnnual / 12)) }}/mes · Ahorras 2 meses
+                  </p>
+                  <p
+                    v-else
+                    :class="['text-[11px] mt-1', plan.popular ? 'text-white/30' : 'text-[#BBBBBB]']"
+                  >
+                    O {{ formatCurrency(Math.round((isAnnual ? plan.priceAnnual : plan.priceMonthly * 10))) }} al año con descuento
+                  </p>
+                </div>
+
+                <!-- Plan inheritance label -->
+                <p
+                  v-if="idx > 0"
+                  :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/35' : 'text-[#AAAAAA]']"
+                >
+                  Todo {{ plans[idx - 1].name }}, más:
+                </p>
+
+                <!-- Features checklist -->
+                <div class="space-y-2.5 mb-8">
+                  <div
+                    v-for="feat in plan.features"
+                    :key="feat"
+                    :class="['flex items-start gap-2.5 text-[13px]', plan.popular ? 'text-white/80' : 'text-[#444444]']"
+                  >
+                    <span
+                      :class="['material-symbols-outlined text-[15px] mt-[3px] flex-shrink-0', plan.popular ? 'text-emerald-400' : 'text-emerald-600']"
+                      aria-hidden="true"
+                    >check_circle</span>
+                    <span class="leading-[1.45]">{{ feat }}</span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Buttons + micro-copy -->
-            <div class="space-y-2 mt-auto">
-              <button
-                type="button"
-                :class="[
-                  'w-full py-3.5 rounded-xl text-[13.5px] font-semibold flex items-center justify-center gap-2 btn-transition active:scale-[0.98]',
-                  plan.popular
-                    ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
-                    : 'bg-[#18181B] text-white hover:bg-[#27272A] shadow-sm'
-                ]"
-                @click="openCheckout(plan)"
-                :aria-label="'Comprar plan ' + plan.name + ' ahora'"
-              >
-                <span class="material-symbols-outlined text-[15px]" aria-hidden="true">credit_card</span>
-                Comprar ahora
-              </button>
-              <button
-                type="button"
-                :class="[
-                  'w-full py-3 rounded-xl text-[13px] font-medium btn-transition active:scale-[0.98]',
-                  plan.popular
-                    ? 'border border-white/15 text-white/70 hover:bg-white/8 hover:text-white'
-                    : 'border border-[#E4E4E7] text-[#666666] bg-white hover:bg-[#FAFAFA] hover:text-[#18181B]'
-                ]"
-                @click="() => { trackCTAClick('pricing', plan.id); emit('request-demo') }"
-                :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
-              >
-                Comenzar prueba gratis
-              </button>
-              <!-- Micro-copy -->
-              <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/30' : 'text-[#BBBBBB]']">
-                Sin tarjeta de crédito · Cancela cuando quieras
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <!-- Enterprise bottom strip -->
-        <div class="mt-10 max-w-6xl mx-auto">
-          <div class="enterprise-strip">
-            <div class="flex items-center gap-3 min-w-0">
-              <div class="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center flex-shrink-0">
-                <span class="material-symbols-outlined text-white text-[16px]" aria-hidden="true">business</span>
-              </div>
-              <div class="min-w-0">
-                <p class="text-[13.5px] font-bold text-[#18181B]">¿Más de 20 usuarios o necesidades específicas?</p>
-                <p class="text-[12px] text-[#666666] leading-tight">Planes corporativos con integración ERP personalizada, SLA dedicado y facturación personalizada.</p>
-              </div>
-            </div>
-            <button
-              type="button"
-              class="enterprise-strip-btn flex-shrink-0"
-              @click="emit('request-demo')"
-            >
-              Hablar con ventas
-              <span class="material-symbols-outlined text-[15px]" aria-hidden="true">arrow_forward</span>
-            </button>
-          </div>
-        </div>
-
-        <!-- Trust badges -->
-        <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 max-w-6xl mx-auto">
-          <span class="trust-badge">
-            <span class="material-symbols-outlined text-[14px] text-[#16a34a]" aria-hidden="true">shield</span>
-            Datos cifrados AES-256
-          </span>
-          <span class="trust-badge">
-            <span class="material-symbols-outlined text-[14px] text-[#16a34a]" aria-hidden="true">verified</span>
-            DIAN Partner Certificado
-          </span>
-          <span class="trust-badge">
-            <span class="material-symbols-outlined text-[14px] text-[#16a34a]" aria-hidden="true">replay</span>
-            Garantía 30 días o reembolso
-          </span>
-          <span class="trust-badge">
-            <span class="material-symbols-outlined text-[14px] text-[#16a34a]" aria-hidden="true">support_agent</span>
-            Soporte en español 24/7
-          </span>
-        </div>
-      </div>
-    </section>
-
-    <!-- Simulated Wompi Checkout Overlay -->
-    <Teleport to="body">
-      <div 
-        v-if="showWompi"
-        class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#09090B]/50 backdrop-blur-sm"
-      >
-        <div class="bg-white border border-[#E4E4E7] rounded-[24px] shadow-2xl w-full max-w-[480px] overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col text-left">
-          <!-- Wompi branded header -->
-          <div class="bg-[#F4F1DE] px-6 py-5 border-b border-[#E8E5CE] flex items-center justify-between">
-            <div class="flex items-center gap-3">
-              <div class="bg-[#FE5F55] text-white font-black px-2.5 py-1.5 rounded-lg text-[14px] tracking-tighter flex items-center gap-0.5">
-                <span>w</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-white self-end mb-1" />
-                <span>mpi</span>
-              </div>
-              <div>
-                <h4 class="text-[14px] font-black text-[#3D405B] tracking-tight">
-                  Checkout Seguro
-                </h4>
-                <p class="text-[11px] text-[#3D405B]/70 font-semibold">
-                  Pasarela de pagos enlazada
+              <!-- Buttons + micro-copy -->
+              <div class="space-y-2 mt-auto">
+                <button
+                  type="button"
+                  :class="[
+                    'w-full py-3.5 rounded-xl text-[13.5px] font-semibold flex items-center justify-center gap-2 btn-transition active:scale-[0.98]',
+                    plan.popular
+                      ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
+                      : 'bg-[#18181B] text-white hover:bg-[#27272A] shadow-sm'
+                  ]"
+                  :aria-label="'Comprar plan ' + plan.name + ' ahora'"
+                  @click="openCheckout(plan)"
+                >
+                  <span
+                    class="material-symbols-outlined text-[15px]"
+                    aria-hidden="true"
+                  >credit_card</span>
+                  Comprar ahora
+                </button>
+                <button
+                  type="button"
+                  :class="[
+                    'w-full py-3 rounded-xl text-[13px] font-medium btn-transition active:scale-[0.98]',
+                    plan.popular
+                      ? 'border border-white/15 text-white/70 hover:bg-white/8 hover:text-white'
+                      : 'border border-[#E4E4E7] text-[#666666] bg-white hover:bg-[#FAFAFA] hover:text-[#18181B]'
+                  ]"
+                  :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
+                  @click="() => { trackCTAClick('pricing', plan.id); emit('request-demo') }"
+                >
+                  Comenzar prueba gratis
+                </button>
+                <!-- Micro-copy -->
+                <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/30' : 'text-[#BBBBBB]']">
+                  Sin tarjeta de crédito · Cancela cuando quieras
                 </p>
               </div>
             </div>
-            <button 
-              type="button"
-              class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors" 
-              @click="closeWompi"
-              aria-label="Cerrar pasarela de pago"
-            >
-              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">close</span>
-            </button>
           </div>
 
-          <!-- Checkout body -->
-          <div class="p-6 flex-1 overflow-y-auto max-h-[80vh]">
-            <!-- Order summary -->
-            <div class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl p-4 mb-6">
-              <span class="text-[10px] font-bold text-[#666666] uppercase tracking-wider block mb-1">Resumen del pedido</span>
-              <div class="flex justify-between items-baseline">
-                <span class="text-[15px] font-black text-[#18181B]">{{ selectedPlan?.name }}</span>
-                <span class="text-[15px] font-black text-[#2563EB]">
-                  {{ formatCurrency(isAnnual ? selectedPlan?.priceAnnual : selectedPlan?.priceMonthly) }}
-                </span>
+          <!-- Enterprise bottom strip -->
+          <div class="mt-10 max-w-6xl mx-auto">
+            <div class="enterprise-strip">
+              <div class="flex items-center gap-3 min-w-0">
+                <div class="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center flex-shrink-0">
+                  <span
+                    class="material-symbols-outlined text-white text-[16px]"
+                    aria-hidden="true"
+                  >business</span>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-[13.5px] font-bold text-[#18181B]">
+                    ¿Más de 20 usuarios o necesidades específicas?
+                  </p>
+                  <p class="text-[12px] text-[#666666] leading-tight">
+                    Planes corporativos con integración ERP personalizada, SLA dedicado y facturación personalizada.
+                  </p>
+                </div>
               </div>
-              <p class="text-[11px] text-[#555555] mt-1">
-                Suscripción {{ isAnnual ? 'anual (con 25% desc.)' : 'mensual' }}
-              </p>
-            </div>
-
-            <!-- Payment process step 1: details -->
-            <form
-              v-if="paymentStep === 'details'"
-              class="space-y-4"
-              @submit.prevent="submitPaymentReal"
-            >
-              <button 
-                type="submit"
-                class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
-              >
-                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">lock</span>
-                Pagar con Wompi
-              </button>
-              
-              <!-- Only visible in development — never in production builds -->
               <button
-                v-if="isDev"
                 type="button"
-                class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-bold hover:bg-[#FAFAFA] transition-colors shadow-sm flex items-center justify-center gap-1.5"
-                @click="submitPaymentSimulated"
+                class="enterprise-strip-btn flex-shrink-0"
+                @click="emit('request-demo')"
               >
-                <span class="material-symbols-outlined text-[18px]" aria-hidden="true">science</span>
-                Simular Pago (Solo DEV)
+                Hablar con ventas
+                <span
+                  class="material-symbols-outlined text-[15px]"
+                  aria-hidden="true"
+                >arrow_forward</span>
               </button>
-            </form>
-
-            <!-- Processing step -->
-            <div
-              v-else-if="paymentStep === 'processing'"
-              class="py-12 flex flex-col items-center justify-center text-center"
-            >
-              <span class="animate-spin w-10 h-10 border-4 border-[#FE5F55] border-t-transparent rounded-full mb-4" />
-              <h4 class="text-[15px] font-black text-[#18181B]">
-                Procesando transacción
-              </h4>
-              <p class="text-[12px] text-[#555555] max-w-[280px] mt-1.5 font-medium">
-                {{ processingMessage || 'Por favor no cierres la ventana. Estamos validando la transacción con la red bancaria.' }}
-              </p>
             </div>
+          </div>
 
-            <!-- Success step -->
-            <div
-              v-else-if="paymentStep === 'success'"
-              class="py-8 flex flex-col items-center justify-center text-center"
-            >
-              <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
-                <span class="material-symbols-outlined text-[32px] fill-current">check_circle</span>
+          <!-- Trust badges -->
+          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 mt-10 max-w-6xl mx-auto">
+            <span class="trust-badge">
+              <span
+                class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                aria-hidden="true"
+              >shield</span>
+              Datos cifrados AES-256
+            </span>
+            <span class="trust-badge">
+              <span
+                class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                aria-hidden="true"
+              >verified</span>
+              DIAN Partner Certificado
+            </span>
+            <span class="trust-badge">
+              <span
+                class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                aria-hidden="true"
+              >replay</span>
+              Garantía 30 días o reembolso
+            </span>
+            <span class="trust-badge">
+              <span
+                class="material-symbols-outlined text-[14px] text-[#16a34a]"
+                aria-hidden="true"
+              >support_agent</span>
+              Soporte en español 24/7
+            </span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Simulated Wompi Checkout Overlay -->
+      <Teleport to="body">
+        <div 
+          v-if="showWompi"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#09090B]/50 backdrop-blur-sm"
+        >
+          <div class="bg-white border border-[#E4E4E7] rounded-[24px] shadow-2xl w-full max-w-[480px] overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col text-left">
+            <!-- Wompi branded header -->
+            <div class="bg-[#F4F1DE] px-6 py-5 border-b border-[#E8E5CE] flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div class="bg-[#FE5F55] text-white font-black px-2.5 py-1.5 rounded-lg text-[14px] tracking-tighter flex items-center gap-0.5">
+                  <span>w</span>
+                  <span class="w-1.5 h-1.5 rounded-full bg-white self-end mb-1" />
+                  <span>mpi</span>
+                </div>
+                <div>
+                  <h4 class="text-[14px] font-black text-[#3D405B] tracking-tight">
+                    Checkout Seguro
+                  </h4>
+                  <p class="text-[11px] text-[#3D405B]/70 font-semibold">
+                    Pasarela de pagos enlazada
+                  </p>
+                </div>
               </div>
-              <h4 class="text-[18px] font-black text-[#18181B]">
-                ¡Pago exitoso!
-              </h4>
-              <p class="text-[13px] text-[#555555] max-w-[320px] mt-2 leading-relaxed">
-                Tu transacción ha sido aprobada. Recibirás el comprobante de compra y los accesos por correo electrónico.
-              </p>
-              
               <button 
                 type="button"
-                class="w-full py-3.5 bg-[#18181B] hover:bg-[#27272A] text-white text-[13px] font-extrabold rounded-xl transition-colors shadow-md mt-8 active:scale-[0.98]"
+                class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors" 
+                aria-label="Cerrar pasarela de pago"
                 @click="closeWompi"
               >
-                Finalizar
+                <span
+                  class="material-symbols-outlined text-[18px]"
+                  aria-hidden="true"
+                >close</span>
+              </button>
+            </div>
+
+            <!-- Checkout body -->
+            <div class="p-6 flex-1 overflow-y-auto max-h-[80vh]">
+              <!-- Order summary -->
+              <div class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl p-4 mb-6">
+                <span class="text-[10px] font-bold text-[#666666] uppercase tracking-wider block mb-1">Resumen del pedido</span>
+                <div class="flex justify-between items-baseline">
+                  <span class="text-[15px] font-black text-[#18181B]">{{ selectedPlan?.name }}</span>
+                  <span class="text-[15px] font-black text-[#2563EB]">
+                    {{ formatCurrency(isAnnual ? selectedPlan?.priceAnnual : selectedPlan?.priceMonthly) }}
+                  </span>
+                </div>
+                <p class="text-[11px] text-[#555555] mt-1">
+                  Suscripción {{ isAnnual ? 'anual (con 25% desc.)' : 'mensual' }}
+                </p>
+              </div>
+
+              <!-- Payment process step 1: details -->
+              <form
+                v-if="paymentStep === 'details'"
+                class="space-y-4"
+                @submit.prevent="submitPaymentReal"
+              >
+                <button 
+                  type="submit"
+                  class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
+                >
+                  <span
+                    class="material-symbols-outlined text-[18px]"
+                    aria-hidden="true"
+                  >lock</span>
+                  Pagar con Wompi
+                </button>
+              
+                <!-- Only visible in development — never in production builds -->
+                <button
+                  v-if="isDev"
+                  type="button"
+                  class="w-full py-3.5 border border-[#E4E4E7] text-[#18181B] bg-white rounded-xl text-[13px] font-bold hover:bg-[#FAFAFA] transition-colors shadow-sm flex items-center justify-center gap-1.5"
+                  @click="submitPaymentSimulated"
+                >
+                  <span
+                    class="material-symbols-outlined text-[18px]"
+                    aria-hidden="true"
+                  >science</span>
+                  Simular Pago (Solo DEV)
+                </button>
+              </form>
+
+              <!-- Processing step -->
+              <div
+                v-else-if="paymentStep === 'processing'"
+                class="py-12 flex flex-col items-center justify-center text-center"
+              >
+                <span class="animate-spin w-10 h-10 border-4 border-[#FE5F55] border-t-transparent rounded-full mb-4" />
+                <h4 class="text-[15px] font-black text-[#18181B]">
+                  Procesando transacción
+                </h4>
+                <p class="text-[12px] text-[#555555] max-w-[280px] mt-1.5 font-medium">
+                  {{ processingMessage || 'Por favor no cierres la ventana. Estamos validando la transacción con la red bancaria.' }}
+                </p>
+              </div>
+
+              <!-- Success step -->
+              <div
+                v-else-if="paymentStep === 'success'"
+                class="py-8 flex flex-col items-center justify-center text-center"
+              >
+                <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                  <span class="material-symbols-outlined text-[32px] fill-current">check_circle</span>
+                </div>
+                <h4 class="text-[18px] font-black text-[#18181B]">
+                  ¡Pago exitoso!
+                </h4>
+                <p class="text-[13px] text-[#555555] max-w-[320px] mt-2 leading-relaxed">
+                  Tu transacción ha sido aprobada. Recibirás el comprobante de compra y los accesos por correo electrónico.
+                </p>
+              
+                <button 
+                  type="button"
+                  class="w-full py-3.5 bg-[#18181B] hover:bg-[#27272A] text-white text-[13px] font-extrabold rounded-xl transition-colors shadow-md mt-8 active:scale-[0.98]"
+                  @click="closeWompi"
+                >
+                  Finalizar
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </Teleport>
+
+      <!-- Drawer navigation para móvil -->
+      <Teleport to="body">
+        <div 
+          v-if="mobileNavOpen" 
+          class="fixed inset-0 z-50 bg-[#09090B]/50 backdrop-blur-sm lg:hidden"
+          @click="mobileNavOpen = false"
+        >
+          <!-- Drawer content -->
+          <div
+            class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+            @click.stop
+          >
+            <!-- Drawer header -->
+            <div class="flex justify-between items-center px-5 py-4 border-b border-[#F4F4F5]">
+              <div class="flex items-center gap-2">
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 56 56"
+                  aria-hidden="true"
+                  class="flex-shrink-0"
+                >
+                  <rect
+                    width="56"
+                    height="56"
+                    rx="12"
+                    fill="#18181B"
+                  />
+                  <path
+                    d="M44 18 A 16 16 0 1 0 44 38"
+                    stroke="#fff"
+                    stroke-width="5.5"
+                    stroke-linecap="round"
+                    fill="none"
+                  />
+                  <path
+                    d="M44 18 A 16 16 0 0 1 44 38"
+                    stroke="#2563EB"
+                    stroke-width="5.5"
+                    stroke-linecap="round"
+                    fill="none"
+                  />
+                </svg>
+                <span class="text-[15px] font-bold text-[#18181B]">Contex360</span>
+              </div>
+              <button
+                type="button"
+                class="w-10 h-10 flex items-center justify-center hover:bg-[#F4F4F5] rounded-lg text-[#555555] transition-colors"
+                aria-label="Cerrar menú de navegación"
+                @click="mobileNavOpen = false"
+              >
+                <span
+                  class="material-symbols-outlined text-[20px]"
+                  aria-hidden="true"
+                >close</span>
+              </button>
+            </div>
+
+            <!-- Drawer nav -->
+            <nav
+              role="navigation"
+              aria-label="Navegación móvil"
+              class="flex flex-col px-3 pt-3 flex-1"
+            >
+              <a
+                href="#producto"
+                class="drawer-nav-link"
+                @click="mobileNavOpen = false"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px] text-[#888888]"
+                  aria-hidden="true"
+                >grid_view</span>
+                Plataforma
+              </a>
+              <a
+                href="#beneficios"
+                class="drawer-nav-link"
+                @click="mobileNavOpen = false"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px] text-[#888888]"
+                  aria-hidden="true"
+                >star</span>
+                Soluciones Enterprise
+              </a>
+              <a
+                href="#precios"
+                class="drawer-nav-link"
+                @click="mobileNavOpen = false"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px] text-[#888888]"
+                  aria-hidden="true"
+                >payments</span>
+                Precios
+              </a>
+            </nav>
+
+            <!-- Drawer footer actions -->
+            <div class="px-4 pb-8 pt-4 border-t border-[#F4F4F5] space-y-2.5">
+              <button
+                type="button"
+                class="w-full py-3.5 bg-[#18181B] text-white text-[14px] font-semibold rounded-xl btn-transition active:scale-[0.98] flex items-center justify-center gap-2"
+                @click="() => { mobileNavOpen = false; trackCTAClick('drawer'); emit('request-demo') }"
+              >
+                Iniciar Prueba Gratuita
+                <span
+                  class="material-symbols-outlined text-[18px]"
+                  aria-hidden="true"
+                >arrow_forward</span>
+              </button>
+              <button
+                type="button"
+                class="w-full py-3.5 border border-[#E4E4E7] text-[#555555] text-[14px] font-semibold rounded-xl btn-transition hover:bg-[#FAFAFA] hover:text-[#18181B] flex items-center justify-center gap-2"
+                @click="() => { mobileNavOpen = false; emit('login') }"
+              >
+                <span
+                  class="material-symbols-outlined text-[18px]"
+                  aria-hidden="true"
+                >person</span>
+                Iniciar Sesión
               </button>
             </div>
           </div>
         </div>
-      </div>
-    </Teleport>
+      </Teleport>
 
-    <!-- Drawer navigation para móvil -->
-    <Teleport to="body">
-      <div 
-        v-if="mobileNavOpen" 
-        class="fixed inset-0 z-50 bg-[#09090B]/50 backdrop-blur-sm lg:hidden"
-        @click="mobileNavOpen = false"
+      <!-- FAQ -->
+      <section
+        class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
+        aria-labelledby="faq-heading"
       >
-        <!-- Drawer content -->
-        <div
-          class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
-          @click.stop
-        >
-          <!-- Drawer header -->
-          <div class="flex justify-between items-center px-5 py-4 border-b border-[#F4F4F5]">
-            <div class="flex items-center gap-2">
-              <svg width="24" height="24" viewBox="0 0 56 56" aria-hidden="true" class="flex-shrink-0">
-                <rect width="56" height="56" rx="12" fill="#18181B"/>
-                <path d="M44 18 A 16 16 0 1 0 44 38" stroke="#fff" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-                <path d="M44 18 A 16 16 0 0 1 44 38" stroke="#2563EB" stroke-width="5.5" stroke-linecap="round" fill="none"/>
-              </svg>
-              <span class="text-[15px] font-bold text-[#18181B]">Contex360</span>
-            </div>
-            <button
-              type="button"
-              class="w-10 h-10 flex items-center justify-center hover:bg-[#F4F4F5] rounded-lg text-[#555555] transition-colors"
-              @click="mobileNavOpen = false"
-              aria-label="Cerrar menú de navegación"
+        <div class="max-w-3xl mx-auto px-5 lg:px-8">
+          <div class="text-center mb-10 lg:mb-14">
+            <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+              Preguntas Frecuentes
+            </h2>
+            <h3
+              id="faq-heading"
+              class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
             >
-              <span class="material-symbols-outlined text-[20px]" aria-hidden="true">close</span>
-            </button>
+              Todo lo que necesitas saber
+            </h3>
           </div>
 
-          <!-- Drawer nav -->
-          <nav role="navigation" aria-label="Navegación móvil" class="flex flex-col px-3 pt-3 flex-1">
-            <a
-              href="#producto"
-              class="drawer-nav-link"
-              @click="mobileNavOpen = false"
+          <div class="space-y-2">
+            <div
+              v-for="(faq, i) in faqs"
+              :key="i"
+              class="faq-item"
+              :class="{ 'faq-item--open': openFaq === i }"
             >
-              <span class="material-symbols-outlined text-[18px] text-[#888888]" aria-hidden="true">grid_view</span>
-              Plataforma
-            </a>
-            <a
-              href="#beneficios"
-              class="drawer-nav-link"
-              @click="mobileNavOpen = false"
-            >
-              <span class="material-symbols-outlined text-[18px] text-[#888888]" aria-hidden="true">star</span>
-              Soluciones Enterprise
-            </a>
-            <a
-              href="#precios"
-              class="drawer-nav-link"
-              @click="mobileNavOpen = false"
-            >
-              <span class="material-symbols-outlined text-[18px] text-[#888888]" aria-hidden="true">payments</span>
-              Precios
-            </a>
-          </nav>
+              <button
+                type="button"
+                class="faq-trigger"
+                :aria-expanded="openFaq === i"
+                :aria-controls="`faq-answer-${i}`"
+                @click="toggleFaq(i)"
+              >
+                <span class="text-[14.5px] font-semibold text-[#18181B] text-left">{{ faq.q }}</span>
+                <span
+                  class="faq-icon material-symbols-outlined text-[20px] text-[#888888] flex-shrink-0"
+                  :class="{ 'rotate-45': openFaq === i }"
+                  aria-hidden="true"
+                >add</span>
+              </button>
+              <div
+                :id="`faq-answer-${i}`"
+                class="faq-answer"
+                :class="{ 'faq-answer--open': openFaq === i }"
+              >
+                <p class="text-[13.5px] leading-[1.7] text-[#555555] pb-5 pr-8">
+                  {{ faq.a }}
+                </p>
+              </div>
+            </div>
+          </div>
 
-          <!-- Drawer footer actions -->
-          <div class="px-4 pb-8 pt-4 border-t border-[#F4F4F5] space-y-2.5">
+          <div class="mt-12 text-center">
+            <p class="text-[13.5px] text-[#888888] mb-4">
+              ¿Tienes otra pregunta?
+            </p>
             <button
               type="button"
-              class="w-full py-3.5 bg-[#18181B] text-white text-[14px] font-semibold rounded-xl btn-transition active:scale-[0.98] flex items-center justify-center gap-2"
-              @click="() => { mobileNavOpen = false; trackCTAClick('drawer'); emit('request-demo') }"
+              class="btn-secondary-landing"
+              @click="emit('request-demo')"
             >
-              Iniciar Prueba Gratuita
-              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+              Hablar con el equipo
+              <span
+                class="material-symbols-outlined text-[16px]"
+                aria-hidden="true"
+              >chat</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA strip -->
+      <section class="cta-strip py-24 lg:py-28 relative overflow-hidden">
+        <div
+          aria-hidden="true"
+          class="cta-strip-grid pointer-events-none absolute inset-0"
+        />
+        <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center relative z-10">
+          <h3
+            class="text-[32px] lg:text-[46px] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-5"
+            style="text-wrap: balance;"
+          >
+            ¿Listo para llevar su back-office <em class="not-italic text-[#60A5FA]">al siguiente nivel</em>?
+          </h3>
+          <p class="text-[15.5px] text-white/60 mb-10 max-w-md mx-auto leading-[1.6]">
+            Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              type="button"
+              class="btn-cta-white"
+              aria-label="Solicitar demostración de Contex360"
+              @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
+            >
+              Solicitar Demo
+              <span
+                class="material-symbols-outlined text-[18px]"
+                aria-hidden="true"
+              >arrow_forward</span>
             </button>
             <button
               type="button"
-              class="w-full py-3.5 border border-[#E4E4E7] text-[#555555] text-[14px] font-semibold rounded-xl btn-transition hover:bg-[#FAFAFA] hover:text-[#18181B] flex items-center justify-center gap-2"
-              @click="() => { mobileNavOpen = false; emit('login') }"
+              class="border border-white/20 text-white/80 text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-white/8 hover:text-white btn-transition active:scale-[0.98]"
+              aria-label="Iniciar sesión en la plataforma"
+              @click="emit('login')"
             >
-              <span class="material-symbols-outlined text-[18px]" aria-hidden="true">person</span>
               Iniciar Sesión
             </button>
           </div>
         </div>
-      </div>
-    </Teleport>
-
-    <!-- FAQ -->
-    <section class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]" aria-labelledby="faq-heading">
-      <div class="max-w-3xl mx-auto px-5 lg:px-8">
-        <div class="text-center mb-10 lg:mb-14">
-          <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-            Preguntas Frecuentes
-          </h2>
-          <h3
-            id="faq-heading"
-            class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
-          >
-            Todo lo que necesitas saber
-          </h3>
-        </div>
-
-        <div class="space-y-2">
-          <div
-            v-for="(faq, i) in faqs"
-            :key="i"
-            class="faq-item"
-            :class="{ 'faq-item--open': openFaq === i }"
-          >
-            <button
-              type="button"
-              class="faq-trigger"
-              :aria-expanded="openFaq === i"
-              :aria-controls="`faq-answer-${i}`"
-              @click="toggleFaq(i)"
-            >
-              <span class="text-[14.5px] font-semibold text-[#18181B] text-left">{{ faq.q }}</span>
-              <span
-                class="faq-icon material-symbols-outlined text-[20px] text-[#888888] flex-shrink-0"
-                :class="{ 'rotate-45': openFaq === i }"
-                aria-hidden="true"
-              >add</span>
-            </button>
-            <div
-              :id="`faq-answer-${i}`"
-              class="faq-answer"
-              :class="{ 'faq-answer--open': openFaq === i }"
-            >
-              <p class="text-[13.5px] leading-[1.7] text-[#555555] pb-5 pr-8">
-                {{ faq.a }}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="mt-12 text-center">
-          <p class="text-[13.5px] text-[#888888] mb-4">¿Tienes otra pregunta?</p>
-          <button
-            type="button"
-            class="btn-secondary-landing"
-            @click="emit('request-demo')"
-          >
-            Hablar con el equipo
-            <span class="material-symbols-outlined text-[16px]" aria-hidden="true">chat</span>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA strip -->
-    <section class="cta-strip py-24 lg:py-28 relative overflow-hidden">
-      <div aria-hidden="true" class="cta-strip-grid pointer-events-none absolute inset-0" />
-      <div class="max-w-4xl mx-auto px-6 lg:px-8 text-center relative z-10">
-        <h3
-          class="text-[32px] lg:text-[46px] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-5"
-          style="text-wrap: balance;"
-        >
-          ¿Listo para llevar su back-office <em class="not-italic text-[#60A5FA]">al siguiente nivel</em>?
-        </h3>
-        <p class="text-[15.5px] text-white/60 mb-10 max-w-md mx-auto leading-[1.6]">
-          Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
-        </p>
-        <div class="flex flex-col sm:flex-row gap-3 justify-center">
-          <button
-            type="button"
-            class="btn-cta-white"
-            @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
-            aria-label="Solicitar demostración de Contex360"
-          >
-            Solicitar Demo
-            <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
-          </button>
-          <button
-            type="button"
-            class="border border-white/20 text-white/80 text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-white/8 hover:text-white btn-transition active:scale-[0.98]"
-            @click="emit('login')"
-            aria-label="Iniciar sesión en la plataforma"
-          >
-            Iniciar Sesión
-          </button>
-        </div>
-      </div>
-    </section>
+      </section>
     </main>
 
     <!-- Sticky mobile CTA bar -->
@@ -1265,13 +1427,18 @@ function confirmBillingChange() {
         <button
           type="button"
           class="sticky-mobile-cta-btn"
-          @click="() => { trackCTAClick('sticky-mobile'); emit('request-demo') }"
           tabindex="-1"
+          @click="() => { trackCTAClick('sticky-mobile'); emit('request-demo') }"
         >
           Iniciar Prueba Gratuita
-          <span class="material-symbols-outlined text-[18px]" aria-hidden="true">arrow_forward</span>
+          <span
+            class="material-symbols-outlined text-[18px]"
+            aria-hidden="true"
+          >arrow_forward</span>
         </button>
-        <p class="sticky-mobile-cta-sub">Sin tarjeta · Cancela cuando quieras</p>
+        <p class="sticky-mobile-cta-sub">
+          Sin tarjeta · Cancela cuando quieras
+        </p>
       </div>
     </Teleport>
 
@@ -1286,7 +1453,10 @@ function confirmBillingChange() {
       >
         <div class="bg-white border border-[#E4E4E7] rounded-[20px] shadow-2xl w-full max-w-[400px] p-7 flex flex-col gap-5">
           <div>
-            <h4 id="billing-confirm-title" class="text-[16px] font-bold text-[#18181B] mb-1.5">
+            <h4
+              id="billing-confirm-title"
+              class="text-[16px] font-bold text-[#18181B] mb-1.5"
+            >
               ¿Cambiar modalidad de facturación?
             </h4>
             <p class="text-[13px] text-[#555555] leading-[1.55]">
@@ -1361,12 +1531,16 @@ function confirmBillingChange() {
               type="button"
               class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
               @click="emit('show-about')"
-            >Características</button>
+            >
+              Características
+            </button>
             <button
               type="button"
               class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
               @click="() => { trackCTAClick('footer'); emit('request-demo') }"
-            >Demo</button>
+            >
+              Demo
+            </button>
           </div>
           <div class="flex flex-col gap-3">
             <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Legal</span>
@@ -1374,22 +1548,30 @@ function confirmBillingChange() {
               type="button"
               class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
               @click="emit('show-terms')"
-            >Términos</button>
+            >
+              Términos
+            </button>
             <button
               type="button"
               class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
               @click="emit('show-privacy')"
-            >Privacidad</button>
+            >
+              Privacidad
+            </button>
             <button
               type="button"
               class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
               @click="emit('show-dpa')"
-            >DPA</button>
+            >
+              DPA
+            </button>
             <button
               type="button"
               class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
               @click="emit('show-bcp')"
-            >Continuidad</button>
+            >
+              Continuidad
+            </button>
           </div>
         </div>
         <p class="text-[12px] text-[#666666] font-medium">

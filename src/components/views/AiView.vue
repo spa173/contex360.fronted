@@ -90,7 +90,10 @@ async function handleSubmit() {
             v-if="isSubmitting"
             class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"
           />
-          <span v-else class="material-symbols-outlined text-[18px]">auto_awesome</span>
+          <span
+            v-else
+            class="material-symbols-outlined text-[18px]"
+          >auto_awesome</span>
           {{ isSubmitting ? 'Analizando...' : 'Analizar documento' }}
         </button>
       </div>

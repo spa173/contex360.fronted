@@ -259,7 +259,7 @@ const finalSections = [
           </div>
         </div>
         <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium">
-          Contex360 no se responsabiliza por interrupciones causadas por factores externos como fallas de conectividad del usuario, eventos de fuerza mayor o interrupciones de proveedores de infraestructura (AWS, Render, Neon).
+          Contex360 no se responsabiliza por interrupciones causadas por factores externos como fallas de conectividad del usuario, eventos de fuerza mayor o interrupciones de proveedores de infraestructura (AWS, Hugging Face, Neon).
         </p>
       </div>
     </section>
