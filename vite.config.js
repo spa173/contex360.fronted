@@ -19,10 +19,22 @@ export default defineConfig({
     },
   },
   build: {
-    // Re-enabled: Vite injects <link rel="modulepreload"> for each async chunk,
-    // eliminating waterfall loading when navigating between app modules.
-    // modulePreload: false was causing N round-trips for lazy-loaded views.
-    modulePreload: { polyfill: true },
+    modulePreload: {
+      polyfill: true,
+      resolveDependencies(filename, deps) {
+        // Exclude protected ERP views from initial HTML preloading to save bandwidth on landing page load
+        return deps.filter(dep => {
+          const isProtected = 
+            dep.includes('chunk-accounting') ||
+            dep.includes('chunk-admin') ||
+            dep.includes('chunk-billing') ||
+            dep.includes('chunk-inventory') ||
+            dep.includes('chunk-dashboard') ||
+            dep.includes('chunk-legal')
+          return !isProtected
+        })
+      }
+    },
     chunkSizeWarningLimit: 600,
     // es2022 supports top-level await (used in stateSeed.ts) and is supported by
     // all browsers from 2022+ (well within our audience in 2026).

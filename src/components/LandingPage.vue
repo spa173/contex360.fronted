@@ -542,7 +542,7 @@ function confirmBillingChange() {
             </div>
 
             <!-- Mobile micro-copy under CTA -->
-            <p class="text-[11.5px] text-[#AAAAAA] mt-3 lg:hidden">
+            <p class="text-[11.5px] text-[#71717A] mt-3 lg:hidden">
               Sin tarjeta de crédito · Cancela cuando quieras
             </p>
 
@@ -626,7 +626,7 @@ function confirmBillingChange() {
         aria-label="Clientes que confían en Contex360"
       >
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-          <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-[#CCCCCC] mb-8">
+          <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-[#71717A] mb-8">
             Más de 500 empresas colombianas ya operan con Contex360
           </p>
           <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 lg:gap-x-12">
@@ -745,6 +745,7 @@ function confirmBillingChange() {
               <!-- Stars -->
               <div
                 class="flex gap-0.5 mb-5"
+                role="img"
                 aria-label="5 de 5 estrellas"
               >
                 <span
@@ -782,6 +783,7 @@ function confirmBillingChange() {
           <!-- Aggregate rating -->
           <div
             class="flex items-center justify-center gap-2.5 mt-10 lg:mt-12 px-5 lg:px-8"
+            role="img"
             aria-label="Valoración promedio de clientes"
           >
             <div class="flex gap-0.5">
@@ -887,7 +889,7 @@ function confirmBillingChange() {
                       class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#2563EB]/15 text-[#2563EB]"
                     >IA incluida</span>
                   </div>
-                  <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/55' : 'text-[#777777]']">
+                  <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/80' : 'text-[#555555]']">
                     {{ plan.desc }}
                   </p>
                 </div>
@@ -901,7 +903,7 @@ function confirmBillingChange() {
                     <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-[#18181B]']">
                       {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
                     </span>
-                    <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/45' : 'text-[#999999]']">
+                    <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/70' : 'text-[#71717A]']">
                       / {{ isAnnual ? 'año' : 'mes' }}
                     </span>
                   </div>
@@ -913,7 +915,7 @@ function confirmBillingChange() {
                   </p>
                   <p
                     v-else
-                    :class="['text-[11px] mt-1', plan.popular ? 'text-white/30' : 'text-[#BBBBBB]']"
+                    :class="['text-[11px] mt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
                   >
                     O {{ formatCurrency(Math.round((isAnnual ? plan.priceAnnual : plan.priceMonthly * 10))) }} al año con descuento
                   </p>
@@ -922,7 +924,7 @@ function confirmBillingChange() {
                 <!-- Plan inheritance label -->
                 <p
                   v-if="idx > 0"
-                  :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/35' : 'text-[#AAAAAA]']"
+                  :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
                 >
                   Todo {{ plans[idx - 1].name }}, más:
                 </p>
@@ -953,7 +955,7 @@ function confirmBillingChange() {
                       ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
                       : 'bg-[#18181B] text-white hover:bg-[#27272A] shadow-sm'
                   ]"
-                  :aria-label="'Comprar plan ' + plan.name + ' ahora'"
+                  :aria-label="'Comprar ahora plan ' + plan.name"
                   @click="openCheckout(plan)"
                 >
                   <span
@@ -976,7 +978,7 @@ function confirmBillingChange() {
                   Comenzar prueba gratis
                 </button>
                 <!-- Micro-copy -->
-                <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/30' : 'text-[#BBBBBB]']">
+                <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']">
                   Sin tarjeta de crédito · Cancela cuando quieras
                 </p>
               </div>
@@ -1395,7 +1397,7 @@ function confirmBillingChange() {
             <button
               type="button"
               class="btn-cta-white"
-              aria-label="Solicitar demostración de Contex360"
+              aria-label="Solicitar Demo de Contex360"
               @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
             >
               Solicitar Demo
@@ -1814,12 +1816,12 @@ a:focus-visible {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  opacity: 0.45;
+  opacity: 0.65;
   transition: opacity 200ms ease;
   cursor: default;
   user-select: none;
 }
-.client-logo-item:hover { opacity: 0.7; }
+.client-logo-item:hover { opacity: 0.95; }
 .client-logo-abbr {
   width: 28px;
   height: 28px;
