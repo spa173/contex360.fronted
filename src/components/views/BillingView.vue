@@ -391,11 +391,20 @@ function statusBadge(status: string | undefined): BadgeStyle {
           </div>
 
           <!-- Proyección de Impuestos Real-time (Backend Single Source of Truth) -->
-          <div v-if="taxPreview" class="p-4 rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] space-y-2.5 transition-all duration-300">
+          <div
+            v-if="taxPreview"
+            class="p-4 rounded-[12px] border border-[#E4E4E7] bg-[#FAFAFA] space-y-2.5 transition-all duration-300"
+          >
             <div class="flex items-center justify-between text-[#2563EB]">
               <div class="flex items-center gap-1.5">
-                <span class="material-symbols-outlined text-[16px] animate-spin" v-if="isCalculatingTaxes">sync</span>
-                <span class="material-symbols-outlined text-[16px]" v-else>auto_awesome</span>
+                <span
+                  v-if="isCalculatingTaxes"
+                  class="material-symbols-outlined text-[16px] animate-spin"
+                >sync</span>
+                <span
+                  v-else
+                  class="material-symbols-outlined text-[16px]"
+                >auto_awesome</span>
                 <span class="text-[11px] font-bold uppercase tracking-wider">Proyección de Impuestos</span>
               </div>
               <span class="text-[10px] text-[#71717A] bg-white px-2 py-0.5 border border-[#E4E4E7] rounded-full font-semibold">Backend</span>
@@ -406,15 +415,24 @@ function statusBadge(status: string | undefined): BadgeStyle {
                 <span>Subtotal (Base)</span>
                 <span class="font-mono text-[#18181B]">{{ formatCurrency(taxPreview.base) }}</span>
               </div>
-              <div class="flex justify-between" v-if="taxPreview.iva > 0">
+              <div
+                v-if="taxPreview.iva > 0"
+                class="flex justify-between"
+              >
                 <span>IVA ({{ (taxPreview.ivaRate * 100).toFixed(0) }}%)</span>
                 <span class="font-mono text-[#18181B]">+{{ formatCurrency(taxPreview.iva) }}</span>
               </div>
-              <div class="flex justify-between" v-if="taxPreview.ica > 0">
+              <div
+                v-if="taxPreview.ica > 0"
+                class="flex justify-between"
+              >
                 <span>ICA ({{ taxPreview.city || 'ICA' }} {{ (taxPreview.icaRate * 1000).toFixed(1) }}‰)</span>
                 <span class="font-mono text-[#18181B]">+{{ formatCurrency(taxPreview.ica) }}</span>
               </div>
-              <div class="flex justify-between" v-if="taxPreview.retefuente > 0">
+              <div
+                v-if="taxPreview.retefuente > 0"
+                class="flex justify-between"
+              >
                 <span>ReteFuente ({{ (taxPreview.retefuenteRate * 100).toFixed(1) }}%)</span>
                 <span class="font-mono text-rose-600">-{{ formatCurrency(taxPreview.retefuente) }}</span>
               </div>
@@ -425,7 +443,10 @@ function statusBadge(status: string | undefined): BadgeStyle {
             </div>
           </div>
           
-          <div v-else class="flex gap-2.5 p-3 rounded-[10px] border border-[#E4E4E7] bg-white transition-all duration-300">
+          <div
+            v-else
+            class="flex gap-2.5 p-3 rounded-[10px] border border-[#E4E4E7] bg-white transition-all duration-300"
+          >
             <span class="material-symbols-outlined text-[18px] text-[#2563EB] flex-shrink-0">auto_awesome</span>
             <p class="text-[11px] text-[#18181B] leading-[1.5]">
               <strong class="font-semibold">ContexAI:</strong> Selecciona un cliente e ingresa un monto para proyectar impuestos en tiempo real.

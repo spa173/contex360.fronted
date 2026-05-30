@@ -44,7 +44,10 @@ function rejectOptional() {
             No usamos cookies de rastreo ni publicidad.
             Al hacer clic en "Aceptar todas", también habilitas cookies opcionales que mejoran tu experiencia.
             Consulta nuestra
-            <a href="/privacidad" class="underline hover:text-[#18181B]">Política de Privacidad</a>.
+            <a
+              href="/privacidad"
+              class="underline hover:text-[#18181B]"
+            >Política de Privacidad</a>.
           </p>
         </div>
         <div class="flex gap-3 shrink-0">

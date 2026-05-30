@@ -131,7 +131,10 @@ async function handleCheckout() {
                       selectedPlan === plan.id ? 'border-[#2563EB] bg-[#2563EB]' : 'border-[#D4D4D8]'
                     ]"
                   >
-                    <div v-if="selectedPlan === plan.id" class="w-2 h-2 rounded-full bg-white" />
+                    <div
+                      v-if="selectedPlan === plan.id"
+                      class="w-2 h-2 rounded-full bg-white"
+                    />
                   </div>
                   <div>
                     <div class="flex items-center gap-2">

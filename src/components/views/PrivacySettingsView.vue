@@ -118,7 +118,10 @@ async function handleSeedContratos() {
 </script>
 
 <template>
-  <section v-if="isActive" class="animate-in fade-in slide-in-from-bottom-4 duration-500">
+  <section
+    v-if="isActive"
+    class="animate-in fade-in slide-in-from-bottom-4 duration-500"
+  >
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 mb-8">
       <div>
         <div class="flex items-center gap-2 mb-2 text-[11px] font-medium text-[#A1A1AA]">
@@ -135,7 +138,10 @@ async function handleSeedContratos() {
       </div>
     </div>
 
-    <div v-if="loading" class="flex items-center justify-center py-20">
+    <div
+      v-if="loading"
+      class="flex items-center justify-center py-20"
+    >
       <span class="material-symbols-outlined animate-spin text-[32px] text-[#2563EB]">progress_activity</span>
     </div>
 
@@ -143,21 +149,36 @@ async function handleSeedContratos() {
       <!-- Consentimientos -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden mb-6">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Consentimientos</h2>
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            Consentimientos
+          </h2>
           <span class="text-[11px] text-[#71717A]">Según Ley 1581 de 2012</span>
         </div>
-        <div v-if="consents.length === 0" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">
+        <div
+          v-if="consents.length === 0"
+          class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+        >
           No hay consentimientos registrados aún.
         </div>
-        <div v-else class="divide-y divide-[#F4F4F5]">
-          <div v-for="c in consents" :key="c.id" class="px-5 py-3.5 flex items-center justify-between">
+        <div
+          v-else
+          class="divide-y divide-[#F4F4F5]"
+        >
+          <div
+            v-for="c in consents"
+            :key="c.id"
+            class="px-5 py-3.5 flex items-center justify-between"
+          >
             <div>
               <p class="text-[13px] font-semibold text-[#18181B]">
                 {{ tiposConsentimiento[c.type] || c.type }}
               </p>
               <p class="text-[11px] text-[#71717A]">
                 {{ c.estado === 'aceptado' ? 'Aceptado' : c.estado }} · {{ new Date(c.fecha).toLocaleDateString('es-CO') }}
-                <span v-if="c.hashConsent" class="ml-2 font-mono text-[10px]">#{{ c.hashConsent.slice(0, 8) }}</span>
+                <span
+                  v-if="c.hashConsent"
+                  class="ml-2 font-mono text-[10px]"
+                >#{{ c.hashConsent.slice(0, 8) }}</span>
               </p>
             </div>
             <button
@@ -174,7 +195,9 @@ async function handleSeedContratos() {
       <!-- Derechos ARCO -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden mb-6">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Derechos ARCO</h2>
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            Derechos ARCO
+          </h2>
           <span class="text-[11px] text-[#71717A]">Acceso, Rectificación, Cancelación, Oposición</span>
         </div>
         <div class="px-5 py-5">
@@ -189,13 +212,22 @@ async function handleSeedContratos() {
           </button>
 
           <!-- Formulario de derecho -->
-          <div v-if="showDerechoForm" class="mt-4 p-4 bg-[#FAFAFA] rounded-[12px] border border-[#E4E4E7]">
+          <div
+            v-if="showDerechoForm"
+            class="mt-4 p-4 bg-[#FAFAFA] rounded-[12px] border border-[#E4E4E7]"
+          >
             <label class="block text-[13px] font-semibold text-[#18181B] mb-2">Tipo de solicitud</label>
             <select
               v-model="derechoForm.tipo"
               class="w-full px-3 py-2 border border-[#E4E4E7] rounded-[8px] text-[13px] bg-white mb-4"
             >
-              <option v-for="d in tiposDerecho" :key="d.value" :value="d.value">{{ d.label }}</option>
+              <option
+                v-for="d in tiposDerecho"
+                :key="d.value"
+                :value="d.value"
+              >
+                {{ d.label }}
+              </option>
             </select>
             <div class="flex gap-3">
               <button
@@ -209,7 +241,10 @@ async function handleSeedContratos() {
                 class="px-4 py-2 bg-[#2563EB] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#1D4ED8] disabled:opacity-50 flex items-center gap-2"
                 @click="handleEjercerDerecho"
               >
-                <span v-if="saving" class="material-symbols-outlined animate-spin text-[16px]">progress_activity</span>
+                <span
+                  v-if="saving"
+                  class="material-symbols-outlined animate-spin text-[16px]"
+                >progress_activity</span>
                 Enviar solicitud
               </button>
             </div>
@@ -220,7 +255,9 @@ async function handleSeedContratos() {
       <!-- Contratos Aceptados -->
       <div class="bg-white border border-[#E4E4E7] rounded-[14px] overflow-hidden mb-6">
         <div class="px-5 py-4 border-b border-[#F4F4F5] flex items-center justify-between">
-          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">Contratos Legales</h2>
+          <h2 class="text-[15px] font-bold tracking-tight text-[#18181B]">
+            Contratos Legales
+          </h2>
           <button
             class="text-[11px] font-semibold text-[#2563EB] hover:text-[#1D4ED8]"
             @click="handleSeedContratos"
@@ -228,14 +265,28 @@ async function handleSeedContratos() {
             Cargar contratos predeterminados
           </button>
         </div>
-        <div v-if="contratos.length === 0" class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]">
+        <div
+          v-if="contratos.length === 0"
+          class="px-5 py-10 text-center text-[#A1A1AA] text-[13px]"
+        >
           No hay contratos disponibles. Haz clic en "Cargar contratos predeterminados".
         </div>
-        <div v-else class="divide-y divide-[#F4F4F5]">
-          <div v-for="c in contratos" :key="c.id" class="px-5 py-3.5 flex items-center justify-between">
+        <div
+          v-else
+          class="divide-y divide-[#F4F4F5]"
+        >
+          <div
+            v-for="c in contratos"
+            :key="c.id"
+            class="px-5 py-3.5 flex items-center justify-between"
+          >
             <div>
-              <p class="text-[13px] font-semibold text-[#18181B]">{{ c.titulo }}</p>
-              <p class="text-[11px] text-[#71717A]">v{{ c.version }} · Publicado {{ new Date(c.publicadoEn).toLocaleDateString('es-CO') }}</p>
+              <p class="text-[13px] font-semibold text-[#18181B]">
+                {{ c.titulo }}
+              </p>
+              <p class="text-[11px] text-[#71717A]">
+                v{{ c.version }} · Publicado {{ new Date(c.publicadoEn).toLocaleDateString('es-CO') }}
+              </p>
             </div>
             <span class="text-[11px] font-mono text-[#A1A1AA]">#{{ c.hash.slice(0, 12) }}</span>
           </div>
