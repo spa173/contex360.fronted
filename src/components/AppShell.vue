@@ -252,6 +252,7 @@ async function acceptCurrentContract() {
           v-if="store.activeView === 'subscription'"
           :is-active="true"
           @notify="handleNotify"
+          @navigate="handleNavigate"
         />
         <PlansView
           v-if="store.activeView === 'plans'"

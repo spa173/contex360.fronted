@@ -296,7 +296,7 @@ export const businessApi = {
   },
 
 
-  // AI
+  // AI / Chat
   async chatWithAi(message: string, history: any[] = [], attachment?: string | null) {
     return request<any>('/ai/chat', { method: 'POST', body: { message, history, attachment } })
   },
@@ -309,17 +309,26 @@ export const businessApi = {
   async getAiHealth() {
     return request<any>('/ai/health')
   },
+
+  // OCR — real endpoints from the OCR hardening sprint
   async getOcrRuns(tenantId?: string | null) {
-    return request<any[]>('/analytics/ocr-runs', { tenantId })
+    return request<any[]>('/ocr', { tenantId })
   },
-  async simulateOcrRun(tenantId?: string | null) {
-    return request<any>('/analytics/ocr-runs/simulate', { method: 'POST', tenantId })
+  async getOcrRunStatus(id: string, tenantId?: string | null) {
+    return request<any>(`/ocr/${id}`, { tenantId })
   },
-  async approveOcrRun(id: string, tenantId?: string | null) {
-    return request<any>(`/analytics/ocr-runs/${id}/approve`, { method: 'POST', tenantId })
+  async getOcrStats(tenantId?: string | null) {
+    return request<any>('/ocr/stats', { tenantId })
+  },
+  async retryOcrRun(id: string, autoCreatePurchase = false, tenantId?: string | null) {
+    return request<any>(`/ocr/${id}/retry`, { method: 'POST', body: { autoCreatePurchase }, tenantId })
   },
   async deleteOcrRun(id: string, tenantId?: string | null) {
-    return request<any>(`/analytics/ocr-runs/${id}`, { method: 'DELETE', tenantId })
+    return request<any>(`/ocr/${id}`, { method: 'DELETE', tenantId })
+  },
+  /** Upload a file for OCR — returns FormData so caller handles multipart */
+  getOcrUploadUrl() {
+    return `${getApiBaseUrl()}/ocr/upload`
   },
   
   // 2FA / TOTP
@@ -345,6 +354,18 @@ export const businessApi = {
   },
   async updateTenant(tenantId: string, data: any) {
     return request<any>(`/admin/tenants/${tenantId}`, { method: 'PATCH', body: data })
+  },
+  async updateTenantStatus(tenantId: string, status: 'active' | 'suspended') {
+    return request<any>(`/admin/tenants/${tenantId}/status`, { method: 'PATCH', body: { status } })
+  },
+  async updateTenantSubscription(tenantId: string, data: { planType: string; active: boolean; trialEndsAt: string | null }) {
+    return request<any>(`/admin/tenants/${tenantId}/subscription`, { method: 'PATCH', body: data })
+  },
+  async createAdminTenant(data: any) {
+    return request<any>('/admin/companies', { method: 'POST', body: data })
+  },
+  async deleteAdminTenant(tenantId: string, password: string) {
+    return request<any>(`/admin/tenants/${tenantId}/delete`, { method: 'POST', body: { password } })
   },
   async getAdminUsers(tenantId?: string) {
     const query = tenantId ? `?tenantId=${tenantId}` : ''

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, reactive, watch } from 'vue'
+import { ref, computed, reactive, watch } from 'vue'
 import { useAiStore } from '../../stores/aiStore'
 import { useHead } from '@unhead/vue'
 
@@ -15,16 +15,23 @@ const emit = defineEmits(['notify'])
 const store = useAiStore()
 
 const ocrForm = reactive({ source: '' })
+const isSubmitting = ref(false)
 function resetForm() { ocrForm.source = '' }
 
 watch(() => store.activeTenantId, () => resetForm(), { immediate: true })
 
 const canOcr = computed(() => store.canRunOcr)
 
-function handleSubmit() {
-  const result = store.runOcr(ocrForm.source)
-  emit('notify', { message: result.message, detail: result.detail || '' })
-  if (result.ok) resetForm()
+async function handleSubmit() {
+  if (!ocrForm.source.trim()) return
+  isSubmitting.value = true
+  try {
+    const result = await store.runOcr(ocrForm.source)
+    emit('notify', { message: result.message, detail: result.detail || '' })
+    if (result.ok) resetForm()
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -75,11 +82,16 @@ function handleSubmit() {
           class="w-full border border-[#E4E4E7] rounded-[10px] px-4 py-3 text-[13px] text-[#18181B] font-mono outline-none focus:border-[#18181B] focus:ring-4 focus:ring-black/[0.04] resize-none disabled:bg-[#FAFAFA] disabled:cursor-not-allowed"
         />
         <button
-          :disabled="!canOcr || !ocrForm.source"
+          :disabled="!canOcr || !ocrForm.source || isSubmitting"
           class="w-full mt-4 py-3 bg-[#18181B] text-white rounded-[10px] text-[13px] font-semibold hover:bg-[#27272A] disabled:opacity-50 flex items-center justify-center gap-2"
           @click="handleSubmit"
         >
-          <span class="material-symbols-outlined text-[18px]">auto_awesome</span>Analizar documento
+          <span
+            v-if="isSubmitting"
+            class="animate-spin w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+          />
+          <span v-else class="material-symbols-outlined text-[18px]">auto_awesome</span>
+          {{ isSubmitting ? 'Analizando...' : 'Analizar documento' }}
         </button>
       </div>
 

@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
-import axios from 'axios'
+import { businessApi } from '../../services/businessApi'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog'
 import { Button } from '../ui/button'
 import { Input } from '../ui/input'
-
-const API = import.meta.env.VITE_API_BASE_URL
-if (!API) throw new Error('VITE_API_BASE_URL environment variable is required')
 
 function safeLogMessage(value: unknown) {
   return String(value ?? '').replace(/[\r\n]+/g, ' ').trim().slice(0, 240)
@@ -52,9 +49,7 @@ const trialDaysLeft = computed(() => {
 async function fetchTenant() {
   loading.value = true
   try {
-    const { data } = await axios.get(`${API}/admin/tenants/${props.tenantId}`, {
-      withCredentials: true,
-    })
+    const data = await businessApi.getTenantDetails(props.tenantId)
     tenant.value = data
     generalForm.value = {
       name: data.name || '',
@@ -80,13 +75,11 @@ async function fetchTenant() {
 async function saveGeneral() {
   saving.value = true
   try {
-    const { data } = await axios.patch(`${API}/admin/tenants/${props.tenantId}`, generalForm.value, {
-      withCredentials: true,
-    })
+    const data = await businessApi.updateTenant(props.tenantId, generalForm.value)
     tenant.value = { ...tenant.value, ...data }
     alert('✅ Información actualizada')
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error guardando')
+    alert(e?.message || 'Error guardando')
   } finally {
     saving.value = false
   }
@@ -95,15 +88,15 @@ async function saveGeneral() {
 async function savePlan() {
   saving.value = true
   try {
-    await axios.patch(`${API}/admin/tenants/${props.tenantId}/subscription`, {
+    await businessApi.updateTenantSubscription(props.tenantId, {
       planType: planForm.value.planType,
       active: planForm.value.active,
       trialEndsAt: planForm.value.trialEndsAt || null,
-    }, { withCredentials: true })
+    })
     await fetchTenant()
     alert('✅ Plan actualizado')
   } catch (e: any) {
-    alert(e?.response?.data?.message || 'Error guardando plan')
+    alert(e?.message || 'Error guardando plan')
   } finally {
     saving.value = false
   }
@@ -113,9 +106,7 @@ async function setStatus(status: 'active' | 'suspended') {
   const label = status === 'suspended' ? 'suspender' : 'reactivar'
   if (!confirm(`¿Confirmas ${label} esta empresa?`)) return
   try {
-    await axios.patch(`${API}/admin/tenants/${props.tenantId}/status`, { status }, {
-      withCredentials: true,
-    })
+    await businessApi.updateTenantStatus(props.tenantId, status)
     await fetchTenant()
   } catch (e: any) {
     alert(e?.response?.data?.message || 'Error')
@@ -145,16 +136,12 @@ async function confirmDeleteTenant() {
   saving.value = true
   deleteError.value = ''
   try {
-    await axios.post(`${API}/admin/tenants/${props.tenantId}/delete`, {
-      password: deletePassword.value.trim()
-    }, {
-      withCredentials: true,
-    })
+    await businessApi.deleteAdminTenant(props.tenantId, deletePassword.value.trim())
     showDeleteModal.value = false
     alert('✅ Empresa eliminada correctamente.')
     emit('back')
   } catch (e: any) {
-    deleteError.value = e?.response?.data?.message || 'Error eliminando empresa. Verifica tu contraseña.'
+    deleteError.value = e?.message || 'Error eliminando empresa. Verifica tu contraseña.'
   } finally {
     saving.value = false
   }
