@@ -2,7 +2,6 @@
 import { ref, onMounted, onUnmounted, defineAsyncComponent, watch } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { useOnboardingStore } from '../stores/onboardingStore'
-import { useThemeStore } from '../stores/themeStore'
 import { useTranslationStore } from '../stores/translationStore'
 import { useToasts } from '../composables/useToasts'
 import { usePlanAccess } from '../composables/usePlanAccess'
@@ -36,7 +35,6 @@ const TrialExpiredOverlay = defineAsyncComponent(() => import('./common/TrialExp
 
 const store = useAuthStore()
 const onboardingStore = useOnboardingStore()
-const themeStore = useThemeStore()
 const translationStore = useTranslationStore()
 const { pushToast } = useToasts()
 const { isFeatureLocked, isTrialExpired } = usePlanAccess()
@@ -112,23 +110,23 @@ const currentContractIndex = ref(0)
 async function checkPendingContracts() {
   try {
     pendingContracts.value = await businessApi.getContratosPendientes(store.activeTenant?.id || null)
-  } catch (_e) { pendingContracts.value = [] }
+  } catch { pendingContracts.value = [] }
 }
 async function acceptCurrentContract() {
   const c = pendingContracts.value[currentContractIndex.value]
   if (!c) return
-    try {
-      await businessApi.aceptarContrato(c.id, {}, store.activeTenant?.id || null)
-      pushToast(`Contrato "${c.titulo}" aceptado`)
-      if (currentContractIndex.value < pendingContracts.value.length - 1) {
-        currentContractIndex.value++
-      } else {
-        pendingContracts.value = []
-        currentContractIndex.value = 0
-      }
-    } catch (e) {
-      pushToast('Error al aceptar contrato', e.message)
+  try {
+    await businessApi.aceptarContrato(c.id, {}, store.activeTenant?.id || null)
+    pushToast(`Contrato "${c.titulo}" aceptado`)
+    if (currentContractIndex.value < pendingContracts.value.length - 1) {
+      currentContractIndex.value++
+    } else {
+      pendingContracts.value = []
+      currentContractIndex.value = 0
     }
+  } catch (e) {
+    pushToast('Error al aceptar contrato', e.message)
+  }
 }
 </script>
 
@@ -160,120 +158,120 @@ async function acceptCurrentContract() {
 
     <!-- Main wrapper (hidden during onboarding) -->
     <template v-else>
-    <div class="flex-1 min-w-0 flex flex-col">
-      <TopNavigation
-        :user="store.currentUser"
-        :active-tenant="store.activeTenant"
-        :active-membership="store.activeMembership"
-        :accessible-tenants="store.accessibleTenants"
-        @logout="handleLogout"
-        @toggle-sidebar="toggleSidebar"
-        @navigate="handleNavigate"
-        @open-admin-panel="emit('open-admin-panel')"
-        @notify="handleNotify"
-      />
+      <div class="flex-1 min-w-0 flex flex-col">
+        <TopNavigation
+          :user="store.currentUser"
+          :active-tenant="store.activeTenant"
+          :active-membership="store.activeMembership"
+          :accessible-tenants="store.accessibleTenants"
+          @logout="handleLogout"
+          @toggle-sidebar="toggleSidebar"
+          @navigate="handleNavigate"
+          @open-admin-panel="emit('open-admin-panel')"
+          @notify="handleNotify"
+        />
 
-      <main class="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
-        <DashboardView
-          v-if="store.activeView === 'dashboard'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <BillingView
-          v-if="store.activeView === 'billing'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <PurchasesView
-          v-if="store.activeView === 'purchases'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <TreasuryView
-          v-if="store.activeView === 'treasury'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <InventoryView
-          v-if="store.activeView === 'inventory'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <ThirdPartiesView
-          v-if="store.activeView === 'third-parties'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <AccountingView
-          v-if="store.activeView === 'accounting'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <UsersView
-          v-if="store.activeView === 'users'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <ReportsView
-          v-if="store.activeView === 'reports'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <QuotesView
-          v-if="store.activeView === 'quotes'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <AdminConsoleView
-          v-if="store.activeView === 'admin-console'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <TwoFactorView
-          v-if="store.activeView === 'two-factor'"
-          @notify="handleNotify"
-        />
-        <ProfileView
-          v-if="store.activeView === 'profile'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <AiView
-          v-if="store.activeView === 'ai'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <HelpCenterView
-          v-if="store.activeView === 'help-center'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <SubscriptionView
-          v-if="store.activeView === 'subscription'"
-          :is-active="true"
-          @notify="handleNotify"
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 min-w-0">
+          <DashboardView
+            v-if="store.activeView === 'dashboard'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <BillingView
+            v-if="store.activeView === 'billing'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <PurchasesView
+            v-if="store.activeView === 'purchases'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <TreasuryView
+            v-if="store.activeView === 'treasury'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <InventoryView
+            v-if="store.activeView === 'inventory'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <ThirdPartiesView
+            v-if="store.activeView === 'third-parties'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <AccountingView
+            v-if="store.activeView === 'accounting'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <UsersView
+            v-if="store.activeView === 'users'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <ReportsView
+            v-if="store.activeView === 'reports'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <QuotesView
+            v-if="store.activeView === 'quotes'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <AdminConsoleView
+            v-if="store.activeView === 'admin-console'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <TwoFactorView
+            v-if="store.activeView === 'two-factor'"
+            @notify="handleNotify"
+          />
+          <ProfileView
+            v-if="store.activeView === 'profile'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <AiView
+            v-if="store.activeView === 'ai'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <HelpCenterView
+            v-if="store.activeView === 'help-center'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <SubscriptionView
+            v-if="store.activeView === 'subscription'"
+            :is-active="true"
+            @notify="handleNotify"
+            @navigate="handleNavigate"
+          />
+          <PlansView
+            v-if="store.activeView === 'plans'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+          <PrivacySettingsView
+            v-if="store.activeView === 'privacy-settings'"
+            :is-active="true"
+            @notify="handleNotify"
+          />
+        </main>
+
+        <ChatAssistant
+          ref="chatRef"
           @navigate="handleNavigate"
         />
-        <PlansView
-          v-if="store.activeView === 'plans'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-        <PrivacySettingsView
-          v-if="store.activeView === 'privacy-settings'"
-          :is-active="true"
-          @notify="handleNotify"
-        />
-      </main>
-
-      <ChatAssistant
-        ref="chatRef"
-        @navigate="handleNavigate"
-      />
-      <SpotlightCommand @select="handleSpotlightAction" />
-      <AlertsCenterModal />
-      <TrialExpiredOverlay @navigate="handleNavigate" />
-    </div>
+        <SpotlightCommand @select="handleSpotlightAction" />
+        <AlertsCenterModal />
+        <TrialExpiredOverlay @navigate="handleNavigate" />
+      </div>
     </template>
 
     <!-- Pending contracts re-acceptance modal -->
@@ -284,13 +282,17 @@ async function acceptCurrentContract() {
       >
         <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full mx-4 max-h-[80vh] flex flex-col">
           <div class="p-6 border-b border-zinc-100">
-            <h2 class="text-lg font-semibold text-[#18181B]">Actualización de contratos</h2>
+            <h2 class="text-lg font-semibold text-[#18181B]">
+              Actualización de contratos
+            </h2>
             <p class="text-sm text-[#52525B] mt-1">
               {{ currentContractIndex + 1 }} de {{ pendingContracts.length }} — revisa y acepta
             </p>
           </div>
           <div class="p-6 flex-1 overflow-y-auto">
-            <h3 class="font-semibold text-[#18181B] mb-3">{{ pendingContracts[currentContractIndex]?.titulo }}</h3>
+            <h3 class="font-semibold text-[#18181B] mb-3">
+              {{ pendingContracts[currentContractIndex]?.titulo }}
+            </h3>
             <div class="text-sm text-[#52525B] leading-relaxed whitespace-pre-line">
               {{ pendingContracts[currentContractIndex]?.cuerpo }}
             </div>
