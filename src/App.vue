@@ -69,6 +69,16 @@ const showRootPanel = computed(
   () => store.currentUser?.isSystemOwner && viewingAdminPanel.value
 )
 
+const isPublicRoute = computed(() => {
+  const publicPaths = [
+    '/', '/login', '/demo', '/nosotros', '/privacidad', 
+    '/terminos', '/dpa', '/continuidad', '/precios', 
+    '/forgot-password', '/reset-password', '/pago-exitoso'
+  ]
+  const path = window.location.pathname
+  return publicPaths.some(p => path === p || path.startsWith(p + '/'))
+})
+
 // --- Navegación Inteligente (Push vs Replace) ---
 const syncUrlWithState = (path, replace = false) => {
   const currentPath = window.location.pathname
@@ -219,7 +229,7 @@ onMounted(() => {
     <ErrorBoundary>
       <!-- Initial load skeleton -->
       <AppLoading
-        v-if="isLoading || loadError"
+        v-if="(isLoading || loadError) && !isPublicRoute"
         :error="loadError"
         @retry="initApp"
       />
