@@ -13,8 +13,14 @@
   const SCHEMA_VERSION = 'v2';
   const CURRENT_VERSION = localStorage.getItem('contex360_schema_version');
   if (CURRENT_VERSION !== SCHEMA_VERSION) {
-    localStorage.clear();
-    localStorage.setItem('contex360_schema_version', SCHEMA_VERSION);
-    window.location.reload();
+    // Solo recargamos si hay datos de estado persistidos de versiones anteriores
+    const hasOldData = Object.keys(localStorage).some(key => key.startsWith('contex360') && key !== 'contex360-theme');
+    if (hasOldData) {
+      localStorage.clear();
+      localStorage.setItem('contex360_schema_version', SCHEMA_VERSION);
+      window.location.reload();
+    } else {
+      localStorage.setItem('contex360_schema_version', SCHEMA_VERSION);
+    }
   }
 })();
