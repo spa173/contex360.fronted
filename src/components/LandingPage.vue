@@ -76,6 +76,7 @@ if (isBot) {
   showFooter.value = true
 }
 
+// Check the window location hash to render specific sections immediately for anchor navigation
 const checkHash = () => {
   const hash = window.location.hash
   if (hash === '#testimonios' || hash === '#beneficios') {
