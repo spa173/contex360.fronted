@@ -9,7 +9,7 @@ const errorInfo = ref<Error | null>(null)
 onErrorCaptured((err, instance, info) => {
   hasError.value = true
   errorInfo.value = err as Error
-  console.error('ErrorBoundary capturó un error de componente:', err, 'Info:', info)
+  /* console.error('ErrorBoundary capturó un error de componente:', err, 'Info:', info) */
   return false
 })
 
