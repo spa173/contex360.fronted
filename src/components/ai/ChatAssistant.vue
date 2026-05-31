@@ -59,10 +59,6 @@ const suggestions = [
   'Mejores horarios de atención'
 ]
 
-const toggleChat = () => {
-  isOpen.value = !isOpen.value
-}
-
 // Settings interactive functionality handlers
 const selectModel = (m) => {
   selectedModel.value = m
@@ -232,8 +228,8 @@ const sendMessage = async () => {
   if (fileData && fileData.raw) {
     try {
       attachmentBase64 = await compressFileToBase64(fileData.raw)
-    } catch (e) {
-      console.error('Error converting file to base64', e)
+    } catch {
+      // Error silenciado intencionalmente
     }
   }
 

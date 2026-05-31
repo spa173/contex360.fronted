@@ -30,11 +30,29 @@
 import { TrendingUp } from 'lucide-vue-next'
 
 defineProps({
-  title: String,
-  value: [String, Number],
-  icon: [Object, Function],
-  iconColor: String,
-  iconBg: String,
-  trend: String
+  title: {
+    type: String,
+    default: ''
+  },
+  value: {
+    type: [String, Number],
+    default: 0
+  },
+  icon: {
+    type: [Object, Function],
+    default: null
+  },
+  iconColor: {
+    type: String,
+    default: 'text-slate-400'
+  },
+  iconBg: {
+    type: String,
+    default: 'bg-slate-800'
+  },
+  trend: {
+    type: String,
+    default: null
+  }
 })
 </script>
