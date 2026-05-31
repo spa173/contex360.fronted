@@ -195,8 +195,12 @@ const faqs = [
   },
 ]
 
+// `metric` surfaces the quantifiable result that already exists inside each
+// quote (no new figures are invented). It is the scannable headline of the card;
+// the quote stays as the narrative backup beneath it.
 const testimonials = [
   {
+    metric: { value: '0 rechazos DIAN', label: 'en 200 documentos/día' },
     quote: 'Antes tardábamos 3 días en cuadrar la contabilidad del mes. Con Contex360 lo tenemos en tiempo real. El módulo DIAN es increíblemente rápido — facturamos 200 documentos diarios sin un solo rechazo.',
     name: 'Laura Martínez',
     role: 'Gerente Financiera',
@@ -205,6 +209,7 @@ const testimonials = [
     color: '#2563EB',
   },
   {
+    metric: { value: '2 días', label: 'de migración desde Siigo' },
     quote: 'Migramos desde Siigo en 2 días. El equipo de soporte fue excepcional. El inventario multi-bodega cambió completamente cómo gestionamos nuestras 4 sedes. Ya no perdemos mercancía.',
     name: 'Carlos Rodríguez',
     role: 'CEO & Fundador',
@@ -213,6 +218,7 @@ const testimonials = [
     color: '#16a34a',
   },
   {
+    metric: { value: '8 h/semana', label: 'ahorradas en el cierre' },
     quote: 'ContexAI nos ahorra literalmente 8 horas a la semana. Me genera el borrador de los estados financieros y solo reviso. Para una pyme nuestra, eso es un contador virtual adicional.',
     name: 'Daniela Torres',
     role: 'Contadora Pública',
@@ -373,6 +379,7 @@ async function submitPaymentReal() {
     window.location.href = redirectUrl
   } catch (e: any) {
     paymentStep.value = 'details'
+    // eslint-disable-next-line no-console
     console.error('Error creating Wompi link', e)
     
     let userMsg = 'Intenta nuevamente en unos segundos.'
@@ -744,6 +751,16 @@ function confirmBillingChange() {
                       class="text-[#F59E0B] text-[15px]"
                       aria-hidden="true"
                     >★</span>
+                  </div>
+
+                  <!-- Quantified result: scannable headline (extracted from the quote) -->
+                  <div class="mb-5">
+                    <p class="text-[26px] lg:text-[28px] font-black tracking-[-0.02em] text-[#18181B] leading-none">
+                      {{ t.metric.value }}
+                    </p>
+                    <p class="text-[11px] font-semibold uppercase tracking-[0.08em] text-[#71717A] mt-1.5">
+                      {{ t.metric.label }}
+                    </p>
                   </div>
 
                   <blockquote class="text-[14px] leading-[1.7] text-[#444444] mb-6 flex-1">
