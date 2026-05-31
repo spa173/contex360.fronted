@@ -3,9 +3,9 @@ import { usePlanAccess } from '../../composables/usePlanAccess'
 
 defineProps({
   isOpen: { type: Boolean, default: false },
-  activeTenant: Object,
-  accessibleTenants: Array,
-  activeView: String,
+  activeTenant: { type: Object, default: null },
+  accessibleTenants: { type: Array, default: () => [] },
+  activeView: { type: String, default: '' },
 })
 
 const emit = defineEmits(['navigate', 'tenant-change', 'close', 'open-ai-chat'])

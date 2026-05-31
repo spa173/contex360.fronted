@@ -1,5 +1,6 @@
 <script setup lang="ts">
 defineProps<{ error?: string | null }>()
+defineEmits<{ retry: [] }>()
 </script>
 
 <template>

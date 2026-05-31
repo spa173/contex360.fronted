@@ -176,7 +176,7 @@ function handleResendXml() {
   closeModal()
 }
 
-function onGlobalOpen(e) {
+function onGlobalOpen() {
   openModal()
 }
 

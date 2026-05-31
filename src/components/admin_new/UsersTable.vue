@@ -122,7 +122,10 @@ defineProps({
     type: Array,
     default: () => []
   },
-  erasingId: String
+  erasingId: {
+    type: String,
+    default: null
+  }
 })
 
 defineEmits(['erase'])

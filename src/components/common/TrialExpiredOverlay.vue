@@ -3,7 +3,7 @@ import { computed, ref } from 'vue'
 import { useStateStore } from '../../stores/stateStore'
 import { formatCurrency } from '../../utils/ui'
 
-const emit = defineEmits(['navigate', 'close'])
+defineEmits(['navigate', 'close'])
 const store = useStateStore()
 const selectedPlan = ref('pyme')
 const isAnnual = ref(false)
@@ -63,8 +63,8 @@ async function handleCheckout() {
     if (response?.url) {
       window.location.href = response.url
     }
-  } catch (err) {
-    console.error('Checkout error:', err)
+  } catch {
+    // Error silenciado intencionalmente
   }
 }
 </script>
