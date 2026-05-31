@@ -59,10 +59,6 @@ const suggestions = [
   'Mejores horarios de atención'
 ]
 
-const toggleChat = () => {
-  isOpen.value = !isOpen.value
-}
-
 // Settings interactive functionality handlers
 const selectModel = (m) => {
   selectedModel.value = m
@@ -232,8 +228,8 @@ const sendMessage = async () => {
   if (fileData && fileData.raw) {
     try {
       attachmentBase64 = await compressFileToBase64(fileData.raw)
-    } catch (e) {
-      console.error('Error converting file to base64', e)
+    } catch {
+      // Error silenciado intencionalmente
     }
   }
 
@@ -268,7 +264,6 @@ const sendMessage = async () => {
     }))
 
     const response = await businessApi.chatWithAi(userMsg, mappedHistory, attachmentBase64).catch((err) => {
-      console.error('AI chat error:', err)
       return { role: 'assistant', content: `Error del Cerebro IA: ${err.message || 'Error al procesar archivo'}.` }
     })
     
@@ -324,8 +319,7 @@ const sendMessage = async () => {
         })
       }
     }
-  } catch (error) {
-    console.error('Chat error:', error)
+  } catch {
     chatHistory.value.push({ 
       role: 'assistant', 
       content: 'Lo siento, tuve un problema conectando con el motor de IA. Por favor intenta de nuevo.',
@@ -568,7 +562,7 @@ const scrollToBottom = async () => {
               <div class="min-w-0 flex-1">
                 <div
                   class="bg-white border border-[#E4E4E7] rounded-[20px] rounded-tl-[4px] p-4 sm:p-4.5 text-[13px] sm:text-[14px] text-[#18181B] leading-[1.5] shadow-sm font-medium whitespace-pre-line"
-                  v-html="formatMessageContent(msg.content)"
+                   title="Mensaje del asistente" v-html="formatMessageContent(msg.content)"
                 />
                 <p class="text-[10px] font-semibold text-[#A1A1AA] mt-1.5 ml-1.5">
                   {{ msg.time || 'Hace un momento' }}

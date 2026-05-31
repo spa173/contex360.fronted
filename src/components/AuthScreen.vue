@@ -20,7 +20,7 @@ useHead({
 
 const authStore = useAuthStore()
 
-const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy', 'forgot-password', 'back'])
+defineEmits(['request-demo', 'show-terms', 'show-privacy', 'forgot-password', 'back'])
 
 const email = ref('')
 const password = ref('')
@@ -52,9 +52,6 @@ const PASSWORD_RULES = [
   { id: 'special',   label: 'Al menos un símbolo (!@#$...)',  test: (p: string) => /[^a-zA-Z0-9]/.test(p) },
 ]
 
-const passwordStrength = computed(() =>
-  PASSWORD_RULES.map(r => ({ ...r, passed: r.test(password.value) }))
-)
 const newPasswordStrength = computed(() =>
   PASSWORD_RULES.map(r => ({ ...r, passed: r.test(newPassword.value) }))
 )
@@ -175,7 +172,7 @@ const handleAcceptPrivacy = async () => {
     showPrivacyConsentModal.value = false
     toast.success('Política de privacidad aceptada.')
     await handleSubmit()
-  } catch (err) {
+  } catch {
     toast.error('Error al procesar la política.')
   } finally {
     privacyConsentLoading.value = false

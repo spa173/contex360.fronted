@@ -115,9 +115,9 @@ import { Shield, RotateCw, Play } from 'lucide-vue-next'
 import { formatDate } from '../../utils/ui'
 
 defineProps({
-  complianceChecks: Array,
-  accessReview: Object,
-  runningReview: Boolean
+  complianceChecks: { type: Array, default: () => [] },
+  accessReview: { type: Object, default: () => ({}) },
+  runningReview: { type: Boolean, default: false }
 })
 
 defineEmits(['run-review'])

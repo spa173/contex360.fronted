@@ -106,8 +106,8 @@ import { AlertTriangle, ShieldAlert, ShieldCheck, Send, RotateCw, CheckCircle } 
 import { formatDate } from '../../utils/ui'
 
 defineProps({
-  breachAlerts: Array,
-  notifyingId: String
+  breachAlerts: { type: Array, default: () => [] },
+  notifyingId: { type: String, default: '' }
 })
 
 defineEmits(['notify'])

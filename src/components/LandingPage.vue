@@ -64,12 +64,10 @@ const emit = defineEmits<{
 const scrolled = ref(false)
 const pastHero = ref(false)
 
-const showTestimonials = ref(false)
 const showPricing = ref(false)
 const showFaq = ref(false)
 const showFooter = ref(false)
 
-const testimonialsRef = ref<HTMLElement | null>(null)
 const pricingRef = ref<HTMLElement | null>(null)
 const faqRef = ref<HTMLElement | null>(null)
 const footerRef = ref<HTMLElement | null>(null)
@@ -77,22 +75,18 @@ const footerRef = ref<HTMLElement | null>(null)
 const isBot = typeof navigator !== 'undefined' && /bot|google|baidu|bing|msn|duckduckbot|teoma|slurp|yandex|lighthouse/i.test(navigator.userAgent)
 
 if (isBot) {
-  showTestimonials.value = true
   showPricing.value = true
   showFaq.value = true
   showFooter.value = true
 }
 
-// Check the window location hash to render specific sections immediately for anchor navigation
+// Check the window location hash to render specific sections immediately for anchor navigation.
+// Pricing is now the first lazy section; #beneficios anchors directly above it.
 const checkHash = () => {
   const hash = window.location.hash
-  if (hash === '#testimonios' || hash === '#beneficios') {
-    showTestimonials.value = true
-  } else if (hash === '#precios') {
-    showTestimonials.value = true
+  if (hash === '#beneficios' || hash === '#precios') {
     showPricing.value = true
   } else if (hash === '#faq') {
-    showTestimonials.value = true
     showPricing.value = true
     showFaq.value = true
   }
@@ -109,16 +103,14 @@ onMounted(() => {
   window.addEventListener('scroll', handleScroll, { passive: true })
   window.addEventListener('hashchange', checkHash)
   checkHash()
-  
+
   if (!isBot && typeof IntersectionObserver !== 'undefined') {
     ioObserver = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           const target = entry.target as HTMLElement
           const section = target.dataset.section
-          if (section === 'testimonials') {
-            showTestimonials.value = true
-          } else if (section === 'pricing') {
+          if (section === 'pricing') {
             showPricing.value = true
           } else if (section === 'faq') {
             showFaq.value = true
@@ -132,13 +124,11 @@ onMounted(() => {
       rootMargin: '600px 0px',
       threshold: 0.01
     })
-    
-    if (testimonialsRef.value) ioObserver.observe(testimonialsRef.value)
+
     if (pricingRef.value) ioObserver.observe(pricingRef.value)
     if (faqRef.value) ioObserver.observe(faqRef.value)
     if (footerRef.value) ioObserver.observe(footerRef.value)
   } else {
-    showTestimonials.value = true
     showPricing.value = true
     showFaq.value = true
     showFooter.value = true
@@ -171,11 +161,11 @@ function toggleFaq(i: number) {
 const faqs = [
   {
     q: '¿Necesito conocimientos contables para usar Contex360?',
-    a: 'No. Contex360 está diseñado para que cualquier persona del equipo pueda operarlo. El sistema genera asientos contables automáticamente al registrar ventas, compras y pagos. Tu contador puede supervisar y exportar informes listos para la DIAN sin necesidad de doble entrada de datos.'
+    a: 'No. Contex360 está diseñado para que cualquier persona del equipo pueda operarlo. El sistema genera asientos contables automáticamente al registrar ventas, compras y pagos. Tu contador puede supervisar la información y exportar informes en PDF y la facturación en CSV, sin necesidad de doble entrada de datos.'
   },
   {
     q: '¿Cómo funciona la integración con la facturación electrónica DIAN?',
-    a: 'Somos habilitadores tecnológicos certificados ante la DIAN. Desde el primer día puedes emitir facturas electrónicas válidas (CUFE incluido), notas crédito y documentos soporte. Todo firmado digitalmente con tu certificado. El proceso tarda menos de 3 segundos por documento.'
+    a: 'Operamos con integración de software propio habilitada para emitir facturación electrónica directamente ante la DIAN. Desde el primer día puedes emitir facturas electrónicas válidas con CUFE reglamentario, firmadas digitalmente con tu certificado, y consultar la trazabilidad de cada transmisión.'
   },
   {
     q: '¿Puedo migrar mis datos desde Excel u otro ERP?',
@@ -191,34 +181,7 @@ const faqs = [
   },
   {
     q: '¿Dónde están almacenados mis datos?',
-    a: 'En servidores en Colombia y Estados Unidos (Neon PostgreSQL), con cifrado AES-256 en reposo y TLS 1.3 en tránsito. Realizamos copias de seguridad automáticas cada hora. Cumplimos con la Ley 1581 de Habeas Data y el Reglamento General de Protección de Datos (GDPR) para clientes internacionales.'
-  },
-]
-
-const testimonials = [
-  {
-    quote: 'Antes tardábamos 3 días en cuadrar la contabilidad del mes. Con Contex360 lo tenemos en tiempo real. El módulo DIAN es increíblemente rápido — facturamos 200 documentos diarios sin un solo rechazo.',
-    name: 'Laura Martínez',
-    role: 'Gerente Financiera',
-    company: 'Inversiones Caldas SAS',
-    initials: 'LM',
-    color: '#2563EB',
-  },
-  {
-    quote: 'Migramos desde Siigo en 2 días. El equipo de soporte fue excepcional. El inventario multi-bodega cambió completamente cómo gestionamos nuestras 4 sedes. Ya no perdemos mercancía.',
-    name: 'Carlos Rodríguez',
-    role: 'CEO & Fundador',
-    company: 'DistribuiTech Ltda.',
-    initials: 'CR',
-    color: '#16a34a',
-  },
-  {
-    quote: 'ContexAI nos ahorra literalmente 8 horas a la semana. Me genera el borrador de los estados financieros y solo reviso. Para una pyme nuestra, eso es un contador virtual adicional.',
-    name: 'Daniela Torres',
-    role: 'Contadora Pública',
-    company: 'Comercializadora Andina',
-    initials: 'DT',
-    color: '#7C3AED',
+    a: 'En la nube sobre PostgreSQL (Neon, región Estados Unidos), con cifrado AES-256 en reposo y TLS 1.3 en tránsito. Realizamos copias de seguridad automáticas diarias. Aplicamos los principios de la Ley 1581 de Habeas Data para el tratamiento de datos personales.'
   },
 ]
 
@@ -278,9 +241,9 @@ const plans = [
       'Usuarios ilimitados',
       'Facturación electrónica ilimitada',
       'Todos los módulos incluidos',
-      'Soporte 24/7 Dedicado',
-      'Garantía de SLA 99.99%',
-      'Capacitación y onboarding'
+      'Capacitación y onboarding',
+      'API Keys y Webhooks para Desarrolladores',
+      'Auditoría avanzada de acciones (Logs)'
     ]
   }
 ]
@@ -373,6 +336,7 @@ async function submitPaymentReal() {
     window.location.href = redirectUrl
   } catch (e: any) {
     paymentStep.value = 'details'
+    // eslint-disable-next-line no-console
     console.error('Error creating Wompi link', e)
     
     let userMsg = 'Intenta nuevamente en unos segundos.'
@@ -596,13 +560,13 @@ function confirmBillingChange() {
 
             <h1
               id="hero-heading"
-              class="text-[36px] sm:text-[46px] lg:text-[62px] leading-[1.02] lg:leading-[1.0] tracking-[-0.03em] lg:tracking-[-0.035em] font-bold text-[#18181B] mb-5 lg:mb-7"
+              class="text-[36px] sm:text-[46px] lg:text-[62px] leading-[1.02] lg:leading-[1.0] tracking-[-0.03em] lg:tracking-[-0.035em] font-serif font-bold text-[#18181B] mb-5 lg:mb-7"
               style="text-wrap: balance;"
             >
               Factura electrónica <em class="not-italic text-[#2563EB]">DIAN</em> en segundos. Y todo tu ERP, en un solo lugar.
             </h1>
             <p class="text-[15px] lg:text-[17px] leading-[1.6] lg:leading-[1.55] text-[#555555] mb-7 lg:mb-10 max-w-lg">
-              Emite facturas con CUFE válido en menos de 3 segundos y gestiona inventario, contabilidad y tesorería desde una sola plataforma diseñada para empresas colombianas.
+              Emite facturas electrónicas con CUFE válido y reglamentario, y gestiona inventario, contabilidad y tesorería desde una sola plataforma diseñada para empresas colombianas.
             </p>
 
             <ConversionLadder
@@ -616,19 +580,19 @@ function confirmBillingChange() {
               Sin tarjeta de crédito · Cancela cuando quieras
             </p>
 
-            <!-- Pillars rail -->
-            <div class="mt-8 lg:mt-14 grid grid-cols-3 gap-0 max-w-full lg:max-w-[520px]">
+            <!-- Pillars rail — capacidades factuales de la infraestructura (sin métricas inventadas) -->
+            <div class="mt-8 lg:mt-14 grid grid-cols-[1.2fr_0.8fr_1.4fr] gap-0 max-w-full lg:max-w-[600px]">
               <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4 pr-4 lg:pr-6">
-                <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight tabular-nums">500+</b>
-                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Clientes Activos</span>
+                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-[#18181B] tracking-tight leading-[1.15]">Emisión Oficial</b>
+                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Conexión directa con la DIAN</span>
               </div>
               <div class="border-t-2 border-[#2563EB] pt-3 lg:pt-4 pr-4 lg:pr-6">
-                <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight">DIAN</b>
-                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Partner Certificado</span>
+                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-[#18181B] tracking-tight leading-[1.15]">DIAN</b>
+                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Facturación habilitada</span>
               </div>
-              <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4">
-                <b class="block font-black text-[18px] lg:text-[22px] text-[#18181B] tracking-tight tabular-nums">99.98%</b>
-                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Uptime SLA</span>
+              <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4 pr-4 lg:pr-6">
+                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-[#18181B] tracking-tight leading-[1.15]">Infraestructura Segura</b>
+                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Cifrado AES-256 en la nube</span>
               </div>
             </div>
           </div>
@@ -700,102 +664,6 @@ function confirmBillingChange() {
       <!-- Live product showcase (P1 point 3): see the product, don't just read about it -->
       <ProductShowcase @view-demo="handleViewDemo" />
 
-      <!-- Testimonials -->
-      <div
-        id="testimonios"
-        ref="testimonialsRef"
-        data-section="testimonials"
-      >
-        <template v-if="showTestimonials">
-          <section
-            class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
-            aria-labelledby="testimonials-heading"
-          >
-            <div class="max-w-7xl mx-auto">
-              <div class="text-center mb-10 lg:mb-14 px-5 lg:px-8">
-                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-                  Casos de Éxito
-                </h2>
-                <h3
-                  id="testimonials-heading"
-                  class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
-                  style="text-wrap: balance;"
-                >
-                  Lo que dicen nuestros clientes
-                </h3>
-              </div>
-
-              <!-- Horizontal scroll on mobile, grid on desktop -->
-              <div class="testimonials-scroll px-5 lg:px-8">
-                <figure
-                  v-for="t in testimonials"
-                  :key="t.name"
-                  class="testimonial-card"
-                >
-                  <!-- Stars -->
-                  <div
-                    class="flex gap-0.5 mb-5"
-                    role="img"
-                    aria-label="5 de 5 estrellas"
-                  >
-                    <span
-                      v-for="n in 5"
-                      :key="n"
-                      class="text-[#F59E0B] text-[15px]"
-                      aria-hidden="true"
-                    >★</span>
-                  </div>
-
-                  <blockquote class="text-[14px] leading-[1.7] text-[#444444] mb-6 flex-1">
-                    "{{ t.quote }}"
-                  </blockquote>
-
-                  <figcaption class="flex items-center gap-3 pt-5 border-t border-[#F4F4F5]">
-                    <div
-                      class="w-9 h-9 rounded-full flex items-center justify-center text-white text-[12px] font-black flex-shrink-0"
-                      :style="{ background: t.color }"
-                      aria-hidden="true"
-                    >
-                      {{ t.initials }}
-                    </div>
-                    <div class="min-w-0">
-                      <p class="text-[13px] font-bold text-[#18181B] leading-tight">
-                        {{ t.name }}
-                      </p>
-                      <p class="text-[11.5px] text-[#888888] leading-tight mt-0.5 truncate">
-                        {{ t.role }} · {{ t.company }}
-                      </p>
-                    </div>
-                  </figcaption>
-                </figure>
-              </div>
-
-              <!-- Aggregate rating -->
-              <div
-                class="flex items-center justify-center gap-2.5 mt-10 lg:mt-12 px-5 lg:px-8"
-                role="img"
-                aria-label="Valoración promedio de clientes"
-              >
-                <div class="flex gap-0.5">
-                  <span
-                    v-for="n in 5"
-                    :key="n"
-                    class="text-[#F59E0B] text-[14px]"
-                    aria-hidden="true"
-                  >★</span>
-                </div>
-                <span class="text-[13px] font-bold text-[#18181B]">4.9/5</span>
-                <span class="text-[12px] text-[#888888]">basado en 200+ reseñas verificadas</span>
-              </div>
-            </div>
-          </section>
-        </template>
-        <div
-          v-else
-          class="h-[600px] bg-white border-b border-[#F4F4F5]"
-        />
-      </div>
-
       <!-- Anchor for "Soluciones Enterprise" nav link -->
       <div
         id="beneficios"
@@ -821,7 +689,7 @@ function confirmBillingChange() {
                 </h2>
                 <h3
                   id="precios-heading"
-                  class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B] mb-5"
+                  class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-serif font-bold text-[#18181B] mb-5"
                 >
                   Elige el plan ideal para tu negocio
                 </h3>
@@ -882,13 +750,13 @@ function confirmBillingChange() {
                         </h4>
                         <!-- Plan tier badge -->
                         <span
-                          v-if="plan.id === 'enterprise'"
-                          class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#F4F4F5] text-[#555555]"
-                        >SLA 99.99%</span>
-                        <span
-                          v-else-if="plan.id === 'pyme'"
+                          v-if="plan.id === 'pyme'"
                           class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#2563EB]/15 text-[#2563EB]"
                         >IA incluida</span>
+                        <span
+                          v-if="plan.id === 'enterprise'"
+                          class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#18181B]/10 text-[#555555] border border-[#E4E4E7]"
+                        >Corporativo</span>
                       </div>
                       <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/80' : 'text-[#555555]']">
                         {{ plan.desc }}
@@ -1033,21 +901,14 @@ function confirmBillingChange() {
                     class="material-symbols-outlined text-[14px] text-[#16a34a]"
                     aria-hidden="true"
                   >verified</span>
-                  DIAN Partner Certificado
-                </span>
-                <span class="trust-badge">
-                  <span
-                    class="material-symbols-outlined text-[14px] text-[#16a34a]"
-                    aria-hidden="true"
-                  >replay</span>
-                  Garantía 30 días o reembolso
+                  Facturación electrónica DIAN
                 </span>
                 <span class="trust-badge">
                   <span
                     class="material-symbols-outlined text-[14px] text-[#16a34a]"
                     aria-hidden="true"
                   >support_agent</span>
-                  Soporte en español 24/7
+                  Soporte en español
                 </span>
               </div>
             </div>
@@ -1636,7 +1497,8 @@ a:focus-visible {
 /* ─── Dashboard image ────────────────────────────────────────── */
 .dashboard-image {
   filter: saturate(0.9) brightness(1.01);
-  transition: filter 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+  will-change: filter;
+  transition: filter 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .dashboard-image:hover {
   filter: saturate(1) brightness(1.03);
@@ -1767,26 +1629,6 @@ a:focus-visible {
   background-size: 40px 40px;
 }
 
-/* ─── Testimonial cards ──────────────────────────────────────── */
-.testimonial-card {
-  background: white;
-  border: 1px solid #E4E4E7;
-  border-radius: 18px;
-  padding: 1.75rem;
-  display: flex;
-  flex-direction: column;
-  margin: 0;
-  transition:
-    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1),
-    transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1),
-    border-color 200ms ease;
-}
-.testimonial-card:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.03), 0 16px 40px -12px rgba(10,10,10,0.09);
-  border-color: #D4D4D8;
-  transform: translateY(-2px);
-}
-
 /* ─── FAQ accordion ──────────────────────────────────────────── */
 .faq-item {
   border: 1px solid #E4E4E7;
@@ -1874,7 +1716,6 @@ a:focus-visible {
   .btn-secondary-landing,
   .btn-transition,
   .pricing-card,
-  .testimonial-card,
   .faq-item,
   .faq-icon,
   .faq-answer,
@@ -1920,31 +1761,6 @@ a:focus-visible {
 .drawer-nav-link:hover {
   background: #F4F4F5;
   color: #18181B;
-}
-
-/* ─── Testimonials mobile scroll ─────────────────────────────── */
-.testimonials-scroll {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 1.25rem;
-}
-@media (max-width: 767px) {
-  .testimonials-scroll {
-    display: flex;
-    gap: 0.875rem;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    padding-bottom: 1rem;
-    /* Hide scrollbar visually but keep functional */
-    scrollbar-width: none;
-  }
-  .testimonials-scroll::-webkit-scrollbar { display: none; }
-  .testimonials-scroll .testimonial-card {
-    min-width: min(85vw, 320px);
-    scroll-snap-align: start;
-    flex-shrink: 0;
-  }
 }
 
 /* ─── FAQ mobile touch targets ───────────────────────────────── */
@@ -2013,7 +1829,6 @@ a:focus-visible {
 }
 
 /* ─── touch-action on interactive areas ─────────────────────── */
-.testimonials-scroll,
 .pricing-card,
 .faq-trigger {
   touch-action: manipulation;
@@ -2041,10 +1856,6 @@ a:focus-visible {
 }
 :global(html.dark) .landing-root .btn-secondary-landing:hover {
   background: #1e293b;
-}
-:global(html.dark) .landing-root .testimonial-card {
-  background: #182235;
-  border-color: rgba(55,65,81,0.5);
 }
 :global(html.dark) .landing-root .faq-item {
   border-color: rgba(55,65,81,0.5);

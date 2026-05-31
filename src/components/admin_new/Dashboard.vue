@@ -133,9 +133,9 @@ import StatCard from './StatCard.vue'
 import { formatDate } from '../../utils/ui'
 
 const props = defineProps({
-  stats: Object,
-  demoRequests: Array,
-  complianceChecks: Array
+  stats: { type: Object, default: () => ({}) },
+  demoRequests: { type: Array, default: () => [] },
+  complianceChecks: { type: Array, default: () => [] }
 })
 
 const statCards = computed(() => [

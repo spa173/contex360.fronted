@@ -74,23 +74,16 @@ describe('LandingPage.vue', () => {
       }
     })
 
-    // Initially, lazy sections should not be visible (only placeholders are in the DOM)
-    expect(wrapper.find('#testimonios section').exists()).toBe(false)
+    // Initially, lazy sections should not be visible (only placeholders are in the DOM).
+    // Pricing is now the first lazy section (testimonials removed in the claim-sanitization pass).
     expect(wrapper.find('#precios section').exists()).toBe(false)
     expect(wrapper.find('#faq section').exists()).toBe(false)
 
     // Retrieve observer instance
     const observerInstance = MockIntersectionObserver.lastInstance
     expect(observerInstance).not.toBeNull()
-    
-    // Simulate intersection for testimonials
-    observerInstance!.callback([
-      { isIntersecting: true, target: { dataset: { section: 'testimonials' } } }
-    ])
-    await wrapper.vm.$nextTick()
-    expect(wrapper.find('#testimonios section').exists()).toBe(true)
 
-    // Simulate intersection for pricing
+    // Simulate intersection for pricing (first lazy target)
     observerInstance!.callback([
       { isIntersecting: true, target: { dataset: { section: 'pricing' } } }
     ])
@@ -125,8 +118,7 @@ describe('LandingPage.vue', () => {
 
     await wrapper.vm.$nextTick()
 
-    // Testimonials and Pricing should render immediately, but FAQ and Footer should not
-    expect(wrapper.find('#testimonios section').exists()).toBe(true)
+    // Pricing should render immediately via the hash, but FAQ and Footer should not
     expect(wrapper.find('#precios section').exists()).toBe(true)
     expect(wrapper.find('#faq section').exists()).toBe(false)
   })
@@ -147,7 +139,6 @@ describe('LandingPage.vue', () => {
     })
 
     // All sections should be rendered immediately
-    expect(wrapper.find('#testimonios section').exists()).toBe(true)
     expect(wrapper.find('#precios section').exists()).toBe(true)
     expect(wrapper.find('#faq section').exists()).toBe(true)
     expect(wrapper.find('footer').exists()).toBe(true)

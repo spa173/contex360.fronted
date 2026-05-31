@@ -150,7 +150,7 @@ defineProps({
   }
 })
 
-defineEmits(['view-change'])
+defineEmits(['view-change', 'exit'])
 
 const menuItems = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
