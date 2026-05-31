@@ -13,7 +13,8 @@
     "sitemap": "node scripts/generate-sitemap.cjs",
     "lint": "eslint . --ext .vue,.js,.ts",
     "lint:fix": "eslint . --ext .vue,.js,.ts --fix",
-    "postinstall": "node scripts/patch-lockfile.cjs"
+    "postinstall": "node scripts/patch-lockfile.cjs",
+    "prepare": "husky"
   },
   "dependencies": {
     "@types/dompurify": "^3.0.5",
@@ -46,8 +47,10 @@
     "eslint": "^10.3.0",
     "eslint-plugin-vue": "^10.9.1",
     "globals": "^17.6.0",
+    "husky": "^9.1.7",
     "jsdom": "^29.1.0",
     "knip": "^6.13.1",
+    "lint-staged": "^17.0.6",
     "postcss": "^8.5.3",
     "tailwindcss": "^3.4.17",
     "typescript": "^6.0.3",
