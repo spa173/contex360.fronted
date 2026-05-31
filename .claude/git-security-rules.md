@@ -34,7 +34,12 @@ El control de versiones en Git debe contener **únicamente** el código fuente, 
 *   **Directriz:** El repositorio de Git no debe verse afectado por el editor que use cada desarrollador.
 *   **Mecanismo:** Se mantiene únicamente [.vscode/extensions.json](file:///c:/Users/camilo/Desktop/contex360.fronted/.vscode/extensions.json) en Git para sugerir las extensiones recomendadas (como Volar para Vue 3 y ESLint). El resto de archivos como `.vscode/settings.json`, `.vscode/launch.json` o `.vscode/tasks.json` se ignoran, ya que pueden contener rutas absolutas del disco duro local y configuraciones de terminal específicas del sistema operativo del desarrollador.
 
+### Regla 2.4: Exclusión Estricta de Archivos no Productivos (IA, Temporales, Skills)
+*   **Directriz:** Todo archivo temporal, experimental, generado por IA, skill, MCP, benchmark, script de prueba, contexto privado, prompt temporal o workspace local debe permanecer fuera del repositorio Git.
+*   **Mecanismo:** Si un archivo no es necesario para compilar, probar o desplegar Contex360 en producción, debe estar incluido en `.gitignore`.
+
 ---
+
 
 ## 🛠️ 3. Validaciones Antes de Commit y Push
 
