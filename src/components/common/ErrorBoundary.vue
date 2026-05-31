@@ -6,10 +6,9 @@ const hasError = ref(false)
 const errorInfo = ref<Error | null>(null)
 
 // 1. Errores de Renderizado (Componentes Vue Hijos)
-onErrorCaptured((err, instance, info) => {
+onErrorCaptured((err) => {
   hasError.value = true
   errorInfo.value = err as Error
-  /* console.error('ErrorBoundary capturó un error de componente:', err, 'Info:', info) */
   return false
 })
 

@@ -562,7 +562,7 @@ const scrollToBottom = async () => {
               <div class="min-w-0 flex-1">
                 <div
                   class="bg-white border border-[#E4E4E7] rounded-[20px] rounded-tl-[4px] p-4 sm:p-4.5 text-[13px] sm:text-[14px] text-[#18181B] leading-[1.5] shadow-sm font-medium whitespace-pre-line"
-                  v-html="formatMessageContent(msg.content)" title="Mensaje del asistente"
+                   title="Mensaje del asistente" v-html="formatMessageContent(msg.content)"
                 />
                 <p class="text-[10px] font-semibold text-[#A1A1AA] mt-1.5 ml-1.5">
                   {{ msg.time || 'Hace un momento' }}
