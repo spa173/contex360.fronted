@@ -1,10 +1,17 @@
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import { useThrottleFn } from '@vueuse/core'
 import { useStateStore } from '../stores/stateStore'
 import { businessApi } from '../services/businessApi'
 import { toast } from 'vue-sonner'
 import { useHead } from '@unhead/vue'
+import DianBadge from './landing/DianBadge.vue'
+import TrustBar from './landing/TrustBar.vue'
+import BentoGrid from './landing/BentoGrid.vue'
+import ProductShowcase from './landing/ProductShowcase.vue'
+import ConversionLadder from './landing/ConversionLadder.vue'
+import ProductFrame from './landing/ProductFrame.vue'
+import MockInvoiceDIAN from './landing/MockInvoiceDIAN.vue'
 
 useHead({
   title: 'Contex360 - ERP para Colombia | Facturación, Inventario, Contabilidad',
@@ -213,17 +220,6 @@ const testimonials = [
     initials: 'DT',
     color: '#7C3AED',
   },
-]
-
-const clientLogos = [
-  { name: 'Inversiones Caldas', abbr: 'IC' },
-  { name: 'DistribuiTech', abbr: 'DT' },
-  { name: 'Constructora Bolívar', abbr: 'CB' },
-  { name: 'Mercados Andinos', abbr: 'MA' },
-  { name: 'Grupo Bétera', abbr: 'GB' },
-  { name: 'Valores Seguros', abbr: 'VS' },
-  { name: 'TechPyme SAS', abbr: 'TP' },
-  { name: 'Almacenes Norte', abbr: 'AN' },
 ]
 
 
@@ -435,6 +431,24 @@ function trackCTAClick(source: string, plan?: string) {
   emit('cta-clicked', { source, plan })
 }
 
+// ── Conversion ladder handlers (P1 point 5) ──────────────────────────────────
+// Ver Demo → scroll to the live product showcase (lowest friction).
+// Prueba Gratis / Hablar con Ventas → reuse the demo-request flow (approved
+// option a), tagging the source so analytics can tell intent levels apart.
+function handleViewDemo() {
+  trackCTAClick('view-demo')
+  showPricing.value = true // ensure lazy sections below mount before scrolling
+  document.getElementById('producto-vivo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+function handleStartTrial(source: string) {
+  trackCTAClick(source)
+  emit('request-demo')
+}
+function handleContactSales(source: string) {
+  trackCTAClick(`${source}-sales`)
+  emit('request-demo')
+}
+
 const showBillingConfirm = ref(false)
 
 function toggleBilling() {
@@ -574,48 +588,28 @@ function confirmBillingChange() {
       >
         <div class="max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-20 items-center">
           <div class="z-10">
-            <!-- Chip system -->
-            <span class="inline-flex items-center gap-1.5 px-3 py-1.5 mb-5 lg:mb-8 border border-[#E4E4E7] rounded-full text-[11px] lg:text-[11.5px] text-[#555555] bg-white/80 backdrop-blur-sm font-medium shadow-[0_1px_4px_rgba(0,0,0,0.04)] select-none">
-              <span
-                class="w-1.5 h-1.5 rounded-full bg-[#16a34a] animate-pulse flex-shrink-0"
-                aria-hidden="true"
-              />
-              ERP de Próxima Generación
-            </span>
+            <!-- DIAN-first chip (P0-1): leads with the core differentiator -->
+            <DianBadge
+              variant="chip"
+              class="mb-5 lg:mb-8"
+            />
 
             <h1
               id="hero-heading"
-              class="text-[38px] sm:text-[48px] lg:text-[68px] leading-[1.0] lg:leading-[0.98] tracking-[-0.03em] lg:tracking-[-0.035em] font-bold text-[#18181B] mb-5 lg:mb-7"
+              class="text-[36px] sm:text-[46px] lg:text-[62px] leading-[1.02] lg:leading-[1.0] tracking-[-0.03em] lg:tracking-[-0.035em] font-bold text-[#18181B] mb-5 lg:mb-7"
               style="text-wrap: balance;"
             >
-              El cerebro <em class="not-italic text-[#2563EB]">logístico</em> de tu negocio.
+              Factura electrónica <em class="not-italic text-[#2563EB]">DIAN</em> en segundos. Y todo tu ERP, en un solo lugar.
             </h1>
             <p class="text-[15px] lg:text-[17px] leading-[1.6] lg:leading-[1.55] text-[#555555] mb-7 lg:mb-10 max-w-lg">
-              Una plataforma sofisticada y ultra-rápida diseñada para corporaciones colombianas. Automatiza contabilidad, inventarios y facturación con precisión.
+              Emite facturas con CUFE válido en menos de 3 segundos y gestiona inventario, contabilidad y tesorería desde una sola plataforma diseñada para empresas colombianas.
             </p>
 
-            <div class="flex flex-col sm:flex-row gap-2.5 lg:gap-3">
-              <button
-                type="button"
-                class="btn-primary-landing"
-                aria-label="Iniciar prueba gratuita - Sin tarjeta de crédito requerida"
-                @click="() => { trackCTAClick('hero'); emit('request-demo') }"
-              >
-                Iniciar Prueba Gratuita
-                <span
-                  class="material-symbols-outlined text-[18px]"
-                  aria-hidden="true"
-                >arrow_forward</span>
-              </button>
-              <button
-                type="button"
-                class="btn-secondary-landing hidden sm:inline-flex"
-                aria-label="Ver capacidades del sistema"
-                @click="emit('show-about')"
-              >
-                Ver Capacidades
-              </button>
-            </div>
+            <ConversionLadder
+              @view-demo="handleViewDemo"
+              @start-trial="handleStartTrial('hero')"
+              @contact-sales="handleContactSales('hero')"
+            />
 
             <!-- Mobile micro-copy under CTA -->
             <p class="text-[11.5px] text-[#71717A] mt-3 lg:hidden">
@@ -675,125 +669,43 @@ function confirmBillingChange() {
               </picture>
             </div>
 
-            <!-- Floating trust chips — desktop only to avoid overflow on mobile -->
-            <div class="hidden lg:flex absolute -bottom-4 left-6 gap-2">
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
-                <span
-                  class="material-symbols-outlined text-[14px]"
-                  aria-hidden="true"
-                >lock</span>
-                SSL/TLS 1.3
-              </span>
-              <span class="inline-flex items-center gap-1.5 px-2.5 py-1.5 bg-white border border-[#E4E4E7] rounded-full text-[11px] text-[#555555] shadow-sm">
-                <span
-                  class="material-symbols-outlined text-[14px]"
-                  aria-hidden="true"
-                >shield</span>
-                ISO 27001
-              </span>
+            <!-- Floating DIAN invoice card (P0-1): makes the differentiator the
+                 focal point, layered over the dashboard. Desktop only to avoid
+                 overflow on mobile, where the DIAN chip + pillar rail carry it. -->
+            <div class="hidden lg:block absolute -bottom-8 -left-6 w-[270px] z-20">
+              <ProductFrame label="facturación">
+                <MockInvoiceDIAN />
+              </ProductFrame>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Social proof bar -->
+      <!-- Trust bar (P0-2): real, verifiable indicators replace fake logos -->
       <section
-        class="py-8 lg:py-12 border-b border-[#F4F4F5] bg-white"
-        aria-label="Clientes que confían en Contex360"
+        class="py-9 lg:py-12 border-b border-[#F4F4F5] bg-white"
+        aria-label="Indicadores de confianza de Contex360"
       >
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
           <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-[#71717A] mb-8">
-            Más de 500 empresas colombianas ya operan con Contex360
+            La plataforma que cumple con la DIAN y protege tu operación
           </p>
-          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-5 lg:gap-x-12">
-            <div
-              v-for="logo in clientLogos"
-              :key="logo.abbr"
-              class="client-logo-item group"
-              :title="logo.name"
-            >
-              <span class="client-logo-abbr">{{ logo.abbr }}</span>
-              <span class="client-logo-name">{{ logo.name }}</span>
-            </div>
-          </div>
+          <TrustBar />
         </div>
       </section>
 
-      <!-- Features -->
-      <section
-        id="producto"
-        class="py-16 lg:py-32 bg-[#FAFAFA] border-b border-[#F4F4F5]"
-        style="scroll-margin-top: 80px;"
-      >
-        <div class="max-w-7xl mx-auto px-6 lg:px-8">
-          <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-10 lg:mb-16 gap-5 lg:gap-8">
-            <div class="max-w-2xl">
-              <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
-                Infraestructura Central
-              </h2>
-              <h3
-                class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-bold text-[#18181B]"
-                style="text-wrap: balance;"
-              >
-                Estructurado para escala corporativa.
-              </h3>
-            </div>
-            <p class="text-[15px] leading-[1.55] text-[#555555] max-w-sm font-medium">
-              Una única fuente de verdad para cada operación, desde inventarios multi-bodega hasta informes financieros en tiempo real.
-            </p>
-          </div>
+      <!-- Bento grid (P1 point 4): real product UI replaces the 3 generic cards -->
+      <BentoGrid />
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
-            <div class="feature-card group">
-              <div class="feature-icon-wrap feature-icon-dark group-hover:scale-[1.06]">
-                <span
-                  class="material-symbols-outlined text-[20px]"
-                  translate="no"
-                >verified_user</span>
-              </div>
-              <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
-                Seguridad de Grado Bancario
-              </h4>
-              <p class="text-[13.5px] leading-[1.6] text-[#666666]">
-                Encriptación de nivel empresarial y copias de seguridad automáticas que aseguran que tus datos financieros estén siempre protegidos y disponibles.
-              </p>
-            </div>
-
-            <div class="feature-card group">
-              <div class="feature-icon-wrap feature-icon-blue group-hover:scale-[1.06]">
-                <span
-                  class="material-symbols-outlined text-[20px]"
-                  translate="no"
-                >bolt</span>
-              </div>
-              <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
-                Motor de Alta Velocidad
-              </h4>
-              <p class="text-[13.5px] leading-[1.6] text-[#666666]">
-                Procesamiento de datos en tiempo real para informes contables complejos y estados financieros en segundos, no horas.
-              </p>
-            </div>
-
-            <div class="feature-card group">
-              <div class="feature-icon-wrap feature-icon-dark group-hover:scale-[1.06]">
-                <span
-                  class="material-symbols-outlined text-[20px]"
-                  translate="no"
-                >apartment</span>
-              </div>
-              <h4 class="text-[17px] font-bold text-[#18181B] mb-2.5 tracking-tight">
-                Cumplimiento Colombiano
-              </h4>
-              <p class="text-[13.5px] leading-[1.6] text-[#666666]">
-                Totalmente adaptado a las regulaciones de la DIAN: facturación electrónica, nómina e informes de exógena integrados.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
+      <!-- Live product showcase (P1 point 3): see the product, don't just read about it -->
+      <ProductShowcase @view-demo="handleViewDemo" />
 
       <!-- Testimonials -->
-      <div ref="testimonialsRef" data-section="testimonials" id="testimonios">
+      <div
+        id="testimonios"
+        ref="testimonialsRef"
+        data-section="testimonials"
+      >
         <template v-if="showTestimonials">
           <section
             class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
@@ -878,7 +790,10 @@ function confirmBillingChange() {
             </div>
           </section>
         </template>
-        <div v-else class="h-[600px] bg-white border-b border-[#F4F4F5]" />
+        <div
+          v-else
+          class="h-[600px] bg-white border-b border-[#F4F4F5]"
+        />
       </div>
 
       <!-- Anchor for "Soluciones Enterprise" nav link -->
@@ -888,7 +803,12 @@ function confirmBillingChange() {
       />
 
       <!-- Pricing Section -->
-      <div ref="pricingRef" data-section="pricing" id="precios" style="scroll-margin-top: 80px;">
+      <div
+        id="precios"
+        ref="pricingRef"
+        data-section="pricing"
+        style="scroll-margin-top: 80px;"
+      >
         <template v-if="showPricing">
           <section
             aria-labelledby="precios-heading"
@@ -1133,7 +1053,10 @@ function confirmBillingChange() {
             </div>
           </section>
         </template>
-        <div v-else class="h-[1200px] bg-[#FAFAFA] border-b border-[#F4F4F5]" />
+        <div
+          v-else
+          class="h-[1200px] bg-[#FAFAFA] border-b border-[#F4F4F5]"
+        />
       </div>
 
       <!-- Simulated Wompi Checkout Overlay -->
@@ -1392,7 +1315,11 @@ function confirmBillingChange() {
       </Teleport>
 
       <!-- FAQ -->
-      <div ref="faqRef" data-section="faq" id="faq">
+      <div
+        id="faq"
+        ref="faqRef"
+        data-section="faq"
+      >
         <template v-if="showFaq">
           <section
             class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
@@ -1463,11 +1390,17 @@ function confirmBillingChange() {
             </div>
           </section>
         </template>
-        <div v-else class="h-[500px] bg-white border-b border-[#F4F4F5]" />
+        <div
+          v-else
+          class="h-[500px] bg-white border-b border-[#F4F4F5]"
+        />
       </div>
 
       <!-- CTA strip -->
-      <div ref="footerRef" data-section="footer">
+      <div
+        ref="footerRef"
+        data-section="footer"
+      >
         <template v-if="showFooter">
           <section class="cta-strip py-24 lg:py-28 relative overflow-hidden">
             <div
@@ -1484,32 +1417,20 @@ function confirmBillingChange() {
               <p class="text-[15.5px] text-white/60 mb-10 max-w-md mx-auto leading-[1.6]">
                 Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
               </p>
-              <div class="flex flex-col sm:flex-row gap-3 justify-center">
-                <button
-                  type="button"
-                  class="btn-cta-white"
-                  aria-label="Solicitar Demo de Contex360"
-                  @click="() => { trackCTAClick('bottom'); emit('request-demo') }"
-                >
-                  Solicitar Demo
-                  <span
-                    class="material-symbols-outlined text-[18px]"
-                    aria-hidden="true"
-                  >arrow_forward</span>
-                </button>
-                <button
-                  type="button"
-                  class="border border-white/20 text-white/80 text-[14px] font-semibold px-8 py-3.5 rounded-xl hover:bg-white/8 hover:text-white btn-transition active:scale-[0.98]"
-                  aria-label="Iniciar sesión en la plataforma"
-                  @click="emit('login')"
-                >
-                  Iniciar Sesión
-                </button>
-              </div>
+              <ConversionLadder
+                tone="dark"
+                class="justify-center"
+                @view-demo="handleViewDemo"
+                @start-trial="handleStartTrial('bottom')"
+                @contact-sales="handleContactSales('bottom')"
+              />
             </div>
           </section>
         </template>
-        <div v-else class="h-[350px] bg-[#0F0F11]" />
+        <div
+          v-else
+          class="h-[350px] bg-[#0F0F11]"
+        />
       </div>
     </main>
 
@@ -1677,7 +1598,10 @@ function confirmBillingChange() {
         </div>
       </footer>
     </template>
-    <div v-else class="h-[250px] bg-white border-t border-[#F4F4F5]" />
+    <div
+      v-else
+      class="h-[250px] bg-white border-t border-[#F4F4F5]"
+    />
   </div>
 </template>
 
@@ -1798,71 +1722,6 @@ a:focus-visible {
   transform: scale(0.98);
 }
 
-.btn-cta-white {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.625rem;
-  background: white;
-  color: #18181B;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 0.875rem 2rem;
-  border-radius: 0.75rem;
-  border: 1px solid white;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.1);
-  transition:
-    background-color 150ms ease,
-    box-shadow 150ms ease,
-    transform 120ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer;
-}
-.btn-cta-white:hover {
-  background: #F4F4F5;
-  box-shadow: 0 4px 16px rgba(0,0,0,0.25), 0 1px 2px rgba(0,0,0,0.1);
-  transform: translateY(-1px);
-}
-.btn-cta-white:active {
-  transform: scale(0.98);
-}
-
-/* ─── Feature cards ──────────────────────────────────────────── */
-.feature-card {
-  background: white;
-  border: 1px solid #E4E4E7;
-  border-radius: 18px;
-  padding: 2.25rem;
-  transition:
-    box-shadow 250ms cubic-bezier(0.4, 0, 0.2, 1),
-    border-color 250ms ease,
-    transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-.feature-card:hover {
-  box-shadow: 0 2px 4px rgba(0,0,0,0.02), 0 16px 48px -12px rgba(10,10,10,0.1);
-  border-color: #D4D4D8;
-  transform: translateY(-2px);
-}
-
-.feature-icon-wrap {
-  width: 44px;
-  height: 44px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 1.5rem;
-  transition: transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
-  flex-shrink: 0;
-}
-.feature-icon-dark {
-  background: #18181B;
-  color: white;
-}
-.feature-icon-blue {
-  background: #2563EB;
-  color: white;
-}
-
 /* ─── Pricing cards ──────────────────────────────────────────── */
 .pricing-card {
   border-radius: 20px;
@@ -1906,39 +1765,6 @@ a:focus-visible {
     linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
   background-size: 40px 40px;
-}
-
-/* ─── Social proof logos ─────────────────────────────────────── */
-.client-logo-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  opacity: 0.65;
-  transition: opacity 200ms ease;
-  cursor: default;
-  user-select: none;
-}
-.client-logo-item:hover { opacity: 0.95; }
-.client-logo-abbr {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  background: #18181B;
-  color: white;
-  font-size: 10px;
-  font-weight: 800;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  letter-spacing: -0.01em;
-  flex-shrink: 0;
-}
-.client-logo-name {
-  font-size: 13px;
-  font-weight: 700;
-  color: #18181B;
-  letter-spacing: -0.01em;
-  white-space: nowrap;
 }
 
 /* ─── Testimonial cards ──────────────────────────────────────── */
@@ -2046,17 +1872,13 @@ a:focus-visible {
   .dashboard-image,
   .btn-primary-landing,
   .btn-secondary-landing,
-  .btn-cta-white,
   .btn-transition,
-  .feature-card,
-  .feature-icon-wrap,
   .pricing-card,
   .testimonial-card,
   .faq-item,
   .faq-icon,
   .faq-answer,
-  .enterprise-strip-btn,
-  .client-logo-item {
+  .enterprise-strip-btn {
     transition: none;
   }
   .c360-mark .rotor {
@@ -2208,13 +2030,6 @@ a:focus-visible {
     linear-gradient(90deg, rgba(55,65,81,0.25) 1px, transparent 1px);
   background-size: 40px 40px;
 }
-:global(html.dark) .landing-root .feature-card {
-  background: #182235;
-  border-color: rgba(55,65,81,0.5);
-}
-:global(html.dark) .landing-root .feature-card:hover {
-  border-color: rgba(55,65,81,0.8);
-}
 :global(html.dark) .landing-root .pricing-card--default {
   background: #182235;
   border-color: rgba(55,65,81,0.5);
@@ -2248,9 +2063,6 @@ a:focus-visible {
 :global(html.dark) .landing-root .enterprise-strip {
   background: #182235;
   border-color: rgba(55,65,81,0.5);
-}
-:global(html.dark) .landing-root .client-logo-name {
-  color: #f4f4f5;
 }
 :global(html.dark) .sticky-mobile-cta {
   background: rgba(11, 15, 25, 0.92);
