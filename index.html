@@ -4,41 +4,23 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!-- DNS prefetch for external origins used at runtime -->
+    <link rel="dns-prefetch" href="https://api.contex360.co">
+    <link rel="dns-prefetch" href="https://checkout.wompi.co">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <!-- Inter: critical — loaded synchronously with font-display:swap -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Material Symbols: non-critical icons. Injected from main.js after first paint
+         so it does NOT block render. CSP-safe (no inline onload handler). <noscript> fallback. -->
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,400..500,0,0&display=block">
+    </noscript>
+    <!-- LCP image: preload the right variant per viewport -->
+    <link rel="preload" as="image" href="/dashboard_preview.webp" imagesrcset="/dashboard_preview-mobile.webp 768w, /dashboard_preview.webp 1024w" imagesizes="(max-width: 768px) 100vw, 1024px" fetchpriority="high">
     <title>Contex360</title>
-    <meta http-equiv="Content-Security-Policy" content="
-      default-src 'self';
-      script-src 'self' 'sha256-6vIKtP+voxn21SGPelwZxXT+N94YTtSe7UO3XhqQ6t=' 'sha256-2RiLy7hM1bBcTtC/ZVbvnbvTp+hVZmllkHslStLJmI8=' 'sha256-NILBvGAmYwu2+YiDJK2ARU9amSSH6Cj21k1STAzh51g=';
-      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
-      font-src 'self' https://fonts.gstatic.com;
-      img-src 'self' data:;
-      connect-src 'self' https://api.contex360.co https://checkout.wompi.co https://spartan173-contex.hf.space https://*.hf.space;
-      form-action 'self' https://checkout.wompi.co;
-      base-uri 'self';
-      object-src 'none';
-    ">
-    <script>
-      (function() {
-        const stored = localStorage.getItem('contex360-theme')
-        const theme = (stored === 'light' || stored === 'dark') ? stored : 'light'
-        document.documentElement.classList.add(theme)
-        document.documentElement.classList.remove(theme === 'dark' ? 'light' : 'dark')
-        document.documentElement.dataset.theme = theme
-        document.documentElement.style.colorScheme = theme
-      })();
-      (function() {
-        const SCHEMA_VERSION = 'v2'
-        const CURRENT_VERSION = localStorage.getItem('contex360_schema_version')
-        if (CURRENT_VERSION !== SCHEMA_VERSION) {
-          localStorage.clear()
-          localStorage.setItem('contex360_schema_version', SCHEMA_VERSION)
-          window.location.reload()
-        }
-      })();
-    </script>
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self' https://api.contex360.co https://checkout.wompi.co https://spartan173-contex.hf.space https://*.hf.space; form-action 'self' https://checkout.wompi.co; base-uri 'self'; object-src 'none';">
+    <script type="module" src="/src/scripts/theme.js"></script>
   </head>
   <body>
     <div id="app"></div>

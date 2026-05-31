@@ -1,26 +1,33 @@
 <script setup>
-import { onMounted, ref, computed } from 'vue'
+import { onMounted, ref, computed, defineAsyncComponent } from 'vue'
 import { useHead } from '@unhead/vue'
 import { useStateStore } from './stores/stateStore'
 import { useThemeStore } from './stores/themeStore'
-import AppShell from './components/AppShell.vue'
-import RootShell from './components/RootShell.vue'
-import AuthScreen from './components/AuthScreen.vue'
-import DemoRequestView from './components/views/DemoRequestView.vue'
-import PricingView from './components/views/PricingView.vue'
+
+// Static layout components (loaded immediately for the landing page)
+import CookieConsentBanner from './components/common/CookieConsentBanner.vue'
 import LandingPage from './components/LandingPage.vue'
-import AboutView from './components/views/AboutView.vue'
-import PrivacyPolicyView from './components/views/PrivacyPolicyView.vue'
-import TermsOfUseView from './components/views/TermsOfUseView.vue'
-import ForgotPasswordView from './components/views/ForgotPasswordView.vue'
-import ResetPasswordView from './components/views/ResetPasswordView.vue'
 import ToastStack from './components/common/ToastStack.vue'
 import SessionRecoveryModal from './components/ui/SessionRecoveryModal.vue'
 import AppLoading from './components/layout/AppLoading.vue'
-import PaymentSuccess from './components/views/PaymentSuccess.vue'
 import ErrorBoundary from './components/common/ErrorBoundary.vue'
 import { Toaster } from 'vue-sonner'
 import { useToasts } from './composables/useToasts'
+
+// Async major page/view components (lazy-loaded to prevent render-blocking initial payloads)
+const AppShell = defineAsyncComponent(() => import('./components/AppShell.vue'))
+const RootShell = defineAsyncComponent(() => import('./components/RootShell.vue'))
+const AuthScreen = defineAsyncComponent(() => import('./components/AuthScreen.vue'))
+const DemoRequestView = defineAsyncComponent(() => import('./components/views/DemoRequestView.vue'))
+const PricingView = defineAsyncComponent(() => import('./components/views/PricingView.vue'))
+const AboutView = defineAsyncComponent(() => import('./components/views/AboutView.vue'))
+const PrivacyPolicyView = defineAsyncComponent(() => import('./components/views/PrivacyPolicyView.vue'))
+const TermsOfUseView = defineAsyncComponent(() => import('./components/views/TermsOfUseView.vue'))
+const DataProcessingView = defineAsyncComponent(() => import('./components/views/DataProcessingView.vue'))
+const BusinessContinuityView = defineAsyncComponent(() => import('./components/views/BusinessContinuityView.vue'))
+const ForgotPasswordView = defineAsyncComponent(() => import('./components/views/ForgotPasswordView.vue'))
+const ResetPasswordView = defineAsyncComponent(() => import('./components/views/ResetPasswordView.vue'))
+const PaymentSuccess = defineAsyncComponent(() => import('./components/views/PaymentSuccess.vue'))
 
 const SITE_NAME = 'Contex360'
 const DEFAULT_DESC = 'ERP inteligente para empresas colombianas. Facturación electrónica DIAN, inventario, contabilidad y más en un solo lugar.'
@@ -46,6 +53,8 @@ const showDemo = ref(false)
 const showAuth = ref(false)
 const showPrivacy = ref(false)
 const showTerms = ref(false)
+const showDPA = ref(false)
+const showBCP = ref(false)
 const showAbout = ref(false)
 const showPricing = ref(false)
 const showPaymentSuccess = ref(false)
@@ -59,6 +68,16 @@ const loadError = ref(null)
 const showRootPanel = computed(
   () => store.currentUser?.isSystemOwner && viewingAdminPanel.value
 )
+
+const isPublicRoute = computed(() => {
+  const publicPaths = [
+    '/', '/login', '/demo', '/nosotros', '/privacidad', 
+    '/terminos', '/dpa', '/continuidad', '/precios', 
+    '/forgot-password', '/reset-password', '/pago-exitoso'
+  ]
+  const path = window.location.pathname
+  return publicPaths.some(p => path === p || path.startsWith(p + '/'))
+})
 
 // --- Navegación Inteligente (Push vs Replace) ---
 const syncUrlWithState = (path, replace = false) => {
@@ -89,6 +108,8 @@ watch(showDemo, (val) => val && syncUrlWithState('/demo'))
 watch(showAbout, (val) => val && syncUrlWithState('/nosotros'))
 watch(showPrivacy, (val) => val && syncUrlWithState('/privacidad'))
 watch(showTerms, (val) => val && syncUrlWithState('/terminos'))
+watch(showDPA, (val) => val && syncUrlWithState('/dpa'))
+watch(showBCP, (val) => val && syncUrlWithState('/continuidad'))
 watch(showPricing, (val) => val && syncUrlWithState('/precios'))
 watch(showForgotPassword, (val) => val && syncUrlWithState('/forgot-password'))
 watch(showResetPassword, (val) => val && syncUrlWithState('/reset-password'))
@@ -102,6 +123,8 @@ const handlePopState = (event) => {
   showDemo.value = false
   showPrivacy.value = false
   showTerms.value = false
+  showDPA.value = false
+  showBCP.value = false
   showAbout.value = false
   showPricing.value = false
   showPaymentSuccess.value = false
@@ -113,6 +136,8 @@ const handlePopState = (event) => {
   else if (path === '/nosotros') showAbout.value = true
   else if (path === '/privacidad') showPrivacy.value = true
   else if (path === '/terminos') showTerms.value = true
+  else if (path === '/dpa') showDPA.value = true
+  else if (path === '/continuidad') showBCP.value = true
   else if (path === '/precios') showPricing.value = true
   else if (path === '/forgot-password') showForgotPassword.value = true
   else if (path.startsWith('/reset-password')) showResetPassword.value = true
@@ -129,6 +154,8 @@ const handleCustomBack = () => {
   } else {
     showPrivacy.value = false
     showTerms.value = false
+    showDPA.value = false
+    showBCP.value = false
     showDemo.value = false
     showAbout.value = false
     showAuth.value = false
@@ -202,7 +229,7 @@ onMounted(() => {
     <ErrorBoundary>
       <!-- Initial load skeleton -->
       <AppLoading
-        v-if="isLoading || loadError"
+        v-if="(isLoading || loadError) && !isPublicRoute"
         :error="loadError"
         @retry="initApp"
       />
@@ -263,10 +290,30 @@ onMounted(() => {
           <PrivacyPolicyView
             v-else-if="showPrivacy"
             @back="handleCustomBack"
+            @show-terms="showTerms = true; showPrivacy = false"
+            @show-dpa="showDPA = true; showPrivacy = false"
+            @show-bcp="showBCP = true; showPrivacy = false"
           />
           <TermsOfUseView
             v-else-if="showTerms"
             @back="showTerms = false"
+            @show-privacy="showPrivacy = true; showTerms = false"
+            @show-dpa="showDPA = true; showTerms = false"
+            @show-bcp="showBCP = true; showTerms = false"
+          />
+          <DataProcessingView
+            v-else-if="showDPA"
+            @back="showDPA = false"
+            @show-privacy="showPrivacy = true; showDPA = false"
+            @show-terms="showTerms = true; showDPA = false"
+            @show-bcp="showBCP = true; showDPA = false"
+          />
+          <BusinessContinuityView
+            v-else-if="showBCP"
+            @back="showBCP = false"
+            @show-privacy="showPrivacy = true; showBCP = false"
+            @show-terms="showTerms = true; showBCP = false"
+            @show-dpa="showDPA = true; showBCP = false"
           />
           <LandingPage
             v-else
@@ -274,6 +321,8 @@ onMounted(() => {
             @request-demo="showDemo = true"
             @show-privacy="showPrivacy = true"
             @show-terms="showTerms = true"
+            @show-dpa="showDPA = true"
+            @show-bcp="showBCP = true"
             @show-about="showAbout = true"
             @show-pricing="showPricing = true"
             @purchase-plan="handlePurchasePlan"
@@ -288,5 +337,6 @@ onMounted(() => {
       rich-colors
     />
     <ToastStack :toasts="toasts" />
+    <CookieConsentBanner />
   </div>
 </template>

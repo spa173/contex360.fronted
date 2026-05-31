@@ -296,7 +296,7 @@ export const businessApi = {
   },
 
 
-  // AI
+  // AI / Chat
   async chatWithAi(message: string, history: any[] = [], attachment?: string | null) {
     return request<any>('/ai/chat', { method: 'POST', body: { message, history, attachment } })
   },
@@ -309,17 +309,26 @@ export const businessApi = {
   async getAiHealth() {
     return request<any>('/ai/health')
   },
+
+  // OCR — real endpoints from the OCR hardening sprint
   async getOcrRuns(tenantId?: string | null) {
-    return request<any[]>('/analytics/ocr-runs', { tenantId })
+    return request<any[]>('/ocr', { tenantId })
   },
-  async simulateOcrRun(tenantId?: string | null) {
-    return request<any>('/analytics/ocr-runs/simulate', { method: 'POST', tenantId })
+  async getOcrRunStatus(id: string, tenantId?: string | null) {
+    return request<any>(`/ocr/${id}`, { tenantId })
   },
-  async approveOcrRun(id: string, tenantId?: string | null) {
-    return request<any>(`/analytics/ocr-runs/${id}/approve`, { method: 'POST', tenantId })
+  async getOcrStats(tenantId?: string | null) {
+    return request<any>('/ocr/stats', { tenantId })
+  },
+  async retryOcrRun(id: string, autoCreatePurchase = false, tenantId?: string | null) {
+    return request<any>(`/ocr/${id}/retry`, { method: 'POST', body: { autoCreatePurchase }, tenantId })
   },
   async deleteOcrRun(id: string, tenantId?: string | null) {
-    return request<any>(`/analytics/ocr-runs/${id}`, { method: 'DELETE', tenantId })
+    return request<any>(`/ocr/${id}`, { method: 'DELETE', tenantId })
+  },
+  /** Upload a file for OCR — returns FormData so caller handles multipart */
+  getOcrUploadUrl() {
+    return `${getApiBaseUrl()}/ocr/upload`
   },
   
   // 2FA / TOTP
@@ -345,6 +354,18 @@ export const businessApi = {
   },
   async updateTenant(tenantId: string, data: any) {
     return request<any>(`/admin/tenants/${tenantId}`, { method: 'PATCH', body: data })
+  },
+  async updateTenantStatus(tenantId: string, status: 'active' | 'suspended') {
+    return request<any>(`/admin/tenants/${tenantId}/status`, { method: 'PATCH', body: { status } })
+  },
+  async updateTenantSubscription(tenantId: string, data: { planType: string; active: boolean; trialEndsAt: string | null }) {
+    return request<any>(`/admin/tenants/${tenantId}/subscription`, { method: 'PATCH', body: data })
+  },
+  async createAdminTenant(data: any) {
+    return request<any>('/admin/companies', { method: 'POST', body: data })
+  },
+  async deleteAdminTenant(tenantId: string, password: string) {
+    return request<any>(`/admin/tenants/${tenantId}/delete`, { method: 'POST', body: { password } })
   },
   async getAdminUsers(tenantId?: string) {
     const query = tenantId ? `?tenantId=${tenantId}` : ''
@@ -517,5 +538,44 @@ export const businessApi = {
   },
   async getSubscriptionInvoices(tenantId?: string | null) {
     return request<any[]>('/subscriptions/invoices', { tenantId })
+  },
+  async getAvailableCurrencies() {
+    return request<{ code: string; symbol: string; name: string; rateToCop: number; decimals: number }[]>('/subscriptions/currencies')
+  },
+
+  // ── GDPR / Privacy ──────────────────────────────────────────────────────
+  async registrarConsentimiento(data: { userId: string; type: string; estado: string }, tenantId?: string | null) {
+    return request<any>('/privacy/consent', { method: 'POST', body: data, tenantId })
+  },
+  async getConsentimientos(userId: string, tenantId?: string | null) {
+    return request<any[]>(`/privacy/consents/${userId}`, { tenantId })
+  },
+  async crearSolicitudDerechos(data: { userId: string; tipo: string; solicitante: string; email: string; ip?: string }, tenantId?: string | null) {
+    return request<any>('/privacy/solicitud-derechos', { method: 'POST', body: data, tenantId })
+  },
+
+  // ── Contratos ───────────────────────────────────────────────────────────
+  async getContratosActivos(tenantId?: string | null) {
+    return request<any[]>('/contratos', { tenantId })
+  },
+  async getContratoActivo(tipo: string, tenantId?: string | null) {
+    return request<any>(`/contratos/activo/${tipo}`, { tenantId })
+  },
+  async aceptarContrato(contratoId: string, data?: { ip?: string; dispositivo?: string }, tenantId?: string | null) {
+    return request<any>(`/contratos/${contratoId}/aceptar`, { method: 'POST', body: data, tenantId })
+  },
+  async verificarAceptacionContrato(contratoId: string, tenantId?: string | null) {
+    return request<{ aceptado: boolean }>(`/contratos/${contratoId}/verificar`, { tenantId })
+  },
+  async seedContratos(tenantId?: string | null) {
+    return request<any>('/contratos/seed', { method: 'POST', tenantId })
+  },
+  async getContratosPendientes(tenantId?: string | null) {
+    return request<any[]>('/contratos/pendientes', { tenantId })
+  },
+
+  // ── Taxes ───────────────────────────────────────────────────────────────
+  async calcularImpuestos(data: { subtotal: number; regime?: string; clientCity?: string }) {
+    return request<any>('/taxes/calculate', { method: 'POST', body: data })
   },
 }

@@ -10,8 +10,8 @@
   --color-background-info: rgba(37, 99, 235, 0.08);
   --color-background-warning: rgba(234, 179, 8, 0.1);
   --color-text-primary: #18181B;
-  --color-text-secondary: #71717A;
-  --color-text-tertiary: #A1A1AA;
+  --color-text-secondary: #555555;
+  --color-text-tertiary: #666666;
   --color-text-info: #2563EB;
   --color-text-success: #16a34a;
   --color-text-warning: #ca8a04;
@@ -34,8 +34,8 @@
   --secondary-foreground: #18181B;
   --accent: #2563EB;
   --accent-foreground: #FFFFFF;
-  --muted: #71717A;
-  --muted-foreground: #71717A;
+  --muted: #555555;
+  --muted-foreground: #555555;
   --border: #E4E4E7;
   --input: #E4E4E7;
   --ring: #2563EB;
@@ -2291,4 +2291,24 @@ fieldset:disabled {
 .version-tag {
   opacity: 0.6;
   font-size: 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .c360-mark .rotor {
+    animation: none !important;
+    opacity: 0.8 !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .c360-mark .rotor {
+    animation: spin 12s linear infinite !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .c360-mark,
+  .c360-mark .rotor {
+    animation-play-state: paused !important;
+  }
 }

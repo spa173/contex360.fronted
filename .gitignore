@@ -1,49 +1,36 @@
-# Environment files with secrets
+# =========================================================================
+# Contex360 - Frontend Git Ignore Configuration
+# =========================================================================
+
+# --- 1. SECRETS & TOKENS ---
+# Evitar subir claves de API, contraseñas, certificados y configuraciones con credenciales
 .env
 .env.*
 !.env.example
 .env*.local
+*.pem
+*.key
+*.pub
+*.cert
+*.crt
+*.pfx
+*.p12
+.npmrc
+.yarnrc
+auth.json
+.git-credentials
 
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.vercel
-
-# Pruebas locales privadas
-tests-local/
-scratch/
-
-# Windsurf & AI Agents skills (privadas, no subir a GitHub)
-skills/
-skills-lock.json
+# --- 2. AI AGENTS & TOOLS (Archivos de IA) ---
+# Evitar subir configuraciones locales, permisos o historial de agentes de IA
+.claude/
+.claudeignore
+.gemini/
 .agents/
 .adal/
 .aider-desk/
+.aider*
 .augment/
 .bob/
-.claude/
-.claudeignore
 .codeartsdoer/
 .codebuddy/
 .codemaker/
@@ -55,7 +42,6 @@ skills-lock.json
 .devin/
 .factory/
 .forge/
-.gemini/
 .goose/
 .graphify/
 .hermes/
@@ -79,3 +65,58 @@ skills-lock.json
 .vibe/
 .windsurf/
 .zencoder/
+skills/
+skills-lock.json
+
+# --- 3. LOCAL SETTINGS (Settings Locales) ---
+# Configuraciones del IDE y archivos del sistema local/operativo
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.history/
+.DS_Store
+Thumbs.db
+
+# --- 4. LOGS (Registros) ---
+# Logs de ejecución, depuración y del gestor de paquetes
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+pnpm-error.log*
+
+# --- 5. TEMPORARY FILES & BUILD OUTPUTS (Archivos Temporales) ---
+# Cachés, dependencias instaladas y compilaciones de producción
+node_modules/
+dist/
+dist-ssr/
+.vercel/
+.cache/
+.parcel-cache/
+.turbo/
+out/
+tmp/
+temp/
+*.tmp
+*.temp
+tsconfig.tsbuildinfo
+*.tsbuildinfo
+.eslintcache
+.prettiercache
+.scannerwork/
+coverage/
+
+# --- 6. PRIVATE CONTEXTS & LOCAL TESTING (Contextos Privados) ---
+# Archivos de pruebas locales y notas de desarrollo personales
+tests-local/
+scratch/
+private-context/
+*.local

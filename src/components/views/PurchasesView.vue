@@ -41,20 +41,26 @@ async function handleFileUpload(event: Event) {
 
   isProcessing.value = true
   try {
-    // Llamar al endpoint OCR real del backend
+    const { businessApi } = await import('../../services/businessApi')
+    const { getCsrfToken } = await import('../../services/csrf')
+    const { useStateStore } = await import('../../stores/stateStore')
+    const stateStore = useStateStore()
+    const tenantId = stateStore.activeTenantId || ''
     const formData = new FormData()
     formData.append('file', file)
-    const tenantId = purchases.purchases[0]?.tenantId || ''
-    const baseUrl = (await import('../../services/apiBase')).getApiBaseUrl()
-    const response = await fetch(`${baseUrl}/analytics/ocr-runs/upload`, {
+    const csrf = getCsrfToken()
+    const headers: Record<string, string> = {}
+    if (tenantId) headers['x-tenant-id'] = tenantId
+    if (csrf) headers['X-CSRF-Token'] = csrf
+    const response = await fetch(businessApi.getOcrUploadUrl(), {
       method: 'POST',
-      headers: tenantId ? { 'x-tenant-id': tenantId } : {},
+      headers,
       credentials: 'include',
       body: formData,
     })
     if (response.ok) {
       await purchases.fetchPurchases()
-      emit('notify', { message: 'Factura recibida', detail: 'El documento fue enviado al motor OCR. Revisa las tareas de IA en el Dashboard.' })
+      emit('notify', { message: 'Factura recibida', detail: 'El documento fue enviado al motor OCR. Revisa el módulo IA para ver los resultados.' })
     } else {
       const err = await response.json().catch(() => ({}))
       emit('notify', { message: 'Error OCR', detail: err.message || 'No se pudo procesar el archivo.' })
@@ -63,7 +69,6 @@ async function handleFileUpload(event: Event) {
     emit('notify', { message: 'Error', detail: e.message || 'Error al subir el archivo.' })
   } finally {
     isProcessing.value = false
-    // Limpiar input para permitir re-subida del mismo archivo
     if (fileInputRef.value) fileInputRef.value.value = ''
   }
 }

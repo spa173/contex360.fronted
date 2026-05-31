@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useStateStore } from '../../stores/stateStore'
 import { businessApi } from '../../services/businessApi'
 import { toast } from 'vue-sonner'
 import { useHead } from '@unhead/vue'
+import { useRouter } from 'vue-router'
 
 useHead({
   title: 'Planes y Precios',
@@ -19,10 +20,11 @@ useHead({
 const emit = defineEmits<{
   (e: 'back'): void
   (e: 'request-demo'): void
-  (e: 'login'): void
   (e: 'purchase-plan', payload: { planType: string; billing: 'monthly' | 'annual' }): void
+  (e: 'login'): void
 }>()
 
+const router = useRouter()
 const isAnnual = ref(false)
 const selectedPlan = ref<any>(null)
 const showWompi = ref(false)
@@ -30,6 +32,47 @@ const paymentStep = ref('details') // details -> processing -> success
 const cardNumber = ref('')
 const cardExpiry = ref('')
 const cardCvc = ref('')
+
+// Handle query params for retry/update payment method
+onMounted(() => {
+  const params = new URLSearchParams(window.location.search)
+  const retry = params.get('retry')
+  const updateMethod = params.get('update_method')
+  const payOverdue = params.get('pay_overdue')
+  const planType = params.get('plan')
+  const billing = params.get('billing')
+  const tenantId = params.get('tenantId')
+  
+  if (retry === 'true' || updateMethod === 'true' || payOverdue === 'true') {
+    // Set the plan based on query params if provided (for retry/update)
+    if (planType && (retry === 'true' || updateMethod === 'true')) {
+      const plan = plans.find(p => p.id === planType)
+      if (plan) {
+        selectedPlan.value = plan
+        isAnnual.value = billing === 'annual'
+      }
+    }
+    
+    // Open the payment modal automatically
+    showWompi.value = true
+    paymentStep.value = 'details'
+    
+    // Clear the query params from URL to avoid loops
+    const newParams = new URLSearchParams()
+    if (!retry) newParams.set('plan', planType || '')
+    if (!updateMethod) newParams.set('billing', billing || '')
+    if (!payOverdue) {
+      newParams.set('tenantId', tenantId || '')
+      newParams.set('plan', planType || '')
+      newParams.set('billing', billing || '')
+    }
+    if (newParams.toString()) {
+      window.history.replaceState({}, '', `${window.location.pathname}?${newParams.toString()}`)
+    } else {
+      window.history.replaceState({}, '', window.location.pathname)
+    }
+  }
+})
 
 
 const plans = [

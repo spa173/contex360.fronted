@@ -4,28 +4,12 @@ import { useThemeStore } from '../../stores/themeStore'
 import { useTranslationStore } from '../../stores/translationStore'
 import { businessApi } from '../../services/businessApi'
 import { useStateStore } from '../../stores/stateStore'
+import TrialBanner from '../common/TrialBanner.vue'
 
 const props = defineProps(['activeTenant', 'accessibleTenants', 'user', 'activeView', 'activeMembership', 'sidebarOpen', 'canSwitchTenant'])
 const emit = defineEmits(['logout', 'toggle-sidebar', 'navigate', 'open-admin-panel', 'notify'])
 
 const store = useStateStore()
-
-const trialDaysLeft = computed(() => {
-  const sub = store.subscription
-  if (!sub || !sub.trialEndsAt) return null
-  
-  const end = new Date(sub.trialEndsAt)
-  const now = new Date()
-  
-  const diffTime = end.getTime() - now.getTime()
-  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-  return diffDays
-})
-
-const showTrialBanner = computed(() => {
-  const days = trialDaysLeft.value
-  return days !== null && days >= 0 && days < 5
-})
 
 const themeStore = useThemeStore()
 const showNotifications = ref(false)
@@ -222,27 +206,7 @@ function handleViewAllAlerts() {
 <template>
   <header class="sticky top-0 z-30 w-full flex flex-col">
     <!-- Trial Banner -->
-    <div
-      v-if="showTrialBanner"
-      class="bg-amber-50 border-b border-amber-200 text-amber-800 text-[13px] font-medium py-2.5 px-4 text-center flex items-center justify-center gap-2 transition-all duration-300"
-    >
-      <span class="material-symbols-outlined text-[16px] text-amber-600">warning</span>
-      <span>
-        Tu trial vence en {{ trialDaysLeft }} {{ trialDaysLeft === 1 ? 'día' : 'días' }} —
-        <button 
-          class="underline font-extrabold hover:text-amber-950 focus:outline-none" 
-          @click="emit('navigate', 'plans')"
-        >
-          Ver planes
-        </button>
-      </span>
-      <button
-        class="ml-2 w-5 h-5 rounded-full bg-amber-200 hover:bg-amber-300 flex items-center justify-center text-[11px] font-bold text-amber-800 transition-colors"
-        @click="showTrialBanner = false"
-      >
-        ✕
-      </button>
-    </div>
+    <TrialBanner @navigate="(v) => emit('navigate', v)" />
     <div class="topbar w-full h-14 bg-white border-b border-[#E4E4E7] flex items-center justify-between px-4 lg:px-5 gap-3">
       <!-- Hamburger (mobile only) -->
       <button

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import DOMPurify from 'dompurify'
 import { useHead } from '@unhead/vue'
+import { useLegal } from '../../composables/useLegal'
+
+const { doc } = useLegal('terms')
 
 useHead({
   title: 'Términos de Uso',
@@ -14,7 +17,7 @@ useHead({
 })
 
 const lastUpdated = '12 de mayo de 2026'
-const emit = defineEmits<{ (e: 'back'): void }>()
+const emit = defineEmits<{ (e: 'back'): void; (e: 'show-privacy'): void; (e: 'show-dpa'): void; (e: 'show-bcp'): void }>()
 
 const sanitizeHtml = (html: string) => DOMPurify.sanitize(html, {
   ALLOWED_TAGS: ['strong', 'em', 'a'],
@@ -168,6 +171,11 @@ const finalSections = [
         </h1>
         <p class="text-[13px] text-[#71717A] font-medium">
           Última actualización: {{ lastUpdated }}
+          <span
+            v-if="doc"
+            class="inline-flex items-center ml-3 px-2 py-0.5 rounded-md text-[10px] font-semibold bg-[#F4F4F5] text-[#71717A]"
+            :title="`Versión ${doc.version} — sincronizada con el servidor`"
+          >v{{ doc.version }}</span>
         </p>
       </div>
     </section>
@@ -251,7 +259,7 @@ const finalSections = [
           </div>
         </div>
         <p class="text-[14px] text-[#71717A] leading-[1.65] font-medium">
-          Contex360 no se responsabiliza por interrupciones causadas por factores externos como fallas de conectividad del usuario, eventos de fuerza mayor o interrupciones de proveedores de infraestructura (AWS, Render, Neon).
+          Contex360 no se responsabiliza por interrupciones causadas por factores externos como fallas de conectividad del usuario, eventos de fuerza mayor o interrupciones de proveedores de infraestructura (AWS, Hugging Face, Neon).
         </p>
       </div>
     </section>
@@ -298,6 +306,17 @@ const finalSections = [
           <p class="text-[12px] text-[#71717A] leading-[1.6] font-medium">
             Estos términos pueden ser modificados periódicamente. Los cambios serán notificados a través de la plataforma con al menos 15 días de anticipación. El uso continuado del servicio tras la notificación implica la aceptación de los términos actualizados.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Legal nav -->
+    <section class="relative pb-6">
+      <div class="max-w-3xl mx-auto px-6 lg:px-8">
+        <div class="flex flex-wrap gap-2 justify-center">
+          <button class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors" @click="emit('show-privacy')">Política de Privacidad</button>
+          <button class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors" @click="emit('show-dpa')">Acuerdo de Datos</button>
+          <button class="px-3 py-1.5 text-[11px] font-semibold text-[#2563EB] bg-blue-50 rounded-full hover:bg-blue-100 transition-colors" @click="emit('show-bcp')">Plan de Continuidad</button>
         </div>
       </div>
     </section>

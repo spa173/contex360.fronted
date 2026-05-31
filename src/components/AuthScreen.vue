@@ -2,6 +2,7 @@
 import { computed, ref, onMounted } from 'vue'
 import { useAuthStore } from '../stores/authStore'
 import { businessApi } from '../services/businessApi'
+import { changeExpiredPassword } from '../services/authApi'
 import { decryptData } from '../utils/security'
 import { toast } from 'vue-sonner'
 import { useHead } from '@unhead/vue'
@@ -19,7 +20,7 @@ useHead({
 
 const authStore = useAuthStore()
 
-const emit = defineEmits(['request-demo', 'show-terms', 'show-privacy', 'forgot-password', 'back'])
+defineEmits(['request-demo', 'show-terms', 'show-privacy', 'forgot-password', 'back'])
 
 const email = ref('')
 const password = ref('')
@@ -32,6 +33,7 @@ const statusMessage = ref('')
 const requiresTotp = ref(false)
 const totpCode = ref('')
 const requiresPasswordChange = ref(false)
+const resetToken = ref('')
 const newPassword = ref('')
 const newPasswordConfirm = ref('')
 const changePasswordLoading = ref(false)
@@ -50,9 +52,6 @@ const PASSWORD_RULES = [
   { id: 'special',   label: 'Al menos un símbolo (!@#$...)',  test: (p: string) => /[^a-zA-Z0-9]/.test(p) },
 ]
 
-const passwordStrength = computed(() =>
-  PASSWORD_RULES.map(r => ({ ...r, passed: r.test(password.value) }))
-)
 const newPasswordStrength = computed(() =>
   PASSWORD_RULES.map(r => ({ ...r, passed: r.test(newPassword.value) }))
 )
@@ -107,6 +106,7 @@ const handleSubmit = async () => {
 
     if (result?.requiresPasswordChange) {
       requiresPasswordChange.value = true
+      resetToken.value = result.resetToken || ''
       errorMessage.value = ''
       return
     }
@@ -142,9 +142,15 @@ const handleChangePassword = async () => {
   changePasswordLoading.value = true
   errorMessage.value = ''
   try {
-    const res = await businessApi.changePassword(password.value, newPassword.value)
+    let res
+    if (resetToken.value) {
+      res = await changeExpiredPassword(resetToken.value, password.value, newPassword.value)
+    } else {
+      res = await businessApi.changePassword(password.value, newPassword.value)
+    }
     if (res.ok) {
       requiresPasswordChange.value = false
+      resetToken.value = ''
       password.value = newPassword.value
       statusMessage.value = 'Contraseña actualizada. Iniciando sesión...'
       await handleSubmit()
@@ -166,7 +172,7 @@ const handleAcceptPrivacy = async () => {
     showPrivacyConsentModal.value = false
     toast.success('Política de privacidad aceptada.')
     await handleSubmit()
-  } catch (err) {
+  } catch {
     toast.error('Error al procesar la política.')
   } finally {
     privacyConsentLoading.value = false
