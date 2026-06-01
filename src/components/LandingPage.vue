@@ -431,7 +431,7 @@ function confirmBillingChange() {
 </script>
 
 <template>
-  <div class="landing-root min-h-screen bg-white text-[#09090B] font-['Inter'] relative overflow-hidden">
+  <div class="landing-root min-h-screen bg-background text-foreground font-['Inter'] relative overflow-hidden">
     <!-- Hero background: grid + radial -->
     <div
       aria-hidden="true"
@@ -453,7 +453,7 @@ function confirmBillingChange() {
       role="navigation"
       aria-label="Navegación principal"
       class="relative flex justify-between items-center h-20 px-6 lg:px-8 sticky top-0 z-40 transition-[background-color,border-color,box-shadow,backdrop-filter] duration-300"
-      :class="scrolled ? 'bg-white/90 backdrop-blur-md border-b border-[#F4F4F5] shadow-sm' : 'bg-transparent'"
+      :class="scrolled ? 'bg-background/90 backdrop-blur-md border-b border-border shadow-sm' : 'bg-transparent'"
     >
       <div class="flex items-center gap-2.5">
         <svg
@@ -486,20 +486,20 @@ function confirmBillingChange() {
             />
           </g>
         </svg>
-        <span class="text-[18px] font-bold tracking-tight text-[#18181B]">Contex360</span>
+        <span class="text-[18px] font-bold tracking-tight text-foreground">Contex360</span>
       </div>
 
       <div class="hidden lg:flex items-center gap-10">
         <a
-          class="text-[13px] font-medium text-[#555555] hover:text-[#18181B] transition-colors cursor-pointer"
+          class="text-[13px] font-medium text-muted hover:text-foreground transition-colors cursor-pointer"
           href="#producto"
         >Plataforma</a>
         <a
-          class="text-[13px] font-medium text-[#555555] hover:text-[#18181B] transition-colors cursor-pointer"
+          class="text-[13px] font-medium text-muted hover:text-foreground transition-colors cursor-pointer"
           href="#beneficios"
         >Soluciones Enterprise</a>
         <a
-          class="text-[13px] font-medium text-[#555555] hover:text-[#18181B] transition-colors cursor-pointer"
+          class="text-[13px] font-medium text-muted hover:text-foreground transition-colors cursor-pointer"
           href="#precios"
         >Precios</a>
       </div>
@@ -508,14 +508,14 @@ function confirmBillingChange() {
         <!-- Desktop nav actions -->
         <button
           type="button"
-          class="hidden lg:inline-flex text-[13px] font-semibold text-[#555555] px-4 py-2.5 rounded-lg hover:bg-[#F4F4F5] hover:text-[#18181B] btn-transition"
+          class="hidden lg:inline-flex text-[13px] font-semibold text-muted px-4 py-2.5 rounded-lg hover:bg-surface hover:text-foreground btn-transition"
           @click="emit('login')"
         >
           Iniciar Sesión
         </button>
         <button
           type="button"
-          class="hidden lg:inline-flex bg-[#18181B] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#27272A] btn-transition shadow-sm active:scale-[0.97]"
+          class="hidden lg:inline-flex bg-[#2563EB] text-white text-[13px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#1D4ED8] btn-transition shadow-sm active:scale-[0.97]"
           @click="() => { trackCTAClick('nav'); emit('request-demo') }"
         >
           Solicitar Demo
@@ -524,7 +524,7 @@ function confirmBillingChange() {
         <!-- Mobile nav actions -->
         <button
           type="button"
-          class="lg:hidden bg-[#18181B] text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg btn-transition active:scale-[0.97] min-h-[44px]"
+          class="lg:hidden bg-[#2563EB] text-white text-[12.5px] font-semibold px-4 py-2.5 rounded-lg btn-transition active:scale-[0.97] min-h-[44px]"
           @click="() => { trackCTAClick('nav'); emit('request-demo') }"
         >
           Demo gratis
@@ -548,7 +548,7 @@ function confirmBillingChange() {
       <section
         id="hero"
         aria-labelledby="hero-heading"
-        class="relative pt-10 pb-14 lg:pt-28 lg:pb-40 border-b border-[#F4F4F5]"
+        class="relative py-20 lg:py-28 border-b border-border"
       >
         <div class="max-w-7xl mx-auto px-5 lg:px-8 grid lg:grid-cols-[1.05fr_1fr] gap-10 lg:gap-20 items-center">
           <div class="z-10">
@@ -560,12 +560,12 @@ function confirmBillingChange() {
 
             <h1
               id="hero-heading"
-              class="text-[36px] sm:text-[46px] lg:text-[62px] leading-[1.02] lg:leading-[1.0] tracking-[-0.03em] lg:tracking-[-0.035em] font-serif font-bold text-[#18181B] mb-5 lg:mb-7"
+              class="text-[36px] sm:text-[46px] lg:text-[62px] leading-[1.02] lg:leading-[1.0] tracking-[-0.03em] lg:tracking-[-0.035em] font-serif font-bold text-foreground mb-5 lg:mb-7"
               style="text-wrap: balance;"
             >
               Factura electrónica <em class="not-italic text-[#2563EB]">DIAN</em> en segundos. Y todo tu ERP, en un solo lugar.
             </h1>
-            <p class="text-[15px] lg:text-[17px] leading-[1.6] lg:leading-[1.55] text-[#555555] mb-7 lg:mb-10 max-w-lg">
+            <p class="text-[15px] lg:text-[17px] leading-[1.6] lg:leading-[1.55] text-muted mb-7 lg:mb-10 max-w-lg">
               Emite facturas electrónicas con CUFE válido y reglamentario, y gestiona inventario, contabilidad y tesorería desde una sola plataforma diseñada para empresas colombianas.
             </p>
 
@@ -576,31 +576,31 @@ function confirmBillingChange() {
             />
 
             <!-- Mobile micro-copy under CTA -->
-            <p class="text-[11.5px] text-[#71717A] mt-3 lg:hidden">
+            <p class="text-[11.5px] text-muted mt-3 lg:hidden">
               Sin tarjeta de crédito · Cancela cuando quieras
             </p>
 
             <!-- Pillars rail — capacidades factuales de la infraestructura (sin métricas inventadas) -->
             <div class="mt-8 lg:mt-14 grid grid-cols-[1.2fr_0.8fr_1.4fr] gap-0 max-w-full lg:max-w-[600px]">
-              <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4 pr-4 lg:pr-6">
-                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-[#18181B] tracking-tight leading-[1.15]">Emisión Oficial</b>
-                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Conexión directa con la DIAN</span>
+              <div class="border-t-2 border-border pt-3 lg:pt-4 pr-4 lg:pr-6">
+                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-foreground tracking-tight leading-[1.15]">Emisión Oficial</b>
+                <span class="text-[12px] lg:text-[12px] uppercase tracking-[0.1em] font-bold text-muted mt-0.5 block leading-tight">Conexión directa con la DIAN</span>
               </div>
               <div class="border-t-2 border-[#2563EB] pt-3 lg:pt-4 pr-4 lg:pr-6">
-                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-[#18181B] tracking-tight leading-[1.15]">DIAN</b>
-                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Facturación habilitada</span>
+                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-foreground tracking-tight leading-[1.15]">DIAN</b>
+                <span class="text-[12px] lg:text-[12px] uppercase tracking-[0.1em] font-bold text-muted mt-0.5 block leading-tight">Facturación habilitada</span>
               </div>
-              <div class="border-t-2 border-[#E4E4E7] pt-3 lg:pt-4 pr-4 lg:pr-6">
-                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-[#18181B] tracking-tight leading-[1.15]">Infraestructura Segura</b>
-                <span class="text-[9.5px] lg:text-[10.5px] uppercase tracking-[0.1em] font-bold text-[#888888] mt-0.5 block leading-tight">Cifrado AES-256 en la nube</span>
+              <div class="border-t-2 border-border pt-3 lg:pt-4 pr-4 lg:pr-6">
+                <b class="block font-serif font-bold text-[16px] lg:text-[19px] text-foreground tracking-tight leading-[1.15]">Infraestructura Segura</b>
+                <span class="text-[12px] lg:text-[12px] uppercase tracking-[0.1em] font-bold text-muted mt-0.5 block leading-tight">Cifrado AES-256 en la nube</span>
               </div>
             </div>
           </div>
 
           <!-- Dashboard preview card -->
           <div class="relative mt-6 lg:mt-0 mb-6 lg:mb-0">
-            <div class="absolute inset-0 bg-[#F4F4F5] rounded-[20px] lg:rounded-[24px] translate-x-2 translate-y-2 lg:translate-x-3 lg:translate-y-3 -z-10 border border-[#E4E4E7]" />
-            <div class="bg-white p-2 lg:p-3 rounded-[20px] lg:rounded-[24px] border border-[#E4E4E7] shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
+            <div class="absolute inset-0 bg-surface rounded-[20px] lg:rounded-[24px] translate-x-2 translate-y-2 lg:translate-x-3 lg:translate-y-3 -z-10 border border-border" />
+            <div class="bg-background p-2 lg:p-3 rounded-[20px] lg:rounded-[24px] border border-border shadow-[0_1px_2px_rgba(0,0,0,0.02),0_24px_60px_-20px_rgba(10,10,10,0.12)] relative overflow-hidden group">
               <!-- WebP is supported by 97%+ of browsers in 2026. The PNG fallback
                  (532KB) has been removed to avoid penalising the majority of users.
                  The <img> src still uses the WebP directly as a safe fallback
@@ -647,11 +647,11 @@ function confirmBillingChange() {
 
       <!-- Trust bar (P0-2): real, verifiable indicators replace fake logos -->
       <section
-        class="py-9 lg:py-12 border-b border-[#F4F4F5] bg-white"
+        class="py-20 lg:py-28 border-b border-border bg-background"
         aria-label="Indicadores de confianza de Contex360"
       >
         <div class="max-w-7xl mx-auto px-6 lg:px-8">
-          <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-[#71717A] mb-8">
+          <p class="text-center text-[10.5px] uppercase tracking-[0.2em] font-bold text-muted mb-8">
             La plataforma que cumple con la DIAN y protege tu operación
           </p>
           <TrustBar />
@@ -680,41 +680,41 @@ function confirmBillingChange() {
         <template v-if="showPricing">
           <section
             aria-labelledby="precios-heading"
-            class="py-16 lg:py-28 bg-[#FAFAFA] border-b border-[#F4F4F5]"
+            class="py-20 lg:py-28 bg-secondary border-b border-border"
           >
             <div class="max-w-7xl mx-auto px-6 lg:px-8">
               <div class="text-center max-w-3xl mx-auto mb-16">
-                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-primary mb-4">
                   Tarifas Transparentes
                 </h2>
                 <h3
                   id="precios-heading"
-                  class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-serif font-bold text-[#18181B] mb-5"
+                  class="text-[36px] lg:text-[42px] leading-[1.05] tracking-[-0.03em] font-serif font-bold text-foreground mb-5"
                 >
                   Elige el plan ideal para tu negocio
                 </h3>
-                <p class="text-[15px] leading-[1.55] text-[#555555] max-w-lg mx-auto font-medium">
+                <p class="text-[15px] leading-[1.55] text-muted max-w-lg mx-auto font-medium">
                   Sin contratos a largo plazo, sin cargos ocultos. Cambia de plan o cancela cuando quieras.
                 </p>
 
                 <!-- Toggle mensual/anual -->
                 <div class="flex items-center justify-center gap-3.5 mt-8">
-                  <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">Mensual</span>
+                  <span :class="['text-[13.5px] font-semibold transition-colors', !isAnnual ? 'text-foreground' : 'text-muted']">Mensual</span>
                   <button
                     type="button"
                     role="switch"
                     :aria-checked="isAnnual"
-                    class="w-12 h-6.5 rounded-full bg-[#E4E4E7] p-0.5 relative transition-colors duration-200"
-                    :class="{ 'bg-[#18181B]': isAnnual }"
+                    class="w-12 h-6.5 rounded-full bg-border p-0.5 relative transition-colors duration-200"
+                    :class="{ 'bg-foreground': isAnnual }"
                     aria-label="Facturación anual"
                     @click="toggleBilling"
                   >
-                    <span 
-                      class="block w-5.5 h-5.5 rounded-full bg-white shadow-sm transition-transform duration-200"
+                    <span
+                      class="block w-5.5 h-5.5 rounded-full bg-background shadow-sm transition-transform duration-200"
                       :class="{ 'translate-x-5.5': isAnnual }"
                     />
                   </button>
-                  <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-[#18181B]' : 'text-[#555555]']">
+                  <span :class="['text-[13.5px] font-semibold transition-colors flex items-center gap-1.5', isAnnual ? 'text-foreground' : 'text-muted']">
                     Anual
                     <span class="bg-[#10B981]/15 text-[#10B981] text-[10px] font-black px-2 py-0.5 rounded-md uppercase tracking-wide">
                       Ahorra 25% + 2 Meses Gratis
@@ -736,7 +736,7 @@ function confirmBillingChange() {
                   <!-- Badge popular -->
                   <span
                     v-if="plan.popular"
-                    class="absolute -top-3.5 left-6 bg-white text-[#18181B] text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-[#E4E4E7]"
+                    class="absolute -top-3.5 left-6 bg-background text-foreground text-[10px] font-black px-3 py-1 rounded-full uppercase tracking-wider shadow-md border border-border"
                   >
                     ⚡ Más popular
                   </span>
@@ -745,7 +745,7 @@ function confirmBillingChange() {
                     <!-- Plan Header -->
                     <div class="mb-6">
                       <div class="flex items-center justify-between mb-2">
-                        <h4 :class="['text-[20px] font-black tracking-tight', plan.popular ? 'text-white' : 'text-[#18181B]']">
+                        <h4 :class="['text-[20px] font-black tracking-tight', plan.popular ? 'text-white' : 'text-foreground']">
                           {{ plan.name }}
                         </h4>
                         <!-- Plan tier badge -->
@@ -758,7 +758,7 @@ function confirmBillingChange() {
                           class="text-[9px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-[#18181B]/10 text-[#555555] border border-[#E4E4E7]"
                         >Corporativo</span>
                       </div>
-                      <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/80' : 'text-[#555555]']">
+                      <p :class="['text-[12.5px] leading-[1.55]', plan.popular ? 'text-white/80' : 'text-muted']">
                         {{ plan.desc }}
                       </p>
                     </div>
@@ -766,13 +766,13 @@ function confirmBillingChange() {
                     <!-- Price -->
                     <div
                       class="mb-6 pb-6"
-                      :class="plan.popular ? 'border-b border-white/10' : 'border-b border-[#F4F4F5]'"
+                      :class="plan.popular ? 'border-b border-white/10' : 'border-b border-border'"
                     >
                       <div class="flex items-baseline gap-1.5">
-                        <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-[#18181B]']">
+                        <span :class="['text-[34px] font-black tracking-tight tabular-nums', plan.popular ? 'text-white' : 'text-foreground']">
                           {{ formatCurrency(isAnnual ? plan.priceAnnual : plan.priceMonthly) }}
                         </span>
-                        <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/70' : 'text-[#71717A]']">
+                        <span :class="['text-[12px] font-semibold', plan.popular ? 'text-white/70' : 'text-muted']">
                           / {{ isAnnual ? 'año' : 'mes' }}
                         </span>
                       </div>
@@ -793,7 +793,7 @@ function confirmBillingChange() {
                     <!-- Plan inheritance label -->
                     <p
                       v-if="idx > 0"
-                      :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/60' : 'text-[#71717A]']"
+                      :class="['text-[11px] font-bold uppercase tracking-wider mb-3', plan.popular ? 'text-white/60' : 'text-muted']"
                     >
                       Todo {{ plans[idx - 1].name }}, más:
                     </p>
@@ -821,8 +821,8 @@ function confirmBillingChange() {
                       :class="[
                         'w-full py-3.5 rounded-xl text-[13.5px] font-semibold flex items-center justify-center gap-2 btn-transition active:scale-[0.98]',
                         plan.popular
-                          ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
-                          : 'bg-[#18181B] text-white hover:bg-[#27272A] shadow-sm'
+                          ? 'border border-white/15 text-white/70 hover:bg-white/8 hover:text-white'
+                          : 'border border-[#E4E4E7] text-[#666666] bg-white hover:bg-[#FAFAFA] hover:text-[#18181B]'
                       ]"
                       :aria-label="'Comprar ahora plan ' + plan.name"
                       @click="openCheckout(plan)"
@@ -838,8 +838,8 @@ function confirmBillingChange() {
                       :class="[
                         'w-full py-3 rounded-xl text-[13px] font-medium btn-transition active:scale-[0.98]',
                         plan.popular
-                          ? 'border border-white/15 text-white/70 hover:bg-white/8 hover:text-white'
-                          : 'border border-[#E4E4E7] text-[#666666] bg-white hover:bg-[#FAFAFA] hover:text-[#18181B]'
+                          ? 'bg-white text-[#18181B] hover:bg-[#F4F4F5] shadow-lg shadow-white/10'
+                          : 'bg-[#2563EB] text-white hover:bg-[#1D4ED8] shadow-sm'
                       ]"
                       :aria-label="'Comenzar prueba gratis del plan ' + plan.name"
                       @click="() => { trackCTAClick('pricing', plan.id); emit('request-demo') }"
@@ -847,7 +847,7 @@ function confirmBillingChange() {
                       Comenzar prueba gratis
                     </button>
                     <!-- Micro-copy -->
-                    <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/60' : 'text-[#71717A]']">
+                    <p :class="['text-center text-[11px] pt-1', plan.popular ? 'text-white/60' : 'text-muted']">
                       Sin tarjeta de crédito · Cancela cuando quieras
                     </p>
                   </div>
@@ -858,17 +858,17 @@ function confirmBillingChange() {
               <div class="mt-10 max-w-6xl mx-auto">
                 <div class="enterprise-strip">
                   <div class="flex items-center gap-3 min-w-0">
-                    <div class="w-8 h-8 rounded-lg bg-[#18181B] flex items-center justify-center flex-shrink-0">
+                    <div class="w-8 h-8 rounded-lg bg-foreground flex items-center justify-center flex-shrink-0">
                       <span
                         class="material-symbols-outlined text-white text-[16px]"
                         aria-hidden="true"
                       >business</span>
                     </div>
                     <div class="min-w-0">
-                      <p class="text-[13.5px] font-bold text-[#18181B]">
+                      <p class="text-[13.5px] font-bold text-foreground">
                         ¿Más de 20 usuarios o necesidades específicas?
                       </p>
-                      <p class="text-[12px] text-[#666666] leading-tight">
+                      <p class="text-[12px] text-muted leading-tight">
                         Planes corporativos con integración ERP personalizada, SLA dedicado y facturación personalizada.
                       </p>
                     </div>
@@ -916,37 +916,37 @@ function confirmBillingChange() {
         </template>
         <div
           v-else
-          class="h-[1200px] bg-[#FAFAFA] border-b border-[#F4F4F5]"
+          class="h-[1200px] bg-secondary border-b border-border"
         />
       </div>
 
       <!-- Simulated Wompi Checkout Overlay -->
       <Teleport to="body">
-        <div 
+        <div
           v-if="showWompi"
-          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-[#09090B]/50 backdrop-blur-sm"
+          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         >
-          <div class="bg-white border border-[#E4E4E7] rounded-[24px] shadow-2xl w-full max-w-[480px] overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col text-left">
+          <div class="bg-background border border-border rounded-[24px] shadow-2xl w-full max-w-[480px] overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col text-left">
             <!-- Wompi branded header -->
-            <div class="bg-[#F4F1DE] px-6 py-5 border-b border-[#E8E5CE] flex items-center justify-between">
+            <div class="bg-surface px-6 py-5 border-b border-border flex items-center justify-between">
               <div class="flex items-center gap-3">
-                <div class="bg-[#FE5F55] text-white font-black px-2.5 py-1.5 rounded-lg text-[14px] tracking-tighter flex items-center gap-0.5">
+                <div class="bg-primary text-white font-black px-2.5 py-1.5 rounded-lg text-[14px] tracking-tighter flex items-center gap-0.5">
                   <span>w</span>
                   <span class="w-1.5 h-1.5 rounded-full bg-white self-end mb-1" />
                   <span>mpi</span>
                 </div>
                 <div>
-                  <h4 class="text-[14px] font-black text-[#3D405B] tracking-tight">
+                  <h4 class="text-[14px] font-black text-foreground tracking-tight">
                     Checkout Seguro
                   </h4>
-                  <p class="text-[11px] text-[#3D405B]/70 font-semibold">
+                  <p class="text-[11px] text-muted font-semibold">
                     Pasarela de pagos enlazada
                   </p>
                 </div>
               </div>
-              <button 
+              <button
                 type="button"
-                class="w-7 h-7 rounded-full hover:bg-black/5 text-[#3D405B] flex items-center justify-center transition-colors" 
+                class="w-7 h-7 rounded-full hover:bg-black/5 text-foreground flex items-center justify-center transition-colors" 
                 aria-label="Cerrar pasarela de pago"
                 @click="closeWompi"
               >
@@ -960,11 +960,11 @@ function confirmBillingChange() {
             <!-- Checkout body -->
             <div class="p-6 flex-1 overflow-y-auto max-h-[80vh]">
               <!-- Order summary -->
-              <div class="bg-[#FAFAFA] border border-[#E4E4E7] rounded-xl p-4 mb-6">
-                <span class="text-[10px] font-bold text-[#666666] uppercase tracking-wider block mb-1">Resumen del pedido</span>
+              <div class="bg-surface border border-border rounded-xl p-4 mb-6">
+                <span class="text-[10px] font-bold text-muted uppercase tracking-wider block mb-1">Resumen del pedido</span>
                 <div class="flex justify-between items-baseline">
-                  <span class="text-[15px] font-black text-[#18181B]">{{ selectedPlan?.name }}</span>
-                  <span class="text-[15px] font-black text-[#2563EB]">
+                  <span class="text-[15px] font-black text-foreground">{{ selectedPlan?.name }}</span>
+                  <span class="text-[15px] font-black text-primary">
                     {{ formatCurrency(isAnnual ? selectedPlan?.priceAnnual : selectedPlan?.priceMonthly) }}
                   </span>
                 </div>
@@ -979,9 +979,9 @@ function confirmBillingChange() {
                 class="space-y-4"
                 @submit.prevent="submitPaymentReal"
               >
-                <button 
+                <button
                   type="submit"
-                  class="w-full py-4 bg-[#FE5F55] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#eb574e] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
+                  class="w-full py-4 bg-[#2563EB] text-white text-[13px] font-extrabold rounded-xl hover:bg-[#1D4ED8] transition-colors shadow-md mt-2 flex items-center justify-center gap-1.5"
                 >
                   <span
                     class="material-symbols-outlined text-[18px]"
@@ -1010,8 +1010,8 @@ function confirmBillingChange() {
                 v-else-if="paymentStep === 'processing'"
                 class="py-12 flex flex-col items-center justify-center text-center"
               >
-                <span class="animate-spin w-10 h-10 border-4 border-[#FE5F55] border-t-transparent rounded-full mb-4" />
-                <h4 class="text-[15px] font-black text-[#18181B]">
+                <span class="animate-spin w-10 h-10 border-4 border-primary border-t-transparent rounded-full mb-4" />
+                <h4 class="text-[15px] font-black text-foreground">
                   Procesando transacción
                 </h4>
                 <p class="text-[12px] text-[#555555] max-w-[280px] mt-1.5 font-medium">
@@ -1027,16 +1027,16 @@ function confirmBillingChange() {
                 <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
                   <span class="material-symbols-outlined text-[32px] fill-current">check_circle</span>
                 </div>
-                <h4 class="text-[18px] font-black text-[#18181B]">
+                <h4 class="text-[18px] font-black text-foreground">
                   ¡Pago exitoso!
                 </h4>
-                <p class="text-[13px] text-[#555555] max-w-[320px] mt-2 leading-relaxed">
+                <p class="text-[13px] text-muted max-w-[320px] mt-2 leading-relaxed">
                   Tu transacción ha sido aprobada. Recibirás el comprobante de compra y los accesos por correo electrónico.
                 </p>
               
-                <button 
+                <button
                   type="button"
-                  class="w-full py-3.5 bg-[#18181B] hover:bg-[#27272A] text-white text-[13px] font-extrabold rounded-xl transition-colors shadow-md mt-8 active:scale-[0.98]"
+                  class="w-full py-3.5 bg-[#2563EB] hover:bg-[#1D4ED8] text-white text-[13px] font-extrabold rounded-xl transition-colors shadow-md mt-8 active:scale-[0.98]"
                   @click="closeWompi"
                 >
                   Finalizar
@@ -1049,18 +1049,18 @@ function confirmBillingChange() {
 
       <!-- Drawer navigation para móvil -->
       <Teleport to="body">
-        <div 
-          v-if="mobileNavOpen" 
-          class="fixed inset-0 z-50 bg-[#09090B]/50 backdrop-blur-sm lg:hidden"
+        <div
+          v-if="mobileNavOpen"
+          class="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm lg:hidden"
           @click="mobileNavOpen = false"
         >
           <!-- Drawer content -->
           <div
-            class="fixed top-0 right-0 h-full w-72 bg-white shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
+            class="fixed top-0 right-0 h-full w-72 bg-background shadow-2xl flex flex-col animate-in slide-in-from-right duration-200"
             @click.stop
           >
             <!-- Drawer header -->
-            <div class="flex justify-between items-center px-5 py-4 border-b border-[#F4F4F5]">
+            <div class="flex justify-between items-center px-5 py-4 border-b border-border">
               <div class="flex items-center gap-2">
                 <svg
                   width="24"
@@ -1090,11 +1090,11 @@ function confirmBillingChange() {
                     fill="none"
                   />
                 </svg>
-                <span class="text-[15px] font-bold text-[#18181B]">Contex360</span>
+                <span class="text-[15px] font-bold text-foreground">Contex360</span>
               </div>
               <button
                 type="button"
-                class="w-10 h-10 flex items-center justify-center hover:bg-[#F4F4F5] rounded-lg text-[#555555] transition-colors"
+                class="w-10 h-10 flex items-center justify-center hover:bg-surface rounded-lg text-muted transition-colors"
                 aria-label="Cerrar menú de navegación"
                 @click="mobileNavOpen = false"
               >
@@ -1147,10 +1147,10 @@ function confirmBillingChange() {
             </nav>
 
             <!-- Drawer footer actions -->
-            <div class="px-4 pb-8 pt-4 border-t border-[#F4F4F5] space-y-2.5">
+            <div class="px-4 pb-8 pt-4 border-t border-border space-y-2.5">
               <button
                 type="button"
-                class="w-full py-3.5 bg-[#18181B] text-white text-[14px] font-semibold rounded-xl btn-transition active:scale-[0.98] flex items-center justify-center gap-2"
+                class="w-full py-3.5 bg-[#2563EB] text-white text-[14px] font-semibold rounded-xl btn-transition active:scale-[0.98] flex items-center justify-center gap-2"
                 @click="() => { mobileNavOpen = false; trackCTAClick('drawer'); emit('request-demo') }"
               >
                 Iniciar Prueba Gratuita
@@ -1161,7 +1161,7 @@ function confirmBillingChange() {
               </button>
               <button
                 type="button"
-                class="w-full py-3.5 border border-[#E4E4E7] text-[#555555] text-[14px] font-semibold rounded-xl btn-transition hover:bg-[#FAFAFA] hover:text-[#18181B] flex items-center justify-center gap-2"
+                class="w-full py-3.5 border border-border text-muted text-[14px] font-semibold rounded-xl btn-transition hover:bg-surface hover:text-foreground flex items-center justify-center gap-2"
                 @click="() => { mobileNavOpen = false; emit('login') }"
               >
                 <span
@@ -1183,17 +1183,17 @@ function confirmBillingChange() {
       >
         <template v-if="showFaq">
           <section
-            class="py-16 lg:py-28 bg-white border-b border-[#F4F4F5]"
+            class="py-20 lg:py-28 bg-background border-b border-border"
             aria-labelledby="faq-heading"
           >
             <div class="max-w-3xl mx-auto px-5 lg:px-8">
               <div class="text-center mb-10 lg:mb-14">
-                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-[#2563EB] mb-4">
+                <h2 class="text-[11px] uppercase tracking-[0.2em] font-bold text-primary mb-4">
                   Preguntas Frecuentes
                 </h2>
                 <h3
                   id="faq-heading"
-                  class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-[#18181B]"
+                  class="text-[32px] lg:text-[38px] leading-[1.08] tracking-[-0.025em] font-bold text-foreground"
                 >
                   Todo lo que necesitas saber
                 </h3>
@@ -1213,7 +1213,7 @@ function confirmBillingChange() {
                     :aria-controls="`faq-answer-${i}`"
                     @click="toggleFaq(i)"
                   >
-                    <span class="text-[14.5px] font-semibold text-[#18181B] text-left">{{ faq.q }}</span>
+                    <span class="text-[14.5px] font-semibold text-foreground text-left">{{ faq.q }}</span>
                     <span
                       class="faq-icon material-symbols-outlined text-[20px] text-[#888888] flex-shrink-0"
                       :class="{ 'rotate-45': openFaq === i }"
@@ -1225,7 +1225,7 @@ function confirmBillingChange() {
                     class="faq-answer"
                     :class="{ 'faq-answer--open': openFaq === i }"
                   >
-                    <p class="text-[13.5px] leading-[1.7] text-[#555555] pb-5 pr-8">
+                    <p class="text-[13.5px] leading-[1.7] text-muted pb-5 pr-8">
                       {{ faq.a }}
                     </p>
                   </div>
@@ -1233,7 +1233,7 @@ function confirmBillingChange() {
               </div>
 
               <div class="mt-12 text-center">
-                <p class="text-[13.5px] text-[#888888] mb-4">
+                <p class="text-[13.5px] text-muted mb-4">
                   ¿Tienes otra pregunta?
                 </p>
                 <button
@@ -1253,7 +1253,7 @@ function confirmBillingChange() {
         </template>
         <div
           v-else
-          class="h-[500px] bg-white border-b border-[#F4F4F5]"
+          class="h-[500px] bg-background border-b border-border"
         />
       </div>
 
@@ -1263,7 +1263,7 @@ function confirmBillingChange() {
         data-section="footer"
       >
         <template v-if="showFooter">
-          <section class="cta-strip py-24 lg:py-28 relative overflow-hidden">
+          <section class="cta-strip py-20 lg:py-28 relative overflow-hidden">
             <div
               aria-hidden="true"
               class="cta-strip-grid pointer-events-none absolute inset-0"
@@ -1273,7 +1273,7 @@ function confirmBillingChange() {
                 class="text-[32px] lg:text-[46px] leading-[1.05] tracking-[-0.03em] font-bold text-white mb-5"
                 style="text-wrap: balance;"
               >
-                ¿Listo para llevar su back-office <em class="not-italic text-[#60A5FA]">al siguiente nivel</em>?
+                Automatice su contabilidad y facturación <em class="not-italic text-blue-400">DIAN hoy mismo</em>
               </h3>
               <p class="text-[15.5px] text-white/60 mb-10 max-w-md mx-auto leading-[1.6]">
                 Agende una demostración de 30 minutos con nuestro equipo. Sin compromiso, sin tarjeta de crédito.
@@ -1290,7 +1290,7 @@ function confirmBillingChange() {
         </template>
         <div
           v-else
-          class="h-[350px] bg-[#0F0F11]"
+          class="h-[350px] bg-zinc-950"
         />
       </div>
     </main>
@@ -1324,34 +1324,34 @@ function confirmBillingChange() {
     <Teleport to="body">
       <div
         v-if="showBillingConfirm"
-        class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-[#09090B]/50 backdrop-blur-sm"
+        class="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
         role="dialog"
         aria-modal="true"
         aria-labelledby="billing-confirm-title"
       >
-        <div class="bg-white border border-[#E4E4E7] rounded-[20px] shadow-2xl w-full max-w-[400px] p-7 flex flex-col gap-5">
+        <div class="bg-background border border-border rounded-[20px] shadow-2xl w-full max-w-[400px] p-7 flex flex-col gap-5">
           <div>
             <h4
               id="billing-confirm-title"
-              class="text-[16px] font-bold text-[#18181B] mb-1.5"
+              class="text-[16px] font-bold text-foreground mb-1.5"
             >
               ¿Cambiar modalidad de facturación?
             </h4>
-            <p class="text-[13px] text-[#555555] leading-[1.55]">
+            <p class="text-[13px] text-muted leading-[1.55]">
               El proceso de pago actual se cerrará. Podrás iniciar uno nuevo con la nueva modalidad.
             </p>
           </div>
           <div class="flex gap-2.5">
             <button
               type="button"
-              class="flex-1 py-2.5 bg-[#18181B] text-white text-[13px] font-semibold rounded-xl hover:bg-[#27272A] transition-colors"
+              class="flex-1 py-2.5 bg-[#2563EB] text-white text-[13px] font-semibold rounded-xl hover:bg-[#1D4ED8] transition-colors"
               @click="confirmBillingChange"
             >
               Confirmar cambio
             </button>
             <button
               type="button"
-              class="flex-1 py-2.5 border border-[#E4E4E7] text-[#18181B] text-[13px] font-semibold rounded-xl hover:bg-[#FAFAFA] transition-colors"
+              class="flex-1 py-2.5 border border-border text-foreground text-[13px] font-semibold rounded-xl hover:bg-surface transition-colors"
               @click="showBillingConfirm = false"
             >
               Cancelar
@@ -1363,7 +1363,7 @@ function confirmBillingChange() {
 
     <!-- Footer -->
     <template v-if="showFooter">
-      <footer class="py-10 lg:py-14 border-t border-[#F4F4F5] bg-white">
+      <footer class="py-20 lg:py-28 border-t border-border bg-background">
         <div class="max-w-7xl mx-auto px-5 lg:px-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-8 lg:gap-10">
           <div class="flex flex-col gap-3">
             <div class="flex items-center gap-2.5">
@@ -1397,18 +1397,18 @@ function confirmBillingChange() {
                   />
                 </g>
               </svg>
-              <span class="text-[16px] font-bold text-[#18181B]">Contex360</span>
+              <span class="text-[16px] font-bold text-foreground">Contex360</span>
             </div>
-            <p class="text-[12px] text-[#666666] font-medium max-w-[220px] leading-relaxed">
+            <p class="text-[12px] text-muted font-medium max-w-[220px] leading-relaxed">
               Sistemas Administrativos Avanzados para la Empresa Colombiana.
             </p>
           </div>
           <div class="flex gap-8 lg:gap-12">
             <div class="flex flex-col gap-3">
-              <span class="text-[11px] font-bold text-[#18181B] uppercase tracking-widest">Plataforma</span>
+              <span class="text-[11px] font-bold text-foreground uppercase tracking-widest">Plataforma</span>
               <button
                 type="button"
-                class="text-[12px] text-[#555555] hover:text-[#18181B] font-medium text-left"
+                class="text-[12px] text-muted hover:text-foreground font-medium text-left"
                 @click="emit('show-about')"
               >
                 Características
@@ -1453,7 +1453,7 @@ function confirmBillingChange() {
               </button>
             </div>
           </div>
-          <p class="text-[12px] text-[#666666] font-medium">
+          <p class="text-[12px] text-muted font-medium">
             © 2026 Contex360. Todos los derechos reservados.
           </p>
         </div>
@@ -1461,7 +1461,7 @@ function confirmBillingChange() {
     </template>
     <div
       v-else
-      class="h-[250px] bg-white border-t border-[#F4F4F5]"
+      class="h-[250px] bg-background border-t border-border"
     />
   </div>
 </template>
@@ -1470,7 +1470,7 @@ function confirmBillingChange() {
 /* ─── Focus ─────────────────────────────────────────────────── */
 button:focus-visible,
 a:focus-visible {
-  outline: 2px solid #2563EB;
+  outline: 2px solid var(--primary);
   outline-offset: 2px;
   border-radius: 6px;
 }
@@ -1530,13 +1530,13 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  background: #18181B;
-  color: white;
+  background: var(--foreground);
+  color: var(--background);
   font-size: 14px;
   font-weight: 600;
   padding: 0.875rem 2rem;
   border-radius: 0.75rem;
-  border: 1px solid #18181B;
+  border: 1px solid var(--foreground);
   box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 4px 12px -2px rgba(0,0,0,0.12);
   transition:
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -1545,7 +1545,7 @@ a:focus-visible {
   cursor: pointer;
 }
 .btn-primary-landing:hover {
-  background: #27272A;
+  background: var(--muted);
   box-shadow: 0 1px 2px rgba(0,0,0,0.1), 0 8px 20px -4px rgba(0,0,0,0.18);
   transform: translateY(-1px);
 }
@@ -1559,13 +1559,13 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.625rem;
-  background: white;
-  color: #18181B;
+  background: var(--background);
+  color: var(--foreground);
   font-size: 14px;
   font-weight: 600;
   padding: 0.875rem 2rem;
   border-radius: 0.75rem;
-  border: 1px solid #E4E4E7;
+  border: 1px solid var(--border);
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
   transition:
     background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
@@ -1575,8 +1575,8 @@ a:focus-visible {
   cursor: pointer;
 }
 .btn-secondary-landing:hover {
-  background: #FAFAFA;
-  border-color: #D4D4D8;
+  background: var(--surface);
+  border-color: var(--border-subtle);
   box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   transform: translateY(-1px);
 }
@@ -1593,8 +1593,8 @@ a:focus-visible {
     transform 200ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 .pricing-card--default {
-  background: white;
-  border: 1px solid #E4E4E7;
+  background: var(--background);
+  border: 1px solid var(--border);
   box-shadow: 0 1px 2px rgba(0,0,0,0.04);
 }
 .pricing-card--default:hover {
@@ -1602,8 +1602,8 @@ a:focus-visible {
   transform: translateY(-2px);
 }
 .pricing-card--popular {
-  background: #18181B;
-  border: 1px solid #27272A;
+  background: var(--foreground);
+  border: 1px solid rgba(255,255,255,0.1);
   box-shadow:
     0 0 0 1px rgba(37,99,235,0.15),
     0 4px 8px rgba(0,0,0,0.12),
@@ -1631,13 +1631,13 @@ a:focus-visible {
 
 /* ─── FAQ accordion ──────────────────────────────────────────── */
 .faq-item {
-  border: 1px solid #E4E4E7;
+  border: 1px solid var(--border);
   border-radius: 14px;
   overflow: hidden;
   transition: border-color 200ms ease, box-shadow 200ms ease;
 }
 .faq-item--open {
-  border-color: #D4D4D8;
+  border-color: var(--border-subtle);
   box-shadow: 0 2px 12px rgba(0,0,0,0.05);
 }
 .faq-trigger {
@@ -1647,12 +1647,12 @@ a:focus-visible {
   justify-content: space-between;
   gap: 1rem;
   padding: 1.1rem 1.25rem;
-  background: white;
+  background: var(--background);
   cursor: pointer;
   text-align: left;
   transition: background-color 150ms ease;
 }
-.faq-trigger:hover { background: #FAFAFA; }
+.faq-trigger:hover { background: var(--surface); }
 .faq-icon {
   transition: transform 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
 }
@@ -1660,8 +1660,8 @@ a:focus-visible {
   max-height: 0;
   overflow: hidden;
   transition: max-height 350ms cubic-bezier(0.4, 0, 0.2, 1);
-  background: #FAFAFA;
-  border-top: 0px solid #F4F4F5;
+  background: var(--surface);
+  border-top: 0px solid var(--border);
 }
 .faq-answer--open {
   max-height: 400px;
@@ -1685,7 +1685,7 @@ a:focus-visible {
   display: inline-flex;
   align-items: center;
   gap: 0.375rem;
-  background: #18181B;
+  background: #2563EB;
   color: white;
   font-size: 12.5px;
   font-weight: 600;
@@ -1696,7 +1696,7 @@ a:focus-visible {
   white-space: nowrap;
   transition: background-color 150ms ease, transform 120ms ease;
 }
-.enterprise-strip-btn:hover { background: #27272A; transform: translateY(-1px); }
+.enterprise-strip-btn:hover { background: #1D4ED8; transform: translateY(-1px); }
 .enterprise-strip-btn:active { transform: scale(0.97); }
 
 /* ─── Trust badges ───────────────────────────────────────────── */
@@ -1706,7 +1706,7 @@ a:focus-visible {
   gap: 0.375rem;
   font-size: 11.5px;
   font-weight: 600;
-  color: #555555;
+  color: var(--muted);
 }
 
 /* ─── Reduced motion ─────────────────────────────────────────── */
@@ -1738,11 +1738,11 @@ a:focus-visible {
   border-radius: 10px;
   background: transparent;
   border: none;
-  color: #18181B;
+  color: var(--foreground);
   cursor: pointer;
   transition: background-color 150ms ease;
 }
-.nav-hamburger:hover { background: #F4F4F5; }
+.nav-hamburger:hover { background: var(--surface); }
 
 /* ─── Mobile drawer nav links ────────────────────────────────── */
 .drawer-nav-link {
@@ -1753,14 +1753,14 @@ a:focus-visible {
   border-radius: 10px;
   font-size: 14.5px;
   font-weight: 600;
-  color: #444444;
+  color: var(--muted);
   text-decoration: none;
   min-height: 48px;
   transition: background-color 150ms ease, color 150ms ease;
 }
 .drawer-nav-link:hover {
-  background: #F4F4F5;
-  color: #18181B;
+  background: var(--surface);
+  color: var(--foreground);
 }
 
 /* ─── FAQ mobile touch targets ───────────────────────────────── */
@@ -1800,7 +1800,7 @@ a:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  background: #18181B;
+  background: #2563EB;
   color: white;
   font-size: 14.5px;
   font-weight: 700;
@@ -1812,7 +1812,7 @@ a:focus-visible {
   box-shadow: 0 2px 8px rgba(0,0,0,0.15);
   transition: background-color 150ms ease, transform 120ms ease;
 }
-.sticky-mobile-cta-btn:hover { background: #27272A; }
+.sticky-mobile-cta-btn:hover { background: #1D4ED8; }
 .sticky-mobile-cta-btn:active { transform: scale(0.98); }
 .sticky-mobile-cta-sub {
   text-align: center;
